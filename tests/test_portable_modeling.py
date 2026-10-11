@@ -48,10 +48,13 @@ class PortableModeling(unittest.TestCase):
         with self.assertRaises(ValueError):airfoil.prepare([operations[1]],{})
 
     def test_packaged_seed_choice_needs_no_native_id(self):
-        self.assertEqual(seeds.list_seeds()['available_count'],3)
+        self.assertEqual(seeds.list_seeds()['available_count'],9)
         selected=seeds.select_seed(5,'smooth')
         self.assertEqual(selected['name'],'five_smooth')
         self.assertTrue(Path(selected['seed_file']).is_file())
+        for count in (3,4,6):
+            for mode in ('straight','smooth'):
+                self.assertTrue(Path(seeds.select_seed(count,mode)['seed_file']).is_file())
         with self.assertRaises(ValueError):seeds.select_seed(5,'straight')
 
     def test_relocated_library_and_corrupt_seed_detection(self):
@@ -64,7 +67,7 @@ class PortableModeling(unittest.TestCase):
             shutil.copy2(ROOT/'LICENSE',root/'LICENSE')
             with patch.object(bridge,'ROOT',root),patch.object(bridge,'config',return_value={}):
                 result=seeds.install_seed_library()
-                self.assertEqual(result['available_count'],3)
+                self.assertEqual(result['available_count'],9)
                 selected=seeds.select_seed(5,'smooth')
                 self.assertTrue(Path(selected['seed_file']).is_relative_to(root))
                 Path(selected['seed_file']).write_bytes(b'corrupt seed')

@@ -99,6 +99,7 @@ class InstallationValidation(unittest.TestCase):
             elif command[0] == 'cmd.exe':
                 calls.append('compile')
                 (self.root / 'build/creo_worker.exe').write_bytes(b'fixture worker')
+                (self.root / 'build/creo_blend_sync.dll').write_bytes(b'fixture callback')
             else:
                 calls.append('constants')
             return subprocess.CompletedProcess(command, 0, stdout=b'{}')
@@ -115,6 +116,9 @@ class InstallationValidation(unittest.TestCase):
             (includes / HEADERS[-1]).write_text('enum fixture { PRO_FEAT_TEST_NEW = 8 };')
             bridge.build_native()
             self.assertEqual(calls.count('compile'), 3)
+            (self.root / 'build/creo_blend_sync.dll').unlink()
+            bridge.build_native()
+            self.assertEqual(calls.count('compile'), 4)
 
     def test_compiler_preflight_detects_partial_vcvars_success(self):
         include = self.root / 'include'
@@ -130,6 +134,30 @@ class InstallationValidation(unittest.TestCase):
             for filename in ('ucrt.lib', 'kernel32.lib'):
                 (libraries / filename).touch()
             self.assertEqual(compiler_environment_errors(env), [])
+
+    def test_worker_change_reuses_callback_but_tampering_rebuilds_it(self):
+        self.sdk()
+        (self.root/'native/worker.cpp').write_text('// worker one')
+        (self.root/'native/blend_sync.cpp').write_text('// callback')
+        builds=[]
+        def run(command, **kwargs):
+            if len(command)>1 and command[1].endswith('generate_constants.py'):
+                generate(self.root)
+            elif command[0]=='cmd.exe':
+                script=(self.root/'build/build.cmd').read_text()
+                callback_compiled='blend_sync.cpp' in script
+                builds.append(callback_compiled)
+                (self.root/'build/creo_worker.exe').write_bytes(b'worker')
+                if callback_compiled:(self.root/'build/creo_blend_sync.dll').write_bytes(b'verified callback')
+            return subprocess.CompletedProcess(command,0,stdout=b'{}')
+        with patch.object(bridge,'ROOT',self.root),patch.object(bridge,'config',return_value=self.settings),patch.object(bridge,'check_environment',return_value={'ready_to_build':True}),patch.object(bridge.subprocess,'run',side_effect=run):
+            bridge.build_native()
+            (self.root/'native/worker.cpp').write_text('// worker two')
+            bridge.build_native()
+            self.assertEqual(builds,[True,False])
+            (self.root/'build/creo_blend_sync.dll').write_bytes(b'tampered')
+            bridge.build_native()
+            self.assertEqual(builds,[True,False,True])
 
     @unittest.skipUnless(os.name == 'nt', 'Windows installer integration')
     def test_installer_native_failure_leaves_client_config_and_resume_instructions(self):
@@ -151,7 +179,7 @@ class InstallationValidation(unittest.TestCase):
                      'Common Files/x86e_win64/obj/pro_comm_msg.exe',
                      'Common Files/templates/mmns_part_solid_abs.prt',
                      'Common Files/templates/mmns_asm_design_abs.asm',
-                     *['Common Files/protoolkit/x86e_win64/obj/' + n for n in ('ptasyncmd.lib', 'protkmd_NU.lib', 'ucore.lib', 'udata.lib')]]:
+                     *['Common Files/protoolkit/x86e_win64/obj/' + n for n in ('ptasyncmd.lib', 'protkmd_NU.lib', 'protk_dllmd_NU.lib', 'ucore.lib', 'udata.lib')]]:
             target = self.creo / name
             target.parent.mkdir(parents=True, exist_ok=True)
             target.touch()

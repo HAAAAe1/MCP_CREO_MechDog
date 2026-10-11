@@ -41,7 +41,7 @@ static J read_blend_setting(int feature_id,const std::wstring& phase){
 
 static J verify_loft_settings(const std::wstring& phase){
  J result=J::object();
- for(auto it=aliases.begin();it!=aliases.end();++it){const J& meta=it.value();if(meta.value("op","")!="loft_seed"||!meta.contains("interpolation"))continue;
+ for(auto it=aliases.begin();it!=aliases.end();++it){const J& meta=it.value();if((meta.value("op","")!="loft_seed"&&meta.value("op","")!="loft")||!meta.contains("interpolation"))continue;
   int id=meta["feature_id"];ProFeature f;CK(ProFeatureInit((ProSolid)board,id,&f));ProFeattype type;CK(ProFeatureTypeGet(&f,&type));ProLine subtype=L"";CK(ProFeatureSubtypeGet(&f,subtype));
   if(type!=PRO_FEAT_PROTRUSION||(wcscmp(subtype,L"\u6df7\u5408")&&_wcsicmp(subtype,L"Blend")))throw std::runtime_error("Native Blend feature identity changed");
   int count=0;CK(ProFeatureNumSectionsGet(&f,&count));if(count!=(int)meta["sections"].size())throw std::runtime_error("Native Blend section count changed");

@@ -1,4 +1,4 @@
-"""Real MCP/Creo checks of 3/5-section native Blend seed rebinding.
+"""Real MCP/Creo checks of 3/4/5/6-section native Blend seed rebinding.
 
 Supply a dedicated local seed with exactly --sections external sketches,
 created and selected in increasing Z order. Never resubmit uncertain jobs.
@@ -36,7 +36,11 @@ def airfoil(chord,angle):
 
 def profiles(count,foil=False):
     if count==3:zs=[0,30,60];sizes=[20,30,10];angles=[30,15,5]
-    else:zs=[0,20,50,80,100];sizes=[12,26,34,22,8];angles=[35,28,18,10,5]
+    elif count==5:zs=[0,20,50,80,100];sizes=[12,26,34,22,8];angles=[35,28,18,10,5]
+    else:
+        zs=[60*i/(count-1) for i in range(count)]
+        sizes=[20+12*math.sin(math.pi*i/(count-1))-10*i/(count-1) for i in range(count)]
+        angles=[30-25*i/(count-1) for i in range(count)]
     result=[]
     for i,(z,size,angle) in enumerate(zip(zs,sizes,angles)):
         entities=airfoil(size,angle) if foil else [{'type':'rectangle','name':'profile','min':[-size/2,-size/2],'max':[size/2,size/2]}]
@@ -232,7 +236,7 @@ async def main(seed_file,feature_id,count,mode,resume=False):
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--seed-file',required=True);parser.add_argument('--feature-id',required=True,type=int)
-    parser.add_argument('--sections',choices=[3,5],required=True,type=int)
+    parser.add_argument('--sections',choices=[3,4,5,6],required=True,type=int)
     parser.add_argument('--interpolation',choices=['straight','smooth'],required=True)
     parser.add_argument('--resume',action='store_true');a=parser.parse_args()
     asyncio.run(main(a.seed_file,a.feature_id,a.sections,a.interpolation,a.resume))

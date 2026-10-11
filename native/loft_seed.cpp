@@ -89,7 +89,7 @@ static void bind_loft_seed(const J& binding,const J& original_profiles){
  ProReferencearrayFree(new_refs);ProReferencearrayFree(old_refs);
  CK(ProArrayAlloc(section_count,sizeof(int),1,(ProArray*)&ids));for(int i=0;i<section_count;i++)ids[i]=original_profiles[i].get<int>();ProFeatureDeleteOptions* opts=nullptr;CK(ProArrayAlloc(1,sizeof(ProFeatureDeleteOptions),1,(ProArray*)&opts));opts[0]=PRO_FEAT_DELETE_NO_OPTS;
  ProError removed=ProFeatureWithoptionsDelete((ProSolid)board,ids,opts,PRO_REGEN_NO_FLAGS);ProArrayFree((ProArray*)&ids);ProArrayFree((ProArray*)&opts);check(removed,"RemoveUnusedSeedSketches");
- ProName name;wcscpy_s(name,wide(binding["label"]).c_str());CK(ProModelitemNameSet(&blend,name));CK(ProSolidRegenerate((ProSolid)board,PRO_REGEN_NO_FLAGS));
+ ProName name,current_name;wcscpy_s(name,wide(binding["label"]).c_str());CK(ProModelitemNameGet(&blend,current_name));if(_wcsicmp(name,current_name))CK(ProModelitemNameSet(&blend,name));CK(ProSolidRegenerate((ProSolid)board,PRO_REGEN_NO_FLAGS));
  ProFeatStatus status;CK(ProFeatureStatusGet(&blend,&status));if(status!=PRO_FEAT_ACTIVE)throw std::runtime_error("Rebound Blend is not active");
  J meta={{"feature_id",blend.id},{"op","loft_seed"},{"sections",binding["sections"]},{"interpolation",binding.value("interpolation","straight")},{"construction","native_multisection_blend_seed_rebinding"},{"seed_sha256",binding["snapshot_sha256"]}};aliases[binding["label"].get<std::string>()]=meta;
  operation_results.push_back({{"op","loft_seed"},{"label",binding["label"]},{"feature_id",blend.id},{"succeeded",true}});

@@ -20,7 +20,8 @@ async def main(create: bool, simple: bool, classic: bool):
         report["protocol_version"] = client.protocol_version
         tools = await client.list_tools()
         report["tools"] = [t.name for t in tools.tools]
-        assert len(report["tools"]) == 80, report["tools"]
+        from capabilities import UNAVAILABLE_OPERATIONS
+        assert not {f'creo_{name}' for name in UNAVAILABLE_OPERATIONS} & set(report['tools'])
         assert {"creo_execute_plan","creo_create_sketch","creo_extrude","creo_revolve","creo_hole","creo_dimension_pattern","creo_new_drawing","creo_create_udf","creo_rib","creo_boolean_bodies","creo_new_loft_part"} <= set(report["tools"]), report
         assert {'creo_list_seeds','creo_install_seed_library','creo_validate_seed','creo_new_airfoil_blade',
                 'creo_create_airfoil_section','creo_set_airfoil_parameters','creo_update_sketch_geometry',
@@ -37,6 +38,8 @@ async def main(create: bool, simple: bool, classic: bool):
         report["loft_interpolation_schema_verified"] = True
         capabilities = await client.call_tool("creo_capabilities", {})
         assert not capabilities.is_error, capabilities
+        assert capabilities.structured_content['enabled_tool_count'] == len(report['tools'])
+        assert capabilities.structured_content['disabled_tools_hidden'] is True
         assert capabilities.structured_content["families"]["loft_seed"]["interpolation"] == ["straight", "smooth"]
         assert capabilities.structured_content["families"]["loft_seed"]["section_count_input_range"] == [2, 20]
         assert capabilities.structured_content["families"]["loft_seed"]["seed_section_count_must_match"] is True

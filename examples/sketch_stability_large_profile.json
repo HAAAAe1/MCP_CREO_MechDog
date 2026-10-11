@@ -1,0 +1,249 @@
+[
+  {
+    "type": "line",
+    "name": "b0",
+    "start": [
+      5200.0,
+      -1100.0
+    ],
+    "end": [
+      5200.0,
+      1100.0
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b1",
+    "start": [
+      5200.0,
+      1100.0
+    ],
+    "end": [
+      6200.0,
+      2100.0
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b2",
+    "start": [
+      6200.0,
+      2100.0
+    ],
+    "end": [
+      28700.0,
+      2100.0
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b3",
+    "start": [
+      28700.0,
+      2100.0
+    ],
+    "end": [
+      51200.0,
+      2100.0
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b4",
+    "start": [
+      51200.0,
+      2100.0
+    ],
+    "end": [
+      54864.4,
+      2036.0
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b5",
+    "start": [
+      54864.4,
+      2036.0
+    ],
+    "end": [
+      58524.4,
+      1844.2
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b6",
+    "start": [
+      58524.4,
+      1844.2
+    ],
+    "end": [
+      62175.0,
+      1524.8
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b7",
+    "start": [
+      62175.0,
+      1524.8
+    ],
+    "end": [
+      65813.2,
+      1078.1
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b8",
+    "start": [
+      65813.2,
+      1078.1
+    ],
+    "end": [
+      69433.0,
+      504.8
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b9",
+    "start": [
+      69433.0,
+      504.8
+    ],
+    "end": [
+      72094.736,
+      0.0
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b10",
+    "start": [
+      72094.736,
+      0.0
+    ],
+    "end": [
+      69433.0,
+      -504.8
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b11",
+    "start": [
+      69433.0,
+      -504.8
+    ],
+    "end": [
+      65813.2,
+      -1078.1
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b12",
+    "start": [
+      65813.2,
+      -1078.1
+    ],
+    "end": [
+      62175.0,
+      -1524.8
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b13",
+    "start": [
+      62175.0,
+      -1524.8
+    ],
+    "end": [
+      58524.4,
+      -1844.2
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b14",
+    "start": [
+      58524.4,
+      -1844.2
+    ],
+    "end": [
+      54864.4,
+      -2036.0
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b15",
+    "start": [
+      54864.4,
+      -2036.0
+    ],
+    "end": [
+      51200.0,
+      -2100.0
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b16",
+    "start": [
+      51200.0,
+      -2100.0
+    ],
+    "end": [
+      28700.0,
+      -2100.0
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b17",
+    "start": [
+      28700.0,
+      -2100.0
+    ],
+    "end": [
+      6200.0,
+      -2100.0
+    ],
+    "construction": false
+  },
+  {
+    "type": "line",
+    "name": "b18",
+    "start": [
+      6200.0,
+      -2100.0
+    ],
+    "end": [
+      5200.0,
+      -1100.0
+    ],
+    "construction": false
+  }
+]

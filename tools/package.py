@@ -14,7 +14,7 @@ NAME = "MCP_CREO_MechDog"
 
 
 def source_files():
-    names = ("README.md", "LICENSE", "THIRD_PARTY_NOTICES.md", "server.py", "bridge.py", "seeds.py", "airfoil.py",
+    names = ("README.md", "LICENSE", "THIRD_PARTY_NOTICES.md", "server.py", "bridge.py", "seeds.py", "airfoil.py", "profile_checks.py",
              "generic_bridge.py", "schema.py", "version.py", "capabilities.py", "config.example.json", "client-config.example.json",
              "requirements.txt", "requirements.lock.txt", "setup.ps1", ".gitignore")
     files = [ROOT / name for name in names]

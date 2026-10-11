@@ -66,11 +66,18 @@ class AdvancedValidation(unittest.TestCase):
 
     def test_unavailable_operations_rejected_before_native_job(self):
         op={'op':'loft','label':'transition','sections':['first','second']}
-        with patch('generic_bridge.bridge.toolkit_lock') as lock, patch('pathlib.Path.mkdir') as mkdir:
+        with patch.dict('capabilities.UNAVAILABLE_OPERATIONS',{'loft':'Temporarily disabled for this gate test'}), patch('generic_bridge.bridge.toolkit_lock') as lock, patch('pathlib.Path.mkdir') as mkdir:
             with self.assertRaisesRegex(ValueError,'no native job was queued'):
                 submit([op])
             lock.assert_not_called();mkdir.assert_not_called()
         require_available([{'op':'sheetmetal_flange'}])
+
+    def test_direct_blend_unsupported_material_modes_rejected_before_queue(self):
+        base={'op':'loft','label':'transition','sections':['first','second']}
+        with patch('generic_bridge.bridge.toolkit_lock') as lock,patch('pathlib.Path.mkdir') as mkdir:
+            for fields in ({'mode':'cut'},{'mode':'surface'},{'new_body':True}):
+                with self.assertRaisesRegex(ValueError,'default body only'):submit([{**base,**fields}])
+            lock.assert_not_called();mkdir.assert_not_called()
 
     def test_sheetmetal_unused_options_are_rejected(self):
         base={'op':'sheetmetal_wall','label':'wall','sketch':'profile','depth':20,'thickness':1}
