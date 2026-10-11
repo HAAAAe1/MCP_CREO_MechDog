@@ -1,0 +1,1234 @@
+{
+  "version": "0.2.5",
+  "target_version": "0.2.5",
+  "date": "2026-10-11",
+  "status": "accepted",
+  "full_creo_coverage": false,
+  "requested_items": [
+    1,
+    2,
+    3,
+    4,
+    8,
+    10
+  ],
+  "accepted_items": [
+    1,
+    2,
+    3,
+    4,
+    8,
+    10
+  ],
+  "incomplete_items": [],
+  "unit_tests": {
+    "passed": 57,
+    "failed": 0,
+    "version": "0.2.5"
+  },
+  "native_build": {
+    "worker": "passed",
+    "synchronous_callback": "passed",
+    "native_source_sha256": "2f1aff67236db16d39eae842d66e969fcc36b0dcd6969247fc745c3820687d07",
+    "worker_sha256": "a6bc1064e47951dc10702c57c7f6687b603698cf375c62944b7832128a252fb8",
+    "callback_sha256": "bc91a7332f9ba67d1b0d40411ff65812e6581f716f20ecab89a4ba3599cb1725"
+  },
+  "protocol_query": {
+    "version": "0.2.5",
+    "tool_count": 80,
+    "available_seed_count": 9,
+    "coordinate_modes_exposed": true,
+    "disabled_tools_hidden": true,
+    "job_status": "succeeded",
+    "full_bytes": 12079,
+    "compact_bytes": 1398
+  },
+  "sweep_cases": [
+    {
+      "name": "curved",
+      "create_job": "3503b4aa70d541e3a733b52ed3e60320",
+      "edit_job": "33a46e33110c430fbe8be85d51315e5e",
+      "rollback_job": "2ac1123a552c4b47b20f32ab1db74fbf",
+      "native_feature_id": 46,
+      "feature_type": 917,
+      "volume": 394.78417604336573,
+      "edited_volume": 888.2643960973867,
+      "create_reloaded": true,
+      "edit_reloaded": true,
+      "rollback_succeeded": true,
+      "passed": true
+    },
+    {
+      "name": "cut",
+      "create_job": "3e450e976fa54525b6c60f331aec31c6",
+      "edit_job": "27af24288bdd4979a48efdca62548617",
+      "rollback_job": "fcfeb91ac00b45c5bf095d5a46e5af72",
+      "native_feature_id": 84,
+      "feature_type": 916,
+      "volume": 15497.345175425631,
+      "edited_volume": 14869.026644707672,
+      "create_reloaded": true,
+      "edit_reloaded": true,
+      "rollback_succeeded": true,
+      "passed": true
+    },
+    {
+      "name": "surface",
+      "create_job": "5dd55169b33749f3b25f38506e6b0450",
+      "edit_job": "7343938db7f344fd833fa9cdfcbbf14e",
+      "rollback_job": "02267f10308d440f92acbbfe3853ac90",
+      "native_feature_id": 46,
+      "feature_type": 942,
+      "volume": null,
+      "edited_volume": 639.9999999999999,
+      "create_reloaded": true,
+      "edit_reloaded": true,
+      "rollback_succeeded": true,
+      "passed": true
+    },
+    {
+      "name": "thin",
+      "create_job": "8b1e34b566004758969441e6d09f3867",
+      "edit_job": "424db854a8c343b59dcf25c1d954c331",
+      "rollback_job": "159d8348d63a407294e3b2b8bad09149",
+      "native_feature_id": 46,
+      "feature_type": 917,
+      "volume": 1256.637061435917,
+      "edited_volume": 1507.9644737231001,
+      "create_reloaded": true,
+      "edit_reloaded": true,
+      "rollback_succeeded": true,
+      "passed": true
+    }
+  ],
+  "direct_blend_factory_cases": [
+    {
+      "section_count": 3,
+      "interpolation": "straight",
+      "passed": true,
+      "jobs": {
+        "create": {
+          "job_id": "a9b55fd6e7d74d6996b31b6a7bfcf38e",
+          "status": "succeeded"
+        },
+        "edit": {
+          "job_id": "aac32e4bb6774c2db27c32c99b2c9570",
+          "status": "succeeded"
+        },
+        "rollback": {
+          "job_id": "842d6b5fb4df4c03be1d7df43c15ba92",
+          "status": "failed"
+        }
+      },
+      "feature_id": 71,
+      "section_sketch_ids": [
+        40,
+        51,
+        62
+      ],
+      "initial_volume_mm3": 7000.000000000003,
+      "edited_volume_mm3": 7900.0,
+      "initial_geometry": [
+        {
+          "z": 0.0,
+          "width": 20.0,
+          "height": 20.0
+        },
+        {
+          "z": 15.0,
+          "width": 15.0,
+          "height": 15.0
+        },
+        {
+          "z": 30.0,
+          "width": 10.0,
+          "height": 10.0
+        }
+      ],
+      "edited_geometry": [
+        {
+          "z": 0.0,
+          "width": 20.0,
+          "height": 20.0
+        },
+        {
+          "z": 15.0,
+          "width": 19.0,
+          "height": 15.0
+        },
+        {
+          "z": 30.0,
+          "width": 10.0,
+          "height": 10.0
+        }
+      ],
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": true
+    },
+    {
+      "section_count": 3,
+      "interpolation": "smooth",
+      "passed": true,
+      "jobs": {
+        "create": {
+          "job_id": "816451a0904842c09ee1cd9c89592cd3"
+        },
+        "edit": {
+          "job_id": "aeb1e3f83284425e8f9cf297a6429272",
+          "status": "succeeded"
+        },
+        "rollback": {
+          "job_id": "fed333f87eeb4496aea9787cd15dd2b1",
+          "status": "failed"
+        }
+      },
+      "feature_id": 71,
+      "section_sketch_ids": [
+        40,
+        51,
+        62
+      ],
+      "initial_volume_mm3": 7000.0,
+      "edited_volume_mm3": 8197.19814985924,
+      "initial_geometry": [
+        {
+          "z": 0.0,
+          "width": 20.0,
+          "height": 20.0
+        },
+        {
+          "z": 15.0,
+          "width": 15.0,
+          "height": 15.0
+        },
+        {
+          "z": 30.0,
+          "width": 10.0,
+          "height": 10.0
+        }
+      ],
+      "edited_geometry": [
+        {
+          "z": 0.0,
+          "width": 20.0,
+          "height": 20.0
+        },
+        {
+          "z": 15.0,
+          "width": 18.92004984,
+          "height": 15.00000032
+        },
+        {
+          "z": 30.0,
+          "width": 10.0,
+          "height": 10.0
+        }
+      ],
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": true
+    },
+    {
+      "section_count": 4,
+      "interpolation": "straight",
+      "passed": true,
+      "jobs": {
+        "create": {
+          "job_id": "a44681527c6a48baa082abaa058b31c2",
+          "status": "succeeded"
+        },
+        "edit": {
+          "job_id": "65ffa769ddf84fe2a8f5ed3049a7f5f2",
+          "status": "succeeded"
+        },
+        "rollback": {
+          "job_id": "3e74c2e6537448bc9868109acaa29509",
+          "status": "failed"
+        }
+      },
+      "feature_id": 82,
+      "section_sketch_ids": [
+        40,
+        51,
+        62,
+        73
+      ],
+      "initial_volume_mm3": 7000.000000000002,
+      "edited_volume_mm3": 7533.33333333333,
+      "initial_geometry": [
+        {
+          "z": 0.0,
+          "width": 20.0,
+          "height": 20.0
+        },
+        {
+          "z": 10.0,
+          "width": 16.66666604,
+          "height": 16.66666604
+        },
+        {
+          "z": 20.0,
+          "width": 13.33333302,
+          "height": 13.33333302
+        },
+        {
+          "z": 30.0,
+          "width": 10.0,
+          "height": 10.0
+        }
+      ],
+      "edited_geometry": [
+        {
+          "z": 0.0,
+          "width": 20.0,
+          "height": 20.0
+        },
+        {
+          "z": 10.0,
+          "width": 16.66666604,
+          "height": 16.66666604
+        },
+        {
+          "z": 20.0,
+          "width": 17.33333396,
+          "height": 13.33333302
+        },
+        {
+          "z": 30.0,
+          "width": 10.0,
+          "height": 10.0
+        }
+      ],
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": true
+    },
+    {
+      "section_count": 4,
+      "interpolation": "smooth",
+      "passed": true,
+      "jobs": {
+        "create": {
+          "job_id": "e0dbd6f92244489994ffc4aee2305153",
+          "status": "succeeded"
+        },
+        "edit": {
+          "job_id": "3bbc5e090fd84f6fb7ac08b984f3c143",
+          "status": "succeeded"
+        },
+        "rollback": {
+          "job_id": "8d5316df275d430fa4512f2e937cf60c",
+          "status": "failed"
+        }
+      },
+      "feature_id": 82,
+      "section_sketch_ids": [
+        40,
+        51,
+        62,
+        73
+      ],
+      "initial_volume_mm3": 7000.0,
+      "edited_volume_mm3": 7550.229477664635,
+      "initial_geometry": [
+        {
+          "z": 0.0,
+          "width": 20.0,
+          "height": 20.0
+        },
+        {
+          "z": 10.0,
+          "width": 16.66666666,
+          "height": 16.66666666
+        },
+        {
+          "z": 20.0,
+          "width": 13.33333334,
+          "height": 13.33333334
+        },
+        {
+          "z": 30.0,
+          "width": 10.0,
+          "height": 10.0
+        }
+      ],
+      "edited_geometry": [
+        {
+          "z": 0.0,
+          "width": 20.0,
+          "height": 20.0
+        },
+        {
+          "z": 10.0,
+          "width": 16.68381806,
+          "height": 16.66666638
+        },
+        {
+          "z": 20.0,
+          "width": 17.28630816,
+          "height": 13.33333334
+        },
+        {
+          "z": 30.0,
+          "width": 10.0,
+          "height": 10.0
+        }
+      ],
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": true
+    },
+    {
+      "section_count": 6,
+      "interpolation": "straight",
+      "passed": true,
+      "jobs": {
+        "create": {
+          "job_id": "ae3e3e3ddef648d38c39013a5ccbd2ff",
+          "status": "succeeded"
+        },
+        "edit": {
+          "job_id": "794eb2ba0f8a49b988c03783ea7bd064",
+          "status": "succeeded"
+        },
+        "rollback": {
+          "job_id": "2f7bcafc95184a2e85d7c5c43cc301d5",
+          "status": "failed"
+        }
+      },
+      "feature_id": 104,
+      "section_sketch_ids": [
+        40,
+        51,
+        62,
+        73,
+        84,
+        95
+      ],
+      "initial_volume_mm3": 7000.000000000002,
+      "edited_volume_mm3": 7336.000000000001,
+      "initial_geometry": [
+        {
+          "z": 0.0,
+          "width": 20.0,
+          "height": 20.0
+        },
+        {
+          "z": 6.0,
+          "width": 18.0,
+          "height": 18.0
+        },
+        {
+          "z": 12.0,
+          "width": 16.0,
+          "height": 16.0
+        },
+        {
+          "z": 18.0,
+          "width": 14.0,
+          "height": 14.0
+        },
+        {
+          "z": 24.0,
+          "width": 12.0,
+          "height": 12.0
+        },
+        {
+          "z": 30.0,
+          "width": 10.0,
+          "height": 10.0
+        }
+      ],
+      "edited_geometry": [
+        {
+          "z": 0.0,
+          "width": 20.0,
+          "height": 20.0
+        },
+        {
+          "z": 6.0,
+          "width": 18.0,
+          "height": 18.0
+        },
+        {
+          "z": 12.0,
+          "width": 16.0,
+          "height": 16.0
+        },
+        {
+          "z": 18.0,
+          "width": 18.0,
+          "height": 14.0
+        },
+        {
+          "z": 24.0,
+          "width": 12.0,
+          "height": 12.0
+        },
+        {
+          "z": 30.0,
+          "width": 10.0,
+          "height": 10.0
+        }
+      ],
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": true
+    },
+    {
+      "section_count": 6,
+      "interpolation": "smooth",
+      "passed": true,
+      "jobs": {
+        "create": {
+          "job_id": "befbb2773df64ff0a9e22690263f5ca6",
+          "status": "succeeded"
+        },
+        "edit": {
+          "job_id": "342ac6d8ec094a50a210822a055da4c0",
+          "status": "succeeded"
+        },
+        "rollback": {
+          "job_id": "4918acc8a21d4efa95c8b2f20e56ecc7",
+          "status": "failed"
+        }
+      },
+      "feature_id": 104,
+      "section_sketch_ids": [
+        40,
+        51,
+        62,
+        73,
+        84,
+        95
+      ],
+      "initial_volume_mm3": 7000.0,
+      "edited_volume_mm3": 7330.214710640636,
+      "initial_geometry": [
+        {
+          "z": 0.0,
+          "width": 20.0,
+          "height": 20.0
+        },
+        {
+          "z": 6.0,
+          "width": 18.0,
+          "height": 18.0
+        },
+        {
+          "z": 12.0,
+          "width": 16.0,
+          "height": 16.0
+        },
+        {
+          "z": 18.0,
+          "width": 14.0,
+          "height": 14.0
+        },
+        {
+          "z": 24.0,
+          "width": 12.0,
+          "height": 12.0
+        },
+        {
+          "z": 30.0,
+          "width": 10.0,
+          "height": 10.0
+        }
+      ],
+      "edited_geometry": [
+        {
+          "z": 0.0,
+          "width": 20.0,
+          "height": 20.0
+        },
+        {
+          "z": 6.0,
+          "width": 17.99991644,
+          "height": 17.9999996
+        },
+        {
+          "z": 12.0,
+          "width": 16.00359082,
+          "height": 16.00000062
+        },
+        {
+          "z": 18.0,
+          "width": 17.91840882,
+          "height": 14.0
+        },
+        {
+          "z": 24.0,
+          "width": 12.02784172,
+          "height": 11.99999984
+        },
+        {
+          "z": 30.0,
+          "width": 10.0,
+          "height": 10.0
+        }
+      ],
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": true
+    }
+  ],
+  "new_seed_rebinding_cases": [
+    {
+      "section_count": 3,
+      "interpolation": "straight",
+      "passed": true,
+      "count_mismatch_rejected": true,
+      "mode_mismatch_rejected": true
+    },
+    {
+      "section_count": 3,
+      "interpolation": "smooth",
+      "passed": true,
+      "count_mismatch_rejected": true,
+      "mode_mismatch_rejected": true
+    },
+    {
+      "section_count": 4,
+      "interpolation": "straight",
+      "passed": true,
+      "count_mismatch_rejected": true,
+      "mode_mismatch_rejected": true
+    },
+    {
+      "section_count": 4,
+      "interpolation": "smooth",
+      "passed": true,
+      "count_mismatch_rejected": true,
+      "mode_mismatch_rejected": true
+    },
+    {
+      "section_count": 6,
+      "interpolation": "straight",
+      "passed": true,
+      "count_mismatch_rejected": true,
+      "mode_mismatch_rejected": true
+    },
+    {
+      "section_count": 6,
+      "interpolation": "smooth",
+      "passed": true,
+      "count_mismatch_rejected": true,
+      "mode_mismatch_rejected": true
+    }
+  ],
+  "existing_target_blend": {
+    "passed": true,
+    "base_ids": {
+      "base": 51,
+      "base_profile_0": 42
+    },
+    "jobs": {
+      "base": {
+        "job_id": "96531ba12128440a8b06e0cdea8901a9"
+      },
+      "append": {
+        "job_id": "8ad6cf7f67464aca90a2253c1a52ef1f"
+      },
+      "edit": {
+        "job_id": "4bb1ef7b69504843bd57089a8627d7b7"
+      },
+      "failed_append_rollback": {
+        "job_id": "0e48e7432224454d9b15c5180f4e2e0b"
+      },
+      "rollback_live_refresh": {
+        "job_id": "b9a7280f45e0471ab907f357c73a928a"
+      }
+    },
+    "section_count": 3,
+    "interpolation": "smooth",
+    "initial_volume_mm3": 11500.0,
+    "edited_volume_mm3": 12697.19814985924,
+    "blend_feature_id": 111,
+    "saved_file_reloaded_and_verified": true,
+    "rollback_succeeded": true,
+    "rollback_live_verified": true,
+    "public_mcp_jobs": {
+      "base": {
+        "job_id": "f472eddc630b4350a39f96c14e3deb24",
+        "tool": "creo_execute_plan"
+      },
+      "public_loft": {
+        "job_id": "20ff32ac99524d24bd9dbe3df431df3c",
+        "tool": "creo_loft"
+      },
+      "edit": {
+        "job_id": "6fbb2e32cf0845b5b192d8b2e26173c1",
+        "tool": "creo_execute_plan"
+      }
+    },
+    "public_mcp_passed": true
+  },
+  "direct_blend_actual_plane_checks": {
+    "steps": {
+      "sketches": {
+        "job_id": "bfedbde657e14a0d89738789e99a1964",
+        "tool": "creo_execute_plan"
+      },
+      "actual_equal_planes_rejected": {
+        "job_id": "85925c0528bb4ef3a02d36227c8c35c8",
+        "tool": "creo_execute_plan"
+      },
+      "rollback_refresh": {
+        "job_id": "2ddc099cfe3343f7808b0ee3ec8deaec",
+        "tool": "creo_refresh_model"
+      },
+      "changed_plane_valid_blend": {
+        "job_id": "f2d2ee015aea46c482127dc1dc2f7e45",
+        "tool": "creo_execute_plan"
+      }
+    },
+    "passed": true,
+    "actual_plane_order_checked": true,
+    "rollback_succeeded": true,
+    "rollback_live_verified": true,
+    "valid_changed_plane_volume_mm3": 4966.666666666665,
+    "saved_file_reloaded_and_verified": true
+  },
+  "public_coordinate_sketch_cases": {
+    "steps": {
+      "report19_create": {
+        "job_id": "7dc5796d13474143a1b11b47294d6b2d",
+        "tool": "creo_execute_plan"
+      },
+      "report19_edit": {
+        "job_id": "026df408aa6b40ad9b58b9eb2b81bec3",
+        "tool": "creo_execute_plan"
+      },
+      "report19_geometry": {
+        "job_id": "e3eeaf76ab524e57b8979248fb5baf95",
+        "tool": "creo_update_sketch_geometry"
+      },
+      "report19_geometry_export": {
+        "job_id": "d13f60ee7c4c47a18e8ef5ed808aec68",
+        "tool": "creo_export_model"
+      },
+      "report19_rollback": {
+        "job_id": "c3d4f6325b6d49d5b47d6c62dc358563",
+        "tool": "creo_execute_plan"
+      },
+      "report19_refresh": {
+        "job_id": "b9ad2b29073743c2baa33387472843c2",
+        "tool": "creo_refresh_model"
+      },
+      "polygon12_create": {
+        "job_id": "e2d1dc799e234ccfa1fc943f83437688",
+        "tool": "creo_execute_plan"
+      },
+      "polygon12_edit": {
+        "job_id": "e8a42bf45bf9446cba99556bbffcbd89",
+        "tool": "creo_execute_plan"
+      },
+      "capsule_xy_create": {
+        "job_id": "e8e3c24364ae47b1a3d7dfdc9ed776c9",
+        "tool": "creo_execute_plan"
+      },
+      "capsule_xy_edit": {
+        "job_id": "fdd722d669084741b4ce146d6d843bf5",
+        "tool": "creo_execute_plan"
+      },
+      "capsule_xy_geometry": {
+        "job_id": "1cbb9724adc4436887c744c32ed61b01",
+        "tool": "creo_update_sketch_geometry"
+      },
+      "capsule_xy_geometry_export": {
+        "job_id": "00ea404804b346feaabdc7451fcc4a98",
+        "tool": "creo_export_model"
+      },
+      "capsule_xy_rollback": {
+        "job_id": "1fc88fca5f784d3e83839c94d542d509",
+        "tool": "creo_execute_plan"
+      },
+      "capsule_xy_refresh": {
+        "job_id": "52825b24e7a442d8ae13151591c04e9f",
+        "tool": "creo_refresh_model"
+      },
+      "capsule_xz_create": {
+        "job_id": "55ab98d4b43e4c7bbd80d71e3411b069",
+        "tool": "creo_execute_plan"
+      },
+      "capsule_xz_edit": {
+        "job_id": "32fa285a146a4ceeb29612c79ec99a93",
+        "tool": "creo_execute_plan"
+      },
+      "circle_yz_create": {
+        "job_id": "742a39043f9c48c2b372ebd73ec4bd46",
+        "tool": "creo_execute_plan"
+      },
+      "circle_yz_edit": {
+        "job_id": "14bacc3b89a3400f804b08ff31eab5db",
+        "tool": "creo_execute_plan"
+      },
+      "rectangle_coordinates_create": {
+        "job_id": "7f739db91acf46319f685a192564203f",
+        "tool": "creo_execute_plan"
+      },
+      "rectangle_coordinates_edit": {
+        "job_id": "206f247e1d4548c292fc53c2d3aca250",
+        "tool": "creo_execute_plan"
+      }
+    },
+    "cases": [
+      {
+        "name": "report19",
+        "passed": true,
+        "initial": {
+          "model_id": "776ddb2546e44ec4b02d3a67d030bb39",
+          "revision": 1,
+          "sketch_feature_id": 40,
+          "solid_feature_id": 64,
+          "volume_mm3": 25039965833.28,
+          "solver": {
+            "coordinate_geometry": {
+              "max_deviation_mm": 2.2737367544323206e-13,
+              "point_count": 38,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_geometry_after_creation": {
+              "max_deviation_mm": 2.2737367544323206e-13,
+              "point_count": 38,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_scaling": false,
+            "final_units": "mm",
+            "requested": "auto",
+            "used": "coordinates"
+          },
+          "saved_file_reloaded_and_verified": true,
+          "boundary": {
+            "max_deviation_mm": 0.00046473157696917856,
+            "tolerance_mm": 0.15,
+            "boundary_point_count": 19
+          }
+        },
+        "edited": {
+          "model_id": "776ddb2546e44ec4b02d3a67d030bb39",
+          "revision": 2,
+          "sketch_feature_id": 40,
+          "solid_feature_id": 64,
+          "volume_mm3": 25540765149.9456,
+          "solver": {
+            "coordinate_geometry": {
+              "max_deviation_mm": 2.2737367544323206e-13,
+              "point_count": 38,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_geometry_after_creation": {
+              "max_deviation_mm": 2.2737367544323206e-13,
+              "point_count": 38,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_scaling": false,
+            "final_units": "mm",
+            "requested": "auto",
+            "used": "coordinates"
+          },
+          "saved_file_reloaded_and_verified": true,
+          "boundary": {
+            "max_deviation_mm": 0.0020924999989802018,
+            "tolerance_mm": 0.15,
+            "boundary_point_count": 19
+          }
+        },
+        "geometry_edit": {
+          "model_id": "776ddb2546e44ec4b02d3a67d030bb39",
+          "revision": 3,
+          "sketch_feature_id": 40,
+          "solid_feature_id": 64,
+          "volume_mm3": 26306988104.443966,
+          "solver": {
+            "coordinate_geometry": {
+              "max_deviation_mm": 1.4551915228366852e-11,
+              "point_count": 38,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_geometry_after_creation": {
+              "max_deviation_mm": 1.4551915228366852e-11,
+              "point_count": 38,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_scaling": false,
+            "final_units": "mm",
+            "requested": "auto",
+            "used": "coordinates"
+          },
+          "saved_file_reloaded_and_verified": true,
+          "boundary": {
+            "max_deviation_mm": 0.000399930919121125,
+            "tolerance_mm": 0.15,
+            "boundary_point_count": 19
+          }
+        },
+        "rollback_succeeded": true,
+        "rollback_live_verified": true
+      },
+      {
+        "name": "polygon12",
+        "passed": true,
+        "initial": {
+          "model_id": "08d584056c254c90ac4796dbaa3c0e5f",
+          "revision": 1,
+          "sketch_feature_id": 40,
+          "solid_feature_id": 57,
+          "volume_mm3": 479999999999.99994,
+          "solver": {
+            "coordinate_geometry": {
+              "max_deviation_mm": 7.34788079488412e-12,
+              "point_count": 24,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_geometry_after_creation": {
+              "max_deviation_mm": 7.34788079488412e-12,
+              "point_count": 24,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_scaling": false,
+            "final_units": "mm",
+            "requested": "auto",
+            "used": "coordinates"
+          },
+          "saved_file_reloaded_and_verified": true,
+          "boundary": {
+            "max_deviation_mm": 0.00037220513968351813,
+            "tolerance_mm": 0.15,
+            "boundary_point_count": 12
+          }
+        },
+        "edited": {
+          "model_id": "08d584056c254c90ac4796dbaa3c0e5f",
+          "revision": 2,
+          "sketch_feature_id": 40,
+          "solid_feature_id": 57,
+          "volume_mm3": 489600000000.0,
+          "solver": {
+            "coordinate_geometry": {
+              "max_deviation_mm": 7.34788079488412e-12,
+              "point_count": 24,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_geometry_after_creation": {
+              "max_deviation_mm": 7.34788079488412e-12,
+              "point_count": 24,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_scaling": false,
+            "final_units": "mm",
+            "requested": "auto",
+            "used": "coordinates"
+          },
+          "saved_file_reloaded_and_verified": true,
+          "boundary": {
+            "max_deviation_mm": 0.00037587191877145736,
+            "tolerance_mm": 0.15,
+            "boundary_point_count": 12
+          }
+        }
+      },
+      {
+        "name": "capsule_xy",
+        "passed": true,
+        "initial": {
+          "model_id": "5dcf2ab287b34abdb36fcad9bc9cc03a",
+          "revision": 1,
+          "sketch_feature_id": 40,
+          "solid_feature_id": 49,
+          "volume_mm3": 27853981795.870567,
+          "solver": {
+            "coordinate_geometry": {
+              "max_deviation_mm": 9.094947017729282e-13,
+              "point_count": 6,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_geometry_after_creation": {
+              "max_deviation_mm": 9.094947017729282e-13,
+              "point_count": 6,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_scaling": false,
+            "final_units": "mm",
+            "requested": "auto",
+            "used": "coordinates"
+          },
+          "saved_file_reloaded_and_verified": true,
+          "boundary": {
+            "max_deviation_mm": 0.0004585290007526055,
+            "tolerance_mm": 0.15,
+            "boundary_point_count": 706
+          }
+        },
+        "edited": {
+          "model_id": "5dcf2ab287b34abdb36fcad9bc9cc03a",
+          "revision": 2,
+          "sketch_feature_id": 40,
+          "solid_feature_id": 49,
+          "volume_mm3": 28413846829.967644,
+          "solver": {
+            "coordinate_geometry": {
+              "max_deviation_mm": 9.094947017729282e-13,
+              "point_count": 6,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_geometry_after_creation": {
+              "max_deviation_mm": 9.094947017729282e-13,
+              "point_count": 6,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_scaling": false,
+            "final_units": "mm",
+            "requested": "auto",
+            "used": "coordinates"
+          },
+          "saved_file_reloaded_and_verified": true,
+          "boundary": {
+            "max_deviation_mm": 0.00048115460140252253,
+            "tolerance_mm": 0.15,
+            "boundary_point_count": 708
+          }
+        },
+        "geometry_edit": {
+          "model_id": "5dcf2ab287b34abdb36fcad9bc9cc03a",
+          "revision": 3,
+          "sketch_feature_id": 40,
+          "solid_feature_id": 49,
+          "volume_mm3": 28979282660.42386,
+          "solver": {
+            "coordinate_geometry": {
+              "max_deviation_mm": 2.2648549702353193e-12,
+              "point_count": 6,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_geometry_after_creation": {
+              "max_deviation_mm": 2.2648549702353193e-12,
+              "point_count": 6,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_scaling": false,
+            "final_units": "mm",
+            "requested": "auto",
+            "used": "coordinates"
+          },
+          "saved_file_reloaded_and_verified": true,
+          "boundary": {
+            "max_deviation_mm": 0.00047141385311988415,
+            "tolerance_mm": 0.15,
+            "boundary_point_count": 712
+          }
+        },
+        "rollback_succeeded": true,
+        "rollback_live_verified": true
+      },
+      {
+        "name": "capsule_xz",
+        "passed": true,
+        "initial": {
+          "model_id": "de8d1f5e9d3c4802bd0e0120e9333d93",
+          "revision": 1,
+          "sketch_feature_id": 42,
+          "solid_feature_id": 51,
+          "volume_mm3": 27853981636.96934,
+          "solver": {
+            "coordinate_geometry": {
+              "max_deviation_mm": 7.275957614183426e-12,
+              "point_count": 6,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_geometry_after_creation": {
+              "max_deviation_mm": 7.275957614183426e-12,
+              "point_count": 6,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_scaling": false,
+            "final_units": "mm",
+            "requested": "auto",
+            "used": "coordinates"
+          },
+          "saved_file_reloaded_and_verified": true,
+          "boundary": {
+            "max_deviation_mm": 0.0020532913813440246,
+            "tolerance_mm": 0.15,
+            "boundary_point_count": 706
+          }
+        },
+        "edited": {
+          "model_id": "de8d1f5e9d3c4802bd0e0120e9333d93",
+          "revision": 2,
+          "sketch_feature_id": 42,
+          "solid_feature_id": 51,
+          "volume_mm3": 28413846667.872738,
+          "solver": {
+            "coordinate_geometry": {
+              "max_deviation_mm": 7.275957614183426e-12,
+              "point_count": 6,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_geometry_after_creation": {
+              "max_deviation_mm": 7.275957614183426e-12,
+              "point_count": 6,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_scaling": false,
+            "final_units": "mm",
+            "requested": "auto",
+            "used": "coordinates"
+          },
+          "saved_file_reloaded_and_verified": true,
+          "boundary": {
+            "max_deviation_mm": 0.0019934732281399192,
+            "tolerance_mm": 0.15,
+            "boundary_point_count": 708
+          }
+        }
+      },
+      {
+        "name": "circle_yz",
+        "passed": true,
+        "initial": {
+          "model_id": "e42b1114407f432db9caa64b16b90193",
+          "revision": 1,
+          "sketch_feature_id": 42,
+          "solid_feature_id": 49,
+          "volume_mm3": 7853981633.9745,
+          "solver": {
+            "coordinate_geometry": {
+              "max_deviation_mm": 0.0,
+              "point_count": 1,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_geometry_after_creation": {
+              "max_deviation_mm": 0.0,
+              "point_count": 1,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_scaling": false,
+            "final_units": "mm",
+            "requested": "auto",
+            "used": "coordinates"
+          },
+          "saved_file_reloaded_and_verified": true,
+          "boundary": {
+            "max_deviation_mm": 0.0021063362655695528,
+            "tolerance_mm": 0.15,
+            "boundary_point_count": 704
+          }
+        },
+        "edited": {
+          "model_id": "e42b1114407f432db9caa64b16b90193",
+          "revision": 2,
+          "sketch_feature_id": 42,
+          "solid_feature_id": 49,
+          "volume_mm3": 8011846664.817396,
+          "solver": {
+            "coordinate_geometry": {
+              "max_deviation_mm": 0.0,
+              "point_count": 1,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_geometry_after_creation": {
+              "max_deviation_mm": 0.0,
+              "point_count": 1,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_scaling": false,
+            "final_units": "mm",
+            "requested": "auto",
+            "used": "coordinates"
+          },
+          "saved_file_reloaded_and_verified": true,
+          "boundary": {
+            "max_deviation_mm": 0.001977189011995506,
+            "tolerance_mm": 0.15,
+            "boundary_point_count": 706
+          }
+        }
+      },
+      {
+        "name": "rectangle_coordinates",
+        "passed": true,
+        "initial": {
+          "model_id": "02c8971d5fed4459bfe3bb16efb27cf2",
+          "revision": 1,
+          "sketch_feature_id": 40,
+          "solid_feature_id": 49,
+          "volume_mm3": 799999.9999999998,
+          "solver": {
+            "coordinate_geometry": {
+              "max_deviation_mm": 0.0,
+              "point_count": 8,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_geometry_after_creation": {
+              "max_deviation_mm": 0.0,
+              "point_count": 8,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_scaling": false,
+            "final_units": "mm",
+            "requested": "coordinates",
+            "used": "coordinates"
+          },
+          "saved_file_reloaded_and_verified": true,
+          "boundary": {
+            "max_deviation_mm": 0,
+            "tolerance_mm": 0.15,
+            "boundary_point_count": 4
+          }
+        },
+        "edited": {
+          "model_id": "02c8971d5fed4459bfe3bb16efb27cf2",
+          "revision": 2,
+          "sketch_feature_id": 40,
+          "solid_feature_id": 49,
+          "volume_mm3": 816000.0,
+          "solver": {
+            "coordinate_geometry": {
+              "max_deviation_mm": 0.0,
+              "point_count": 8,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_geometry_after_creation": {
+              "max_deviation_mm": 0.0,
+              "point_count": 8,
+              "tolerance_mm": 1e-05
+            },
+            "coordinate_scaling": false,
+            "final_units": "mm",
+            "requested": "coordinates",
+            "used": "coordinates"
+          },
+          "saved_file_reloaded_and_verified": true,
+          "boundary": {
+            "max_deviation_mm": 0,
+            "tolerance_mm": 0.15,
+            "boundary_point_count": 4
+          }
+        }
+      }
+    ],
+    "success": true
+  },
+  "final_curved_sweep_regression": {
+    "name": "curved",
+    "create_job": "166f925535e649998e1bb6d2a05cec3e",
+    "create_status": "succeeded",
+    "native_feature_id": 46,
+    "volume": 394.78417604336573,
+    "create_reloaded": true,
+    "feature_type": 917,
+    "edit_job": "c68350ddd37c420988fffd53e151fb98",
+    "edit_status": "succeeded",
+    "edited_volume": 888.2643960973867,
+    "edit_reloaded": true,
+    "rollback_job": "32cca0006fc84fd3b857f93617383fa6",
+    "rollback_status": "failed",
+    "rollback_succeeded": true,
+    "passed": true
+  },
+  "validation_version_note": "Native modeling acceptance was completed while the development label was 0.2.4, then the same native implementation was released as 0.2.5. Protocol, version, tool discovery, seed hashes and automatic tests were checked for 0.2.5. Historical reports retain their original version labels.",
+  "limits": [
+    "No coordinate normalization or rigid solving is exposed.",
+    "Coordinate dimensioning is limited to supported line/circle/arc profiles on principal planes without user dimensions/constraints; other profiles retain autodim.",
+    "Direct Blend is restricted to MCP-owned XY sections ordered by actual increasing Z, solid add into the default body.",
+    "The four sweep cases and nine seed pairs do not prove every parameter combination.",
+    "No claim of complete Creo coverage."
+  ]
+}

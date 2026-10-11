@@ -197,6 +197,7 @@ def check_environment() -> dict:
         "toolkit_headers": sdk / "includes/ProToolkit.h",
         "async_library": sdk / "x86e_win64/obj/ptasyncmd.lib",
         "toolkit_library": sdk / "x86e_win64/obj/protkmd_NU.lib",
+        "toolkit_dll_library": sdk / "x86e_win64/obj/protk_dllmd_NU.lib",
         "ucore_library": sdk / "x86e_win64/obj/ucore.lib",
         "udata_library": sdk / "x86e_win64/obj/udata.lib",
         "communication_executable": common / "x86e_win64/obj/pro_comm_msg.exe",
@@ -221,6 +222,7 @@ def build_native() -> Path:
     build = ROOT / "build"
     build.mkdir(exist_ok=True)
     exe = build / "creo_worker.exe"
+    blend_dll = build / "creo_blend_sync.dll"
     # Always refresh before checking the cached binary. The generator only writes
     # changed content, so upgrades and SDK changes cannot retain an obsolete map.
     with (build / "generate_constants.log").open("wb") as log:
@@ -235,18 +237,47 @@ def build_native() -> Path:
     # Enum values and ABI declarations come from SDK headers. A names-only map
     # can stay identical while these change during an SDK maintenance upgrade.
     includes = Path(c["creo_root"]) / "Common Files/protoolkit/includes"
+    abi = hashlib.sha256()
     for p in sorted(includes.rglob("*.h")):
-        digest.update(b"\0SDK_HEADER\0" + p.relative_to(includes).as_posix().encode())
-        digest.update(p.read_bytes())
-    digest.update(json.dumps(c, sort_keys=True).encode())
+        data = b"\0SDK_HEADER\0" + p.relative_to(includes).as_posix().encode() + p.read_bytes()
+        digest.update(data)
+        abi.update(data)
+    settings = json.dumps(c, sort_keys=True).encode()
+    digest.update(settings)
+    abi.update(settings)
+    callback = hashlib.sha256(b"MSVC17_MD_DLL_v1" + abi.digest())
+    for relative in ("native/blend_sync.cpp", "native/third_party/json.hpp"):
+        source = ROOT / relative
+        if source.is_file(): callback.update(relative.encode() + source.read_bytes())
+    callback_fingerprint = callback.hexdigest()
+    callback_stamp = build / "blend_sync_build.json"
+    def record_callback():
+        write_json(callback_stamp, {"fingerprint": callback_fingerprint,
+                   "sha256": hashlib.sha256(blend_dll.read_bytes()).hexdigest()})
     fingerprint = digest.hexdigest()
     stamp = build / "source.sha256"
-    if exe.exists() and stamp.exists() and stamp.read_text() == fingerprint:
-        return exe
+    if exe.exists() and blend_dll.exists() and stamp.exists() and stamp.read_text() == fingerprint:
+        # Migrate a previously verified combined cache without rebuilding the
+        # identical DLL. Changing unrelated worker code should not replace it.
+        if not callback_stamp.exists(): record_callback()
+        cached = read_json(callback_stamp)
+        if (cached.get("fingerprint") == callback_fingerprint
+                and cached.get("sha256") == hashlib.sha256(blend_dll.read_bytes()).hexdigest()):
+            return exe
     if not check_environment()["ready_to_build"]:
         raise RuntimeError("Creo SDK, template or MSVC is missing; call creo_check_environment")
     sdk = Path(c["creo_root"]) / "Common Files/protoolkit"
     libs = " ".join(f'"{sdk / "x86e_win64/obj" / name}"' for name in ("protkmd_NU.lib", "ptasyncmd.lib", "ucore.lib", "udata.lib"))
+    dll_libs = " ".join(f'"{sdk / "x86e_win64/obj" / name}"' for name in ("protk_dllmd_NU.lib", "ucore.lib", "udata.lib"))
+    cached_callback = read_json(callback_stamp) if callback_stamp.is_file() else {}
+    reuse_callback = (blend_dll.is_file() and cached_callback.get("fingerprint") == callback_fingerprint
+                      and cached_callback.get("sha256") == hashlib.sha256(blend_dll.read_bytes()).hexdigest())
+    callback_script = "" if reuse_callback else f'''
+cl /nologo /MD /EHsc /std:c++17 /W3 /DPRO_MACHINE=36 /DPRO_OS=4 /I"{sdk / 'includes'}" /c "{ROOT / 'native/blend_sync.cpp'}" /Fo"{build / 'blend_sync.obj'}"
+if errorlevel 1 exit /b 2
+link /nologo /DLL /MACHINE:X64 /OUT:"{blend_dll}" "{build / 'blend_sync.obj'}" {dll_libs} kernel32.lib user32.lib wsock32.lib advapi32.lib mpr.lib winspool.lib netapi32.lib psapi.lib gdi32.lib shell32.lib comdlg32.lib ole32.lib ws2_32.lib
+if errorlevel 1 exit /b 3
+'''
     script = build / "build.cmd"
     script.write_text(f'''@echo off
 setlocal
@@ -258,6 +289,7 @@ cl /nologo /MD /EHsc /std:c++17 /bigobj /W3 /DPRO_MACHINE=36 /DPRO_OS=4 /DPRO_US
 if errorlevel 1 exit /b 2
 link /nologo /MACHINE:X64 /SUBSYSTEM:CONSOLE /OUT:"{exe}" "{build / 'worker.obj'}" {libs} kernel32.lib user32.lib wsock32.lib advapi32.lib mpr.lib winspool.lib netapi32.lib psapi.lib gdi32.lib shell32.lib comdlg32.lib ole32.lib ws2_32.lib
 if errorlevel 1 exit /b 3
+{callback_script}
 exit /b 0
 ''', encoding="utf-8")
     with (build / "build.log").open("wb") as log:
@@ -267,6 +299,7 @@ exit /b 0
             raise RuntimeError(f"MSVC/Windows SDK environment preflight failed; inspect {build / 'build.log'} (SDK discovery or registry access may be blocked)")
         raise RuntimeError(f"Native build failed ({result.returncode}); see {build / 'build.log'}")
     stamp.write_text(fingerprint)
+    record_callback()
     constants = subprocess.run([str(exe), "constants"], env=native_environment(), capture_output=True, timeout=20, creationflags=HIDDEN)
     if constants.returncode == 0:
         (build / "constants.json").write_bytes(constants.stdout)
@@ -358,7 +391,9 @@ def run_job(job_id: str) -> None:
     write_json(directory / "job.json", manifest)
 
 
-def get_job(job_id: str) -> dict:
+def get_job(job_id: str, detail: str = 'full') -> dict:
+    if detail not in ('compact', 'full'):
+        raise ValueError('detail must be compact or full')
     directory = job_path(job_id)
     if not (directory / "job.json").exists():
         raise ValueError("Unknown job_id")
@@ -376,14 +411,47 @@ def get_job(job_id: str) -> dict:
         timeout = config().get("generic_timeout_seconds",600) if manifest.get("kind") == "generic" else config()["native_timeout_seconds"]
         if age > 120 + 120 + timeout + 30:
             manifest.update(status="unknown_outcome", message="Job exceeded its expected lifetime; inspect runner.log and Creo before retrying")
+    if detail == 'compact':
+        manifest = compact_job(manifest)
     return manifest
 
 
-def list_jobs(limit: int = 10) -> list[dict]:
+def compact_job(manifest: dict) -> dict:
+    """Bound polling payloads without losing the outcome or recovery information."""
+    keys = ('job_id','kind','model_id','status','stage','revision','readonly',
+            'created_at','started_at','finished_at','message','construction')
+    summary = {key: manifest[key] for key in keys if key in manifest}
+    summary['detail'] = 'compact'
+    summary['operation_count'] = len(manifest.get('operations', []))
+    result = manifest.get('result')
+    if result:
+        result_keys = ('success','toolkit_code','message','part_file','sha256',
+                       'saved_file_reloaded_and_verified','rollback_succeeded',
+                       'rollback_message','rollback_code','preview_file','connected',
+                       'volume_mm3','expected_volume_mm3','extrude_count','round_count','hole_count')
+        native = {key:result[key] for key in result_keys if key in result}
+        inspection = result.get('inspection', {})
+        native['inspection'] = {key:inspection[key] for key in
+                                ('healthy','has_solid','units','model_type','volume_mm3') if key in inspection}
+        native['inspection']['counts'] = {key:len(inspection.get(key,[])) for key in
+                                          ('features','surfaces','edges','bodies','components')}
+        native['operations'] = [{key:op[key] for key in
+                                 ('op','label','succeeded','file','feature_id','elapsed_seconds','message') if key in op}
+                                for op in result.get('operations',[])]
+        summary['result'] = native
+    if 'native_log_tail' in manifest:
+        summary['native_log_tail'] = manifest['native_log_tail'][-2000:]
+    summary['full_result_available'] = bool(result)
+    return summary
+
+
+def list_jobs(limit: int = 10, detail: str = 'compact') -> list[dict]:
     if not 1 <= limit <= 50:
         raise ValueError("limit must be 1–50")
+    if detail not in ('compact','full'):
+        raise ValueError('detail must be compact or full')
     paths = sorted(JOBS.glob("*/job.json"), key=lambda p: p.stat().st_mtime, reverse=True)
-    return [get_job(p.parent.name) for p in paths[:limit]]
+    return [get_job(p.parent.name, detail=detail) for p in paths[:limit]]
 
 
 if __name__ == "__main__":

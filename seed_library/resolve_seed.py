@@ -4,11 +4,11 @@ import argparse
 import hashlib
 import json
 
-parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('name', choices=['two_straight', 'two_smooth', 'five_smooth'])
-args = parser.parse_args()
 root = Path(__file__).resolve().parent
 manifest = json.loads((root / 'seed_manifest.json').read_text(encoding='utf-8'))
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('name', choices=[s['name'] for s in manifest['seeds']])
+args = parser.parse_args()
 seed = next(s for s in manifest['seeds'] if s['name'] == args.name)
 path = (root / seed['relative_path']).resolve()
 assert root in path.parents and path.is_file(), 'Seed file is missing'

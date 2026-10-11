@@ -16,26 +16,32 @@ REGISTERED_OPERATIONS = (
     "drawing_note", "drawing_note_update", "drawing_table", "drawing_table_cell", "drawing_dimension", "drawing_delete",
 )
 
-UNAVAILABLE_OPERATIONS = {
-    "loft": "Direct Blend creation and insertion into existing parts remain unavailable. Use creo_new_loft_part with a saved seed matching the requested section count and interpolation.",
-}
+UNAVAILABLE_OPERATIONS = {}
 
 def require_available(operations: list[dict]) -> None:
     unavailable = [op['op'] for op in operations if op['op'] in UNAVAILABLE_OPERATIONS]
     if unavailable:
         details = '; '.join(f"{name}: {UNAVAILABLE_OPERATIONS[name]}" for name in dict.fromkeys(unavailable))
-        raise ValueError(f"Not available in the {VERSION} release candidate; no native job was queued. {details}")
+        raise ValueError(f"Not available in the {VERSION} release; no native job was queued. {details}")
+    for op in operations:
+        if op['op']=='loft' and (op.get('mode','add')!='add' or op.get('new_body',False)):
+            raise ValueError('Direct Blend supports solid add into the default body only; cut, surface and new_body are not accepted')
 
 def families() -> dict:
     return {
         'seed_library': {'enabled': True, 'scope': 'MIT native seeds bundled with source; SHA256 validation, local registration and automatic count/mode selection',
-                         'automatic_pairs': ['2/straight','2/smooth','5/smooth'],
+                         'automatic_pairs': ['2/straight','2/smooth','3/straight','3/smooth','4/straight','4/smooth','5/smooth','6/straight','6/smooth'],
                          'limits': 'no automatic download, arbitrary seed generation or mode/count conversion'},
         'airfoil': {'enabled': True, 'scope': 'symmetric NACA 00xx native sketch splines; chord/thickness/twist/origin/pivot edits preserve sketch and Blend IDs',
                     'native_test': 'five smooth stations, two sequential middle-section edits and edit after a native group axis pattern; STL section comparison',
                     'limits': 'no camber; metadata driven MCP edits, not Creo relation-driven airfoil dimensions; creation-time sample count is fixed'},
-        'sketch_geometry_edit': {'enabled': True, 'scope': 'in-place line/polyline/rectangle/circle/spline replacement; entity names/types/counts retained',
-                                'limits': 'replaces dimensions/constraints with automatic dimensions and clears named dimension/airfoil metadata'},
+        'sketch_dimensioning': {'enabled': True, 'modes': ['auto','autodim','coordinates'],
+                               'scope': 'auto selects native coordinate dimensions on principal planes for supported undimensioned profiles with at least 10 expanded entities or coordinate/radius magnitude above 1000 mm; coordinates can be requested explicitly',
+                               'native_test': '19-line large-coordinate profile, R40000 12-gon, large capsule on XY and rotated/translated XZ, large YZ circle and explicit-coordinate rectangle; native sketch/solid IDs, named dimension edits, STL boundaries and save/erase/reload verified',
+                               'limits': 'coordinates supports line/centerline/rectangle/polyline/circle/arc on XY/XZ/YZ, without user dimensions/constraints; actual geometry checked to 1e-5 mm when creating/replacing; spline/ellipse and arbitrary planes use autodim; no normalization or rigid solving; not proof of every constraint or extreme shape'},
+        'sketch_geometry_edit': {'enabled': True, 'scope': 'in-place geometry replacement; entity names/types/counts and sketch feature ID retained; dimensions rebuilt using auto/autodim/coordinates',
+                                'native_test': 'large 19-line and capsule replacements preserve downstream extrusion IDs, geometry, saved reload; failed dimension assertions roll back and live refresh confirms restoration',
+                                'limits': 'replaces prior dimensions/constraints and clears airfoil metadata; query new named dimension IDs after replacement; spline/ellipse retain the original autodim path; coordinate mode cannot be mixed with user constraints'},
         'placement': {'enabled': True, 'scope': 'native body FlexMove or quilt/geometry Move, in-place translation/rotation edits, local feature groups, reorder and axis patterns',
                       'native_test': 'body rotate/translate/edit with true solid bounding boxes; quilt rotate/translate/thicken/edit; five-section blade group pattern and later airfoil edit; save/erase/reload',
                       'limits': 'body branch can require Flexible Modeling license; copy-original, multiple bodies, custom csys, complex quilts and datum/curve combinations require local validation'},
@@ -54,12 +60,15 @@ def families() -> dict:
                 'limits': 'part/sheetmetal only; exact reference prompts required; assembly UDFs, quadrants, variable parameters and manufacturing UDFs are not wrapped; libraries supplied by user'},
         'mirror': {'enabled': True, 'native_test': 'whole solid about a principal datum plane',
                    'limits': 'whole-part/geometry references only; feature/subtree mirror is rejected'},
-        'sweep': {'enabled': True, 'native_test': 'straight trajectory, circular constant section, named diameter edit',
-                  'limits': 'constant section; other trajectories, thin/cut/surface branches need installation-specific validation'},
+        'sweep': {'enabled': True, 'native_test': 'straight and quarter-circle trajectories; solid add, straight cut, open surface followed by thicken, symmetric thin; named section edits, native ID preservation, analytic volume checks, save/erase/reload and failed-assertion rollback on 2026-10-11',
+                  'limits': 'constant section; compound trajectories, all frame options, capped surfaces and intersections still require local validation; thin is total symmetric wall thickness'},
         'draft': {'enabled': True, 'native_test': 'constant unsplit draft on a planar face with a planar neutral reference',
                   'limits': 'variable, split and rib draft are not high-level tools'},
-        'loft': {'enabled': False, 'reason': UNAVAILABLE_OPERATIONS['loft'],
-                 'alternative_tool': 'creo_new_loft_part'},
+        'loft': {'enabled': True, 'tool': 'creo_loft',
+                 'scope': 'direct native solid Blend from independent MCP-owned XY sketches ordered by increasing Z; create in a feature plan or append to an owned part',
+                 'interpolation': ['straight','smooth'],
+                 'native_test': '3/4/6 straight and smooth factory cases; append 3/smooth to an existing saved base, preserve native IDs, edit dimensions, verify all-section STL, save/erase/reload and failed-append rollback with a live refresh',
+                 'limits': 'solid add into the default body only; no cut/surface/new_body, nonparallel sections or endpoint tangency/curvature controls; native reports support Chinese/English Creo; first use of the synchronous DLL may require human confirmation'},
         'loft_seed': {'enabled': True, 'tool': 'creo_new_loft_part',
                       'scope': 'new native part by rebinding an automatically selected bundled seed or explicit compatible seed to new XY sketch/airfoil sections',
                       'section_count_input_range': [2, 20],
@@ -67,10 +76,16 @@ def families() -> dict:
                       'interpolation': ['straight', 'smooth'],
                       'tested_section_count_mode_pairs': [{'section_count': 2, 'interpolation': 'straight'},
                                                           {'section_count': 2, 'interpolation': 'smooth'},
-                                                          {'section_count': 5, 'interpolation': 'smooth'}],
+                                                          {'section_count': 3, 'interpolation': 'straight'},
+                                                          {'section_count': 3, 'interpolation': 'smooth'},
+                                                          {'section_count': 4, 'interpolation': 'straight'},
+                                                          {'section_count': 4, 'interpolation': 'smooth'},
+                                                          {'section_count': 5, 'interpolation': 'smooth'},
+                                                          {'section_count': 6, 'interpolation': 'straight'},
+                                                          {'section_count': 6, 'interpolation': 'smooth'}],
                       'mode_verification': 'requested interpolation must match the saved seed; native PRO_FEAT_INFO checked before save, after parameter edits and after reload',
                       'native_test': 'five-section smooth rectangles and NACA 0012 spline airfoils; middle sketch/plane edits; saved reload, all-section STL checks and failed-assertion rollback; two-section rectangle/circle/triangle regression',
-                      'limits': 'requires a saved solid Blend seed with matching section count and interpolation, Chinese/English Creo; XY sketches with strictly increasing Z offsets; no seed section insertion/removal, mode conversion, existing-target insertion, cut/surface or tangency controls; seed endpoint settings and datums are inherited; input range is not proof that every count/profile is tested; free endpoints may produce identical geometry with two sections'},
+                      'limits': 'requires a saved solid Blend seed with matching section count and interpolation, Chinese/English Creo; XY sketches with strictly increasing Z offsets; no seed section insertion/removal, mode conversion, cut/surface or tangency controls; use direct loft for existing-target insertion; seed endpoint settings and datums are inherited; input range is not proof that every count/profile is tested; free endpoints may produce identical geometry with two sections'},
         'sheetmetal': {'enabled': True, 'scope': 'first flat wall, attached flange, unbend, bend-back and flat pattern',
                       'native_test': '40 x 30 x 1 wall, 90 degree flange with R2/R3 bend, followed by unfolding and refolding',
                       'limits': 'first wall uses thin extrusion then native conversion; bend relief, forms, hems and jogs are not high-level tools'},

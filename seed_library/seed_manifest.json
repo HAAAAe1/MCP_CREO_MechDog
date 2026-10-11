@@ -1,8 +1,8 @@
 {
   "name": "MCP_CREO_MechDog reference seed library",
-  "compatible_server_version": "0.2.4",
+  "compatible_server_version": "0.2.5",
   "tested_creo": "10.0.0.0",
-  "source_package_includes_this_library": false,
+  "source_package_includes_this_library": true,
   "target_computer_runtime_validation_required": true,
   "seeds": [
     {
@@ -34,6 +34,66 @@
       "units": "mm",
       "sha256": "818c1e8c364725aeb1a37e6e1f9ff6424baf4a3b16e2b75cc7a93c4c3c9148b5",
       "validation_report": "validation/validation_multisection.json"
+    },
+    {
+      "name": "three_straight",
+      "section_count": 3,
+      "interpolation": "straight",
+      "seed_feature_id": 71,
+      "sha256": "e93d2870467363567cfb938c73875019b8d61be33d4b0c2965e6e69d15860b05",
+      "relative_path": "seeds/three_straight/db_a11bae1ccb.prt.2",
+      "units": "mm",
+      "validation_report": "validation/validation_three_straight.json"
+    },
+    {
+      "name": "three_smooth",
+      "section_count": 3,
+      "interpolation": "smooth",
+      "seed_feature_id": 71,
+      "sha256": "0334374eab104bb2355129da243403a8681b6a1d9246b3285706e46ef3070d9e",
+      "relative_path": "seeds/three_smooth/db_ca74c20181.prt.2",
+      "units": "mm",
+      "validation_report": "validation/validation_three_smooth.json"
+    },
+    {
+      "name": "four_straight",
+      "section_count": 4,
+      "interpolation": "straight",
+      "seed_feature_id": 82,
+      "sha256": "487ec48bb9b9046eae7b916e444438b8224bda4326b1776d42c2f9c1450a9b5f",
+      "relative_path": "seeds/four_straight/db_203197ed6f.prt.2",
+      "units": "mm",
+      "validation_report": "validation/validation_four_straight.json"
+    },
+    {
+      "name": "four_smooth",
+      "section_count": 4,
+      "interpolation": "smooth",
+      "seed_feature_id": 82,
+      "sha256": "fff48c00adc53cf1377203b6f3cc6482b362d53cd63473be7eaed27e28258fb5",
+      "relative_path": "seeds/four_smooth/db_8bdd03c9da.prt.2",
+      "units": "mm",
+      "validation_report": "validation/validation_four_smooth.json"
+    },
+    {
+      "name": "six_straight",
+      "section_count": 6,
+      "interpolation": "straight",
+      "seed_feature_id": 104,
+      "sha256": "5e3c31948e01ecc0525a86910d47fd62f30a08a5efad557003a3ea4f5358f03b",
+      "relative_path": "seeds/six_straight/db_3392364426.prt.2",
+      "units": "mm",
+      "validation_report": "validation/validation_six_straight.json"
+    },
+    {
+      "name": "six_smooth",
+      "section_count": 6,
+      "interpolation": "smooth",
+      "seed_feature_id": 104,
+      "sha256": "a199fa1df46af34a15ceba93f7e076ab7b49288885ae405329539daa6ecc476f",
+      "relative_path": "seeds/six_smooth/db_03b22a6b52.prt.2",
+      "units": "mm",
+      "validation_report": "validation/validation_six_smooth.json"
     }
   ],
   "project_contributions_license": "MIT",

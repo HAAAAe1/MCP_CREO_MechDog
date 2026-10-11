@@ -1,0 +1,138 @@
+{
+  "date": "2026-10-11",
+  "version": "0.2.4",
+  "target_version": "0.2.5",
+  "success": true,
+  "seed_name": "six_straight",
+  "section_count": 6,
+  "interpolation": "straight",
+  "seed_sha256": "5e3c31948e01ecc0525a86910d47fd62f30a08a5efad557003a3ea4f5358f03b",
+  "seed_feature_id": 104,
+  "creation": "Project-authored native Blend using the MechDog synchronous selection callback",
+  "original_geometry": "20 mm to 10 mm square profiles, equally spaced over 30 mm",
+  "rebinding_test": {
+    "initial": {
+      "blend_feature_id": 104,
+      "section_sketch_ids": [
+        201,
+        212,
+        223,
+        234,
+        245,
+        256
+      ],
+      "volume_mm3": 31340.57735249703,
+      "saved_file_reloaded_and_verified": true
+    },
+    "edited": {
+      "blend_feature_id": 104,
+      "section_sketch_ids": [
+        201,
+        212,
+        223,
+        234,
+        245,
+        256
+      ],
+      "volume_mm3": 35183.380888622276,
+      "saved_file_reloaded_and_verified": true
+    },
+    "middle_size_mm": [
+      25.412678195541844,
+      31.412678195541844
+    ],
+    "all_section_geometry": {
+      "success": true,
+      "facets": 44,
+      "sections": [
+        {
+          "z_mm": 0.0,
+          "width_mm": 20.0,
+          "height_mm": 20.0,
+          "requested_size_mm": 20.0
+        },
+        {
+          "z_mm": 12.0,
+          "width_mm": 25.05342292,
+          "height_mm": 25.05342292,
+          "requested_size_mm": 25.053423027509677
+        },
+        {
+          "z_mm": 24.0,
+          "width_mm": 27.41267776,
+          "height_mm": 27.41267776,
+          "requested_size_mm": 27.412678195541844
+        },
+        {
+          "z_mm": 36.0,
+          "width_mm": 31.41267776,
+          "height_mm": 31.41267776,
+          "requested_size_mm": 31.412678195541844
+        },
+        {
+          "z_mm": 48.0,
+          "width_mm": 19.05342292,
+          "height_mm": 19.05342292,
+          "requested_size_mm": 19.05342302750968
+        },
+        {
+          "z_mm": 60.0,
+          "width_mm": 10.0,
+          "height_mm": 10.0,
+          "requested_size_mm": 10.0
+        }
+      ],
+      "tolerance_mm": 0.15
+    },
+    "rollback_verified": true,
+    "count_mismatch_rejected": true,
+    "mode_mismatch_rejected": true,
+    "source_unchanged": true
+  },
+  "jobs": [
+    {
+      "stage": "rect_create",
+      "job_id": "4728d199f5094bf8994f667ece061ac3",
+      "status": "succeeded",
+      "expected_failure": false
+    },
+    {
+      "stage": "rect_edit_middle",
+      "job_id": "ae6c884ea29b4718bd909b19840981e5",
+      "status": "succeeded",
+      "expected_failure": false
+    },
+    {
+      "stage": "rect_export_stl",
+      "job_id": "663e6e8086ae4b56add6f4551b3bc21e",
+      "status": "succeeded",
+      "expected_failure": false
+    },
+    {
+      "stage": "failed_edit_rollback",
+      "job_id": "27b87f54c8734944bd8e2917a8142cf4",
+      "status": "failed",
+      "expected_failure": true
+    },
+    {
+      "stage": "rollback_refresh",
+      "job_id": "de29403dc3e34860a5320219722ae338",
+      "status": "succeeded",
+      "expected_failure": false
+    },
+    {
+      "stage": "seed_count_mismatch",
+      "job_id": "621822c0d55346a5b384e69e7107980e",
+      "status": "failed",
+      "expected_failure": true
+    },
+    {
+      "stage": "seed_mode_mismatch",
+      "job_id": "05b33e64fc2a4babb89d626fe3d789a8",
+      "status": "failed",
+      "expected_failure": true
+    }
+  ],
+  "license": "MIT for project-authored geometry, manifest and supporting materials",
+  "limits": "Tested on Creo 10.0.0.0, millimeters, XY sections ordered by increasing Z. Target machine requires its own native runtime validation."
+}

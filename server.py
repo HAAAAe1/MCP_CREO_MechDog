@@ -24,7 +24,7 @@ mcp = MCPServer(
     instructions="General native parametric modeling in Creo 10. Use mm and degrees. Create parts with creo_new_part "
                  "or a complete creo_execute_plan, create independent sketches, then reference them by feature label "
                  "for extrude/revolve/add/cut, and append subsequent native features. "
-                 "Mutation tools return a job_id: poll creo_get_job, then use its model_id and latest revision. "
+                 "Mutation tools return a job_id: poll creo_get_job with detail=compact, then use its model_id and latest revision. "
                  "Inspect surfaces/edges/dimensions before choosing raw references. Always provide expected_revision "
                  "when modifying an existing MCP model. Models and native files persist across clients. "
                  "Success requires status=succeeded and saved_file_reloaded_and_verified=true for mutations. "
@@ -80,15 +80,15 @@ async def creo_create_plate(length: float, width: float, thickness: float,
 
 
 @mcp.tool(annotations=READ)
-async def creo_get_job(job_id: str) -> dict[str, Any]:
-    """Read modeling progress/result. succeeded includes native PRT/ASM path, hash, counts, volume and saved-file verification."""
-    return await invoke(bridge.get_job, job_id)
+async def creo_get_job(job_id: str, detail: Literal['compact','full'] = 'full') -> dict[str, Any]:
+    """Read modeling progress/result. Use detail=compact for polling: status/revision/files/hash/volume/counts/operation outcomes; full includes complete geometry, aliases and validation. Full remains the compatibility default."""
+    return await invoke(bridge.get_job, job_id, detail)
 
 
 @mcp.tool(annotations=READ)
-async def creo_list_jobs(limit: int = 10) -> dict[str, Any]:
+async def creo_list_jobs(limit: int = 10, detail: Literal['compact','full'] = 'compact') -> dict[str, Any]:
     """List recent jobs, including jobs that continue after their MCP client disconnects."""
-    return {"jobs": await invoke(bridge.list_jobs, limit)}
+    return {"jobs": await invoke(bridge.list_jobs, limit, detail)}
 
 
 @mcp.tool(annotations=READ)
@@ -97,14 +97,16 @@ async def creo_capabilities() -> dict[str, Any]:
     local_evidence = bridge.ROOT / "build/capability_evidence.json"
     evidence = local_evidence if local_evidence.is_file() else bridge.ROOT / "docs/validation_development.json"
     verified = bridge.read_json(evidence) if evidence.is_file() else {}
-    if verified.get('version') != VERSION:
-        verified = {"version":VERSION,"status":"No validation summary for this version yet; inspect integration reports"}
+    if not verified:
+        verified = {"status":"No historical feature summary installed"}
     loft_evidence = bridge.ROOT / "docs/validation_loft_seed.json"
     smooth_evidence = bridge.ROOT / "docs/validation_loft_smooth.json"
     multisection_evidence = bridge.ROOT / "docs/validation_multisection.json"
     portable_evidence = bridge.ROOT / 'docs/validation_portable_modeling.json'
-    verified = {"scope":"Historical suites are retained separately from the 2026-10-11 modeling increment",
+    increment_evidence = bridge.ROOT / 'docs/validation_increment_025.json'
+    verified = {"scope":"v0.2.5 selected-item acceptance is separate from historical feature suites; full Creo coverage is not claimed",
                 "portable_modeling":bridge.read_json(portable_evidence) if portable_evidence.is_file() else {"status":"No portable modeling summary yet"},
+                "development_025":bridge.read_json(increment_evidence) if increment_evidence.is_file() else {"status":"No v0.2.5 acceptance summary installed"},
                 "historical_features":verified,
                 "loft_seed":bridge.read_json(loft_evidence) if loft_evidence.is_file() else {"status":"No loft integration summary yet"},
                 "loft_smooth":bridge.read_json(smooth_evidence) if smooth_evidence.is_file() else {"status":"No smooth Blend integration summary yet"},
@@ -112,7 +114,8 @@ async def creo_capabilities() -> dict[str, Any]:
     return {
         "name":"MCP_CREO_MechDog", "version":VERSION, "unit":"mm", "angle_unit":"degrees",
         "tool_count":len(await mcp.list_tools()),
-        "enabled_tool_count":len(await mcp.list_tools())-len(UNAVAILABLE_OPERATIONS),
+        "enabled_tool_count":len(await mcp.list_tools()),
+        "disabled_tools_hidden": True,
         "unavailable_tools":["creo_"+name for name in UNAVAILABLE_OPERATIONS],
         "modeling":"Composable native Creo features; geometry is not restricted to a plate recipe",
         "entities":["line","centerline","circle","arc","polyline","rectangle","spline","ellipse"],
@@ -238,10 +241,10 @@ async def creo_set_airfoil_parameters(model_id: str, expected_revision: int, ske
 
 @mcp.tool(annotations=CREATE)
 async def creo_update_sketch_geometry(model_id: str, expected_revision: int, sketch: str,
-                                      entities: list[Entity]) -> dict[str, Any]:
-    """Replace a native sketch's geometry in place, preserving sketch feature ID. Expanded entity names/types must match. Replaces dimensions/constraints with automatic dimensions; named dimension aliases are cleared."""
+                                      entities: list[Entity], dimensioning: Literal['auto','autodim','coordinates']='auto') -> dict[str, Any]:
+    """Replace native sketch geometry in place, preserving sketch feature ID. Expanded entity names/types must match. Clears old named dimensions/constraints. Arc and ellipse editing are experimental and need local validation."""
     return await invoke(general.submit,[dict(op='update_sketch_geometry',sketch=sketch,
-                        entities=[e.model_dump() for e in entities])],model_id,None,expected_revision)
+                        entities=[e.model_dump() for e in entities],dimensioning=dimensioning)],model_id,None,expected_revision)
 
 
 @mcp.tool(annotations=CREATE)
@@ -294,16 +297,20 @@ async def creo_set_geometry_transform(model_id: str, expected_revision: int, fea
 async def creo_create_sketch(model_id: str, expected_revision: int, label: str,
                               entities: list[Entity], plane: Literal["XY","XZ","YZ"] | dict[str,Any] = "XY",
                               offset: float = 0, dimensions: list[SketchDimension] | None = None,
-                              constraints: list[SketchConstraint] | None = None) -> dict[str, Any]:
+                              constraints: list[SketchConstraint] | None = None,
+                              dimensioning: Literal['auto','autodim','coordinates']='auto') -> dict[str, Any]:
     """Create an independent native dimensioned sketch of arbitrary supported entities.
 
     Coordinates are in the chosen plane's (u,v) frame. Arc angles are degrees CCW.
     Rectangle/polyline expand to named lines e.g. box_0, box_1. Explicit dimensions
     have names and entity references; automatic dimensioning fills remaining freedoms.
     For revolve include one centerline, or supply an external axis to creo_revolve.
+    auto uses complete coordinate dimensions for large/complex supported principal-plane profiles;
+    coordinates forces that mode; autodim retains native automatic dimensions. Coordinate mode
+    supports lines/polylines/rectangles/circles/arcs and cannot combine explicit dimensions/constraints.
     """
     op={"op":"sketch","label":label,"plane":plane,"offset":offset,"entities":[e.model_dump() for e in entities],
-        "dimensions":[d.model_dump() for d in dimensions or []],"constraints":[c.model_dump() for c in constraints or []]}
+        "dimensions":[d.model_dump() for d in dimensions or []],"constraints":[c.model_dump() for c in constraints or []],"dimensioning":dimensioning}
     return await invoke(general.submit,[op],model_id,None,expected_revision)
 
 
@@ -424,9 +431,10 @@ async def creo_sweep(model_id: str, expected_revision: int, label: str,
 async def creo_loft(model_id: str, expected_revision: int, label: str, sections: list[str | int],
                     mode: Literal["add","cut","surface"]="add",
                     interpolation: Literal["straight","smooth"]="straight", new_body: bool=False) -> dict[str,Any]:
-    """Direct native blend creation is unavailable; use creo_new_loft_part for the verified seed workflow.
+    """Append a native solid Blend using independent MCP-owned XY sketches, ordered by increasing Z.
 
-    This reserved interface returns an explicit error before queuing or mutating a model.
+    Straight/smooth, default-body add only. Cut, surface and new_body are rejected.
+    First use of the synchronous DLL may require the human to accept Creo's loader warning.
     """
     return await invoke(general.submit,[{"op":"loft","label":label,"sections":sections,"mode":mode,"interpolation":interpolation,"new_body":new_body}],model_id,None,expected_revision)
 
@@ -801,6 +809,9 @@ async def creo_create_udf(model_id: str, expected_revision: int, label: str, fil
     if instance is not None: op['instance']=instance
     return await invoke(general.submit,[op],model_id,None,expected_revision)
 
+
+for _unavailable in UNAVAILABLE_OPERATIONS:
+    mcp.remove_tool('creo_' + _unavailable)
 
 if __name__ == "__main__":
     mcp.run(transport="stdio")

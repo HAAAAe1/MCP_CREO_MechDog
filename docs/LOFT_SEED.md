@@ -1,6 +1,6 @@
 # 普通放样：原生混合种子复用
 
-**2026-10-11 当前流程**：源码附带两截面直线/平滑、五截面平滑 MIT 种子；安装器自动注册，调用 `creo_new_loft_part` 可省略 `seed_file` 和 `seed_feature_id`，按数量/模式匹配。以下显式路径流程仍兼容，手工新建种子用于其他数量；当前增量见 [PORTABLE_MODELING_2026-10-11.md](PORTABLE_MODELING_2026-10-11.md)。
+**v0.2.5 当前流程**：源码附带九个 MIT 种子（2/3/4/6 直线和平滑，5 平滑）；安装器自动注册，调用 `creo_new_loft_part` 可省略 `seed_file` 和 `seed_feature_id`，按数量/模式匹配。以下显式路径流程仍兼容，手工新建种子用于其他数量；当前能力见 [RELEASE_NOTES_0.2.5.md](RELEASE_NOTES_0.2.5.md)。
 
 `creo_new_loft_part` 复制保存的专用 PRT 种子，创建独立的新零件，保留可编辑的原生 **Blend / 混合**。从 **0.2.4** 起接收 **2～20 张** Z 偏移严格递增的 XY 草图，数量和 `straight` / `smooth` 模式必须与种子匹配。多截面步骤及验证见 [MULTISECTION_BLEND.md](MULTISECTION_BLEND.md)。
 
@@ -14,7 +14,7 @@
 
 可以直接下载独立发布的 [种子库](SEED_LIBRARY.md)，选用 `two_straight` 或 `two_smooth`。种子原文件可以在不同电脑复制，调用时改为本机绝对路径，清单中的内部 ID 适用于同一份原文件。
 
-先创建 Z=0 的 20×20 正方形，再创建 Z=30 的 10×10 正方形；创建实体“混合”，使用“选定截面”，按顺序选取完整闭合曲线链。在“选项”设置直线或平滑，确认保存并查询原生特征 ID。源码内附三个项目原创 MIT 种子 PRT，不含 PTC 模型或 SDK。
+先创建 Z=0 的 20×20 正方形，再创建 Z=30 的 10×10 正方形；创建实体“混合”，使用“选定截面”，按顺序选取完整闭合曲线链。在“选项”设置直线或平滑，确认保存并查询原生特征 ID。源码内附九个项目原创 MIT 种子 PRT，不含 PTC 模型或 SDK。
 
 将 [loft_seed.json](../examples/loft_seed.json) 或 [loft_smooth_seed.json](../examples/loft_smooth_seed.json) 作为工具参数，替换种子绝对路径与 ID。示例方台体积 7000 mm³。种子库两份原始两截面种子的内部 ID 为 60；自行新建或改造的模型须重新查询，不能套用该值。
 
@@ -39,4 +39,4 @@
 .\.venv\Scripts\python.exe -X utf8 tools\test_loft_seed.py --seed-file 'C:\my_library\smooth_seed.prt.1' --feature-id 60 --interpolation smooth
 ```
 
-路径和 ID 必须替换。超时或未知结果先检查原任务，不重复提交。数量扩展不会自动扩大向已有零件追加、无种子创建、非平行、切除/曲面以及相切/曲率控制的范围。`creo_loft` 与计划操作 `loft` 仍禁用。
+路径和 ID 必须替换。超时或未知结果先检查原任务，不重复提交。种子复用不增加或删除截面；数量与模式必须匹配。`creo_loft` 与计划操作 `loft` 已支持直接创建和已有受管零件追加，限 XY 截面按实际 Z 递增、默认实体增材，见 [直接混合](DIRECT_BLEND_0.2.5.md)。非平行、切除/曲面以及相切/曲率控制仍未开放。

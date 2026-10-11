@@ -1,6 +1,6 @@
 # 换电脑、换 Agent：种子与 MCP 使用说明
 
-种子是包含原生“混合/Blend”的简单 Creo PRT 模板。v0.2.4 的普通混合会复制种子，
+种子是包含原生“混合/Blend”的简单 Creo PRT 模板。`creo_new_loft_part` 会复制种子，
 创建新的参数草图，再将原生混合改接到这些草图。源文件不改动，最终保留原生特征树。
 草图、拉伸、旋转、孔等普通工具不要求此类混合种子，使用本机 Creo 的标准模板。
 
@@ -11,17 +11,20 @@
 | two_straight | 2 | straight/直线 | 60 |
 | two_smooth | 2 | smooth/平滑 | 60 |
 | five_smooth | 5 | smooth/平滑 | 93 |
+| three_straight / three_smooth | 3 | straight / smooth | 71 |
+| four_straight / four_smooth | 4 | straight / smooth | 82 |
+| six_straight / six_smooth | 6 | straight / smooth | 104 |
 
-这些文件逐字节核对过 v0.2.4 实机测试输入；公开摘要在 validation/。
+文件与实际验收输入逐字节核对，配套源码版本为 v0.2.5；历史原生测试版本标签保留，公开摘要在 validation/。
 只要沿用随包原始文件，清单中的内部 ID 可以复用；电脑目录改变时需要更新绝对路径。
 重新创建或改造种子后须重新核对 ID、数量和模式。文件名和版本后缀请保留。
-本包不包含三截面直线种子，不代表其他数量均已验证。
+3/4/6 的六个新增种子在 2026-10-11 通过重新绑定新轮廓、尺寸修改、实体截面检查、保存重载和失败回滚。不代表其他数量与所有轮廓均已验证。旧 v0.2.4 独立附件只有原来的 3 个种子；迁移新增种子时使用当前源码内附的完整 seed_library 目录。
 
 ## 换电脑
 
 1. 在目标 Windows x64 电脑安装 Creo 10、匹配的 Toolkit SDK、MSVC x64/Windows SDK、Python 3.12+ x64；
    本轮验证使用 Creo 10.0.0.0，其他版本组合需要重新验证。目标机必须有可用于实际 Toolkit 调用的许可。
-2. 解压 0.2.4 源码到例如 C:\MCP_CREO_MechDog，在该目录执行：
+2. 解压 0.2.5 源码到例如 C:\MCP_CREO_MechDog，在该目录执行：
 
    .\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 10.0.0.0'
 
@@ -32,7 +35,7 @@
    客户端配置格式不同时，保留相同的 Python command 和 server.py args。
 5. 打开一个 Creo 会话。调用 creo_check_environment、creo_session_status；连接成功后先运行一个原生建模任务，
    验证 succeeded 与 saved_file_reloaded_and_verified == true，确认本机运行和许可实际可用。
-6. 普通混合需提供本机 seed_file、seed_feature_id、interpolation，截面数与种子一致。
+6. 调用 `creo_list_seeds` 确认本机全部 9 个文件通过哈希检查。`creo_new_loft_part` 可按数量和模式自动匹配，也可显式提供本机 seed_file、seed_feature_id、interpolation；截面数与种子一致。
 
 可用标准 Python 从本包生成与目标机目录匹配的种子参数，例如：
 
@@ -45,7 +48,7 @@ python C:\CreoSeeds\resolve_seed.py five_smooth
 
 每个支持本地 stdio MCP 的客户端配置相同的安装目录和启动命令即可。
 同一安装目录的 models/ 与 jobs/ 保存受管模型及任务记录，继续修改时查询最新 model_id/revision，顺序提交任务。
-不要假定旧聊天记录中的 revision 仍有效。2026-10-11 增量源码内附本库，安装器自动注册；旧发布源码包不含本库，迁移旧版本时仍需带两个包。
+不要假定旧聊天记录中的 revision 仍有效。v0.2.5 源码内附本库，安装器自动注册；旧发布源码包不含本库，迁移旧版本时仍需带两个包。
 
 ## 云端 Agent 和既有模型
 

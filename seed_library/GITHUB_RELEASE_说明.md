@@ -1,11 +1,16 @@
-# 可追加到 v0.2.4 Release 的说明
+# v0.2.5 种子库发布说明
 
-2026-10-11 增量源码内附本库，setup.ps1 自动验证/注册，MCP 可查询并自动匹配；旧附件使用流程记录如下。新增翼型参数、原生定位和分组轴阵列说明见源码 docs/PORTABLE_MODELING_2026-10-11.md。
+本版含九个项目原创 MIT 原生混合种子：2/3/4/6 截面的直线和平滑，以及 5 截面的平滑。数量、模式、原生特征 ID 和 SHA256 在 `seed_manifest.json`，验收摘要在 `validation/`。
 
-另提供原生混合种子库 MCP_CREO_MechDog-0.2.4-seed-library.zip：
-- 两截面直线、两截面平滑、五截面平滑，均已通过本机 Creo 10.0.0.0 建模、参数修改和保存重载验证。
-- 包含原生 PRT、内部混合特征 ID、截面数/模式清单、SHA256 校验、路径解析辅助脚本及迁移说明。
-- 下载源码包和种子库后，在自己的 Windows/Creo/Toolkit 环境安装；原始种子可直接复制复用，调用时改为本机绝对路径。
-- 源码安装器当前不会自动下载种子库；GitHub 自动生成的 Source code ZIP 不含仅作为 Release 附件上传的种子库。
-- 项目原创模型和配套文件采用 MIT；不包含或提供 Creo、Toolkit SDK、可执行文件和软件许可。
-- 种子数量和直线/平滑模式必须匹配请求；新电脑需自行验证运行条件。完整 Creo 操作覆盖仍未完成，保持 Pre-release。
+建议 Release 附件：
+
+- MCP_CREO_MechDog-0.2.5-source.zip
+- MCP_CREO_MechDog-0.2.5-source.zip.sha256
+- MCP_CREO_MechDog-0.2.5-seed-library.zip
+- MCP_CREO_MechDog-0.2.5-seed-library.zip.sha256
+
+源码包已内附全部种子，独立种子包便于迁移。仓库根目录必须同步更新完整 `seed_library/`，包括原生 PRT、清单、验证和 MIT 许可证。旧 v0.2.4 的独立种子附件只有三个，保留为历史附件，不能代替新版完整库。
+
+目标机需要自备 Creo、匹配 Toolkit SDK、编译器、Python 和可用许可。安装器验证/注册随包库，不从网络自动下载。使用 `creo_list_seeds` 确认九个文件均通过哈希检查；截面数量与模式须匹配请求。
+
+v0.2.5 完成指定的六项改进，完整 Creo 覆盖仍未完成。建议保持 Pre-release；本地打包不会自动上传 GitHub。迁移说明见 [README_迁移说明.md](README_迁移说明.md)。

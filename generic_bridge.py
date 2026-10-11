@@ -55,6 +55,13 @@ def new_loft_part(seed_file: str | None, seed_feature_id: int | None, sections: 
         raise ValueError('Between 2 and 20 sketch operations are required')
     if any(s['plane']!='XY' for s in sections) or any(a['offset']>=b['offset'] for a,b in zip(sections,sections[1:])):
         raise ValueError('This workflow requires XY sketches with strictly increasing Z offsets')
+    import airfoil
+    from profile_checks import closed_profile
+    for section in sections:
+        entities=airfoil.entities(section['profile']) if section['op']=='airfoil_sketch' else section['entities']
+        if not (section.get('dimensions') or section.get('constraints')):
+            try: closed_profile(entities)
+            except ValueError as error: raise ValueError(f"Section {section['label']}: {error}") from error
     binding=LoftOp.model_validate({'op':'loft','label':label,'sections':[s['label'] for s in sections],'interpolation':interpolation}).model_dump()
     if label in binding['sections']: raise ValueError('Loft and sketch labels must be distinct')
     if (seed_file is None) != (seed_feature_id is None):

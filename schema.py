@@ -35,6 +35,11 @@ class Arc(Circle):
     type: Literal["arc"]
     start_angle: float
     end_angle: float
+    @model_validator(mode='after')
+    def span(self):
+        if abs((self.end_angle-self.start_angle) % 360) < 1e-10:
+            raise ValueError('Arc requires distinct endpoints; use circle for a complete circle')
+        return self
 
 class Polyline(StrictModel):
     type: Literal["polyline", "spline"]
@@ -42,6 +47,15 @@ class Polyline(StrictModel):
     points: Annotated[list[Point2], Field(min_length=2, max_length=200)]
     closed: bool = False
     construction: bool = False
+    @model_validator(mode='after')
+    def distinct_points(self):
+        if any(math.dist(a,b)<1e-8 for a,b in zip(self.points,self.points[1:])):
+            raise ValueError('Consecutive polyline/spline points must be distinct')
+        if self.closed and len(self.points)<3:
+            raise ValueError('Closed profiles need at least three points')
+        if self.type=='polyline' and self.closed and math.dist(self.points[0],self.points[-1])<1e-8:
+            raise ValueError('With closed=true omit the duplicated final point')
+        return self
 
 class Rectangle(StrictModel):
     type: Literal["rectangle"]
@@ -87,8 +101,14 @@ class SketchOp(StrictModel):
     entities: Annotated[list[Entity],Field(min_length=1,max_length=500)]
     dimensions: list[SketchDimension] = []
     constraints: list[SketchConstraint] = []
+    dimensioning: Literal['auto','autodim','coordinates'] = 'auto'
     @model_validator(mode="after")
     def entities_unique(self):
+        if self.dimensioning=='coordinates':
+            if self.dimensions or self.constraints:
+                raise ValueError('Coordinate dimensioning cannot be combined with supplied dimensions/constraints')
+            if not isinstance(self.plane,str) or any(e.type not in {'line','centerline','rectangle','polyline','circle','arc'} for e in self.entities):
+                raise ValueError('Coordinate dimensioning requires a principal plane and line/polyline/rectangle/circle/arc entities')
         names=[e.name for e in self.entities]
         if len(names)!=len(set(names)): raise ValueError("Sketch entity names must be unique")
         if sum(e.type=="centerline" for e in self.entities)>1: raise ValueError("One revolve centerline is supported per sketch")
@@ -148,10 +168,12 @@ class SketchGeometryOp(StrictModel):
     op: Literal['update_sketch_geometry']
     sketch: Label
     entities: Annotated[list[Entity], Field(min_length=1, max_length=500)]
+    dimensioning: Literal['auto','autodim','coordinates'] = 'auto'
     @model_validator(mode='after')
     def supported_entities(self):
-        if any(e.type not in {'line','polyline','rectangle','circle','spline'} for e in self.entities):
-            raise ValueError('In-place geometry editing supports line, polyline, rectangle, circle and spline')
+        if any(e.type not in {'line','polyline','rectangle','circle','arc','ellipse','spline'} for e in self.entities):
+            raise ValueError('In-place editing supports line, polyline, rectangle, circle, arc, ellipse and spline')
+        SketchOp(op='sketch',label='replacement',entities=self.entities,dimensioning=self.dimensioning)
         return self
 
 
