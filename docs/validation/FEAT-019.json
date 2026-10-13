@@ -1,6 +1,6 @@
 {
   "work_item": "FEAT-019",
-  "status": "development_in_progress_native_acceptance_incomplete",
+  "status": "completed_user_accepted_workbuddy_creo_12_4",
   "date": "2026-10-13",
   "version": "0.2.5",
   "branch": "codex/feat-019-creo-autostart",
@@ -526,5 +526,133 @@
       "report_sha256": "29b3ff771250776f436b4fde0416650ce20ea14a78903ddff7bc59f45bfaec47",
       "jobs": []
     }
-  ]
+  ],
+  "acceptance": {
+    "date": "2026-10-13",
+    "authority": "User explicitly accepted WorkBuddy final MCP test and requested closure",
+    "source_commit_at_codex_recheck": "efc0292",
+    "dirty_at_codex_recheck": false,
+    "runtime_at_codex_recheck": {
+      "python_executable": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+      "server_entry": "E:\\Projects\\MCP_CREO_MechDog\\server.py",
+      "code_root": "E:\\Projects\\MCP_CREO_MechDog",
+      "source_fingerprints_at_startup": {
+        "server.py": "bc04ea8f1dccaa2470728794b862cc2c1e72099ca118891162c579a7683d8266",
+        "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+        "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+        "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+        "schema.py": "58e9bcc01e25da90dd84b1d26d42652ea0b401162b72beea8674bf76e01828fe",
+        "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229"
+      },
+      "source_changed_since_startup": false
+    },
+    "workbuddy_source_commit": "not reported through MCP; do not infer from version alone",
+    "report": {
+      "source_path": "E:\\Projects\\workcreo\\FEAT-019_建模验收报告.md",
+      "archive": "docs/validation/FEAT-019-WorkBuddy-report.md",
+      "sha256": "092e4baec167fbd4579150c3fd358d3bebf4a9e8c6a5d742d3c0dc3273f50961"
+    },
+    "artifacts_manifest": "FEAT-019-WorkBuddy-artifacts.json",
+    "environment": {
+      "creo": "12.4.0.0",
+      "compatibility": "experimental",
+      "formal_creo_10": "not_run"
+    },
+    "workbuddy_reported_startup": {
+      "state": "ready",
+      "connected": true,
+      "toolkit_code": 0,
+      "launched_by_coordinator": true,
+      "source_changed_since_startup": false
+    },
+    "codex_read_only_mcp_recheck": {
+      "success": true,
+      "model_id": "8fa908a662b3407792d314b154362414",
+      "revision": 6,
+      "pending_job": null,
+      "volume_mm3": 9980.0,
+      "jobs": [
+        {
+          "job_id": "ef065a85bb5c41d3b1770204f5f0e960",
+          "status": "succeeded",
+          "revision": 1,
+          "saved_file_reloaded_and_verified": true,
+          "volume_mm3": null
+        },
+        {
+          "job_id": "935b068afb8042ebb2b9c8eb823b0612",
+          "status": "succeeded",
+          "revision": 2,
+          "saved_file_reloaded_and_verified": true,
+          "volume_mm3": null
+        },
+        {
+          "job_id": "258afd752ceb47d8ad75a3c815a176ab",
+          "status": "succeeded",
+          "revision": 3,
+          "saved_file_reloaded_and_verified": true,
+          "volume_mm3": 9999.999999999998
+        },
+        {
+          "job_id": "fb2fb91fadfa42d1a8c6e30d2449f9f9",
+          "status": "succeeded",
+          "revision": 4,
+          "saved_file_reloaded_and_verified": true,
+          "volume_mm3": 19999.999999999996
+        },
+        {
+          "job_id": "926509366ed3403d80406cba827826e3",
+          "status": "succeeded",
+          "revision": 5,
+          "saved_file_reloaded_and_verified": true,
+          "volume_mm3": 9999.999999999998
+        },
+        {
+          "job_id": "7e9aecae4b6f4276ba6e3afc89f64e28",
+          "status": "succeeded",
+          "revision": 6,
+          "saved_file_reloaded_and_verified": true,
+          "volume_mm3": 9980.0
+        }
+      ]
+    },
+    "codex_new_cold_start_smoke": {
+      "success": false,
+      "scope": "Separate Codex stdio client; new modeling not submitted",
+      "runtime": {
+        "python_executable": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+        "server_entry": "E:\\Projects\\MCP_CREO_MechDog\\server.py",
+        "code_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "source_fingerprints_at_startup": {
+          "server.py": "bc04ea8f1dccaa2470728794b862cc2c1e72099ca118891162c579a7683d8266",
+          "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+          "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+          "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+          "schema.py": "58e9bcc01e25da90dd84b1d26d42652ea0b401162b72beea8674bf76e01828fe",
+          "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229"
+        },
+        "source_changed_since_startup": false
+      },
+      "startup_terminal": {
+        "launch_reserved": true,
+        "launch_attempt": 12,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "state": "configuration_error",
+        "connected": false,
+        "message": "Startup preparation failed (TimeoutExpired); check installation/configuration and build logs",
+        "retry_allowed": true,
+        "updated_at": "2026-10-13T14:48:00.399061+00:00"
+      },
+      "report_sha256": "f4904917d26112a666b95a0ac61dc51416587e78da810e0accd84cdc5bfa74c0",
+      "followup": "BUG-005"
+    },
+    "unverified": [
+      "Creo 10 formal baseline",
+      "Real multi-client simultaneous GUI startup count",
+      "All clients closed then successful Toolkit reconnect",
+      "All modeling families",
+      "Part parameter mutation in this final WorkBuddy report"
+    ]
+  }
 }

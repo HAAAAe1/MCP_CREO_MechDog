@@ -12,7 +12,8 @@ ID 一经分配不复用：`BUG` 为缺陷，`FEAT` 为能力，`DEV` 为工程�
 
 | ID | 优先级 | 状态 | 目标版本 | 范围与完成条件 |
 | --- | --- | --- | --- | --- |
-| [FEAT-019](work-items/FEAT-019.md) | P1 | 开发中 | 未排期 | 用户指定下一项：MCP 启动后自动检测；无可复用会话时启动本机 Creo，等待 Toolkit 实际可连接；已有会话复用、并发启动防重复、超时/失败诊断与可关闭配置；实现与 121 项 Windows 单元/语言检查通过，公开运行路径/源码指纹已确认开发版身份；Creo 12.4 冷启动 GUI 出现但 Toolkit 超时，安装版/开发版对照均为 -4，最终建模/重载及 Creo 10 验收未完成；见 [证据](validation/FEAT-019.md) |
+| [FEAT-019](work-items/FEAT-019.md) | P1 | 已完成 | 未发布 | 用户接受 WorkBuddy / Creo 12.4 最终 MCP 验收：自动启动与真实 Toolkit 就绪、新建/草图/拉伸/尺寸驱动/倒角、保存重载通过；Codex MCP 只读复核 6 个成功修改任务与 revision=6 / volume=9980 mm³；121 项 Windows 单元/语言检查通过；Creo 10 及真实多客户端并发/退出后重连未测，Codex 冷启动失败单列 BUG-005；见 [证据](validation/FEAT-019.md) |
+| [BUG-005](work-items/BUG-005.md) | P1 | 待核实 | 未排期 | Codex 重启后仍挂载旧接口；独立 E 盘开发版 MCP 冷启动 GUI 出现但 Toolkit -4 / 探测超时，与 WorkBuddy 成功结果存在客户端/环境差异，根因未确认；不改写 FEAT-019 已接受的实验验收 |
 
 ## 工程整理
 

@@ -1,6 +1,6 @@
 # FEAT-019：MCP 自动启动 Creo
 
-类型：功能。优先级：P1。状态：开发中（实现与单元检查通过，实机启动链路仍在排查）。目标版本：未排期，当前服务版本 0.2.5。
+类型：功能。优先级：P1。状态：已完成（用户接受 WorkBuddy / Creo 12.4 最终 MCP 验收，2026-10-13）。目标版本：未排期，当前服务版本 0.2.5，无新发布。
 
 建立日期：2026-10-13。来源：用户要求“先做 MCP 自动开启 Creo”；关联 [统一台账](../BACKLOG.md)、FEAT-001 会话检测、FEAT-002 人工等待状态。BUG-002 已完成，本条目安排在 DEV-002 布局迁移之前。
 
@@ -79,7 +79,15 @@ Toolkit 的 ProEngineerConnect 禁止随机选择时会返回多会话歧义；�
 
 正式验收基线为 Creo 10，其他版本按 [兼容矩阵](../COMPATIBILITY.md) 分别记录。新证据注明源码提交/dirty/指纹、环境、初始会话状态、实际启动/连接时间、工具输入返回、job_id/model_id、终态与几何/保存重载结果。完成后关联仓库内验收摘要并更新台账。
 
-## 本次记录
+## 最终验收与关闭范围
+
+2026-10-13，用户提供 WorkBuddy 最终 MCP 黑盒报告并明确要求关闭本条目。报告确认 E 盘开发版运行身份、Toolkit ready / connected / code=0、自动启动；新建、草图、拉伸、尺寸驱动、倒角、STEP 与特征树导出通过，体积分别为 10000、20000、还原 10000、倒角后 9980 mm³；过期 revision 拒绝及失败回滚通过。
+
+Codex 随后通过开发版公开 MCP 只读复核：模型 8fa908a662b3407792d314b154362414 的 revision=6、pending_job=null、体积 9980 mm³；6 个建模修改任务均 succeeded 且 saved_file_reloaded_and_verified=true。复核源码为 efc0292、dirty=false，公开运行路径与指纹见结构化证据。原始 [WorkBuddy 报告](../validation/FEAT-019-WorkBuddy-report.md) 已归档，[产物清单与哈希](../validation/FEAT-019-WorkBuddy-artifacts.json) 保留预览/STEP/XML 身份，二进制及测试模型不提交。
+
+本次完成范围为用户接受的 Creo 12.4 实验兼容验收。Creo 10 正式基线、真实多客户端同时启动次数、所有客户端退出后的成功重连仍未实测；不据此扩大支持声明。Codex 新一轮冷启动拉起 GUI 后 Toolkit 探测超时，未提交新模型；这次失败单列 [BUG-005](BUG-005.md) 待核实，不能写成 Codex 新建模通过。FEAT-001、FEAT-002、BUG-001 保持独立条目。
+
+## 历史开发记录（最终验收前）
 
 2026-10-13 后续核对：当前 Codex 挂载接口仍为安装版 MCP_CREO_MechDog，缺少启动工具；开发者验收通过独立 stdio MCP 客户端明确启动 E:\Projects\MCP_CREO_MechDog 下的 Python/server.py。新增公开 runtime 字段供 WorkBuddy 核对实际路径、初始化源码指纹及服务启动后源码变化，不要求查看源码或配置。真实 MCP 身份查询通过，Windows 全部 121 项单元和语言检查通过。再次在零 Creo 进程条件下运行开发版冷启动，GUI 成功打开，但 Toolkit 仍超时；随后安装版和开发版各自查询同一会话均返回 -4，不能将当前失败归因于测试对象使用了安装版。实机验收仍未完成。
 

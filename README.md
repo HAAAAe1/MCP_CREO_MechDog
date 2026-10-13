@@ -8,7 +8,7 @@
 
 当前版本为 **0.2.5**。本轮完成选定的 **1、2、3、4、8、10 项**：能力与工具列表一致、精简任务查询、九个 MIT 混合种子、扫掠四个分支、复杂/大坐标草图尺寸策略，以及向已有零件追加原生混合。57 项自动检查与本机原生建模验收通过。详见 [版本说明](docs/RELEASE_NOTES_0.2.5.md)、[逐项验收](docs/PROGRESS_025.md) 和 [结构化证据](docs/validation_increment_025.json)。
 
-当前开发分支另含 [FEAT-019 自动启动](docs/work-items/FEAT-019.md)：后台检测、启动协调和建模就绪保护已经实现；本机 Creo 12.4 的 Toolkit 连接对照仍失败，最终实机验收未完成。历史 0.2.5 建模证据不作为本功能的通过依据。
+当前开发分支另含 [FEAT-019 自动启动](docs/work-items/FEAT-019.md)：后台检测、启动协调和建模就绪保护已实现；用户接受 WorkBuddy / Creo 12.4 的自动启动、Toolkit 就绪及完整建模/保存重载验收，条目已完成，尚未发布。Creo 10 正式基线未测；Codex 冷启动连接复测失败另列 [BUG-005](docs/work-items/BUG-005.md)。见 [本轮证据](docs/validation/FEAT-019.md)。
 
 普通混合可直接创建或追加，范围见 [直接混合](docs/DIRECT_BLEND_0.2.5.md)；种子复用见 [调用说明](docs/LOFT_SEED.md)、[多截面](docs/MULTISECTION_BLEND.md)。草图支持 `dimensioning="auto" / "autodim" / "coordinates"`，坐标模式的范围与尺寸编辑规则见 [草图说明](docs/SKETCH_STABILITY_0.2.5.md)。迁移步骤见 [种子库](docs/SEED_LIBRARY.md) 和 [换电脑、换 Agent](docs/MIGRATION.md)。
 

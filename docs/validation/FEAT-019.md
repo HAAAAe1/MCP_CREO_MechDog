@@ -1,6 +1,16 @@
 # FEAT-019 开发与实机验证记录
 
-日期：2026-10-13。任务卡：[FEAT-019](../work-items/FEAT-019.md)。状态：开发中，最终实机验收未完成。服务版本保持 0.2.5，无新标签或发布。
+日期：2026-10-13。任务卡：[FEAT-019](../work-items/FEAT-019.md)。状态：已完成，用户接受 WorkBuddy / Creo 12.4 最终 MCP 验收。服务版本保持 0.2.5，无新标签或发布。
+
+## 最终 MCP 验收
+
+用户提供的 [WorkBuddy 原始报告](FEAT-019-WorkBuddy-report.md) 记录 22:31–22:39 的开发版 MCP 实测：运行身份为 E 盘开发目录、源码未漂移，协调器启动后 Toolkit ready / connected / code=0；新建→草图→拉伸→尺寸编辑→倒角→导出/检查链路通过。10000、20000、10000、9980 mm³ 的体积变化符合解析值，保存重载、过期 revision 拒绝及失败回滚有明确结果。报告的 O1～O3 观察保留原样，本次没有修改相关接口。
+
+Codex 以 efc0292、dirty=false 的 E 盘开发版 stdio MCP 只读查询报告中的模型与 6 个修改任务：均 succeeded、保存重载验证 true；最终模型 revision=6、pending_job=null、体积 9980 mm³。详见 [结构化记录](FEAT-019.json) 的 acceptance 字段。WorkBuddy 原始报告没有提供 Git 提交号或完整六项指纹值，不能仅凭版本号补造其提交身份；本次 Codex 查询的公开路径与源码指纹另列。
+
+[产物清单](FEAT-019-WorkBuddy-artifacts.json) 记录原报告及本地预览、STEP、XML 的 SHA256；原产物保留在 E:\Projects\workcreo\FEAT-019_artifacts，不提交二进制、日志或测试模型。完成范围是用户接受的 Creo 12.4 实验兼容，Creo 10 正式基线及真实跨客户端并发启动/退出后重连仍未验证。
+
+本次 Codex 新一轮冷启动确实打开 GUI，但 Toolkit 探测超时并返回 configuration_error（TimeoutExpired），没有提交新模型。该失败独立登记为 [BUG-005](../work-items/BUG-005.md)，不改写 WorkBuddy 成功记录，也不宣称本次 Codex 新建模通过。
 
 ## 已实现的行为
 
@@ -37,7 +47,7 @@ PTC 将 ProEngineerConnect 的 -4 定义为无法找到符合条件的会话或�
 
 各轮本地原始报告保留在 build/FEAT-019-startup-*.json、build/FEAT-019-mcp-admission.json 和 build/FEAT-019-manual-baseline.json，报告名包含 pass 的历史文件也以 success 字段为准。公开摘要保留各轮源码指纹、报告 SHA256、任务和错误，不提交日志、二进制、许可或测试模型。
 
-## 未完成项
+## 历史未完成项（WorkBuddy 最终验收前）
 
 2026-10-13 后续补充：新增公开运行身份查询，真实 stdio MCP 返回 E:\Projects\MCP_CREO_MechDog\.venv\Scripts\python.exe 与同目录 server.py，初始化源码未发生变化；当前 Codex 挂载的旧接口没有 startup/runtime 字段。独立客户端验收一直明确启动开发目录，不以旧挂载接口作为 FEAT-019 验收对象。新增两项身份/源码变化回归后，121 项 Windows 单元和语言检查通过，受测提交 c839caa、dirty=true，源码总指纹 159d0391cb8119357778bc55c022a1961a2b7fb9a4b28249016f3e110c11b5bf。
 
