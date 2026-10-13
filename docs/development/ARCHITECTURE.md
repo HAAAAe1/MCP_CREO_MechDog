@@ -21,6 +21,8 @@ seed_library/        原生种子和清单
 
 DEV-002 首先区分三类根目录：代码包位置、只读分发资源位置、可写配置和任务/模型/构建数据位置。当前 `bridge.ROOT` 由 `bridge.py` 的位置决定，`generic_bridge.py` 的模型目录和后台启动路径、`setup.ps1` 的客户端配置都依赖它。
 
+FEAT-019 新增根目录 `creo_startup.py`，由服务 lifespan 驱动后台初始化。GUI 工作目录仍取 `bridge.ROOT/build/creo_session`；跨源码副本的启动锁、预留和诊断放在当前用户的 LocalAppData，按 Windows 会话、安装和 PSF 定位。DEV-002 迁移时同时核对这一模块、源码白名单、MCP 握手和重试入口，保留既有协调目标，不因包位置变化重复拉起 Creo。
+
 先建立显式路径入口及回归，再迁移包；根目录 `server.py`、`bridge.py` 在迁移期间保留兼容包装。核对种子解析、常量生成、工具脚本、导入方式和发布白名单。迁移不能悄悄生成另一套 `models/` 或 `jobs/`。单元与实机测试路径分批迁移时，同时改发现入口和文档命令。
 
 ## C++ 边界

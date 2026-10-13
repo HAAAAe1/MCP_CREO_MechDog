@@ -64,11 +64,11 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C
 
 以脚本生成的实际路径为准。客户端如果使用其他配置格式，保留相同的执行命令和参数。stdio 客户端会启动本地子进程，因此不需要手动长期运行 `server.py`；不要将 GitHub 仓库 URL 填成 MCP 服务地址。[官方 MCP Python SDK 本地主机说明](https://py.sdk.modelcontextprotocol.io/get-started/real-host/)
 
-打开并保持一个 Creo 10 会话。处理完登录、许可及其他模态对话框，然后让 AI：
+启动客户端中的 MCP 服务，后台自动复用已有会话或启动配置的 Creo。处理启动时出现的登录、许可及其他模态对话框，然后让 AI：
 
-1. 调用 `creo_capabilities`，确认当前版本为 `0.2.5`，80 个工具可用；查看 `families`、`seed_library` 和 `unavailable_operations`。直接混合及已有零件追加已开放，受范围限制；见 [版本说明](RELEASE_NOTES_0.2.5.md)。
+1. 调用 `creo_capabilities`，确认当前版本为 `0.2.5`，81 个工具可用；查看 `families`、`seed_library` 和 `unavailable_operations`。直接混合及已有零件追加已开放，受范围限制；见 [版本说明](RELEASE_NOTES_0.2.5.md)。
 2. 调用 `creo_check_environment`，确认 SDK、模板和编译器路径正确。
-3. 调用 `creo_session_status`，确认 `connected == true`。
+3. 调用 `creo_startup_status` 等待 `state == "ready"`，再调用 `creo_session_status` 确认 `connected == true`。等待时建模请求明确拒绝，未创建任务。
 4. 提交一个新零件建模计划；只提交一次，使用 `creo_get_job` 查询任务进度。
 5. 确认任务 `status == "succeeded"`，修改结果包含 `saved_file_reloaded_and_verified == true`。
 
@@ -79,6 +79,24 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C
 连接成功证明当前连接路径可用；实际特征成功仍需建模验证。PTC 对 Toolkit 许可及编译应用解锁的要求独立于本项目 MIT 许可。[PTC Toolkit 解锁说明](https://support.ptc.com/help/creo_toolkit/protoolkit_pma/r12/usascii/creo_toolkit/user_guide/Unlocking_a_Creo_Toolkit_Application.html)
 
 ## 常见问题
+
+### MCP 自动启动 Creo（FEAT-019）
+
+`config.json` 可设置以下选项，重跑安装会保留已有值：
+
+| 选项 | 缺省值 | 作用 |
+| --- | --- | --- |
+| `auto_start_creo` | `true` | 自动检测、复用；确认没有目标会话时启动 Creo。`false` 时由使用者手动打开 |
+| `creo_startup_timeout_seconds` | `120` | 原生准备完成后的连接等待，整数 10～600 秒 |
+| `creo_startup_psf` | `null` | 使用安装内 `Parametric/bin/parametric.psf`；可指定绝对 `.psf` 路径 |
+
+后台初始化不会等待 Creo 启动完成才响应 MCP 握手。`creo_startup_status` 返回 `checking`、`building_worker`、`starting`、`waiting_for_connection` 或终态；只有实际 Toolkit 连接成功才返回 `ready`。原生准备另有 180 秒等待上限及构建子进程超时。等待或失败时建模入口拒绝入队，历史任务查询和能力查询仍可用。
+
+服务通过现有 Explorer 的 `ShellExecute` 启动配置安装内的 `parametric.exe`，PSF 经 Windows 参数编码单独传入，支持含空格路径，不拼接 `cmd.exe` 命令。自动启动需要同一用户、同一 Windows 会话中可访问的 Explorer 桌面。Creo 作为独立桌面程序保留，关闭 MCP 客户端不会主动关闭它。GUI 继承 Explorer 的桌面环境，并使用自身 PSF；原生 worker 所需的 Windows 环境变量会从当前用户环境补齐，许可值不进入诊断。没有可用桌面时可手动启动 Creo，再请求重新检测。
+
+同一用户会话、安装和 PSF 的多个服务共享 `%LOCALAPPDATA%/MCP_CREO_MechDog/startup/<目标摘要>/` 下的锁、`state.json` 和 `startup.log`。启动预留先于实际拉起写入；先前结果不确定且当前没有进程时，需要显式调用 `creo_startup_status(retry=true)`。重试会复查实际进程，正在启动或已有 Creo 时继续等待，不重复创建。日志不包含许可或敏感会话 ID。冷启动时先依据进程检查拉起 GUI，再进行真实 Toolkit 探测，避免首次探测创建的名称服务随 MCP 主机退出而被清理。Explorer 启动接口不提供子进程退出码；请求异常记录为失败，无就绪确认则有界超时，不将启动请求返回当作成功。
+
+`timeout` 时先处理 Creo 对话框或检查启动环境，再请求重试。`selection_required` 时核对安装和 `creo_session_id`：多会话不随机选择，失效的指定 ID 不会被替换为其他实例。开关关闭后，手动打开 Creo，再调用 `creo_startup_status(retry=true)` 或 `creo_session_status` 重新检测。工具不会自动关闭会话或恢复失联任务；后者仍属 BUG-001 的独立范围。
 
 | 现象 | 处理 |
 | --- | --- |
