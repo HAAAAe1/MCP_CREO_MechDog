@@ -1,0 +1,27 @@
+* text=auto whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+*.py text eol=lf
+*.cpp text eol=lf
+*.c text eol=lf
+*.cxx text eol=lf
+*.h text eol=lf
+*.hpp text eol=lf
+*.toml text eol=lf
+.github/** text eol=lf
+docs/development/** text eol=lf
+docs/templates/** text eol=lf
+docs/work-items/** text eol=lf
+docs/validation/** text eol=lf
+docs/BACKLOG.md text eol=lf
+docs/DEVELOPMENT.md text eol=lf
+docs/COMPATIBILITY.md text eol=lf
+AGENTS.md text eol=lf
+requirements-dev.txt text eol=lf
+.clang-format text eol=lf
+.editorconfig text eol=lf
+.gitattributes text eol=lf
+native/third_party/** -text
+*.prt -text
+*.prt.* -text
+*.asm -text
+*.asm.* -text
+*.gph -text

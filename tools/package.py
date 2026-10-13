@@ -33,8 +33,14 @@ def source_files():
         "client-config.example.json",
         "requirements.txt",
         "requirements.lock.txt",
+        "requirements-dev.txt",
         "setup.ps1",
         ".gitignore",
+        ".gitattributes",
+        "AGENTS.md",
+        "pyproject.toml",
+        ".clang-format",
+        ".editorconfig",
     )
     files = [ROOT / name for name in names]
     for directory, extensions in {
@@ -50,6 +56,11 @@ def source_files():
             if p.is_file() and p.suffix in extensions and "__pycache__" not in p.parts
         )
     files.append(ROOT / "native/third_party/LICENSE.nlohmann-json")
+    files.extend(
+        p
+        for p in (ROOT / ".github").rglob("*")
+        if p.is_file() and p.suffix in {".md", ".yml", ".yaml"}
+    )
     files.extend(
         p
         for p in (ROOT / "seed_library").rglob("*")

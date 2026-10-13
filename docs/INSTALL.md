@@ -2,6 +2,8 @@
 
 ## 需要的环境
 
+正式验收基线为 Creo 10，Creo 12 暂列实验兼容；具体已测范围与未测项见 [兼容矩阵](COMPATIBILITY.md)。仅做 Python 单元和语言检查的开发环境见 [开发入口](DEVELOPMENT.md)，不必先运行完整 Creo 安装流程。
+
 - Windows x64；本版实测环境是 Creo Parametric 10.0.0.0。
 - Python 3.12+ x64；本版安装实测使用 Python 3.12。
 - 与 Creo 安装匹配的 C/C++ Toolkit SDK，包括头文件和 x64 链接库。

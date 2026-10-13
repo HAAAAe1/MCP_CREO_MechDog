@@ -13,6 +13,12 @@ The official MCP Python SDK and its dependencies are installed from the versions
 in `requirements.lock.txt`. Their source and installed environments are not
 bundled in this repository. Each dependency retains its own license and notices.
 
+Development checks additionally install Ruff and the clang-format Python
+distribution at the versions in `requirements-dev.txt`. Their executables and
+installed environments are not bundled in the source package; each tool retains
+its upstream license and notices. See https://docs.astral.sh/ruff/ and
+https://github.com/ssciwr/clang-format-wheel.
+
 ## PTC software
 
 Creo Parametric, Creo Toolkit headers/libraries, templates, runtime binaries and
