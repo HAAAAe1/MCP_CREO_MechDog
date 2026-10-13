@@ -107,5 +107,5 @@ try {
     Write-Output 'Fix the reported prerequisite/network/compiler error and rerun the same setup.ps1 command. No cleanup is required; existing .venv and unchanged native builds are reused.'
     throw
 }
-Write-Output 'Ready. Open one Creo 10 session and import client-config.json into your local MCP client.'
-Write-Output 'Check creo_session_status before modeling; installation alone does not prove Toolkit license availability.'
+Write-Output 'Ready. Import client-config.json into your local MCP client. Creo detection/optional startup runs in the background.'
+Write-Output 'Poll creo_startup_status until ready before modeling; installation alone does not prove Toolkit license availability.'

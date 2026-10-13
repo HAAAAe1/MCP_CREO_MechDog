@@ -36,7 +36,7 @@ static void path(ProPath dest, const std::wstring &value) {
         throw PRO_TK_BAD_INPUTS;
     wcscpy_s(dest, PRO_PATH_SIZE, value.c_str());
 }
-static ProError connect_creo(ProProcessHandle *process) {
+static ProError connect_creo(ProProcessHandle *process, unsigned int timeout_seconds = 30) {
     char empty[] = "";
     char *selected = nullptr;
     size_t length = 0;
@@ -45,14 +45,14 @@ static ProError connect_creo(ProProcessHandle *process) {
     free(selected);
     ProBoolean random = PRO_B_FALSE;
     ProError error = ProEngineerConnect(expected.empty() ? empty : expected.data(), empty, empty,
-                                        empty, PRO_B_FALSE, 30, &random, process);
+                                        empty, PRO_B_FALSE, timeout_seconds, &random, process);
     // Toolkit can fall back to another session if the requested session vanished.
     // Reject that fallback before reading or modifying any model.
     if (!error && !expected.empty()) {
         ProConnectionId actual;
         error = ProEngineerConnectIdGet(actual);
         if (error || expected != actual) {
-            ProEngineerDisconnect(process, 15);
+            ProEngineerDisconnect(process, timeout_seconds < 15 ? timeout_seconds : 15);
             return error ? error : PRO_TK_E_NOT_FOUND;
         }
     }
@@ -329,7 +329,15 @@ int wmain(int argc, wchar_t *argv[]) {
         printf("%s\n", result.dump().c_str());
         return 0;
     }
-    bool probe = argc == 2 && wcscmp(argv[1], L"status") == 0;
+    bool probe = (argc == 2 || argc == 3) && wcscmp(argv[1], L"status") == 0;
+    unsigned int probe_timeout = 30;
+    if (probe && argc == 3) {
+        wchar_t *end = nullptr;
+        long value = wcstol(argv[2], &end, 10);
+        if (!end || *end || value < 1 || value > 30)
+            return 2;
+        probe_timeout = (unsigned int)value;
+    }
     if (!probe && (argc != 3 || wcscmp(argv[1], L"create")))
         return 2;
     std::wstring job = probe ? L"" : argv[2];
@@ -353,7 +361,7 @@ int wmain(int argc, wchar_t *argv[]) {
     if (!result) {
         char empty[] = "";
         ProBoolean random = PRO_B_FALSE;
-        result = connect_creo(&process);
+        result = connect_creo(&process, probe ? probe_timeout : 30);
         connected = result == PRO_TK_NO_ERROR;
         log("CONNECT=%d\n", result);
     }
@@ -372,13 +380,22 @@ int wmain(int argc, wchar_t *argv[]) {
                 type = t;
             }
             ProEngineerReleaseNumericversionGet(&release);
-            disconnect_code = ProEngineerDisconnect(&process, 15);
+            disconnect_code =
+                ProEngineerDisconnect(&process, probe_timeout < 15 ? probe_timeout : 15);
         }
-        printf("{\"connected\":%s,\"toolkit_code\":%d,\"current_model\":%s,\"current_model_code\":%"
+        const char *connection_state = connected ? "connected" : "connection_failed";
+        if (result == PRO_TK_NOT_EXIST)
+            connection_state = "no_session";
+        else if (result == PRO_TK_E_NOT_FOUND)
+            connection_state = "not_found_or_unreadable";
+        else if (result == PRO_TK_E_AMBIGUOUS)
+            connection_state = "ambiguous";
+        printf("{\"connected\":%s,\"connection_state\":\"%s\",\"toolkit_code\":%d,\"current_"
+               "model\":%s,\"current_model_code\":%"
                "d,\"model_type\":%d,\"release_numeric\":%d,\"disconnect_code\":%d,\"feature_"
                "creation_license\":\"requires_actual_modeling_test\"}\n",
-               connected ? "true" : "false", result, json_string(name).c_str(), current_code, type,
-               release, disconnect_code);
+               connected ? "true" : "false", connection_state, result, json_string(name).c_str(),
+               current_code, type, release, disconnect_code);
         return result ? 20 : 0;
     }
     if (connected) {

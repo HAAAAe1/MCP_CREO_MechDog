@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from contextlib import asynccontextmanager
 from typing import Annotated, Any, Literal
 
 from mcp.server import MCPServer
@@ -12,6 +13,7 @@ from mcp.types import ToolAnnotations
 from pydantic import BaseModel, ConfigDict, Field
 
 import bridge
+import creo_startup
 import generic_bridge as general
 import seeds
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS, families
@@ -29,9 +31,22 @@ from schema import (
 from version import VERSION
 
 logging.basicConfig(level=logging.WARNING)
+startup = creo_startup.CreoStartup()
+
+
+@asynccontextmanager
+async def server_lifespan(app):
+    startup.start()
+    try:
+        yield {}
+    finally:
+        startup.stop()
+
+
 mcp = MCPServer(
     "MCP_CREO_MechDog",
     version=VERSION,
+    lifespan=server_lifespan,
     instructions="General native parametric modeling in Creo 10. Use mm and degrees. Create parts with creo_new_part "
     "or a complete creo_execute_plan, create independent sketches, then reference them by feature label "
     "for extrude/revolve/add/cut, and append subsequent native features. "
@@ -41,6 +56,8 @@ mcp = MCPServer(
     "Success requires status=succeeded and saved_file_reloaded_and_verified=true for mutations. "
     "Create sheetmetal/assembly models with the corresponding new-model tools or model_type in execute_plan. "
     "Use creo_capabilities for enabled and tested operations; reserved unavailable tools reject before native mutation. "
+    "Creo startup detection runs in the background; poll creo_startup_status until ready before modeling. "
+    "Use creo_startup_status(retry=true) to recheck a failed/manual startup; no session is automatically closed. "
     "Do not retry unknown_outcome without inspection.",
 )
 READ = ToolAnnotations(
@@ -60,6 +77,8 @@ class Hole(BaseModel):
 
 async def invoke(fn, *args, **kwargs):
     try:
+        if fn in (bridge.create_job, general.submit, general.new_loft_part):
+            startup.require_ready()
         return await asyncio.to_thread(fn, *args, **kwargs)
     except (ValueError, RuntimeError, OSError) as exc:
         raise ToolError(str(exc)) from None
@@ -73,8 +92,14 @@ async def creo_check_environment() -> dict[str, Any]:
 
 @mcp.tool(annotations=READ)
 async def creo_session_status() -> dict[str, Any]:
-    """Connect through Toolkit to the configured Creo session, or the only open session; return current model and native connection code."""
-    return await invoke(bridge.session_status)
+    """Check the configured/unique Creo session through Toolkit. During background startup, return its current state promptly; connected=true requires a verified connection. Ambiguous or stale selections never fall back to a random session."""
+    return await invoke(startup.session_status)
+
+
+@mcp.tool(annotations=CREATE)
+async def creo_startup_status(retry: bool = False) -> dict[str, Any]:
+    """Read background Creo startup state without waiting for initialization. retry=true rechecks process/session state and may launch the configured Creo if auto-start is enabled and no existing/pending startup exists. Does not close any Creo session. Poll until state=ready before modeling; inspect message on timeout, disabled or selection_required."""
+    return startup.start(retry=True) if retry else startup.status()
 
 
 @mcp.tool(annotations=CREATE)
@@ -164,6 +189,13 @@ async def creo_capabilities() -> dict[str, Any]:
         "tool_count": len(await mcp.list_tools()),
         "enabled_tool_count": len(await mcp.list_tools()),
         "disabled_tools_hidden": True,
+        "startup": {
+            "automatic_by_default": True,
+            "status_tool": "creo_startup_status",
+            "readiness": "Toolkit connection verified before modeling admission",
+            "config": ["auto_start_creo", "creo_startup_timeout_seconds", "creo_startup_psf"],
+            "existing_sessions": "Reuse selected/unique session; never close Creo automatically",
+        },
         "unavailable_tools": ["creo_" + name for name in UNAVAILABLE_OPERATIONS],
         "modeling": "Composable native Creo features; geometry is not restricted to a plate recipe",
         "entities": [

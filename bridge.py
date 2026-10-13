@@ -253,10 +253,7 @@ def toolkit_lock(wait_seconds: float = 0):
     """Serialize all native calls across MCP clients and detached jobs."""
     lock = ROOT / "toolkit.lock"
     with lock.open("a+b") as f:
-        f.seek(0, 2)
-        if f.tell() == 0:
-            f.write(b"0")
-            f.flush()
+        # Windows byte-range locking also covers empty files; no pre-lock write.
         deadline = time.monotonic() + wait_seconds
         while True:
             try:
@@ -265,7 +262,7 @@ def toolkit_lock(wait_seconds: float = 0):
                 break
             except OSError:
                 if time.monotonic() >= deadline:
-                    raise RuntimeError(
+                    raise ToolkitBusy(
                         "Creo Toolkit is busy with another task; query its job and try later"
                     )
                 time.sleep(0.25)
@@ -274,6 +271,10 @@ def toolkit_lock(wait_seconds: float = 0):
         finally:
             f.seek(0)
             msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
+
+
+class ToolkitBusy(RuntimeError):
+    """A native call is active; startup must wait without launching another Creo."""
 
 
 def license_setting_state(value: str | None) -> str:
@@ -340,12 +341,64 @@ def resolve_license_environment() -> tuple[str | None, dict]:
     }
 
 
+def windows_process_environment() -> dict[str, str]:
+    """Supply Windows prerequisites omitted by restricted stdio host environments."""
+    import win32api
+    import win32profile
+    import win32security
+
+    env = os.environ.copy()
+    token = win32security.OpenProcessToken(win32api.GetCurrentProcess(), 10)
+    try:
+        defaults = win32profile.CreateEnvironmentBlock(token, False)
+    finally:
+        token.Close()
+    # Restore only Windows runtime variables, without importing unrelated user
+    # credentials, third-party configuration or overriding the MCP host's PATH.
+    prerequisites = {
+        "ALLUSERSPROFILE",
+        "COMPUTERNAME",
+        "COMSPEC",
+        "COMMONPROGRAMFILES",
+        "COMMONPROGRAMFILES(X86)",
+        "COMMONPROGRAMW6432",
+        "NUMBER_OF_PROCESSORS",
+        "OS",
+        "PROCESSOR_IDENTIFIER",
+        "PROCESSOR_LEVEL",
+        "PROCESSOR_REVISION",
+        "PROGRAMDATA",
+        "PROGRAMFILES",
+        "PROGRAMFILES(X86)",
+        "PROGRAMW6432",
+        "PUBLIC",
+        "SYSTEMROOT",
+        "SYSTEMDRIVE",
+        "TMP",
+        "USERDOMAIN",
+        "USERDOMAIN_ROAMINGPROFILE",
+        "WINDIR",
+    }
+    for key, value in defaults.items():
+        if key.upper() in prerequisites:
+            env.setdefault(key.upper(), value)
+    windows_root = env.get("SYSTEMROOT") or env.get("SystemRoot")
+    if not windows_root:
+        raise ValueError("SYSTEMROOT is required for Creo processes")
+    env.setdefault("COMSPEC", str(Path(windows_root) / "System32/cmd.exe"))
+    if "TEMP" in env and "TMP" not in os.environ:
+        env["TMP"] = env["TEMP"]
+    return env
+
+
 def native_environment() -> dict[str, str]:
     common = Path(config()["creo_root"]) / "Common Files"
-    env = os.environ.copy()
+    env = windows_process_environment()
     selected = config().get("creo_session_id")
     if selected:
         env["MECHDOG_CREO_SESSION_ID"] = selected
+    else:
+        env.pop("MECHDOG_CREO_SESSION_ID", None)
     env["PRO_COMM_MSG_EXE"] = str(common / "x86e_win64/obj/pro_comm_msg.exe")
     env["PATH"] = (
         os.pathsep.join(
@@ -433,7 +486,10 @@ def build_native() -> Path:
         data = b"\0SDK_HEADER\0" + p.relative_to(includes).as_posix().encode() + p.read_bytes()
         digest.update(data)
         abi.update(data)
-    settings = json.dumps(c, sort_keys=True).encode()
+    startup_keys = {"auto_start_creo", "creo_startup_timeout_seconds", "creo_startup_psf"}
+    settings = json.dumps(
+        {key: value for key, value in c.items() if key not in startup_keys}, sort_keys=True
+    ).encode()
     digest.update(settings)
     abi.update(settings)
     callback = hashlib.sha256(b"MSVC17_MD_DLL_v1" + abi.digest())
@@ -539,15 +595,21 @@ exit /b 0
     return exe
 
 
-def session_status() -> dict:
+def session_status(connect_timeout_seconds: int = 30) -> dict:
+    if (
+        isinstance(connect_timeout_seconds, bool)
+        or not isinstance(connect_timeout_seconds, int)
+        or not 1 <= connect_timeout_seconds <= 30
+    ):
+        raise ValueError("connect_timeout_seconds must be 1–30")
     with toolkit_lock():
         exe = build_native()
         result = subprocess.run(
-            [str(exe), "status"],
+            [str(exe), "status", str(connect_timeout_seconds)],
             cwd=ROOT / "build",
             env=native_environment(),
             capture_output=True,
-            timeout=50,
+            timeout=connect_timeout_seconds + min(connect_timeout_seconds, 15) + 5,
             creationflags=HIDDEN,
         )
     try:

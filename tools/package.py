@@ -22,6 +22,7 @@ def source_files():
         "THIRD_PARTY_NOTICES.md",
         "server.py",
         "bridge.py",
+        "creo_startup.py",
         "seeds.py",
         "airfoil.py",
         "profile_checks.py",
