@@ -457,5 +457,58 @@
     "source_fingerprint_matches": true,
     "local_config_constants_binaries_and_runtime_data_excluded": true,
     "summary_scope": "Verified archive preceded this final documentation-only update. Final handoff packaging preserves the same tested code."
+  },
+  "workbuddy_final_mcp_validation": {
+    "reported_date": "2026-10-13",
+    "provenance": "User-provided WorkBuddy test summary in this chat; not independently rerun during archival",
+    "result": "passed",
+    "steps_reported": 8,
+    "steps_passed_reported": 8,
+    "test_method": "Direct MCP tool calls; no local test scripts; no source modifications",
+    "tested_head_reported": "91036fc76f2078839a6bb5491ac2550b5ef907bd",
+    "tested_worktree_dirty_reported": false,
+    "source_identity_reported": {
+      "equivalent_code_commit": "8d7920a",
+      "documentation_only_changes": [
+        "AGENTS.md",
+        "docs/BACKLOG.md",
+        "docs/DEVELOPMENT.md"
+      ],
+      "files_reported_equal": [
+        "server.py",
+        "bridge.py",
+        "generic_bridge.py"
+      ],
+      "line_endings": "User reports autocrlf=true; no difference after CR-at-EOL normalization",
+      "implementation_markers_reported": [
+        "SetFileInformationByHandle",
+        "shared-delete reader",
+        "FileRenameInfoEx",
+        "REPLACE_IF_EXISTS|POSIX_SEMANTICS"
+      ]
+    },
+    "repository_identity_checked_at_archival": {
+      "timestamp_utc": "2026-10-13T10:59:40.042339+00:00",
+      "method": "Compare LF-normalized worktree file text against git show 8d7920a:<file>; check changed filenames through 91036fc",
+      "files_match": true,
+      "normalized_sha256": {
+        "server.py": "a0a1bf74dd4d10f32f7b3c3f0fd01f6093e4705c746b75dab0cbeccac96ee982",
+        "bridge.py": "e8bd3328f440c49f57b228fa79c1244bc6fdc203af5779eed5f60885d9df507f",
+        "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf"
+      },
+      "scope": "Repository content only; running MCP service identity is based on user report"
+    },
+    "raw_tool_returns_provided": false,
+    "job_ids_provided": false,
+    "model_ids_provided": false,
+    "parallel_polling_details_provided": false,
+    "machine_environment_details_provided": false,
+    "version_check_scope": "Attached identity record; no source-inspection requirement is added to future WorkBuddy MCP-only test prompts",
+    "limitations": [
+      "No individual step/tool return details were supplied; per-step outcomes are not fabricated",
+      "Does not independently verify file-lock injection, retry bounds or stress polling",
+      "Creo 10 validation remains pending",
+      "No MCP tests rerun during archival"
+    ]
   }
 }
