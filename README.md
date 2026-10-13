@@ -174,6 +174,8 @@
 
 除输入验证外，上述集成测试会实际连接 Creo 并创建或修改独立测试模型。`test_v021.py` 默认验证启用功能和禁用接口的拒绝行为；禁用接口的拒绝测试不是建模成功证明。日志位于任务 `native.log`/`runner.log`/`job.json` 和 `build/build.log`；证据在 `build/*integration_test.json`。保存目录较长时应缩短项目路径。
 
+Windows 登记文件读取允许共享删除，写入使用单步原子替换；短暂占用最多重试 1 秒，持续失败保留旧登记并报错，不会自动重复原生操作。登记读写压力与并发实机轮询可分别运行 `tools/test_registry_io.py` 和 `tools/test_registry_native.py --readers 3`。本次 Creo 12.4 结果及 Creo 10 复测步骤见 [BUG-002 验证与交接](docs/validation/BUG-002.md)。
+
 实现依据：[PTC 草图特征 Element Tree 文档](https://support.ptc.com/help/creo_toolkit/protoolkit_plus/usascii/creo_toolkit/user_guide/Element_Tree_for_Sketched_Features.html)、本机 Creo 10 Toolkit 头文件与示例、[官方 MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk)。实际本机建模成功、保存重载成功的记录才证明该路径可用，SDK/许可环境文件存在本身不能证明许可可用。
 
 完成普通放样实机测试后，可生成它的独立摘要；打包会重新生成本地同版本压缩包：
