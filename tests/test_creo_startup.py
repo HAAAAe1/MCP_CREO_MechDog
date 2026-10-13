@@ -333,6 +333,19 @@ class CreoStartupTests(unittest.TestCase):
         self.assertEqual(value["current_model"], "existing_part")
         self.probe.assert_not_called()
 
+    def test_session_status_detects_manual_open_and_loss_without_implicit_restart(self):
+        self.startup._publish("disabled", "manual startup", shared=False)
+        with patch.object(self.startup, "start") as start:
+            self.probe.return_value = READY
+            self.assertTrue(self.startup.session_status()["connected"])
+            self.probe.return_value = ABSENT
+            value = self.startup.session_status()
+            self.assertFalse(value["connected"])
+            self.assertEqual(value["startup"]["state"], "timeout")
+            self.assertTrue(value["startup"]["retry_allowed"])
+            start.assert_not_called()
+            self.launch.assert_not_called()
+
 
 class WindowsCoordinationTests(unittest.TestCase):
     def test_windows_prerequisites_restore_only_allowed_defaults_and_preserve_host(self):

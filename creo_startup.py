@@ -385,8 +385,15 @@ class CreoStartup:
         native = bridge.session_status(connect_timeout_seconds=2)
         if native.get("connected"):
             self._publish("ready", "Toolkit connection verified", shared=False, native=native)
-        else:
-            self.start()
+        elif self.status()["state"] == "ready":
+            self._publish(
+                "timeout",
+                "Toolkit connection is no longer available; inspect Creo and request creo_startup_status(retry=true)",
+                shared=False,
+                native=native,
+            )
+        # This read-only tool can recognize a manually opened session, but must
+        # not turn a failed query into an implicit GUI launch/recovery request.
         return {**native, "startup": self.status()}
 
     def _run(self, retry: bool) -> None:
