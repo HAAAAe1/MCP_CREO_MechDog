@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import argparse
+import ctypes
 import hashlib
 import json
 import math
 import msvcrt
 import os
 import re
+import stat
 import subprocess
 import sys
 import time
@@ -16,6 +18,7 @@ import uuid
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import TextIO
 
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS
 
@@ -24,20 +27,156 @@ JOBS = ROOT / "jobs"
 HIDDEN = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
 JOB_ID = re.compile(r"[a-f0-9]{32}\Z")
 MODEL_NAME = re.compile(r"[a-z][a-z0-9_]{0,30}\Z")
+JSON_REPLACE_TIMEOUT = 1.0
+JSON_REPLACE_MAX_ATTEMPTS = 25
+
+if os.name == "nt":
+    from ctypes import wintypes
+
+    _kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    _create_file = _kernel32.CreateFileW
+    _create_file.argtypes = (
+        wintypes.LPCWSTR,
+        wintypes.DWORD,
+        wintypes.DWORD,
+        wintypes.LPVOID,
+        wintypes.DWORD,
+        wintypes.DWORD,
+        wintypes.HANDLE,
+    )
+    _create_file.restype = wintypes.HANDLE
+    _close_handle = _kernel32.CloseHandle
+    _close_handle.argtypes = (wintypes.HANDLE,)
+    _close_handle.restype = wintypes.BOOL
+    _set_file_information = _kernel32.SetFileInformationByHandle
+    _set_file_information.argtypes = (
+        wintypes.HANDLE,
+        ctypes.c_int,
+        wintypes.LPVOID,
+        wintypes.DWORD,
+    )
+    _set_file_information.restype = wintypes.BOOL
+
+    class _FileRenameInfo(ctypes.Structure):
+        _fields_ = (
+            ("flags", wintypes.DWORD),
+            ("root_directory", wintypes.HANDLE),
+            ("name_length", wintypes.DWORD),
+            ("name", wintypes.WCHAR * 1),
+        )
 
 
 def now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _open_json_reader(path: Path) -> TextIO:
+    if os.name != "nt":
+        return path.open(encoding="utf-8-sig")
+    # CRT readers omit FILE_SHARE_DELETE and can block an otherwise atomic rename.
+    # Share read/write/delete; the handle still reads one complete file version.
+    handle = _create_file(str(path), 0x80000000, 0x1 | 0x2 | 0x4, None, 3, 0x80, None)
+    if handle == ctypes.c_void_p(-1).value:
+        error = ctypes.WinError(ctypes.get_last_error())
+        error.filename = str(path)
+        raise error
+    try:
+        descriptor = msvcrt.open_osfhandle(handle, os.O_RDONLY | os.O_BINARY)
+    except BaseException:
+        _close_handle(handle)
+        raise
+    # open_osfhandle transfers ownership to the descriptor; never close both.
+    try:
+        return os.fdopen(descriptor, encoding="utf-8-sig")
+    except BaseException:
+        os.close(descriptor)
+        raise
+
+
 def read_json(path: Path) -> dict:
-    return json.loads(path.read_text(encoding="utf-8-sig"))
+    with _open_json_reader(path) as stream:
+        return json.load(stream)
+
+
+def _atomic_replace(temp: Path, path: Path) -> None:
+    if os.name != "nt":
+        os.replace(temp, path)
+        return
+    # MoveFileEx (os.replace) rejects an open destination even with shared delete.
+    # FileRenameInfoEx replaces in one filesystem operation, keeping old readers
+    # on the old file. Do not use ReplaceFileW: some failures remove the target.
+    handle = _create_file(str(temp), 0x10000, 0x1 | 0x2 | 0x4, None, 3, 0x80, None)
+    if handle == ctypes.c_void_p(-1).value:
+        error = ctypes.WinError(ctypes.get_last_error())
+        error.filename = str(temp)
+        raise error
+    try:
+        name = str(path.absolute()).encode("utf-16-le")
+        buffer = ctypes.create_string_buffer(
+            max(ctypes.sizeof(_FileRenameInfo), _FileRenameInfo.name.offset + len(name) + 2)
+        )
+        info = _FileRenameInfo.from_buffer(buffer)
+        info.flags = 0x1 | 0x2  # REPLACE_IF_EXISTS | POSIX_SEMANTICS; respects read-only/ACLs.
+        info.name_length = len(name)
+        ctypes.memmove(ctypes.addressof(buffer) + _FileRenameInfo.name.offset, name, len(name))
+        if not _set_file_information(handle, 22, buffer, len(buffer)):  # FileRenameInfoEx
+            code = ctypes.get_last_error()
+            if code in (1, 50, 87):  # Filesystem/Windows lacks the extended rename API.
+                os.replace(temp, path)
+            else:
+                error = ctypes.WinError(code)
+                error.filename = str(temp)
+                error.filename2 = str(path)
+                raise error
+    finally:
+        _close_handle(handle)
+
+
+def _replace_json(temp: Path, path: Path) -> None:
+    deadline = time.monotonic() + JSON_REPLACE_TIMEOUT
+    delay = 0.005
+    for attempt in range(1, JSON_REPLACE_MAX_ATTEMPTS + 1):
+        try:
+            _atomic_replace(temp, path)
+            return
+        except OSError as exc:
+            winerror = getattr(exc, "winerror", None)
+            retryable = os.name == "nt" and winerror in (5, 32, 33)
+            # WinError 5 also covers permanent ACL/read-only failures. Read-only
+            # is identifiable; ambiguous ACL/external-handle cases share a bound.
+            if retryable and winerror == 5:
+                try:
+                    retryable = not (path.stat().st_file_attributes & stat.FILE_ATTRIBUTE_READONLY)
+                except OSError:
+                    retryable = False
+            remaining = deadline - time.monotonic()
+            if not retryable or remaining <= 0 or attempt == JSON_REPLACE_MAX_ATTEMPTS:
+                exc.add_note(
+                    f"JSON atomic replace failed: {path}; attempts={attempt}; budget={JSON_REPLACE_TIMEOUT}s"
+                )
+                raise
+            time.sleep(min(delay, remaining))
+            delay = min(delay * 2, 0.05)
 
 
 def write_json(path: Path, value: dict) -> None:
+    content = json.dumps(value, ensure_ascii=False, indent=2)
     temp = path.with_suffix(path.suffix + f".{uuid.uuid4().hex}.tmp")
-    temp.write_text(json.dumps(value, ensure_ascii=False, indent=2), encoding="utf-8")
-    os.replace(temp, path)
+    owned = False
+    try:
+        with temp.open("x", encoding="utf-8") as stream:
+            owned = True
+            stream.write(content)
+        _replace_json(temp, path)
+    except BaseException as exc:
+        if owned:
+            try:
+                temp.unlink(missing_ok=True)
+            except OSError as cleanup_error:
+                exc.add_note(
+                    f"Could not remove this writer's temporary file {temp}: {cleanup_error}"
+                )
+        raise
 
 
 def config() -> dict:
