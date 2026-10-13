@@ -18,28 +18,7 @@
       "count": 1
     },
     {
-      "path": "bridge.py",
-      "code": "I001",
-      "message": "Import block is un-sorted or un-formatted",
-      "source": "from __future__ import annotations",
-      "count": 1
-    },
-    {
       "path": "capabilities.py",
-      "code": "I001",
-      "message": "Import block is un-sorted or un-formatted",
-      "source": "from __future__ import annotations",
-      "count": 1
-    },
-    {
-      "path": "generic_bridge.py",
-      "code": "F401",
-      "message": "`json` imported but unused",
-      "source": "import json",
-      "count": 1
-    },
-    {
-      "path": "generic_bridge.py",
       "code": "I001",
       "message": "Import block is un-sorted or un-formatted",
       "source": "from __future__ import annotations",
@@ -538,9 +517,7 @@
   ],
   "unformatted": {
     "airfoil.py": "92432a354ccd19060370fd4a19bf184a785af34ac5b46ec058ce17790428403f",
-    "bridge.py": "fb4b71a6fa741cba1cd6a4bd10360def0dea4153d78163dfc2978bdec663e788",
     "capabilities.py": "43980fe5b39407a46b1a87d6dad94ecd90e37d939fa738e188aa347f75ca6593",
-    "generic_bridge.py": "806ace254c0ce48e7ecb054857c552b9cfe055b4c0f7a232455ddc5b9549bca7",
     "native/advanced.cpp": "4eefd397f6694d1bef185bd47ed7cbc530cc80e600337a1c1dd375c679f67d4d",
     "native/blend_create.cpp": "7c07275e0ef786c359379f13ce826420916a6383d66230900e9ce26b6f063be3",
     "native/blend_sync.cpp": "882d59ad6d0f1942f254fb7f7ed97286e3e099306016e9537997c63c43b490d2",
