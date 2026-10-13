@@ -39,6 +39,10 @@ PTC 将 ProEngineerConnect 的 -4 定义为无法找到符合条件的会话或�
 
 ## 未完成项
 
+2026-10-13 后续补充：新增公开运行身份查询，真实 stdio MCP 返回 E:\Projects\MCP_CREO_MechDog\.venv\Scripts\python.exe 与同目录 server.py，初始化源码未发生变化；当前 Codex 挂载的旧接口没有 startup/runtime 字段。独立客户端验收一直明确启动开发目录，不以旧挂载接口作为 FEAT-019 验收对象。新增两项身份/源码变化回归后，121 项 Windows 单元和语言检查通过，受测提交 c839caa、dirty=true，源码总指纹 159d0391cb8119357778bc55c022a1961a2b7fb9a4b28249016f3e110c11b5bf。
+
+再次以零 Creo 进程开始开发版冷启动，GUI 已自动出现，Toolkit 未就绪并有界超时，没有提交建模任务。该轮结束后安装版及开发版分别探测，同样返回 -4。本次新增身份查询及 [WorkBuddy 提示词](FEAT-019-WorkBuddy.md) 可以消除客户端版本混淆，但尚未修复实机连接故障。未保留未经稳定验证的桌面任务转发改动；当前只通过桌面启动 GUI，原生任务执行路径保持此前实现。
+
 最终源码的冷启动后就绪、已有会话成功复用、全部客户端断开后重新连接、原生草图/拉伸、参数修改和保存重载尚未通过。配置开关、失效 ID、多会话、失败路径的当前证据主要为受控单元测试，不冒充所有实机场景通过。Creo 10 及 WorkBuddy 最终 MCP 黑盒验收未执行。
 
 下一步先恢复可用的 Toolkit 连接基线，再运行 tools/test_creo_startup.py；另一台匹配 SDK/许可的机器可直接获取本分支重新构建。最终 WorkBuddy 验收只调用公开 MCP 工具，使用 [专用提示词](FEAT-019-WorkBuddy.md)，不检查源码或运行本地脚本。完整闭环成功后再关闭任务卡；FEAT-001、FEAT-002、BUG-001 保持独立范围。

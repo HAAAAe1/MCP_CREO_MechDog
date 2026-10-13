@@ -82,6 +82,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C
 
 ### MCP 自动启动 Creo（FEAT-019）
 
+同时存在安装版和开发版时，重启客户端中的目标 MCP 服务后调用 `creo_capabilities`，核对 `runtime.python_executable`、`runtime.server_entry` 和 `runtime.code_root` 的实际路径。`runtime.source_fingerprints_at_startup` 记录服务初始化时的源码指纹（统一换行后计算），`runtime.source_changed_since_startup=true` 表示磁盘源码已变化，应重启服务再验收。服务名称和同为 `0.2.5` 的版本号不能区分两份源码；客户端配置改动也不会替换已运行的服务进程。
+
 `config.json` 可设置以下选项，重跑安装会保留已有值：
 
 | 选项 | 缺省值 | 作用 |

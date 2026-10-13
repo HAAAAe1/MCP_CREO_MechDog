@@ -6,7 +6,7 @@
 
 > 请对已连接的 MCP_CREO_MechDog 做 FEAT-019 最终黑盒测试。全程只调用公开 MCP 工具，不查看、分析或修改源码，不读取 Git 或本机配置，不执行本地脚本、单元测试或终端命令。
 >
-> 1. 调用 creo_capabilities，记录服务版本、工具数和 startup 字段；确认有 creo_startup_status。版本号本身不能证明构建身份，公开接口无法确认的源码身份记为“无法确认”。
+> 1. 调用 creo_capabilities，记录服务版本、工具数、startup 和 runtime 字段；确认有 creo_startup_status。开发版 runtime.server_entry 应为 E:\Projects\MCP_CREO_MechDog\server.py，runtime.python_executable 应为该目录 .venv 中的 Python。记录 source_fingerprints_at_startup；source_changed_since_startup 应为 false，若为 true 则请使用者重启 MCP 后再测。若没有 runtime 或启动工具，说明当前服务接口不符合本轮验收要求，请停止测试并让使用者核对连接。全程通过工具返回确认身份，不查看源码或本机配置。
 > 2. 轮询 creo_startup_status，记录实际出现的状态、message、connected 和等待时间。检查 MCP 能在等待中继续响应能力查询。若观察到未就绪状态，调用一次 creo_new_part；应返回未就绪错误，不能返回 job_id。若已立即 ready，此项记为未观察到，不模拟通过。遇到 timeout、selection_required、configuration_error 或 launch_failed，保留原始返回并停止建模；人工处理后才能使用 retry=true 复查。
 > 3. ready 后调用 creo_session_status，确认 connected=true。提交一次完整计划：XY 面矩形 min=[-10,-5]、max=[10,5]，草图 label=startup_profile；引用该草图拉伸 depth=2，特征 label=startup_solid；断言实体体积 400 mm³。轮询 creo_get_job(detail="full") 到终态，核对 status=succeeded、体积、原生特征及 saved_file_reloaded_and_verified=true，记录 job_id、model_id 和 revision。
 > 4. 用返回的 model_id 和当前 expected_revision 调用 creo_set_parameters，设置 STARTUP_SIZE=17.0。仅提交一次，等待任务成功和保存重载通过；再调用 creo_inspect_model，核对参数值 17、体积仍为 400、revision 只递增一次、pending_job=null。

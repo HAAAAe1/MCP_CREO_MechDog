@@ -99,6 +99,23 @@ class CreoStartupTests(unittest.TestCase):
             "uncertain": False,
         }
 
+    def test_capabilities_identifies_running_source(self):
+        capabilities = asyncio.run(server.creo_capabilities())
+        runtime = capabilities["runtime"]
+        self.assertEqual(Path(runtime["server_entry"]), ROOT / "server.py")
+        self.assertEqual(Path(runtime["code_root"]), ROOT)
+        self.assertEqual(Path(runtime["python_executable"]), Path(os.sys.executable))
+        self.assertFalse(runtime["source_changed_since_startup"])
+        self.assertIn("creo_startup.py", runtime["source_fingerprints_at_startup"])
+
+    def test_capabilities_detects_source_change_without_relabeling_loaded_code(self):
+        loaded = dict(server._LOADED_FINGERPRINTS)
+        changed = {**loaded, "server.py": "changed-on-disk"}
+        with patch.object(server, "_source_fingerprints", return_value=changed):
+            runtime = asyncio.run(server.creo_capabilities())["runtime"]
+        self.assertTrue(runtime["source_changed_since_startup"])
+        self.assertEqual(runtime["source_fingerprints_at_startup"], loaded)
+
     def test_defaults_and_strict_configuration(self):
         self.config.pop("creo_startup_timeout_seconds")
         settings = creo_startup.Settings.load()

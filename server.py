@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import logging
+import sys
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Annotated, Any, Literal
 
 from mcp.server import MCPServer
@@ -32,6 +35,25 @@ from version import VERSION
 
 logging.basicConfig(level=logging.WARNING)
 startup = creo_startup.CreoStartup()
+_CODE_ROOT = Path(__file__).resolve().parent
+_SOURCE_NAMES = (
+    "server.py",
+    "bridge.py",
+    "creo_startup.py",
+    "generic_bridge.py",
+    "schema.py",
+    "native/worker.cpp",
+)
+
+
+def _source_fingerprints() -> dict[str, str]:
+    return {
+        name: hashlib.sha256((_CODE_ROOT / name).read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+        for name in _SOURCE_NAMES
+    }
+
+
+_LOADED_FINGERPRINTS = _source_fingerprints()
 
 
 @asynccontextmanager
@@ -184,6 +206,13 @@ async def creo_capabilities() -> dict[str, Any]:
     return {
         "name": "MCP_CREO_MechDog",
         "version": VERSION,
+        "runtime": {
+            "python_executable": sys.executable,
+            "server_entry": str(Path(__file__).resolve()),
+            "code_root": str(_CODE_ROOT),
+            "source_fingerprints_at_startup": dict(_LOADED_FINGERPRINTS),
+            "source_changed_since_startup": _source_fingerprints() != _LOADED_FINGERPRINTS,
+        },
         "unit": "mm",
         "angle_unit": "degrees",
         "tool_count": len(await mcp.list_tools()),

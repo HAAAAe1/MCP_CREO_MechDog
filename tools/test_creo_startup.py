@@ -113,6 +113,11 @@ async def run(args: argparse.Namespace) -> dict:
             began = time.monotonic()
             first = await stack.enter_async_context(Client(parameters, read_timeout_seconds=30))
             first_handshake = time.monotonic() - began
+            capabilities = await call(first, "creo_capabilities", {})
+            report["runtime"] = capabilities["runtime"]
+            assert Path(report["runtime"]["server_entry"]) == ROOT / "server.py"
+            assert Path(report["runtime"]["python_executable"]) == Path(sys.executable)
+            assert report["runtime"]["source_changed_since_startup"] is False
             if args.retry:
                 # Let this first client's automatic recheck finish. Then request
                 # retry explicitly before admitting a second startup contender.

@@ -104,6 +104,100 @@
       "success": true,
       "scope": "build/cache only, no geometry claim",
       "worker_sha256": "3528e876af1c472cc47d57e755b7c65b646a90e30331fac36003441e19c7b8ba"
+    },
+    "runtime_identity_followup": {
+      "date": "2026-10-13",
+      "source_commit": "c839caaea9dd11fa0ce1b8a16b5730b97c809495",
+      "dirty": true,
+      "public_mcp_runtime": {
+        "python_executable": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+        "server_entry": "E:\\Projects\\MCP_CREO_MechDog\\server.py",
+        "code_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "source_fingerprints_at_startup": {
+          "server.py": "bc04ea8f1dccaa2470728794b862cc2c1e72099ca118891162c579a7683d8266",
+          "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+          "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+          "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+          "schema.py": "58e9bcc01e25da90dd84b1d26d42652ea0b401162b72beea8674bf76e01828fe",
+          "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229"
+        },
+        "source_changed_since_startup": false
+      },
+      "windows_unit_and_language": {
+        "work_item": "FEAT-019",
+        "version": "0.2.5",
+        "timestamp_utc": "2026-10-13T14:23:17.208277+00:00",
+        "environment": {
+          "os": "Windows",
+          "python": "3.12.14"
+        },
+        "source": {
+          "commit": "c839caaea9dd11fa0ce1b8a16b5730b97c809495",
+          "dirty": true,
+          "checked_source_sha256": "159d0391cb8119357778bc55c022a1961a2b7fb9a4b28249016f3e110c11b5bf"
+        },
+        "native_validation": "not_run",
+        "unit_tests": "passed",
+        "success": true,
+        "style_summary": {
+          "lint_findings": 71,
+          "unformatted_files": 54,
+          "cpp_files_checked": 15,
+          "python_files_checked": 53
+        },
+        "tools": {
+          "ruff": "0.17.0",
+          "clang-format": "23.1.3"
+        },
+        "configuration": {
+          "pyproject.toml": "0b5551fbf14055060e36a829d48aaee700f44dfdb2336027393af45ce5691060",
+          ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+          "requirements-dev.txt": "5ad03a1fbb24e3e72d8cc46afb089bb9c1d0a2ff715b563ee5958cf7b8f199f1"
+        }
+      },
+      "unit_count": 121,
+      "cold_start": {
+        "report_sha256": "54c8c5ff118c700fdc77ce2ac25145245a4981e2fe307cf1a10bb2f0c6b88444",
+        "command": [
+          "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+          "E:\\Projects\\MCP_CREO_MechDog\\tools\\test_creo_startup.py",
+          "--require-cold",
+          "--retry",
+          "--output",
+          "build\\FEAT-019-runtime-identity-cold.json"
+        ],
+        "source": {
+          "commit": "c839caaea9dd11fa0ce1b8a16b5730b97c809495",
+          "dirty": true,
+          "fingerprints": {
+            "server.py": "bc04ea8f1dccaa2470728794b862cc2c1e72099ca118891162c579a7683d8266",
+            "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+            "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+            "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229",
+            "tools/test_creo_startup.py": "b539e396a9c4d4235601bbf8ac7dc4618762a732513829c6afba968ff9248524"
+          }
+        },
+        "environment": {
+          "os": "Windows-11-10.0.26100-SP0",
+          "python": "3.12.14",
+          "creo_root": "C:\\Program Files\\PTC\\Creo 12.4.0.0",
+          "creo": "12.4.0.0"
+        },
+        "initial_creo_process_count": 0,
+        "success": false,
+        "error": {
+          "type": "ExceptionGroup",
+          "message": "unhandled errors in a TaskGroup (1 sub-exception)"
+        },
+        "jobs_submitted": 0,
+        "gui_launch_observed": true
+      },
+      "installed_and_development_status_comparison": {
+        "installed_toolkit_code": -4,
+        "development_toolkit_code": -4,
+        "connected": false
+      },
+      "workbuddy_final_black_box": "not_run"
     }
   },
   "mcp_admission": {
