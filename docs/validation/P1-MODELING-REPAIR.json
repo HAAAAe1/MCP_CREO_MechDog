@@ -7208,7 +7208,120 @@
               }
             },
             "loaded": {}
-          }
+          },
+          "canonical_native_operations": [
+            {
+              "op": "sketch",
+              "label": "bottom",
+              "plane": "XY",
+              "offset": 0.0,
+              "entities": [
+                {
+                  "type": "rectangle",
+                  "name": "profile",
+                  "min": [
+                    -10.0,
+                    -10.0
+                  ],
+                  "max": [
+                    10.0,
+                    10.0
+                  ],
+                  "construction": false
+                }
+              ],
+              "dimensions": [
+                {
+                  "name": "width",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_0",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 20.0,
+                  "position": [
+                    20.0,
+                    20.0
+                  ]
+                },
+                {
+                  "name": "height",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_1",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 20.0,
+                  "position": [
+                    20.0,
+                    20.0
+                  ]
+                }
+              ],
+              "constraints": [],
+              "dimensioning": "auto"
+            },
+            {
+              "op": "sketch",
+              "label": "top",
+              "plane": "XY",
+              "offset": 30.0,
+              "entities": [
+                {
+                  "type": "rectangle",
+                  "name": "profile",
+                  "min": [
+                    -5.0,
+                    -5.0
+                  ],
+                  "max": [
+                    5.0,
+                    5.0
+                  ],
+                  "construction": false
+                }
+              ],
+              "dimensions": [
+                {
+                  "name": "width",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_0",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 10.0,
+                  "position": [
+                    10.0,
+                    10.0
+                  ]
+                },
+                {
+                  "name": "height",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_1",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 10.0,
+                  "position": [
+                    10.0,
+                    10.0
+                  ]
+                }
+              ],
+              "constraints": [],
+              "dimensioning": "auto"
+            }
+          ],
+          "input_recording": "Legacy seed script did not record raw public inputs; canonical request operations retained."
         },
         {
           "case": "seed",
@@ -7271,7 +7384,18 @@
                 "source": "Creo native PRO_FEAT_INFO"
               }
             }
-          }
+          },
+          "canonical_native_operations": [
+            {
+              "op": "set_sketch_dimensions",
+              "sketch": "top",
+              "values": {
+                "width": 12.0,
+                "height": 12.0
+              }
+            }
+          ],
+          "input_recording": "Legacy seed script did not record raw public inputs; canonical request operations retained."
         },
         {
           "case": "seed",
@@ -7323,7 +7447,17 @@
                 "source": "Creo native PRO_FEAT_INFO"
               }
             }
-          }
+          },
+          "canonical_native_operations": [
+            {
+              "op": "set_sketch_dimensions",
+              "sketch": "top",
+              "values": {
+                "width": 15.0
+              }
+            }
+          ],
+          "input_recording": "Legacy seed script did not record raw public inputs; canonical request operations retained."
         },
         {
           "case": "seed",
@@ -7386,7 +7520,41 @@
                 "source": "Creo native PRO_FEAT_INFO"
               }
             }
-          }
+          },
+          "canonical_native_operations": [
+            {
+              "op": "sketch",
+              "label": "hole_profile",
+              "plane": "XY",
+              "offset": 0.0,
+              "entities": [
+                {
+                  "type": "circle",
+                  "name": "circle",
+                  "center": [
+                    0.0,
+                    0.0
+                  ],
+                  "radius": 1.0,
+                  "construction": false
+                }
+              ],
+              "dimensions": [],
+              "constraints": [],
+              "dimensioning": "auto"
+            },
+            {
+              "op": "extrude",
+              "label": "through_cut",
+              "sketch": "hole_profile",
+              "depth": 30.0,
+              "mode": "cut",
+              "direction": "positive",
+              "depth_type": "blind",
+              "new_body": false
+            }
+          ],
+          "input_recording": "Legacy seed script did not record raw public inputs; canonical request operations retained."
         },
         {
           "case": "seed",
@@ -7439,7 +7607,52 @@
               }
             },
             "loaded": {}
-          }
+          },
+          "canonical_native_operations": [
+            {
+              "op": "sketch",
+              "label": "bottom",
+              "plane": "XY",
+              "offset": 0.0,
+              "entities": [
+                {
+                  "type": "circle",
+                  "name": "profile",
+                  "center": [
+                    0.0,
+                    0.0
+                  ],
+                  "radius": 10.0,
+                  "construction": false
+                }
+              ],
+              "dimensions": [],
+              "constraints": [],
+              "dimensioning": "auto"
+            },
+            {
+              "op": "sketch",
+              "label": "top",
+              "plane": "XY",
+              "offset": 30.0,
+              "entities": [
+                {
+                  "type": "circle",
+                  "name": "profile",
+                  "center": [
+                    0.0,
+                    0.0
+                  ],
+                  "radius": 5.0,
+                  "construction": false
+                }
+              ],
+              "dimensions": [],
+              "constraints": [],
+              "dimensioning": "auto"
+            }
+          ],
+          "input_recording": "Legacy seed script did not record raw public inputs; canonical request operations retained."
         },
         {
           "case": "seed",
@@ -7492,7 +7705,72 @@
               }
             },
             "loaded": {}
-          }
+          },
+          "canonical_native_operations": [
+            {
+              "op": "sketch",
+              "label": "bottom",
+              "plane": "XY",
+              "offset": 0.0,
+              "entities": [
+                {
+                  "type": "polyline",
+                  "name": "profile",
+                  "points": [
+                    [
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      20.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      20.0
+                    ]
+                  ],
+                  "closed": true,
+                  "construction": false
+                }
+              ],
+              "dimensions": [],
+              "constraints": [],
+              "dimensioning": "auto"
+            },
+            {
+              "op": "sketch",
+              "label": "top",
+              "plane": "XY",
+              "offset": 30.0,
+              "entities": [
+                {
+                  "type": "polyline",
+                  "name": "profile",
+                  "points": [
+                    [
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      10.0
+                    ]
+                  ],
+                  "closed": true,
+                  "construction": false
+                }
+              ],
+              "dimensions": [],
+              "constraints": [],
+              "dimensioning": "auto"
+            }
+          ],
+          "input_recording": "Legacy seed script did not record raw public inputs; canonical request operations retained."
         },
         {
           "case": "seed",
@@ -7523,7 +7801,120 @@
           "failed_operation_index": null,
           "loft_checks": {
             "loaded": {}
-          }
+          },
+          "canonical_native_operations": [
+            {
+              "op": "sketch",
+              "label": "bottom",
+              "plane": "XY",
+              "offset": 0.0,
+              "entities": [
+                {
+                  "type": "rectangle",
+                  "name": "profile",
+                  "min": [
+                    -10.0,
+                    -10.0
+                  ],
+                  "max": [
+                    10.0,
+                    10.0
+                  ],
+                  "construction": false
+                }
+              ],
+              "dimensions": [
+                {
+                  "name": "width",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_0",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 20.0,
+                  "position": [
+                    20.0,
+                    20.0
+                  ]
+                },
+                {
+                  "name": "height",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_1",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 20.0,
+                  "position": [
+                    20.0,
+                    20.0
+                  ]
+                }
+              ],
+              "constraints": [],
+              "dimensioning": "auto"
+            },
+            {
+              "op": "sketch",
+              "label": "top",
+              "plane": "XY",
+              "offset": 30.0,
+              "entities": [
+                {
+                  "type": "rectangle",
+                  "name": "profile",
+                  "min": [
+                    -5.0,
+                    -5.0
+                  ],
+                  "max": [
+                    5.0,
+                    5.0
+                  ],
+                  "construction": false
+                }
+              ],
+              "dimensions": [
+                {
+                  "name": "width",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_0",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 10.0,
+                  "position": [
+                    10.0,
+                    10.0
+                  ]
+                },
+                {
+                  "name": "height",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_1",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 10.0,
+                  "position": [
+                    10.0,
+                    10.0
+                  ]
+                }
+              ],
+              "constraints": [],
+              "dimensioning": "auto"
+            }
+          ],
+          "input_recording": "Legacy seed script did not record raw public inputs; canonical request operations retained."
         },
         {
           "case": "seed",
@@ -7554,7 +7945,120 @@
           "failed_operation_index": null,
           "loft_checks": {
             "loaded": {}
-          }
+          },
+          "canonical_native_operations": [
+            {
+              "op": "sketch",
+              "label": "bottom",
+              "plane": "XY",
+              "offset": 0.0,
+              "entities": [
+                {
+                  "type": "rectangle",
+                  "name": "profile",
+                  "min": [
+                    -10.0,
+                    -10.0
+                  ],
+                  "max": [
+                    10.0,
+                    10.0
+                  ],
+                  "construction": false
+                }
+              ],
+              "dimensions": [
+                {
+                  "name": "width",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_0",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 20.0,
+                  "position": [
+                    20.0,
+                    20.0
+                  ]
+                },
+                {
+                  "name": "height",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_1",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 20.0,
+                  "position": [
+                    20.0,
+                    20.0
+                  ]
+                }
+              ],
+              "constraints": [],
+              "dimensioning": "auto"
+            },
+            {
+              "op": "sketch",
+              "label": "top",
+              "plane": "XY",
+              "offset": 30.0,
+              "entities": [
+                {
+                  "type": "rectangle",
+                  "name": "profile",
+                  "min": [
+                    -5.0,
+                    -5.0
+                  ],
+                  "max": [
+                    5.0,
+                    5.0
+                  ],
+                  "construction": false
+                }
+              ],
+              "dimensions": [
+                {
+                  "name": "width",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_0",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 10.0,
+                  "position": [
+                    10.0,
+                    10.0
+                  ]
+                },
+                {
+                  "name": "height",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_1",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 10.0,
+                  "position": [
+                    10.0,
+                    10.0
+                  ]
+                }
+              ],
+              "constraints": [],
+              "dimensioning": "auto"
+            }
+          ],
+          "input_recording": "Legacy seed script did not record raw public inputs; canonical request operations retained."
         }
       ],
       "validation_role": "final_native_source",
@@ -7622,7 +8126,175 @@
               }
             },
             "loaded": {}
-          }
+          },
+          "canonical_native_operations": [
+            {
+              "op": "sketch",
+              "label": "section_0",
+              "plane": "XY",
+              "offset": 0.0,
+              "entities": [
+                {
+                  "type": "rectangle",
+                  "name": "profile",
+                  "min": [
+                    -10.0,
+                    -10.0
+                  ],
+                  "max": [
+                    10.0,
+                    10.0
+                  ],
+                  "construction": false
+                }
+              ],
+              "dimensions": [
+                {
+                  "name": "width",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_0",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 20.0,
+                  "position": [
+                    20.0,
+                    20.0
+                  ]
+                },
+                {
+                  "name": "height",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_1",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 20.0,
+                  "position": [
+                    20.0,
+                    20.0
+                  ]
+                }
+              ],
+              "constraints": [],
+              "dimensioning": "auto"
+            },
+            {
+              "op": "sketch",
+              "label": "section_1",
+              "plane": "XY",
+              "offset": 30.0,
+              "entities": [
+                {
+                  "type": "rectangle",
+                  "name": "profile",
+                  "min": [
+                    -15.0,
+                    -15.0
+                  ],
+                  "max": [
+                    15.0,
+                    15.0
+                  ],
+                  "construction": false
+                }
+              ],
+              "dimensions": [
+                {
+                  "name": "width",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_0",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 30.0,
+                  "position": [
+                    30.0,
+                    30.0
+                  ]
+                },
+                {
+                  "name": "height",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_1",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 30.0,
+                  "position": [
+                    30.0,
+                    30.0
+                  ]
+                }
+              ],
+              "constraints": [],
+              "dimensioning": "auto"
+            },
+            {
+              "op": "sketch",
+              "label": "section_2",
+              "plane": "XY",
+              "offset": 60.0,
+              "entities": [
+                {
+                  "type": "rectangle",
+                  "name": "profile",
+                  "min": [
+                    -5.0,
+                    -5.0
+                  ],
+                  "max": [
+                    5.0,
+                    5.0
+                  ],
+                  "construction": false
+                }
+              ],
+              "dimensions": [
+                {
+                  "name": "width",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_0",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 10.0,
+                  "position": [
+                    10.0,
+                    10.0
+                  ]
+                },
+                {
+                  "name": "height",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_1",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 10.0,
+                  "position": [
+                    10.0,
+                    10.0
+                  ]
+                }
+              ],
+              "constraints": [],
+              "dimensioning": "auto"
+            }
+          ],
+          "input_recording": "Legacy seed script did not record raw public inputs; canonical request operations retained."
         },
         {
           "case": "rect_edit_middle",
@@ -7685,7 +8357,18 @@
                 "source": "Creo native PRO_FEAT_INFO"
               }
             }
-          }
+          },
+          "canonical_native_operations": [
+            {
+              "op": "set_sketch_dimensions",
+              "sketch": "section_1",
+              "values": {
+                "width": 36.0,
+                "height": 36.0
+              }
+            }
+          ],
+          "input_recording": "Legacy seed script did not record raw public inputs; canonical request operations retained."
         },
         {
           "case": "rect_export_stl",
@@ -7726,7 +8409,14 @@
                 "source": "Creo native PRO_FEAT_INFO"
               }
             }
-          }
+          },
+          "canonical_native_operations": [
+            {
+              "op": "export",
+              "format": "stl"
+            }
+          ],
+          "input_recording": "Legacy seed script did not record raw public inputs; canonical request operations retained."
         },
         {
           "case": "failed_edit_rollback",
@@ -7778,7 +8468,17 @@
                 "source": "Creo native PRO_FEAT_INFO"
               }
             }
-          }
+          },
+          "canonical_native_operations": [
+            {
+              "op": "set_sketch_dimensions",
+              "sketch": "section_1",
+              "values": {
+                "width": 38.0
+              }
+            }
+          ],
+          "input_recording": "Legacy seed script did not record raw public inputs; canonical request operations retained."
         },
         {
           "case": "rollback_refresh",
@@ -7819,7 +8519,9 @@
                 "source": "Creo native PRO_FEAT_INFO"
               }
             }
-          }
+          },
+          "canonical_native_operations": [],
+          "input_recording": "Legacy seed script did not record raw public inputs; canonical request operations retained."
         },
         {
           "case": "seed_count_mismatch",
@@ -7850,7 +8552,120 @@
           "failed_operation_index": null,
           "loft_checks": {
             "loaded": {}
-          }
+          },
+          "canonical_native_operations": [
+            {
+              "op": "sketch",
+              "label": "section_0",
+              "plane": "XY",
+              "offset": 0.0,
+              "entities": [
+                {
+                  "type": "rectangle",
+                  "name": "profile",
+                  "min": [
+                    -10.0,
+                    -10.0
+                  ],
+                  "max": [
+                    10.0,
+                    10.0
+                  ],
+                  "construction": false
+                }
+              ],
+              "dimensions": [
+                {
+                  "name": "width",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_0",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 20.0,
+                  "position": [
+                    20.0,
+                    20.0
+                  ]
+                },
+                {
+                  "name": "height",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_1",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 20.0,
+                  "position": [
+                    20.0,
+                    20.0
+                  ]
+                }
+              ],
+              "constraints": [],
+              "dimensioning": "auto"
+            },
+            {
+              "op": "sketch",
+              "label": "section_1",
+              "plane": "XY",
+              "offset": 30.0,
+              "entities": [
+                {
+                  "type": "rectangle",
+                  "name": "profile",
+                  "min": [
+                    -15.0,
+                    -15.0
+                  ],
+                  "max": [
+                    15.0,
+                    15.0
+                  ],
+                  "construction": false
+                }
+              ],
+              "dimensions": [
+                {
+                  "name": "width",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_0",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 30.0,
+                  "position": [
+                    30.0,
+                    30.0
+                  ]
+                },
+                {
+                  "name": "height",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_1",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 30.0,
+                  "position": [
+                    30.0,
+                    30.0
+                  ]
+                }
+              ],
+              "constraints": [],
+              "dimensioning": "auto"
+            }
+          ],
+          "input_recording": "Legacy seed script did not record raw public inputs; canonical request operations retained."
         },
         {
           "case": "seed_mode_mismatch",
@@ -7881,7 +8696,175 @@
           "failed_operation_index": null,
           "loft_checks": {
             "loaded": {}
-          }
+          },
+          "canonical_native_operations": [
+            {
+              "op": "sketch",
+              "label": "section_0",
+              "plane": "XY",
+              "offset": 0.0,
+              "entities": [
+                {
+                  "type": "rectangle",
+                  "name": "profile",
+                  "min": [
+                    -10.0,
+                    -10.0
+                  ],
+                  "max": [
+                    10.0,
+                    10.0
+                  ],
+                  "construction": false
+                }
+              ],
+              "dimensions": [
+                {
+                  "name": "width",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_0",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 20.0,
+                  "position": [
+                    20.0,
+                    20.0
+                  ]
+                },
+                {
+                  "name": "height",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_1",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 20.0,
+                  "position": [
+                    20.0,
+                    20.0
+                  ]
+                }
+              ],
+              "constraints": [],
+              "dimensioning": "auto"
+            },
+            {
+              "op": "sketch",
+              "label": "section_1",
+              "plane": "XY",
+              "offset": 30.0,
+              "entities": [
+                {
+                  "type": "rectangle",
+                  "name": "profile",
+                  "min": [
+                    -15.0,
+                    -15.0
+                  ],
+                  "max": [
+                    15.0,
+                    15.0
+                  ],
+                  "construction": false
+                }
+              ],
+              "dimensions": [
+                {
+                  "name": "width",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_0",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 30.0,
+                  "position": [
+                    30.0,
+                    30.0
+                  ]
+                },
+                {
+                  "name": "height",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_1",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 30.0,
+                  "position": [
+                    30.0,
+                    30.0
+                  ]
+                }
+              ],
+              "constraints": [],
+              "dimensioning": "auto"
+            },
+            {
+              "op": "sketch",
+              "label": "section_2",
+              "plane": "XY",
+              "offset": 60.0,
+              "entities": [
+                {
+                  "type": "rectangle",
+                  "name": "profile",
+                  "min": [
+                    -5.0,
+                    -5.0
+                  ],
+                  "max": [
+                    5.0,
+                    5.0
+                  ],
+                  "construction": false
+                }
+              ],
+              "dimensions": [
+                {
+                  "name": "width",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_0",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 10.0,
+                  "position": [
+                    10.0,
+                    10.0
+                  ]
+                },
+                {
+                  "name": "height",
+                  "type": "length",
+                  "refs": [
+                    {
+                      "entity": "profile_1",
+                      "point": "whole"
+                    }
+                  ],
+                  "value": 10.0,
+                  "position": [
+                    10.0,
+                    10.0
+                  ]
+                }
+              ],
+              "constraints": [],
+              "dimensioning": "auto"
+            }
+          ],
+          "input_recording": "Legacy seed script did not record raw public inputs; canonical request operations retained."
         }
       ],
       "validation_role": "final_native_source",
