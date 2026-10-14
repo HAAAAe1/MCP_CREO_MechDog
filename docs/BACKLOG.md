@@ -14,6 +14,7 @@ ID 一经分配不复用：`BUG` 为缺陷，`FEAT` 为能力，`DEV` 为工程�
 | --- | --- | --- | --- | --- |
 | [FEAT-020](work-items/FEAT-020.md) | P2 | 验收中 | 0.3.0 | 已实现 GitHub 公开 Release 检查（含预发布、分页、SemVer）、异步缓存及三个 MCP 接口；新增 21 项确定性回归通过；全部 142 项单元与语言守卫通过，真实 stdio MCP 发现 82 个工具并正确识别 0.2.6 预发布与源码附件；本机 Creo 12 建模因 Toolkit 超时未验证；Creo 10 由协助者在其他机器验收，WorkBuddy 与发布待完成，见 [本次证据](validation/FEAT-020.md) |
 | [FEAT-019](work-items/FEAT-019.md) | P1 | 已完成 | 0.2.6 | 用户接受 WorkBuddy / Creo 12.4 最终 MCP 验收：自动启动与真实 Toolkit 就绪、新建/草图/拉伸/尺寸驱动/倒角、保存重载通过；Codex MCP 只读复核 6 个成功修改任务与 revision=6 / volume=9980 mm³；121 项 Windows 单元/语言检查通过；Creo 10 及真实多客户端并发/退出后重连未测，Codex 冷启动失败单列 BUG-005；见 [证据](validation/FEAT-019.md) |
+| [BUG-006](work-items/BUG-006.md) | P1 | 开发中 | 未排期 | 报告 P0-1/N1：轴阵列拒绝通用 datum_feature 标签，引用说明混淆单引用与集合；兼容轴参数标签并明确工具特定格式，保留校验与 revision 保护 |
 | [BUG-005](work-items/BUG-005.md) | P1 | 待核实 | 未排期 | Codex 重启后仍挂载旧接口；独立 E 盘开发版 MCP 冷启动 GUI 出现但 Toolkit -4 / 探测超时，与 WorkBuddy 成功结果存在客户端/环境差异，根因未确认；不改写 FEAT-019 已接受的实验验收 |
 
 ## 工程整理
