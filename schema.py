@@ -6,7 +6,7 @@ import math
 import re
 from typing import Annotated, Any, Literal, Union
 
-from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, model_validator
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, field_validator, model_validator
 
 from creo_mechdog.references import PatternAxis
 
@@ -565,6 +565,22 @@ class LoftOp(StrictModel):
     mode: Literal["add", "cut", "surface"] = "add"
     interpolation: Literal["straight", "smooth"] = "straight"
     new_body: bool = False
+
+    @field_validator("sections", mode="before")
+    @classmethod
+    def normalize_section_ids(cls, values):
+        # Some public clients stringify integer branches of anyOf. Numeric
+        # strings cannot be valid feature labels (labels start with a letter).
+        if isinstance(values, list):
+            values = [
+                int(value) if isinstance(value, str) and re.fullmatch(r"[0-9]+", value) else value
+                for value in values
+            ]
+            if any(type(value) is int and not 0 <= value <= 2147483647 for value in values):
+                raise ValueError("Loft section feature IDs must be nonnegative 32-bit integers")
+            if any(isinstance(value, bool) for value in values):
+                raise ValueError("Loft section feature IDs cannot be booleans")
+        return values
 
     @model_validator(mode="after")
     def unique_sections(self):
