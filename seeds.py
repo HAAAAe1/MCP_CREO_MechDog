@@ -121,7 +121,7 @@ def validate_seed(seed_name: str) -> dict:
 
 
 def install_seed_library(directory: str | None = None, archive_file: str | None = None) -> dict:
-    """Register a checked directory, or safely install the matching v0.2.5 nine-seed ZIP."""
+    """Register a checked directory, or safely install the matching v0.2.6 nine-seed ZIP."""
     if directory and archive_file:
         raise ValueError("Specify directory or archive_file, not both")
     destination = bridge.ROOT / "seed_library"
@@ -130,7 +130,7 @@ def install_seed_library(directory: str | None = None, archive_file: str | None 
         if not source.is_absolute() or not source.is_file():
             raise ValueError("archive_file must be an existing absolute local ZIP path")
         # Accept only the published library, not arbitrary executable ZIP contents.
-        expected_digest = "21300e728ba564187f357253b50e20025d7918ece837172b501b27320b228178"
+        expected_digest = "72b291e6b839cf41eaa8e86fd40897a3bb190e57cb6d4560dabc9aa8fc459fce"
         if hashlib.sha256(source.read_bytes()).hexdigest() != expected_digest:
             raise ValueError("Archive SHA256 differs from the published MIT seed library")
         if destination.exists():

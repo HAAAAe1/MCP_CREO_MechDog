@@ -15,7 +15,7 @@
 | four_straight / four_smooth | 4 | straight / smooth | 82 |
 | six_straight / six_smooth | 6 | straight / smooth | 104 |
 
-文件与实际验收输入逐字节核对，配套源码版本为 v0.2.5；历史原生测试版本标签保留，公开摘要在 validation/。
+文件与实际验收输入逐字节核对，原验收配套源码版本为 v0.2.5；当前分发清单配套 v0.2.6，PRT 文件指纹未变；历史原生测试版本标签保留，公开摘要在 validation/。
 只要沿用随包原始文件，清单中的内部 ID 可以复用；电脑目录改变时需要更新绝对路径。
 重新创建或改造种子后须重新核对 ID、数量和模式。文件名和版本后缀请保留。
 3/4/6 的六个新增种子在 2026-10-11 通过重新绑定新轮廓、尺寸修改、实体截面检查、保存重载和失败回滚。不代表其他数量与所有轮廓均已验证。旧 v0.2.4 独立附件只有原来的 3 个种子；迁移新增种子时使用当前源码内附的完整 seed_library 目录。
@@ -24,7 +24,7 @@
 
 1. 在目标 Windows x64 电脑安装 Creo 10、匹配的 Toolkit SDK、MSVC x64/Windows SDK、Python 3.12+ x64；
    本轮验证使用 Creo 10.0.0.0，其他版本组合需要重新验证。目标机必须有可用于实际 Toolkit 调用的许可。
-2. 解压 0.2.5 源码到例如 C:\MCP_CREO_MechDog，在该目录执行：
+2. 解压 0.2.6 源码到例如 C:\MCP_CREO_MechDog，在该目录执行：
 
    .\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 10.0.0.0'
 
@@ -48,7 +48,7 @@ python C:\CreoSeeds\resolve_seed.py five_smooth
 
 每个支持本地 stdio MCP 的客户端配置相同的安装目录和启动命令即可。
 同一安装目录的 models/ 与 jobs/ 保存受管模型及任务记录，继续修改时查询最新 model_id/revision，顺序提交任务。
-不要假定旧聊天记录中的 revision 仍有效。v0.2.5 源码内附本库，安装器自动注册；旧发布源码包不含本库，迁移旧版本时仍需带两个包。
+不要假定旧聊天记录中的 revision 仍有效。v0.2.6 源码内附本库，安装器自动注册；旧发布源码包不含本库，迁移旧版本时仍需带两个包。
 
 ## 云端 Agent 和既有模型
 

@@ -1,4 +1,4 @@
-# MCP_CREO_MechDog 0.2.5
+# MCP_CREO_MechDog 0.2.6
 
 开发维护从 [开发入口](docs/DEVELOPMENT.md) 和 [统一功能台账](docs/BACKLOG.md) 开始。每项工作先定义验收；语言与单元检查、Creo 实机验收分别记录。项目采用渐进布局整理，当前支持环境见 [兼容矩阵](docs/COMPATIBILITY.md)。
 
@@ -6,9 +6,9 @@
 
 **本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 本版对客户端公开 **81 个可用工具**；`creo_loft` 已通过直接创建和已有零件追加验收并开放。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
 
-当前版本为 **0.2.5**。本轮完成选定的 **1、2、3、4、8、10 项**：能力与工具列表一致、精简任务查询、九个 MIT 混合种子、扫掠四个分支、复杂/大坐标草图尺寸策略，以及向已有零件追加原生混合。57 项自动检查与本机原生建模验收通过。详见 [版本说明](docs/RELEASE_NOTES_0.2.5.md)、[逐项验收](docs/PROGRESS_025.md) 和 [结构化证据](docs/validation_increment_025.json)。
+当前版本为 **0.2.6**，合并开发规范、Windows 登记原子写入修复和 MCP 自动启动 Creo 三个分支。版本号按用户指定从 0.2.5 递增至 0.2.6。发布范围与限制见 [版本说明](docs/RELEASE_NOTES_0.2.6.md)，本轮检查见 [发布验收](docs/validation/RELEASE-0.2.6.md)。0.2.5 的建模能力与验收保留为历史，见 [原版本说明](docs/RELEASE_NOTES_0.2.5.md)、[逐项验收](docs/PROGRESS_025.md) 和 [结构化证据](docs/validation_increment_025.json)。
 
-当前开发分支另含 [FEAT-019 自动启动](docs/work-items/FEAT-019.md)：后台检测、启动协调和建模就绪保护已实现；用户接受 WorkBuddy / Creo 12.4 的自动启动、Toolkit 就绪及完整建模/保存重载验收，条目已完成，尚未发布。Creo 10 正式基线未测；Codex 冷启动连接复测失败另列 [BUG-005](docs/work-items/BUG-005.md)。见 [本轮证据](docs/validation/FEAT-019.md)。
+本版包含 [FEAT-019 自动启动](docs/work-items/FEAT-019.md)：后台检测、启动协调和建模就绪保护已实现；用户于 2026-10-13 接受 WorkBuddy / Creo 12.4 的自动启动、Toolkit 就绪及建模/保存重载验收。Creo 10 正式基线未测；Codex 冷启动连接复测失败另列 [BUG-005](docs/work-items/BUG-005.md)。见 [原验收证据](docs/validation/FEAT-019.md)。
 
 普通混合可直接创建或追加，范围见 [直接混合](docs/DIRECT_BLEND_0.2.5.md)；种子复用见 [调用说明](docs/LOFT_SEED.md)、[多截面](docs/MULTISECTION_BLEND.md)。草图支持 `dimensioning="auto" / "autodim" / "coordinates"`，坐标模式的范围与尺寸编辑规则见 [草图说明](docs/SKETCH_STABILITY_0.2.5.md)。迁移步骤见 [种子库](docs/SEED_LIBRARY.md) 和 [换电脑、换 Agent](docs/MIGRATION.md)。
 
