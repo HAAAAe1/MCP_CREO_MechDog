@@ -2,7 +2,7 @@
   "work_item": "DEV-013",
   "version": "0.3.0",
   "date": "2026-10-14",
-  "status": "release_ready",
+  "status": "published",
   "development_check": {
     "work_item": "DEV-013",
     "version": "0.3.0",
@@ -132,5 +132,99 @@
     "BUG-005 startup connection difference remains unresolved"
   ],
   "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0",
-  "final_source_archive_checksum_location": "Release body and .zip.sha256 asset"
+  "final_source_archive_checksum_location": "Release body and .zip.sha256 asset",
+  "publication": {
+    "release": {
+      "assets": [
+        {
+          "apiUrl": "https://api.github.com/repos/wudahua/MCP_CREO_MechDog/releases/assets/639469514",
+          "contentType": "application/zip",
+          "createdAt": "2026-10-14T06:27:52Z",
+          "digest": "sha256:d97bf7e4283c88c63fb835225cdb614435a8d99d4d75cc3aded39a15f54dd778",
+          "downloadCount": 0,
+          "id": "RA_kwDOU_ueTM4mHYfK",
+          "label": "",
+          "name": "MCP_CREO_MechDog-0.3.0-seed-library.zip",
+          "size": 493501,
+          "state": "uploaded",
+          "updatedAt": "2026-10-14T06:27:52Z",
+          "url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-seed-library.zip"
+        },
+        {
+          "apiUrl": "https://api.github.com/repos/wudahua/MCP_CREO_MechDog/releases/assets/639469497",
+          "contentType": "application/octet-stream",
+          "createdAt": "2026-10-14T06:27:52Z",
+          "digest": "sha256:13801d63571072615dc837f3d57696e8e055886772ddb06a04ec3ae857e75ac0",
+          "downloadCount": 0,
+          "id": "RA_kwDOU_ueTM4mHYe5",
+          "label": "",
+          "name": "MCP_CREO_MechDog-0.3.0-seed-library.zip.sha256",
+          "size": 107,
+          "state": "uploaded",
+          "updatedAt": "2026-10-14T06:27:52Z",
+          "url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-seed-library.zip.sha256"
+        },
+        {
+          "apiUrl": "https://api.github.com/repos/wudahua/MCP_CREO_MechDog/releases/assets/639469500",
+          "contentType": "application/zip",
+          "createdAt": "2026-10-14T06:27:52Z",
+          "digest": "sha256:bf9ed3809027fb896c2742a132feac038aee0a6ec2fcaf8d4b67a3d413c09e37",
+          "downloadCount": 0,
+          "id": "RA_kwDOU_ueTM4mHYe8",
+          "label": "",
+          "name": "MCP_CREO_MechDog-0.3.0-source.zip",
+          "size": 1148902,
+          "state": "uploaded",
+          "updatedAt": "2026-10-14T06:27:52Z",
+          "url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-source.zip"
+        },
+        {
+          "apiUrl": "https://api.github.com/repos/wudahua/MCP_CREO_MechDog/releases/assets/639469511",
+          "contentType": "application/octet-stream",
+          "createdAt": "2026-10-14T06:27:52Z",
+          "digest": "sha256:794848c0fd6c21ac87a45498183a89ea7f5cb15612e47f5bc7fae68d1cb9d241",
+          "downloadCount": 0,
+          "id": "RA_kwDOU_ueTM4mHYfH",
+          "label": "",
+          "name": "MCP_CREO_MechDog-0.3.0-source.zip.sha256",
+          "size": 101,
+          "state": "uploaded",
+          "updatedAt": "2026-10-14T06:27:52Z",
+          "url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-source.zip.sha256"
+        }
+      ],
+      "isDraft": false,
+      "isPrerelease": true,
+      "publishedAt": "2026-10-14T06:27:53Z",
+      "tagName": "v0.3.0",
+      "targetCommitish": "main",
+      "url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0"
+    },
+    "asset_downloads_byte_identical": true,
+    "asset_sha256": {
+      "MCP_CREO_MechDog-0.3.0-seed-library.zip": "d97bf7e4283c88c63fb835225cdb614435a8d99d4d75cc3aded39a15f54dd778",
+      "MCP_CREO_MechDog-0.3.0-seed-library.zip.sha256": "13801d63571072615dc837f3d57696e8e055886772ddb06a04ec3ae857e75ac0",
+      "MCP_CREO_MechDog-0.3.0-source.zip": "bf9ed3809027fb896c2742a132feac038aee0a6ec2fcaf8d4b67a3d413c09e37",
+      "MCP_CREO_MechDog-0.3.0-source.zip.sha256": "794848c0fd6c21ac87a45498183a89ea7f5cb15612e47f5bc7fae68d1cb9d241"
+    },
+    "previous_v026_release_unchanged": true,
+    "tag_commit": "f7bb257286e27e571e87229abefecd53f3c457bf",
+    "main_at_publish": "f7bb257286e27e571e87229abefecd53f3c457bf",
+    "merge_pr": "https://github.com/wudahua/MCP_CREO_MechDog/pull/3",
+    "all_original_branch_tips_are_ancestors_of_main": true,
+    "published_update": {
+      "status": "up_to_date",
+      "current_version": "0.3.0",
+      "latest_version": "0.3.0",
+      "is_prerelease": true,
+      "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0",
+      "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-source.zip",
+      "checked_at": "2026-10-14T06:28:26.195150+00:00",
+      "last_success_at": "2026-10-14T06:28:26.195150+00:00",
+      "message": "当前版本已是最高可比较的公开版本。",
+      "error": null,
+      "from_cache": false,
+      "stale": false
+    }
+  }
 }

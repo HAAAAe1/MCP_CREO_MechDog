@@ -23,3 +23,13 @@ Creo 10 本轮未补录，按用户安排由其他机器验证。BUG-005 未修�
 | 分发核对 | 忽略目录内 check_distribution.py 校验公开白名单、包路径、当前文档链接、配置模板、第三方许可、九个 PRT 指纹，并将新版种子 ZIP 实际安装到空目录，available_count=9 |
 
 九种子 ZIP SHA256：`d97bf7e4283c88c63fb835225cdb614435a8d99d4d75cc3aded39a15f54dd778`。原 PRT 未变；新版两份清单和 seeds.py 匹配此 ZIP。标签、最终附件与提交关系将在 GitHub 发布时回读确认；公开地址为 https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0。
+
+## GitHub 发布回读
+
+[PR #3](https://github.com/wudahua/MCP_CREO_MechDog/pull/3) 的两项 Windows CI 通过，采用 merge commit 合入 main。全部本地原分支 tip 均为 main 的祖先；标签 v0.3.0 指向合并提交 `f7bb257286e27e571e87229abefecd53f3c457bf`。源码打包时工作区 clean，全部公开文件与该提交一致（文本仅允许约定的换行差异）。
+
+[0.3.0 Pre-release](https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0) 已公开，四个附件逐一重新下载，字节与本地产物相同，两份 SHA256 匹配。源码 ZIP SHA256：`bf9ed3809027fb896c2742a132feac038aee0a6ec2fcaf8d4b67a3d413c09e37`；种子 ZIP SHA256：`d97bf7e4283c88c63fb835225cdb614435a8d99d4d75cc3aded39a15f54dd778`。v0.2.6 Release 元数据和附件身份回读与发布前一致。
+
+最终 ZIP 解压后独立 editable 安装、白名单/许可/九种子指纹及空目录 ZIP 安装通过；真实 stdio 返回 0.3.0、82 工具、九种子和正确包路径。解压目录没有本机 config.json，启动记录为配置缺失，不将此接口探针视为完整 SDK 安装或原生建模验收。发布后真实更新查询发现最高公开 0.3.0、is_prerelease=true、status=up_to_date 与正确源码附件链接，stale=false。
+
+本段为发布后补录文档；已发布标签和附件保持不变，包内记录保留打包时的候选状态。代码与受测源码指纹未变。
