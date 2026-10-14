@@ -16218,7 +16218,7 @@
     "finished_at": "2026-10-14T08:32:27.101054+00:00"
   },
   "native_behavior_changed": true,
-  "workbuddy_acceptance": "not_run",
+  "workbuddy_acceptance": "environment_confirmed_modeling_report_pending",
   "unverified": [
     "WorkBuddy final acceptance on E:/Projects/MCP_CREO_MechDog repair build",
     "Creo 10",
@@ -76636,6 +76636,30 @@
     },
     "job_count": 48,
     "success": true,
-    "workbuddy_acceptance": "not_run"
+    "workbuddy_acceptance": "environment confirmed; final modeling report pending"
+  },
+  "workbuddy_repair_environment": {
+    "date": "2026-10-14",
+    "source": "user supplied actual WorkBuddy MCP response summary; no raw response provided",
+    "connection_name": "MCP_CREO_MechDog_dev",
+    "runtime.code_root": "E:/Projects/MCP_CREO_MechDog",
+    "runtime.source_changed_since_startup": false,
+    "direct_blend_callback.artifact_status": "prepared",
+    "connected": true,
+    "reported_process": {
+      "pid": 22880,
+      "started_at_local": "2026-10-14 18:37:39",
+      "timezone": "Asia/Shanghai",
+      "independently_verified": false
+    },
+    "original_C_entry": {
+      "name": "MCP_CREO_MechDog",
+      "root": "C:/MCP_CREO_MechDog",
+      "disabled": true,
+      "changed": false
+    },
+    "configuration_changed_for_this_reconnect": false,
+    "connection_rename_required": false,
+    "modeling_acceptance": "not yet reported"
   }
 }

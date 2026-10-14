@@ -10,7 +10,7 @@ ID 一经分配不复用：`BUG` 为缺陷，`FEAT` 为能力，`DEV` 为工程�
 
 2026-10-14 当前执行进度：FEAT-020 实现 da57ab9、DEV-002 第一批 3888c1d、BUG-006 修复 ccc7366 纳入 0.3.0；用户确认 WorkBuddy N1(P1) 通过，BUG-006 已完成。FEAT-020 原始 WorkBuddy 报告已补录，仍有未测场景，保持验收中；DEV-002 整体继续开发。DEV-013 已通过 PR #3 保留全部原提交合入 main，并公开 v0.3.0 Pre-release；四份附件回下载及 SHA256 一致，更新查询发现公开新版本，旧附件保持原样。
 
-2026-10-14当前项 [BUG-007](work-items/BUG-007.md) 修复65ccf3e已消除建模中的DLL确认等待入口；用户启动常驻回调后，Creo12.4真实stdio连续3轮、两/三截面straight/smooth、已有底座追加、标签/ID及计划入口、几何/重载/revision/回滚通过（48个作业符合预期，正常放样8.2～9.8秒）。174项检查、SDK构建与种子回归通过。状态验收中，待WorkBuddy连接E盘修复构建最终MCP验收；Creo10/外部模态/其他安全策略实测未验证。Codex连接差异仍归BUG-005，目标版本未排期；见 [本次证据](validation/BUG-007.md)。
+2026-10-14当前项 [BUG-007](work-items/BUG-007.md) 修复65ccf3e已消除建模中的DLL确认等待入口；用户启动常驻回调后，Creo12.4真实stdio连续3轮、两/三截面straight/smooth、已有底座追加、标签/ID及计划入口、几何/重载/revision/回滚通过（48个作业符合预期，正常放样8.2～9.8秒）。174项检查、SDK构建与种子回归通过。状态验收中，WorkBuddy已通过MCP_CREO_MechDog_dev确认E盘修复构建connected=true、源码启动后未变，待最终MCP建模验收报告；Creo10/外部模态/其他安全策略实测未验证。Codex连接差异仍归BUG-005，目标版本未排期；见 [本次证据](validation/BUG-007.md)。
 
 验收分工按用户 2026-10-14 的要求执行：本机验证 Creo 12，Creo 10 由协助者在其他机器验证。当前 Codex 实机重查仍未取得 Toolkit 就绪，不能将接口、单元或分发检查通过写成建模与保存重载通过。后续 DEV-002 继续逐批迁移校验和建模辅助模块，服务及桥接实现尚未迁移。
 
@@ -18,7 +18,7 @@ ID 一经分配不复用：`BUG` 为缺陷，`FEAT` 为能力，`DEV` 为工程�
 
 | ID | 优先级 | 状态 | 目标版本 | 范围与完成条件 |
 | --- | --- | --- | --- | --- |
-| [BUG-007](work-items/BUG-007.md) | P0 | 验收中 | 未排期 | 65ccf3e移除建模DLL加载；已初始化后Creo12.4真实stdio三轮、两/三截面straight/smooth、已有底座追加、标签/ID、计划入口、原特征/几何/重载/revision/回滚及后续小件通过；未初始化/非XY保护、174项检查、SDK及种子回归通过。待WorkBuddy最终MCP验收；Creo10、外部模态/其他策略/并发未测，见 [证据](validation/BUG-007.md) |
+| [BUG-007](work-items/BUG-007.md) | P0 | 验收中 | 未排期 | 65ccf3e移除建模DLL加载；已初始化后Creo12.4真实stdio三轮、两/三截面straight/smooth、已有底座追加、标签/ID、计划入口、原特征/几何/重载/revision/回滚及后续小件通过；未初始化/非XY保护、174项检查、SDK及种子回归通过。WorkBuddy已确认E盘修复服务连接就绪，待最终MCP建模报告；Creo10、外部模态/其他策略/并发未测，见 [证据](validation/BUG-007.md) |
 | [FEAT-020](work-items/FEAT-020.md) | P2 | 验收中 | 0.3.0 | 实现提交 `da57ab9`：GitHub 公开 Release（含预发布、分页、SemVer）、异步缓存与三个 MCP 接口；本项 21 项新回归及当时 142 项全量检查通过，真实 stdio 联网通过；更新模块后由 DEV-002 迁入包内。WorkBuddy 更新/缓存/真实并发及联网 400 mm³ 板件保存重载通过；断网、高版本提醒等未测，实现随 0.3.0 预发布；见 [本项证据](validation/FEAT-020.md) 与 [复测步骤](validation/FEAT-020-WorkBuddy-test.md) |
 | [FEAT-019](work-items/FEAT-019.md) | P1 | 已完成 | 0.2.6 | 用户接受 WorkBuddy / Creo 12.4 最终 MCP 验收：自动启动与真实 Toolkit 就绪、新建/草图/拉伸/尺寸驱动/倒角、保存重载通过；Codex MCP 只读复核 6 个成功修改任务与 revision=6 / volume=9980 mm³；121 项 Windows 单元/语言检查通过；Creo 10 及真实多客户端并发/退出后重连未测，Codex 冷启动失败单列 BUG-005；见 [证据](validation/FEAT-019.md) |
 | [BUG-006](work-items/BUG-006.md) | P1 | 已完成 | 0.3.0 | 修复提交 `ccc7366`：axis_pattern 兼容 datum_feature 轴标签，补齐逐工具引用契约与可操作错误；9 项新回归、158 项全量检查、真实 stdio schema 与全新解压安装回归通过；开发者启动重查 timeout 保留原记录；用户于 2026-10-14 确认 WorkBuddy N1(P1) 通过，未提供详细新报告或任务/模型 ID；见 [证据](validation/BUG-006.md)、[引用说明](REFERENCE_SYNTAX.md) 与 [WorkBuddy 复测](validation/BUG-006-WorkBuddy-test.md) |
