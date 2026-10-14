@@ -14,6 +14,7 @@ from mcp.client.stdio import StdioServerParameters
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from tools.mcp_readiness import wait_for_startup
 from version import VERSION
 
 
@@ -77,6 +78,7 @@ async def main(seed_file, feature_id, interpolation="straight"):
     async with Client(
         StdioServerParameters(command=sys.executable, args=[str(ROOT / "server.py")], cwd=str(ROOT))
     ) as client:
+        await wait_for_startup(client, report, output)
 
         async def job(tool, args, fail=False, rollback=False):
             response = await client.call_tool(tool, args)

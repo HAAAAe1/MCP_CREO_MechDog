@@ -3,10 +3,97 @@
 #include <ProToolkitDll.h>
 #include <ProSelbuffer.h>
 #include <ProMenu.h>
+#include <ProUtil.h>
+
+static ProToolkitDllHandle resident_blend_callback(const std::filesystem::path &build,
+                                                   std::string &command) {
+    auto setup_file = build / L"blend_callback_setup.json";
+    try {
+        std::ifstream input(setup_file);
+        J setup;
+        input >> setup;
+        std::ifstream ready(wide(setup.at("ready_file")));
+        J state;
+        ready >> state;
+        if (setup.value("protocol", 0) != 2 || state.value("protocol", 0) != 2 ||
+            state.value("initialize_code", -1) != 0 || state.value("terminated", false) ||
+            state.value("command", "") != setup.value("command", ""))
+            return nullptr;
+        ProName id;
+        wcscpy_s(id, wide(state.at("application_id")).c_str());
+        ProToolkitDllHandle module = nullptr;
+        ProError code = trace_blend_call("blend_callback_lookup",
+                                         [&] { return ProToolkitDllHandleGet(id, &module); });
+        if (code)
+            return nullptr;
+        command = setup.at("command");
+        return module;
+    } catch (const std::exception &) {
+        return nullptr;
+    }
+}
+
+[[noreturn]] static void require_blend_callback_setup(const std::filesystem::path &build) {
+    ProName option = L"open_protk_unsigned_apps";
+    ProPath value = L"";
+    ProError code =
+        trace_blend_call("blend_loader_policy", [&] { return ProConfigoptionGet(option, value); });
+    std::wstring policy = value;
+    for (auto &c : policy)
+        if (c >= L'A' && c <= L'Z')
+            c += L'a' - L'A';
+    log("BLEND_LOADER_POLICY code=%d policy=%s\n", code, utf8(policy).c_str());
+    throw std::runtime_error(
+        "BLEND_CALLBACK_SETUP_REQUIRED: No DLL load or Blend creation was attempted. "
+        "The unsigned Toolkit callback is not initialized, and Creo loader policy is " +
+        (code ? std::string("unverified (Toolkit code ") + std::to_string(code) + ")"
+              : utf8(policy)) +
+        ". Modeling never loads a DLL, including under ALWAYS policy. Register and "
+        "start the callback using Creo Auxiliary Applications and " +
+        utf8((build / L"blend_callback_setup.json").wstring()) +
+        " (registry_file), review its DLL prompt before modeling, then retry a new "
+        "confirmed request. MCP never changes Creo security settings.");
+}
+
+static void resident_blend_task(ProToolkitDllHandle module, const char *function,
+                                const std::wstring &request_file) {
+    ProArgument *inputs = nullptr, *outputs = nullptr;
+    CK(ProArrayAlloc(1, sizeof(ProArgument), 1, (ProArray *)&inputs));
+    inputs[0] = {};
+    wcscpy_s(inputs[0].label, L"request_file");
+    inputs[0].value.type = PRO_VALUE_TYPE_WSTRING;
+    try {
+        CK(ProValuedataWstringSet(&inputs[0].value, const_cast<wchar_t *>(request_file.c_str())));
+        ProCharPath name;
+        strcpy_s(name, function);
+        ProError returned = PRO_TK_GENERAL_ERROR;
+        ProError code = trace_blend_call(function, [&] {
+            return ProToolkitTaskExecute(module, name, inputs, &outputs, &returned);
+        });
+        if (code || returned)
+            throw std::runtime_error(
+                std::string(function) + " rejected the resident callback request (Toolkit code " +
+                std::to_string(code) + ", callback code " + std::to_string(returned) +
+                "); inspect the active model/window and the previous Blend "
+                "job before retrying; unknown requests are never reset automatically");
+    } catch (...) {
+        if (outputs)
+            ProArgumentProarrayFree(&outputs);
+        ProArgumentProarrayFree(&inputs);
+        throw;
+    }
+    if (outputs)
+        CK(ProArgumentProarrayFree(&outputs));
+    CK(ProArgumentProarrayFree(&inputs));
+}
+
 static void generic_loft(const J &op) {
     if (op.value("mode", "add") != "add" || op.value("new_body", false))
         throw std::runtime_error(
             "Direct Blend currently supports solid add into the default body only");
+    wchar_t executable[MAX_PATH];
+    GetModuleFileNameW(nullptr, executable, MAX_PATH);
+    const auto build = std::filesystem::path(executable).parent_path();
     J before = inspection(), curves = J::array();
     double previous_z = -HUGE_VAL;
     for (auto reference : op.at("sections")) {
@@ -60,37 +147,31 @@ static void generic_loft(const J &op) {
         if (!found)
             throw std::runtime_error("Blend section has no selectable curve");
     }
+    std::string resident_command;
+    ProToolkitDllHandle module = resident_blend_callback(build, resident_command);
+    if (!module)
+        require_blend_callback_setup(build);
     activate_blend_context();
     CK(ProSelbufferClear());
-    std::string command = "MechDogBlend_" + std::to_string(GetCurrentProcessId()) + "_" +
-                          std::to_string(GetTickCount64());
-    std::filesystem::path callback_dir = std::filesystem::path(generic_job) / command;
+    std::string token = "MechDogBlend_" + std::to_string(GetCurrentProcessId()) + "_" +
+                        std::to_string(GetTickCount64());
+    std::string command = resident_command;
+    std::filesystem::path callback_dir = std::filesystem::path(generic_job) / token;
     std::filesystem::create_directory(callback_dir);
-    wchar_t executable[MAX_PATH];
-    GetModuleFileNameW(nullptr, executable, MAX_PATH);
-    std::filesystem::path compiled =
-        std::filesystem::path(executable).parent_path() / L"creo_blend_sync.dll";
-    std::filesystem::copy_file(compiled, callback_dir / L"callback.dll",
-                               std::filesystem::copy_options::none);
     std::ofstream request(callback_dir / L"callback_request.json", std::ios::binary);
-    request
-        << J{{"model_name", utf8(model_name)}, {"command", command}, {"curve_ids", curves}}.dump(2);
+    request << J{
+        {"protocol", 2},
+        {"model_name", utf8(model_name)},
+        {"command", command},
+        {"curve_ids",
+         curves}}.dump(2);
     request.close();
-    ProToolkitDllHandle module = nullptr;
-    ProError initialized = PRO_TK_NO_ERROR;
-    ProName display;
-    wcscpy_s(display, L"MCP_CREO_MechDog Blend");
-    ProCharPath dll, textdir;
-    strcpy_s(dll, utf8((callback_dir / L"callback.dll").wstring()).c_str());
-    strcpy_s(textdir, utf8(callback_dir.wstring()).c_str());
-    ProError loaded = trace_blend_call("blend_dll_load", [&] {
-        return ProToolkitDllLoad(display, dll, textdir, PRO_B_FALSE, &module, &initialized,
-                                 nullptr);
-    });
-    log("BLEND_DLL_LOAD=%d INITIALIZE=%d\n", loaded, initialized);
+    bool prepared = false;
+    log("BLEND_CALLBACK_MODE=resident\n");
     try {
-        check(loaded, "LoadBlendSelectionCallback");
-        check(initialized, "InitializeBlendSelectionCallback");
+        resident_blend_task(module, "MechDogBlendPrepare",
+                            (callback_dir / L"callback_request.json").wstring());
+        prepared = true;
         std::wstring macro =
             L"~ Command `ProCmdFtPBlend`; ~ Activate `main_dlg_cur` `chkbn.blend_sectionspage.0` "
             L"1; ~ Select `blend_sectionspage.0.0` `PH.sketchselopt` 1 `Selected`; ~ Activate `UI "
@@ -153,10 +234,16 @@ static void generic_loft(const J &op) {
                   {"interpolation", op.value("interpolation", "straight")},
                   {"construction", "native_blend_synchronous_selection"}});
     } catch (...) {
-        if (module)
-            trace_blend_call("blend_dll_unload_after_error",
-                             [&] { return ProToolkitDllUnload(module); });
+        if (prepared) {
+            try {
+                resident_blend_task(module, "MechDogBlendRelease",
+                                    (callback_dir / L"callback_request.json").wstring());
+            } catch (...) {
+                log("RESIDENT_BLEND_RELEASE_FAILED=1\n");
+            }
+        }
         throw;
     }
-    CK(trace_blend_call("blend_dll_unload", [&] { return ProToolkitDllUnload(module); }));
+    resident_blend_task(module, "MechDogBlendRelease",
+                        (callback_dir / L"callback_request.json").wstring());
 }

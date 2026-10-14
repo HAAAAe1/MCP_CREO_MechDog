@@ -310,6 +310,11 @@ async def run(args: argparse.Namespace) -> dict:
                     "interpolation": mode,
                     "new_body": False,
                 }
+                if args.suite and index == 1:
+                    loft_input["sections"] = [
+                        checkpoint["result"]["aliases"][label]["feature_id"]
+                        for label in loft_input["sections"]
+                    ]
                 before = await probe.call(
                     "creo_inspect_model", {"model_id": checkpoint["model_id"]}
                 )
@@ -340,7 +345,15 @@ async def run(args: argparse.Namespace) -> dict:
                             == before
                         )
                 direct = await probe.job("creo_loft", loft_input, case, allow_failure=True)
+                if args.expect_setup_required:
+                    assert direct["status"] == "failed", direct
                 if direct["status"] == "failed":
+                    if args.expect_setup_required:
+                        assert "BLEND_CALLBACK_SETUP_REQUIRED" in direct.get("message", ""), direct
+                        assert report["jobs"][-1]["elapsed_seconds"] < 30, report["jobs"][-1]
+                        assert "TK_CALL_BEGIN name=blend_dll_load" not in report["jobs"][-1].get(
+                            "developer_native_log", ""
+                        )
                     assert direct["result"]["rollback_succeeded"] is True, direct
                     after = await probe.call(
                         "creo_inspect_model", {"model_id": checkpoint["model_id"]}
@@ -361,12 +374,54 @@ async def run(args: argparse.Namespace) -> dict:
                         restored["result"]["inspection"]["features"]
                         == checkpoint["result"]["inspection"]["features"]
                     )
+                    if args.expect_setup_required:
+                        plan_failure = await probe.job(
+                            "creo_execute_plan",
+                            {
+                                "model_id": checkpoint["model_id"],
+                                "expected_revision": checkpoint["revision"],
+                                "operations": [
+                                    {
+                                        "op": "loft",
+                                        **{
+                                            k: v
+                                            for k, v in loft_input.items()
+                                            if k not in ("model_id", "expected_revision")
+                                        },
+                                    }
+                                ],
+                            },
+                            case + "_plan_rejection",
+                            expected_failure=True,
+                        )
+                        assert "BLEND_CALLBACK_SETUP_REQUIRED" in plan_failure.get("message", "")
+                        assert plan_failure["result"]["rollback_succeeded"] is True
+                        assert report["jobs"][-1]["elapsed_seconds"] < 30
+                        assert "TK_CALL_BEGIN name=blend_dll_load" not in report["jobs"][-1].get(
+                            "developer_native_log", ""
+                        )
+                        after_plan = await probe.call(
+                            "creo_inspect_model", {"model_id": checkpoint["model_id"]}
+                        )
+                        for key in ("revision", "part_file", "inspection", "aliases"):
+                            assert after_plan[key] == before[key], key
+                        assert (
+                            hashlib.sha256(checkpoint_file.read_bytes()).hexdigest()
+                            == checkpoint_hash
+                        )
                     await probe.job(
                         "creo_execute_plan",
                         {"operations": small_solid(), "assertions": {"volume_mm3": 2000}},
                         case + "_after_failed_small_solid",
                     )
                     report["confirmed_direct_failure_checked"] = True
+                    if args.expect_setup_required:
+                        report["restricted_loader_verified"] = True
+                        report["success"] = True
+                        report["unverified"].append(
+                            "seed control not part of restricted-loader-only run"
+                        )
+                        return report
                 expected = (
                     4900 * math.pi / 3 + (2000 if solid else 0) if mode == "straight" else None
                 )
@@ -486,6 +541,11 @@ def main() -> int:
         help="Explicit startup recheck; existing Creo sessions are preserved",
     )
     parser.add_argument("--suite", action="store_true")
+    parser.add_argument(
+        "--expect-setup-required",
+        action="store_true",
+        help="Verify rejection before DLL load, unchanged checkpoint, rollback and subsequent small solid; not a successful Blend test",
+    )
     parser.add_argument(
         "--job-budget",
         type=float,

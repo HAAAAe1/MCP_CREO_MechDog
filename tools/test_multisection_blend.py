@@ -18,6 +18,7 @@ from mcp.client.stdio import StdioServerParameters
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from tools.mcp_readiness import wait_for_startup
 from version import VERSION
 
 
@@ -295,6 +296,7 @@ async def main(seed_file, feature_id, count, mode, resume=False):
     async with Client(
         StdioServerParameters(command=sys.executable, args=[str(ROOT / "server.py")], cwd=str(ROOT))
     ) as client:
+        await wait_for_startup(client, report, output)
 
         async def job(tool, args, stage, expected_failure=False, rollback=False):
             previous = next((j for j in report["jobs"] if j["stage"] == stage), None)
@@ -401,7 +403,7 @@ async def main(seed_file, feature_id, count, mode, resume=False):
             case["stl_file"] = stl
             case["all_section_geometry"] = verify_stl(stl, zs, edited_sizes)
             persist()
-            failure = await job(
+            await job(
                 "creo_execute_plan",
                 {
                     "model_id": p["model_id"],

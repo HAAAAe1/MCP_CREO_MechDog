@@ -21,6 +21,7 @@ import generic_bridge as general
 import seeds
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS, families
 from creo_mechdog import update_check
+from creo_mechdog.blend_callback import callback_setup_status
 from creo_mechdog.paths import SOURCE_PATHS
 from creo_mechdog.references import PatternAxis, reference_capabilities
 from schema import (
@@ -53,6 +54,7 @@ _SOURCE_NAMES = (
     "src/creo_mechdog/paths.py",
     "src/creo_mechdog/references.py",
     "src/creo_mechdog/update_check.py",
+    "src/creo_mechdog/blend_callback.py",
     "version.py",
     "generic_bridge.py",
     "schema.py",
@@ -301,6 +303,7 @@ async def creo_capabilities() -> dict[str, Any]:
         "scope": "MCP-owned native part, sheetmetal, assembly and drawing models. Tool availability does not prove every option or Creo operation is supported; consult validation evidence and coverage documentation.",
         "complete_creo_coverage": False,
         "seed_library": await invoke(seeds.list_seeds),
+        "direct_blend_callback": callback_setup_status(bridge.ROOT / "build"),
         "release_status": "pre-release candidate; requested complete coverage has not been achieved",
         "families": families(),
         "unavailable_operations": UNAVAILABLE_OPERATIONS,
@@ -1005,7 +1008,10 @@ async def creo_loft(
     """Append a native solid Blend using independent MCP-owned XY sketches, ordered by increasing Z.
 
     Straight/smooth, default-body add only. Cut, surface and new_body are rejected.
-    First use of the synchronous DLL may require the human to accept Creo's loader warning.
+    Manually initialize the resident callback before modeling under every loader policy
+    before modeling using capabilities.direct_blend_callback.registry_file. If absent,
+    the native worker rejects before DLL loading with BLEND_CALLBACK_SETUP_REQUIRED.
+    Reuses the prepared callback across jobs; MCP does not change Creo security policy.
     """
     return await invoke(
         general.submit,

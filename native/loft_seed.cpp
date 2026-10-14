@@ -308,10 +308,18 @@ static void bind_loft_seed(const J &binding, const J &original_profiles) {
     ProArrayFree((ProArray *)&ids);
     ProArrayFree((ProArray *)&opts);
     check(removed, "RemoveUnusedSeedSketches");
-    ProName name, current_name;
+    // Confirm the same native feature still exists after structural edits,
+    // before distinguishing an unnamed feature from a missing feature.
+    CK(ProFeatureInit((ProSolid)board, binding["feature_id"], &blend));
+    ProName name, current_name = L"";
     wcscpy_s(name, wide(binding["label"]).c_str());
-    CK(ProModelitemNameGet(&blend, current_name));
-    if (_wcsicmp(name, current_name))
+    ProError named = ProModelitemNameGet(&blend, current_name);
+    log("SEED_BLEND_NAME_GET feature=%d code=%d\n", blend.id, named);
+    // A valid native seed feature can have no explicitly assigned item name.
+    // SDK E_NOT_FOUND in this query is distinct from a missing feature ID.
+    if (named != PRO_TK_E_NOT_FOUND)
+        check(named, "ReadSeedBlendName");
+    if (named == PRO_TK_E_NOT_FOUND || _wcsicmp(name, current_name))
         CK(ProModelitemNameSet(&blend, name));
     CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
     ProFeatStatus status;
