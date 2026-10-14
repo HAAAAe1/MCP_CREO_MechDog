@@ -2,9 +2,10 @@
 
 ## 项目结构与模块划分
 
-- 根目录的 Python 模块负责 stdio MCP 服务（`server.py`）、任务与构建桥接（`bridge.py`、`generic_bridge.py`）、输入校验（`schema.py`、`profile_checks.py`）及建模辅助逻辑。
+- `src/creo_mechdog/` 保存已迁移的 Python 实现与显式路径入口；新的业务模块放在包内，通过标准 editable 安装导入。
+- 根目录暂保留 stdio MCP 服务（`server.py`）、任务与构建桥接（`bridge.py`、`generic_bridge.py`）、版本入口（`version.py`）和尚待迁移的校验/建模模块。DEV-002 按批次迁移，保留既有入口和运行数据位置。
 - `native/` 保存 C++17 Creo Toolkit 执行器和各类特征实现；`native/third_party/` 保存第三方 JSON 代码及许可证。
-- `tests/` 保存 Python 单元测试；`tools/` 保存实机 Creo 集成测试、打包脚本及验证证据汇总工具。
+- `tests/unit/` 保存新增及已迁移的 Python 单元测试，根 `tests/test_*.py` 为待迁移测试；`tools/` 暂保存实机 Creo 集成测试、打包脚本及验证证据汇总工具。
 - `examples/` 保存 JSON 建模方案；`seed_library/` 保存原生 PRT 种子模板及清单；`docs/` 保存安装说明、功能边界和验证记录。
 - `.venv/`、`build/`、`jobs/`、`models/` 是本机运行生成的目录。
 
@@ -49,7 +50,7 @@ Python 使用四个空格缩进，函数和模块采用 `snake_case`，类采用
 - 只能靠源码或本地脚本验证的内部机制（例如文件占用注入、重试次数/预算、临时文件清理）不纳入 WorkBuddy 结论。无法由 MCP 观察的项目明确记为“未验证”，不得推测通过。
 - 下面的开发者测试要求继续用于实现与回归阶段；本地测试证据和 WorkBuddy 最终 MCP 验收分别记录，不互相替代。用户明确要求改变 WorkBuddy 范围时，以当次要求为准。
 
-单元测试使用 `unittest`，文件命名为 `tests/test_*.py`，测试方法命名为 `test_*`。修改输入校验或保护逻辑时补充回归用例。项目未设置数值化覆盖率门槛。修改原生建模代码后，运行对应的 `tools/test_*.py`，检查任务成功、几何断言通过，以及 `saved_file_reloaded_and_verified` 为 `true`。明确记录本次验证范围，不能用历史证据代替当前验证。
+单元测试使用 `unittest`，新增文件命名为 `tests/unit/test_*.py`，测试方法命名为 `test_*`；现有 `discover -s tests` 递归发现入口继续覆盖两种布局。修改输入校验或保护逻辑时补充回归用例。项目未设置数值化覆盖率门槛。修改原生建模代码后，运行对应的 `tools/test_*.py`，检查任务成功、几何断言通过，以及 `saved_file_reloaded_and_verified` 为 `true`。明确记录本次验证范围，不能用历史证据代替当前验证。
 
 Windows CI 仅承担语言与单元检查；原生构建及建模由具备匹配 SDK、许可的环境验收。Creo 10 是正式验收基线，Creo 12 已验证可用，已记录的实机版本为 12.4.0.0，范围见 `docs/COMPATIBILITY.md`；不同版本的发布回归分别记录，不互相替代。新证据记录条目、源码提交与 dirty 状态、受测源码指纹、命令、环境和未测范围。
 

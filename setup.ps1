@@ -93,6 +93,12 @@ try {
     & $projectPython -m pip install -r (Join-Path $PSScriptRoot 'requirements.lock.txt')
     if ($LASTEXITCODE -ne 0) { throw 'Dependency installation failed. Check internet/PyPI access and requirements.lock.txt.' }
     $completed += $stage
+    $stage = 'Python source package'
+    & $projectPython -m pip install --no-deps --editable $PSScriptRoot
+    if ($LASTEXITCODE -ne 0) { throw 'Source package installation failed. Restore pyproject.toml and src, then rerun setup.ps1.' }
+    & $projectPython -c 'import creo_mechdog.paths'
+    if ($LASTEXITCODE -ne 0) { throw 'Source package import failed. Reinstall the package for this source directory.' }
+    $completed += $stage
     $stage = 'native Blend seed library'
     & $projectPython (Join-Path $PSScriptRoot 'seeds.py') --install
     if ($LASTEXITCODE -ne 0) { throw 'Seed library verification failed. Restore the packaged seed_library, or register the original published library.' }

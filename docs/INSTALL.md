@@ -72,7 +72,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C
 
 启动客户端中的 MCP 服务，后台自动复用已有会话或启动配置的 Creo。处理启动时出现的登录、许可及其他模态对话框，然后让 AI：
 
-1. 调用 `creo_capabilities`，确认当前版本为 `0.2.6`，81 个工具可用；查看 `families`、`seed_library` 和 `unavailable_operations`。直接混合及已有零件追加已开放，受范围限制；见 [版本说明](RELEASE_NOTES_0.2.6.md)。
+1. 调用 `creo_capabilities`，确认当前运行版本和工具数（0.3.0 为 82 个工具，0.2.6 为 81 个）；查看 `families`、`seed_library` 和 `unavailable_operations`。直接混合及已有零件追加已开放，受范围限制；见 [版本说明](RELEASE_NOTES_0.3.0.md)。
 2. 调用 `creo_check_environment`，确认 SDK、模板和编译器路径正确。
 3. 调用 `creo_startup_status` 等待 `state == "ready"`，再调用 `creo_session_status` 确认 `connected == true`。等待时建模请求明确拒绝，未创建任务。
 4. 提交一个新零件建模计划；只提交一次，使用 `creo_get_job` 查询任务进度。
@@ -130,8 +130,24 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C
 0.21 是预发布候选版；放样仍未完成，不能作为支持所有 Creo 操作的稳定版。完整边界见 [COVERAGE_0.21.md](COVERAGE_0.21.md)。
 
 
-## 升级到 0.2.6
+## 升级到 0.3.0
 
-升级流程同上，保留本机配置、模型和任务目录，等待原生任务完成后更新代码并重跑 `setup.ps1`。不必手动删除 `native/constants.inc`；构建会自动更新。新接口及限制见 [版本说明](RELEASE_NOTES_0.2.6.md)。更新源码后重启客户端中的 MCP 服务，调用 `creo_capabilities` 确认 `version == "0.2.6"`。只打开一个 Creo 会话；高级配置 `creo_session_id` 可固定 Toolkit 连接目标，重启会话后需重新取得有效 ID，程序拒绝连接回退。重跑安装保留已有 ID，不会自动猜测新的连接目标。
+升级流程同上，保留本机配置、模型和任务目录，等待原生任务完成后更新代码并重跑 `setup.ps1`。不必手动删除 `native/constants.inc`；构建会自动更新。新接口及限制见 [版本说明](RELEASE_NOTES_0.3.0.md)。更新源码后重启客户端中的 MCP 服务，调用 `creo_capabilities` 确认 `version == "0.3.0"`。只打开一个 Creo 会话；高级配置 `creo_session_id` 可固定 Toolkit 连接目标，重启会话后需重新取得有效 ID，程序拒绝连接回退。重跑安装保留已有 ID，不会自动猜测新的连接目标。
 
 包含本次建模增量的源码内附 MIT 种子库，安装器验证并注册，`creo_new_loft_part` 按数量/模式自动选择，不要求手填路径和特征 ID。库内有九个原生 PRT：2/3/4/6 截面的直线和平滑，以及 5 截面平滑；详细步骤见 [SEED_LIBRARY.md](SEED_LIBRARY.md)。新电脑需要重新安装并验证，不直接复制旧 `.venv`、二进制、配置或会话 ID；同机换客户端可以共用安装目录，见 [MIGRATION.md](MIGRATION.md)。
+
+## Python 包的渐进迁移（DEV-002）
+
+当前源码的更新检查实现位于 `src/creo_mechdog/update_check.py`，新的业务模块继续放入此包。`setup.ps1` 安装运行依赖后通过 `pip install --no-deps --editable <源码目录>` 安装包；开发环境可执行 `python -m pip install -r requirements-dev.txt`。根 `server.py`、`bridge.py` 和 `version.py` 入口继续保留，客户端命令无需改为 src 路径。
+
+已有开发环境更新源码后，需要用该环境的 Python 执行 `python -m pip install --no-deps -e .`，再重启 MCP。移动整个安装目录后重跑安装，不直接复制旧虚拟环境；服务拒绝混用来自另一源码目录的包。当前安装方式以完整源码目录为基础，包元数据用于本地安装，不代表单独 wheel 已包含 SDK、种子与原生执行器。
+
+能力查询 `runtime.python_package_root` 标明 Python 包位置，`resource_root` 和 `data_root` 默认仍为原安装目录；旧 `runtime.code_root` 保留原源码根语义。配置、模型、任务和构建仍在原目录，第一批不会在 src 下生成另一套数据。
+
+## 版本检查与升级提醒（FEAT-020）
+
+包含此功能的源码提供 `creo_check_update(force=false)`，能力查询与启动状态增加 `update` 快照；启动和建模不等待联网。检查包含公开预发布、使用 24 小时进程缓存，失败冷却 15 分钟。字段、超时边界及完整升级步骤见 [版本检查说明](UPDATE_CHECK.md)。旧版必须先手动升级一次，才能收到后续版本提醒；0.3.0 已包含此功能，0.2.6 为 81 个工具。
+
+## 引用参数核对（BUG-006）
+
+使用 capabilities.references.by_tool 查询工具特定种类和结构。axis_pattern.axis 支持几何轴 ID、datum_axis_feature 标签，并兼容 datum_feature 轴标签；其它参数中的 datum_feature 仍为基准平面。钣金边是裸引用，倒圆/倒角是集合数组，草图字典支撑面使用 reference 包装。更新源码后重启 MCP，并核对 schema、runtime 指纹及 [引用说明](REFERENCE_SYNTAX.md)；0.2.6 开发安装不能仅由版本号确认本项修复；0.3.0 包含本修复。

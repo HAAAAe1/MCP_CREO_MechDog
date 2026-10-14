@@ -20,6 +20,9 @@ import creo_startup
 import generic_bridge as general
 import seeds
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS, families
+from creo_mechdog import update_check
+from creo_mechdog.paths import SOURCE_PATHS
+from creo_mechdog.references import PatternAxis, reference_capabilities
 from schema import (
     AirfoilProfile,
     AirfoilSketchOp,
@@ -35,11 +38,22 @@ from version import VERSION
 
 logging.basicConfig(level=logging.WARNING)
 startup = creo_startup.CreoStartup()
+updates = update_check.UpdateChecker()
 _CODE_ROOT = Path(__file__).resolve().parent
+if SOURCE_PATHS.resource_root != _CODE_ROOT:
+    raise RuntimeError(
+        "Python package belongs to another source checkout; run this installation's "
+        "python -m pip install --no-deps -e <source directory> before starting server.py"
+    )
 _SOURCE_NAMES = (
     "server.py",
     "bridge.py",
     "creo_startup.py",
+    "src/creo_mechdog/__init__.py",
+    "src/creo_mechdog/paths.py",
+    "src/creo_mechdog/references.py",
+    "src/creo_mechdog/update_check.py",
+    "version.py",
     "generic_bridge.py",
     "schema.py",
     "native/worker.cpp",
@@ -59,9 +73,11 @@ _LOADED_FINGERPRINTS = _source_fingerprints()
 @asynccontextmanager
 async def server_lifespan(app):
     startup.start()
+    updates.start()
     try:
         yield {}
     finally:
+        await updates.stop()
         startup.stop()
 
 
@@ -75,11 +91,17 @@ mcp = MCPServer(
     "Mutation tools return a job_id: poll creo_get_job with detail=compact, then use its model_id and latest revision. "
     "Inspect surfaces/edges/dimensions before choosing raw references. Always provide expected_revision "
     "when modifying an existing MCP model. Models and native files persist across clients. "
+    "Consult creo_capabilities.references.by_tool for each parameter's kind and container shape. "
     "Success requires status=succeeded and saved_file_reloaded_and_verified=true for mutations. "
     "Create sheetmetal/assembly models with the corresponding new-model tools or model_type in execute_plan. "
     "Use creo_capabilities for enabled and tested operations; reserved unavailable tools reject before native mutation. "
     "Creo startup detection runs in the background; poll creo_startup_status until ready before modeling. "
     "Use creo_startup_status(retry=true) to recheck a failed/manual startup; no session is automatically closed. "
+    "On first use call creo_check_update and inspect update in capabilities/startup status. "
+    "If status=update_available and stale=false, tell the user the current/latest versions, prerelease flag, "
+    "release_url and download_url and the manual upgrade steps in message. "
+    "Remind only once per latest_version in the current client session; do not interrupt modeling. "
+    "Failed/unknown/checking/stale update information never proves the installation is up to date. "
     "Do not retry unknown_outcome without inspection.",
 )
 READ = ToolAnnotations(
@@ -87,6 +109,9 @@ READ = ToolAnnotations(
 )
 CREATE = ToolAnnotations(
     read_only_hint=False, destructive_hint=False, idempotent_hint=False, open_world_hint=False
+)
+NETWORK_READ = ToolAnnotations(
+    read_only_hint=True, destructive_hint=False, idempotent_hint=True, open_world_hint=True
 )
 
 
@@ -121,7 +146,25 @@ async def creo_session_status() -> dict[str, Any]:
 @mcp.tool(annotations=CREATE)
 async def creo_startup_status(retry: bool = False) -> dict[str, Any]:
     """Read background Creo startup state without waiting for initialization. retry=true rechecks process/session state and may launch the configured Creo if auto-start is enabled and no existing/pending startup exists. Does not close any Creo session. Poll until state=ready before modeling; inspect message on timeout, disabled or selection_required."""
-    return startup.start(retry=True) if retry else startup.status()
+    result = startup.start(retry=True) if retry else startup.status()
+    return {**result, "update": updates.snapshot()}
+
+
+@mcp.tool(annotations=NETWORK_READ)
+async def creo_check_update(force: bool = False) -> dict[str, Any]:
+    """Check public GitHub Releases, including prereleases, against the running version.
+
+    Returns the same update object as capabilities.update and startup_status.update:
+    status (not_checked/checking/update_available/up_to_date/failed/unknown),
+    current_version/latest_version/is_prerelease/release_url/download_url,
+    checked_at/last_success_at/from_cache/stale/message/error. Times are UTC ISO 8601.
+    Uses a process-local 24-hour cache; force=true refreshes it, except during the
+    15-minute failure/unknown cooldown. Concurrent checks share one request. A fresh
+    check has a 5-second total network budget across all pages; other tools never wait
+    for it. Failed checks may retain previous successful links with stale=true.
+    Only accesses the public GitHub API; never downloads, installs or changes files.
+    """
+    return await updates.check(force)
 
 
 @mcp.tool(annotations=CREATE)
@@ -206,10 +249,14 @@ async def creo_capabilities() -> dict[str, Any]:
     return {
         "name": "MCP_CREO_MechDog",
         "version": VERSION,
+        "update": updates.snapshot(),
         "runtime": {
             "python_executable": sys.executable,
             "server_entry": str(Path(__file__).resolve()),
             "code_root": str(_CODE_ROOT),
+            "python_package_root": str(SOURCE_PATHS.code_root),
+            "resource_root": str(SOURCE_PATHS.resource_root),
+            "data_root": str(SOURCE_PATHS.data_root),
             "source_fingerprints_at_startup": dict(_LOADED_FINGERPRINTS),
             "source_changed_since_startup": _source_fingerprints() != _LOADED_FINGERPRINTS,
         },
@@ -248,13 +295,7 @@ async def creo_capabilities() -> dict[str, Any]:
             "XZ": "u=+X,v=+Z,normal=-Y",
             "YZ": "u=+Y,v=+Z,normal=+X",
         },
-        "references": {
-            "datum_plane": {"kind": "datum_plane", "axis": "z", "offset": 0},
-            "planar_solid_face": {"kind": "plane", "normal": [0, 0, 1], "offset": 10},
-            "raw_face": {"kind": "surface", "id": "from inspection"},
-            "raw_edge": {"kind": "edge", "id": "from inspection"},
-            "datum_label": {"kind": "datum_feature", "label": "plane_label"},
-        },
+        "references": reference_capabilities(),
         "arbitrary_planar_support": "plane={reference:{kind:surface,id:...},origin:[x,y,z],u_axis:[x,y,z]}",
         "workflow": "submit once -> poll get_job -> inspect model -> choose references -> append using expected_revision",
         "scope": "MCP-owned native part, sheetmetal, assembly and drawing models. Tool availability does not prove every option or Creo operation is supported; consult validation evidence and coverage documentation.",
@@ -517,11 +558,19 @@ async def creo_axis_pattern(
     expected_revision: int,
     label: str,
     leader: str | int,
-    axis: dict[str, Any],
+    axis: PatternAxis,
     count: int = 2,
     increment_deg: float = 180,
 ) -> dict[str, Any]:
-    """Create a native angular pattern of a feature or MCP feature group. Axis must precede the leader; use an independent datum axis and creo_reorder_features if necessary."""
+    """Create a native angular pattern of a feature or MCP feature group.
+
+    axis is a bare {kind:'axis',id:N} geometry selection or
+    {kind:'datum_axis_feature',label:'axis_label'}. For compatibility, a
+    {kind:'datum_feature',label:'axis_label'} in this parameter means an axis
+    and is normalized to datum_axis_feature. A datum_plane or surface cannot
+    substitute for an axis. Axis must precede the leader; use an independent
+    datum axis and creo_reorder_features if necessary.
+    """
     return await invoke(
         general.submit,
         [
@@ -604,7 +653,12 @@ async def creo_create_sketch(
     expected_revision: int,
     label: str,
     entities: list[Entity],
-    plane: Literal["XY", "XZ", "YZ"] | dict[str, Any] = "XY",
+    plane: Annotated[
+        Literal["XY", "XZ", "YZ"] | dict[str, Any],
+        Field(
+            description="XY/XZ/YZ, or {reference:{kind:'surface',id:N},origin:[x,y,z],u_axis:[x,y,z]}; frame fields optional. A dictionary plane requires the reference container."
+        ),
+    ] = "XY",
     offset: float = 0,
     dimensions: list[SketchDimension] | None = None,
     constraints: list[SketchConstraint] | None = None,
@@ -729,7 +783,12 @@ async def creo_round(
     expected_revision: int,
     label: str,
     radius: float,
-    references: list[dict[str, Any]],
+    references: Annotated[
+        list[dict[str, Any]],
+        Field(
+            description="Set list: [{edge:{kind:'edge',id:N}}] or [{surfaces:[{kind:'surface',id:A},{kind:'surface',id:B}]}]. Bare edge objects are not sets."
+        ),
+    ],
 ) -> dict[str, Any]:
     """Create a native constant-radius fillet on edges or face pairs. Each set is {edge:reference} or {surfaces:[reference,reference]}."""
     return await invoke(
@@ -747,7 +806,12 @@ async def creo_chamfer(
     expected_revision: int,
     label: str,
     distance: float,
-    references: list[dict[str, Any]],
+    references: Annotated[
+        list[dict[str, Any]],
+        Field(
+            description="Set list: [{edge:{kind:'edge',id:N}}] or [{surfaces:[{kind:'surface',id:A},{kind:'surface',id:B}]}]. Bare edge objects are not sets."
+        ),
+    ],
 ) -> dict[str, Any]:
     """Create equal-distance native chamfer sets on explicit edges or face pairs."""
     return await invoke(
@@ -1035,7 +1099,12 @@ async def creo_sheetmetal_flange(
     model_id: str,
     expected_revision: int,
     label: str,
-    edge: dict[str, Any],
+    edge: Annotated[
+        dict[str, Any],
+        Field(
+            description="Bare edge selection {kind:'edge',id:N} from model inspection. Do not add a reference/edge wrapper inside this parameter."
+        ),
+    ],
     height: float,
     angle: float = 90,
     radius: float = 1,

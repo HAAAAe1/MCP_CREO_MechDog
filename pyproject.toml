@@ -1,3 +1,22 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "MCP_CREO_MechDog"
+dynamic = ["version"]
+description = "Local Creo Toolkit MCP service, installed from a source checkout"
+requires-python = ">=3.12"
+license = "MIT"
+
+[tool.setuptools]
+packages = ["creo_mechdog"]
+py-modules = ["version"]
+package-dir = {creo_mechdog = "src/creo_mechdog"}
+
+[tool.setuptools.dynamic]
+version = {attr = "version.VERSION"}
+
 [tool.ruff]
 target-version = "py312"
 line-length = 100

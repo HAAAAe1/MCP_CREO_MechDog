@@ -1,0 +1,136 @@
+{
+  "work_item": "DEV-013",
+  "version": "0.3.0",
+  "date": "2026-10-14",
+  "status": "release_ready",
+  "development_check": {
+    "work_item": "DEV-013",
+    "version": "0.3.0",
+    "timestamp_utc": "2026-10-14T06:18:05.770510+00:00",
+    "environment": {
+      "os": "Windows",
+      "python": "3.12.14"
+    },
+    "source": {
+      "commit": "5ff1684aec76da80ada5056a5162681393b8e051",
+      "dirty": true,
+      "checked_source_sha256": "44bf55b78ae7ddd6fc7e0e69663e39ef56e9276f75adadc8fbacc3d8bc9d25c4"
+    },
+    "native_validation": "not_run",
+    "unit_tests": "passed",
+    "success": true,
+    "style_summary": {
+      "lint_findings": 67,
+      "unformatted_files": 50,
+      "cpp_files_checked": 15,
+      "python_files_checked": 63
+    },
+    "tools": {
+      "ruff": "0.17.0",
+      "clang-format": "23.1.3"
+    },
+    "configuration": {
+      "pyproject.toml": "b6fdec9a5b332300304f92c2fbe61455b7cfaaaeecfb1cd2880f83d5658249dd",
+      ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+      "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc"
+    }
+  },
+  "unit_tests": {
+    "version": "0.3.0",
+    "timestamp": 1791958718.2496219,
+    "tests_run": 158,
+    "success": true,
+    "failures": 0,
+    "errors": 0
+  },
+  "fresh_install": {
+    "success": true,
+    "separate_venv": true,
+    "editable_from_extracted_source": true,
+    "development_check": {
+      "work_item": "DEV-013",
+      "version": "0.3.0",
+      "timestamp_utc": "2026-10-14T06:20:33.180789+00:00",
+      "environment": {
+        "os": "Windows",
+        "python": "3.12.14"
+      },
+      "source": {
+        "commit": null,
+        "dirty": null,
+        "checked_source_sha256": "44bf55b78ae7ddd6fc7e0e69663e39ef56e9276f75adadc8fbacc3d8bc9d25c4"
+      },
+      "native_validation": "not_run",
+      "unit_tests": "passed",
+      "success": true,
+      "style_summary": {
+        "lint_findings": 67,
+        "unformatted_files": 50,
+        "cpp_files_checked": 15,
+        "python_files_checked": 63
+      },
+      "tools": {
+        "ruff": "0.17.0",
+        "clang-format": "23.1.3"
+      },
+      "configuration": {
+        "pyproject.toml": "b6fdec9a5b332300304f92c2fbe61455b7cfaaaeecfb1cd2880f83d5658249dd",
+        ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+        "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc"
+      }
+    },
+    "unit_tests": {
+      "version": "0.3.0",
+      "timestamp": 1791958866.6482222,
+      "tests_run": 158,
+      "success": true,
+      "failures": 0,
+      "errors": 0
+    },
+    "distribution": {
+      "work_item": "DEV-013",
+      "version": "0.3.0",
+      "success": true,
+      "source": "E:\\Projects\\MCP_CREO_MechDog\\build\\release-0.3.0\\candidate-extracted\\MCP_CREO_MechDog",
+      "editable_package_root_verified": true,
+      "seed_count": 9,
+      "seed_hashes_verified": true,
+      "source_allowlist_verified": true,
+      "licenses_verified": true,
+      "current_document_links_verified": true,
+      "actual_seed_zip_install_into_empty_directory": true,
+      "seed_archive_sha256": "d97bf7e4283c88c63fb835225cdb614435a8d99d4d75cc3aded39a15f54dd778",
+      "source_archive_sha256": "fa6d6c3719f4fa00545432021964f073259ff7f84a1fa5561495656ce3a68a47"
+    }
+  },
+  "mcp_protocol": {
+    "reference_contract_passed": true,
+    "enabled_tool_count": 82,
+    "version": "0.3.0",
+    "native_modeling": "not_requested",
+    "report": "build/release-0.3.0/mcp-reference.json"
+  },
+  "mcp_update_before_release": {
+    "success": true,
+    "current_version": "0.3.0",
+    "latest_version": "0.2.6",
+    "status": "up_to_date",
+    "lower_version_downgrade_not_advised": true
+  },
+  "user_acceptance": {
+    "scope": "BUG-006 N1(P1)",
+    "source": "current conversation on 2026-10-14",
+    "detailed_report": "not_provided"
+  },
+  "seed_archive_sha256": "d97bf7e4283c88c63fb835225cdb614435a8d99d4d75cc3aded39a15f54dd778",
+  "native_source_unchanged_from_bug006": true,
+  "unverified": [
+    "Creo 10 current release",
+    "full native suite",
+    "FEAT-020 real network failure and modeling during failure",
+    "actual higher-version reminder presentation",
+    "BUG-005 startup connection difference remains unresolved"
+  ],
+  "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0",
+  "final_source_archive_checksum_location": "Release body and .zip.sha256 asset"
+}

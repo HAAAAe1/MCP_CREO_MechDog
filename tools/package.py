@@ -45,6 +45,7 @@ def source_files():
     )
     files = [ROOT / name for name in names]
     for directory, extensions in {
+        "src/creo_mechdog": {".py"},
         "native": {".cpp", ".hpp", ".h"},
         "tools": {".py"},
         "tests": {".py"},

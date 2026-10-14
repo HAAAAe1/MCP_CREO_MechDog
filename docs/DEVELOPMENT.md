@@ -21,7 +21,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe tools\dev_check.py
 ```
 
-`requirements-dev.txt` 引用锁定的运行依赖，并固定 Ruff 和 clang-format 版本。正式建模安装继续使用 `setup.ps1`，详见 [安装说明](INSTALL.md)。检查入口以脚本位置定位仓库，工具在仓库目录执行。
+`requirements-dev.txt` 引用锁定的运行依赖、固定 Ruff 和 clang-format 版本，并通过 `-e .` 安装本地源码包。`pyproject.toml` 的构建后端版本也已锁定。正式建模安装继续使用 `setup.ps1`，详见 [安装说明](INSTALL.md)。检查入口以脚本位置定位仓库，工具在仓库目录执行。
 
 `.gitattributes` 固定 Python/C++ 和新开发文档换行为 LF，避免 Windows 检出设置导致格式检查差异；已有历史文档沿用原换行，第三方与原生 PRT/ASM 等二进制禁止文本转换。
 

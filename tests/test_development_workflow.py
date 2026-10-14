@@ -169,6 +169,10 @@ class DevelopmentWorkflow(unittest.TestCase):
         root = package.ROOT
         files = {path.relative_to(root).as_posix() for path in package.source_files()}
         required = {
+            "src/creo_mechdog/__init__.py",
+            "src/creo_mechdog/paths.py",
+            "src/creo_mechdog/update_check.py",
+            "tests/unit/test_update_check.py",
             "AGENTS.md",
             "pyproject.toml",
             ".clang-format",

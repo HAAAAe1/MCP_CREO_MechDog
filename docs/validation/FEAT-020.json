@@ -1,0 +1,745 @@
+{
+  "work_item": "FEAT-020",
+  "date": "2026-10-14",
+  "status": "acceptance_pending",
+  "version": "0.2.6",
+  "target_release": "0.3.0",
+  "scope_decision": "User: local Creo 12 acceptance only; Creo 10 is delegated to helpers on other machines.",
+  "development_check": {
+    "work_item": "FEAT-020",
+    "version": "0.2.6",
+    "timestamp_utc": "2026-10-14T03:13:28.668745+00:00",
+    "environment": {
+      "os": "Windows",
+      "python": "3.12.14"
+    },
+    "source": {
+      "commit": "b7f4dfe1bf4c2787e50a5df5b08012a463b2d24b",
+      "dirty": true,
+      "checked_source_sha256": "068e51c0bfc0a77005e0d8551deecbf842c99e43d118f71c2ebba71307e649c3"
+    },
+    "native_validation": "not_run",
+    "unit_tests": "passed",
+    "success": true,
+    "style_summary": {
+      "lint_findings": 70,
+      "unformatted_files": 52,
+      "cpp_files_checked": 15,
+      "python_files_checked": 56
+    },
+    "tools": {
+      "ruff": "0.17.0",
+      "clang-format": "23.1.3"
+    },
+    "configuration": {
+      "pyproject.toml": "0b5551fbf14055060e36a829d48aaee700f44dfdb2336027393af45ce5691060",
+      ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+      "requirements-dev.txt": "5ad03a1fbb24e3e72d8cc46afb089bb9c1d0a2ff715b563ee5958cf7b8f199f1"
+    }
+  },
+  "unit_tests": {
+    "version": "0.2.6",
+    "timestamp": 1791947627.1139202,
+    "tests_run": 142,
+    "success": true,
+    "failures": 0,
+    "errors": 0
+  },
+  "new_regressions": 21,
+  "source_fingerprints": {
+    "server.py": "c6c312b897d73f32f21e69930245c9f5db69d352af55fa08a5bec771a06e4895",
+    "update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+    "version.py": "e435cf56bd44265eea70a5d9b0a690e41df6c97f4690b33509d1659baa046e59",
+    "requirements.txt": "fd5e44035da923a565310d38019b3ef7ea7035ea671549bb22e4923fdebd0446",
+    "tests/test_update_check.py": "a2af99bdd9583f14d9639fd75d4f1e442a860bba55cf6f9df44a6d0871312cfd",
+    "tests/test_development_workflow.py": "edaea3043a1bfb8e0030678bf4fcda077e25fb1b113fb8373cbd40ba1155e7da",
+    "tools/test_update_check.py": "88b859b705a61fed5c80d914ddbc9486e535722f3d05cdfc415b8eca1a96729f",
+    "tools/package.py": "737cc70f797ddd4210cb61de2dec041242b807ca6e5a53203feea2e32b4b0bfe"
+  },
+  "environment": {
+    "windows": "Windows 11 x64 10.0.26100",
+    "python": "3.12.14",
+    "creo_gui_observed": "12.4.0.0",
+    "creo_toolkit_connected": false,
+    "sdk": "configured Creo 12.4 SDK; startup native preparation completed; no new native source change",
+    "compiler": "existing VS 2022 x64 build environment",
+    "creo10": "external helper acceptance pending"
+  },
+  "mcp_reports": {
+    "feat020-mcp-live-final.json": {
+      "raw_report_sha256": "a43c5fce0b80398e0a6e085cd27474a72a4739b4503197847e89de3bcc178d17",
+      "tested_at": "2026-10-14T03:13:48.243447+00:00",
+      "success": true,
+      "network": "real GitHub",
+      "client_mode": "auto",
+      "tool_count": 82,
+      "source_fingerprints_at_startup": {
+        "server.py": "c6c312b897d73f32f21e69930245c9f5db69d352af55fa08a5bec771a06e4895",
+        "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+        "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+        "update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+        "version.py": "e435cf56bd44265eea70a5d9b0a690e41df6c97f4690b33509d1659baa046e59",
+        "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+        "schema.py": "58e9bcc01e25da90dd84b1d26d42652ea0b401162b72beea8674bf76e01828fe",
+        "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229"
+      },
+      "update": {
+        "status": "up_to_date",
+        "current_version": "0.2.6",
+        "latest_version": "0.2.6",
+        "is_prerelease": true,
+        "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.2.6",
+        "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.2.6/MCP_CREO_MechDog-0.2.6-source.zip",
+        "checked_at": "2026-10-14T03:13:50.507137+00:00",
+        "last_success_at": "2026-10-14T03:13:50.507137+00:00",
+        "message": "当前版本已是最高可比较的公开版本。",
+        "error": null,
+        "from_cache": true,
+        "stale": false
+      },
+      "startup": {
+        "launch_reserved": true,
+        "launch_attempt": 14,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "state": "waiting_for_connection",
+        "connected": false,
+        "message": "Creo is starting or awaiting interaction; Toolkit has not confirmed readiness. Check startup dialogs if this persists",
+        "retry_allowed": false,
+        "updated_at": "2026-10-14T03:13:45.884305+00:00",
+        "native": {
+          "connected": false,
+          "connection_state": "not_found_or_unreadable",
+          "toolkit_code": -4,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 0,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 20
+        },
+        "coordinated": true,
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.2.6",
+          "latest_version": "0.2.6",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.2.6",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.2.6/MCP_CREO_MechDog-0.2.6-source.zip",
+          "checked_at": "2026-10-14T03:13:50.507137+00:00",
+          "last_success_at": "2026-10-14T03:13:50.507137+00:00",
+          "message": "当前版本已是最高可比较的公开版本。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      },
+      "modeling": {
+        "status": "not_requested"
+      },
+      "interface_timings": {
+        "creo_capabilities": {
+          "calls": 2,
+          "min_seconds": 0.06199999999989814,
+          "max_seconds": 0.07799999999951979,
+          "any_tool_error": false,
+          "inputs": [
+            {}
+          ]
+        },
+        "creo_check_update": {
+          "calls": 2,
+          "min_seconds": 0.01600000000144064,
+          "max_seconds": 0.8279999999995198,
+          "any_tool_error": false,
+          "inputs": [
+            {
+              "force": true
+            },
+            {}
+          ]
+        },
+        "creo_startup_status": {
+          "calls": 1,
+          "min_seconds": 0.0,
+          "max_seconds": 0.0,
+          "any_tool_error": false,
+          "inputs": [
+            {}
+          ]
+        }
+      }
+    },
+    "feat020-mcp-classic.json": {
+      "raw_report_sha256": "11e6de9ad2ac46cec19a0bb8fef7bb48a2d62a244e1ac93128201616150997e6",
+      "tested_at": "2026-10-14T03:09:18.584782+00:00",
+      "success": true,
+      "network": "real GitHub",
+      "client_mode": "legacy",
+      "tool_count": 82,
+      "source_fingerprints_at_startup": {
+        "server.py": "c6c312b897d73f32f21e69930245c9f5db69d352af55fa08a5bec771a06e4895",
+        "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+        "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+        "update_check.py": "215d74c4b1ac13f459d665e2d88a5ad9699292e6c3a94bc80031079d66d5614a",
+        "version.py": "e435cf56bd44265eea70a5d9b0a690e41df6c97f4690b33509d1659baa046e59",
+        "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+        "schema.py": "58e9bcc01e25da90dd84b1d26d42652ea0b401162b72beea8674bf76e01828fe",
+        "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229"
+      },
+      "update": {
+        "status": "up_to_date",
+        "current_version": "0.2.6",
+        "latest_version": "0.2.6",
+        "is_prerelease": true,
+        "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.2.6",
+        "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.2.6/MCP_CREO_MechDog-0.2.6-source.zip",
+        "checked_at": "2026-10-14T03:09:22.098767+00:00",
+        "last_success_at": "2026-10-14T03:09:22.098767+00:00",
+        "message": "当前版本已是最高可比较的公开版本。",
+        "error": null,
+        "from_cache": true,
+        "stale": false
+      },
+      "startup": {
+        "launch_reserved": true,
+        "launch_attempt": 14,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "state": "waiting_for_connection",
+        "connected": false,
+        "message": "Creo is starting or awaiting interaction; Toolkit has not confirmed readiness. Check startup dialogs if this persists",
+        "retry_allowed": false,
+        "updated_at": "2026-10-14T03:09:20.569664+00:00",
+        "native": {
+          "connected": false,
+          "connection_state": "not_found_or_unreadable",
+          "toolkit_code": -4,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 0,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 20
+        },
+        "coordinated": true,
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.2.6",
+          "latest_version": "0.2.6",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.2.6",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.2.6/MCP_CREO_MechDog-0.2.6-source.zip",
+          "checked_at": "2026-10-14T03:09:22.098767+00:00",
+          "last_success_at": "2026-10-14T03:09:22.098767+00:00",
+          "message": "当前版本已是最高可比较的公开版本。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      },
+      "modeling": {
+        "status": "not_requested"
+      },
+      "interface_timings": {
+        "creo_capabilities": {
+          "calls": 2,
+          "min_seconds": 0.030999999999039574,
+          "max_seconds": 0.07800000000133878,
+          "any_tool_error": false,
+          "inputs": [
+            {}
+          ]
+        },
+        "creo_check_update": {
+          "calls": 2,
+          "min_seconds": 0.0,
+          "max_seconds": 1.9529999999995198,
+          "any_tool_error": false,
+          "inputs": [
+            {
+              "force": true
+            },
+            {}
+          ]
+        },
+        "creo_startup_status": {
+          "calls": 1,
+          "min_seconds": 0.0,
+          "max_seconds": 0.0,
+          "any_tool_error": false,
+          "inputs": [
+            {}
+          ]
+        }
+      }
+    },
+    "feat020-mcp-failure-creo12.json": {
+      "raw_report_sha256": "ad3de143f01887fce095679a5fb2be4d309aeec5a7f2118a934277073113a9df",
+      "tested_at": "2026-10-14T03:03:21.146773+00:00",
+      "success": false,
+      "network": "controlled developer injection",
+      "client_mode": "auto",
+      "tool_count": 82,
+      "source_fingerprints_at_startup": {
+        "server.py": "c6c312b897d73f32f21e69930245c9f5db69d352af55fa08a5bec771a06e4895",
+        "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+        "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+        "update_check.py": "215d74c4b1ac13f459d665e2d88a5ad9699292e6c3a94bc80031079d66d5614a",
+        "version.py": "e435cf56bd44265eea70a5d9b0a690e41df6c97f4690b33509d1659baa046e59",
+        "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+        "schema.py": "58e9bcc01e25da90dd84b1d26d42652ea0b401162b72beea8674bf76e01828fe",
+        "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229"
+      },
+      "update": {
+        "status": "failed",
+        "current_version": "0.2.6",
+        "latest_version": null,
+        "is_prerelease": null,
+        "release_url": null,
+        "download_url": null,
+        "checked_at": "2026-10-14T03:03:22.451129+00:00",
+        "last_success_at": null,
+        "message": "无法确认更新；15 分钟后可重试。已有版本信息仅为上次成功缓存。",
+        "error": "Controlled developer-test network failure",
+        "from_cache": true,
+        "stale": false
+      },
+      "startup": {
+        "launch_reserved": true,
+        "launch_attempt": 14,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "state": "waiting_for_connection",
+        "connected": false,
+        "message": "Creo is starting or awaiting interaction; Toolkit has not confirmed readiness. Check startup dialogs if this persists",
+        "retry_allowed": false,
+        "updated_at": "2026-10-14T03:05:29.775262+00:00",
+        "native": {
+          "connected": false,
+          "connection_state": "not_found_or_unreadable",
+          "toolkit_code": -4,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 0,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 20
+        },
+        "update": {
+          "status": "failed",
+          "current_version": "0.2.6",
+          "latest_version": null,
+          "is_prerelease": null,
+          "release_url": null,
+          "download_url": null,
+          "checked_at": "2026-10-14T03:03:22.451129+00:00",
+          "last_success_at": null,
+          "message": "无法确认更新；15 分钟后可重试。已有版本信息仅为上次成功缓存。",
+          "error": "Controlled developer-test network failure",
+          "from_cache": true,
+          "stale": false
+        }
+      },
+      "modeling": {
+        "status": "unverified",
+        "reason": {
+          "launch_reserved": true,
+          "launch_attempt": 14,
+          "auto_start_enabled": true,
+          "selected_session_configured": false,
+          "state": "waiting_for_connection",
+          "connected": false,
+          "message": "Creo is starting or awaiting interaction; Toolkit has not confirmed readiness. Check startup dialogs if this persists",
+          "retry_allowed": false,
+          "updated_at": "2026-10-14T03:05:29.775262+00:00",
+          "native": {
+            "connected": false,
+            "connection_state": "not_found_or_unreadable",
+            "toolkit_code": -4,
+            "current_model": "",
+            "current_model_code": -8,
+            "model_type": -1,
+            "release_numeric": 0,
+            "disconnect_code": 0,
+            "feature_creation_license": "requires_actual_modeling_test",
+            "worker_exit_code": 20
+          },
+          "update": {
+            "status": "failed",
+            "current_version": "0.2.6",
+            "latest_version": null,
+            "is_prerelease": null,
+            "release_url": null,
+            "download_url": null,
+            "checked_at": "2026-10-14T03:03:22.451129+00:00",
+            "last_success_at": null,
+            "message": "无法确认更新；15 分钟后可重试。已有版本信息仅为上次成功缓存。",
+            "error": "Controlled developer-test network failure",
+            "from_cache": true,
+            "stale": false
+          }
+        }
+      },
+      "interface_timings": {
+        "creo_capabilities": {
+          "calls": 2,
+          "min_seconds": 0.015000000001236913,
+          "max_seconds": 0.07799999999951979,
+          "any_tool_error": false,
+          "inputs": [
+            {}
+          ]
+        },
+        "creo_check_update": {
+          "calls": 2,
+          "min_seconds": 0.0,
+          "max_seconds": 0.01599999999962165,
+          "any_tool_error": false,
+          "inputs": [
+            {
+              "force": true
+            },
+            {}
+          ]
+        },
+        "creo_startup_status": {
+          "calls": 131,
+          "min_seconds": 0.0,
+          "max_seconds": 0.01600000000144064,
+          "any_tool_error": false,
+          "inputs": [
+            {},
+            {
+              "retry": true
+            }
+          ]
+        }
+      }
+    },
+    "feat020-mcp-failure-creo12-recheck.json": {
+      "raw_report_sha256": "2b6c357e4557aea69df1ab73cecfab4f9152b53c0f326086678121b9eb032651",
+      "tested_at": "2026-10-14T03:08:06.185276+00:00",
+      "success": false,
+      "network": "controlled developer injection",
+      "client_mode": "auto",
+      "tool_count": 82,
+      "source_fingerprints_at_startup": {
+        "server.py": "c6c312b897d73f32f21e69930245c9f5db69d352af55fa08a5bec771a06e4895",
+        "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+        "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+        "update_check.py": "215d74c4b1ac13f459d665e2d88a5ad9699292e6c3a94bc80031079d66d5614a",
+        "version.py": "e435cf56bd44265eea70a5d9b0a690e41df6c97f4690b33509d1659baa046e59",
+        "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+        "schema.py": "58e9bcc01e25da90dd84b1d26d42652ea0b401162b72beea8674bf76e01828fe",
+        "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229"
+      },
+      "update": {
+        "status": "failed",
+        "current_version": "0.2.6",
+        "latest_version": null,
+        "is_prerelease": null,
+        "release_url": null,
+        "download_url": null,
+        "checked_at": "2026-10-14T03:08:07.710184+00:00",
+        "last_success_at": null,
+        "message": "无法确认更新；15 分钟后可重试。已有版本信息仅为上次成功缓存。",
+        "error": "Controlled developer-test network failure",
+        "from_cache": true,
+        "stale": false
+      },
+      "startup": {
+        "launch_reserved": true,
+        "launch_attempt": 14,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "state": "timeout",
+        "connected": false,
+        "message": "Toolkit did not become ready within the startup budget; inspect Creo dialogs/environment, then request retry. Existing Creo processes were preserved",
+        "retry_allowed": true,
+        "updated_at": "2026-10-14T03:10:11.806010+00:00",
+        "update": {
+          "status": "failed",
+          "current_version": "0.2.6",
+          "latest_version": null,
+          "is_prerelease": null,
+          "release_url": null,
+          "download_url": null,
+          "checked_at": "2026-10-14T03:08:07.710184+00:00",
+          "last_success_at": null,
+          "message": "无法确认更新；15 分钟后可重试。已有版本信息仅为上次成功缓存。",
+          "error": "Controlled developer-test network failure",
+          "from_cache": true,
+          "stale": false
+        }
+      },
+      "modeling": {
+        "status": "unverified",
+        "reason": {
+          "launch_reserved": true,
+          "launch_attempt": 14,
+          "auto_start_enabled": true,
+          "selected_session_configured": false,
+          "state": "timeout",
+          "connected": false,
+          "message": "Toolkit did not become ready within the startup budget; inspect Creo dialogs/environment, then request retry. Existing Creo processes were preserved",
+          "retry_allowed": true,
+          "updated_at": "2026-10-14T03:10:11.806010+00:00",
+          "update": {
+            "status": "failed",
+            "current_version": "0.2.6",
+            "latest_version": null,
+            "is_prerelease": null,
+            "release_url": null,
+            "download_url": null,
+            "checked_at": "2026-10-14T03:08:07.710184+00:00",
+            "last_success_at": null,
+            "message": "无法确认更新；15 分钟后可重试。已有版本信息仅为上次成功缓存。",
+            "error": "Controlled developer-test network failure",
+            "from_cache": true,
+            "stale": false
+          }
+        }
+      },
+      "interface_timings": {
+        "creo_capabilities": {
+          "calls": 2,
+          "min_seconds": 0.031000000000858563,
+          "max_seconds": 0.07799999999951979,
+          "any_tool_error": false,
+          "inputs": [
+            {}
+          ]
+        },
+        "creo_check_update": {
+          "calls": 2,
+          "min_seconds": 0.0,
+          "max_seconds": 0.0,
+          "any_tool_error": false,
+          "inputs": [
+            {
+              "force": true
+            },
+            {}
+          ]
+        },
+        "creo_startup_status": {
+          "calls": 124,
+          "min_seconds": 0.0,
+          "max_seconds": 0.01600000000144064,
+          "any_tool_error": false,
+          "inputs": [
+            {}
+          ]
+        }
+      }
+    },
+    "feat020-mcp-failure-creo12-visible.json": {
+      "raw_report_sha256": "21e578b4271a051199c3f779ca9ffef5e1405fe8e262ea078e33094b77225bc6",
+      "tested_at": "2026-10-14T03:12:09.006518+00:00",
+      "success": false,
+      "network": "controlled developer injection",
+      "client_mode": "auto",
+      "tool_count": 82,
+      "source_fingerprints_at_startup": {
+        "server.py": "c6c312b897d73f32f21e69930245c9f5db69d352af55fa08a5bec771a06e4895",
+        "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+        "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+        "update_check.py": "215d74c4b1ac13f459d665e2d88a5ad9699292e6c3a94bc80031079d66d5614a",
+        "version.py": "e435cf56bd44265eea70a5d9b0a690e41df6c97f4690b33509d1659baa046e59",
+        "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+        "schema.py": "58e9bcc01e25da90dd84b1d26d42652ea0b401162b72beea8674bf76e01828fe",
+        "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229"
+      },
+      "update": {
+        "status": "failed",
+        "current_version": "0.2.6",
+        "latest_version": null,
+        "is_prerelease": null,
+        "release_url": null,
+        "download_url": null,
+        "checked_at": "2026-10-14T03:12:10.333174+00:00",
+        "last_success_at": null,
+        "message": "无法确认更新；15 分钟后可重试。已有版本信息仅为上次成功缓存。",
+        "error": "Controlled developer-test network failure",
+        "from_cache": true,
+        "stale": false
+      },
+      "startup": {
+        "launch_reserved": true,
+        "launch_attempt": 14,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "state": "timeout",
+        "connected": false,
+        "message": "Toolkit did not become ready within the startup budget; inspect Creo dialogs/environment, then request retry. Existing Creo processes were preserved",
+        "retry_allowed": true,
+        "updated_at": "2026-10-14T03:14:14.736863+00:00",
+        "update": {
+          "status": "failed",
+          "current_version": "0.2.6",
+          "latest_version": null,
+          "is_prerelease": null,
+          "release_url": null,
+          "download_url": null,
+          "checked_at": "2026-10-14T03:12:10.333174+00:00",
+          "last_success_at": null,
+          "message": "无法确认更新；15 分钟后可重试。已有版本信息仅为上次成功缓存。",
+          "error": "Controlled developer-test network failure",
+          "from_cache": true,
+          "stale": false
+        }
+      },
+      "modeling": {
+        "status": "unverified",
+        "reason": {
+          "launch_reserved": true,
+          "launch_attempt": 14,
+          "auto_start_enabled": true,
+          "selected_session_configured": false,
+          "state": "timeout",
+          "connected": false,
+          "message": "Toolkit did not become ready within the startup budget; inspect Creo dialogs/environment, then request retry. Existing Creo processes were preserved",
+          "retry_allowed": true,
+          "updated_at": "2026-10-14T03:14:14.736863+00:00",
+          "update": {
+            "status": "failed",
+            "current_version": "0.2.6",
+            "latest_version": null,
+            "is_prerelease": null,
+            "release_url": null,
+            "download_url": null,
+            "checked_at": "2026-10-14T03:12:10.333174+00:00",
+            "last_success_at": null,
+            "message": "无法确认更新；15 分钟后可重试。已有版本信息仅为上次成功缓存。",
+            "error": "Controlled developer-test network failure",
+            "from_cache": true,
+            "stale": false
+          }
+        }
+      },
+      "interface_timings": {
+        "creo_capabilities": {
+          "calls": 2,
+          "min_seconds": 0.015000000001236913,
+          "max_seconds": 0.09399999999914144,
+          "any_tool_error": false,
+          "inputs": [
+            {}
+          ]
+        },
+        "creo_check_update": {
+          "calls": 2,
+          "min_seconds": 0.0,
+          "max_seconds": 0.0,
+          "any_tool_error": false,
+          "inputs": [
+            {
+              "force": true
+            },
+            {}
+          ]
+        },
+        "creo_startup_status": {
+          "calls": 125,
+          "min_seconds": 0.0,
+          "max_seconds": 0.01600000000144064,
+          "any_tool_error": false,
+          "inputs": [
+            {},
+            {
+              "retry": true
+            }
+          ]
+        }
+      }
+    }
+  },
+  "not_verified": [
+    "Creo 12 native modeling under network failure: Toolkit readiness timeout, no job submitted",
+    "External Creo 10 integration acceptance",
+    "WorkBuddy final MCP acceptance",
+    "Real OS network disconnect and real API rate limiting (developer injection/mock regression only)",
+    "Actual client notification display and cross-client deduplication",
+    "New GitHub release, installation of new release and later higher release discovery"
+  ],
+  "release": {
+    "published": false,
+    "reason": "Local Creo 12 modeling acceptance pending due to Toolkit connection timeout; no tag/assets overwritten"
+  },
+  "package_verification": {
+    "archive": "build/FEAT-020-final-development-source.zip",
+    "sha256": "81106dab6ec3cb2ed6252dbefa79324a5d90ed989e9b4dfc1f6bc964210288a6",
+    "note": "Archive was generated before this verification metadata was appended; runtime sources match final source fingerprints. Not a public Release artifact.",
+    "all_packaged_files_matched": true,
+    "extracted_development_check": {
+      "work_item": "FEAT-020",
+      "version": "0.2.6",
+      "timestamp_utc": "2026-10-14T03:16:44.231871+00:00",
+      "environment": {
+        "os": "Windows",
+        "python": "3.12.14"
+      },
+      "source": {
+        "commit": null,
+        "dirty": null,
+        "checked_source_sha256": "068e51c0bfc0a77005e0d8551deecbf842c99e43d118f71c2ebba71307e649c3"
+      },
+      "native_validation": "not_run",
+      "unit_tests": "passed",
+      "success": true,
+      "style_summary": {
+        "lint_findings": 70,
+        "unformatted_files": 52,
+        "cpp_files_checked": 15,
+        "python_files_checked": 56
+      },
+      "tools": {
+        "ruff": "0.17.0",
+        "clang-format": "23.1.3"
+      },
+      "configuration": {
+        "pyproject.toml": "0b5551fbf14055060e36a829d48aaee700f44dfdb2336027393af45ce5691060",
+        ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+        "requirements-dev.txt": "5ad03a1fbb24e3e72d8cc46afb089bb9c1d0a2ff715b563ee5958cf7b8f199f1"
+      }
+    },
+    "extracted_unit_tests": {
+      "version": "0.2.6",
+      "timestamp": 1791947823.2071774,
+      "tests_run": 142,
+      "success": true,
+      "failures": 0,
+      "errors": 0
+    },
+    "seed_sha256": "9928ed610478ec8fffcc78a8e7925b7f980464276a207a69aa635cfa3a8d1de6"
+  },
+  "workbuddy_report": {
+    "path": "FEAT-020-WorkBuddy-report.md",
+    "sha256": "c8662d443e2bed7824528316dd0af43e69af9329f7641e9677a96a61c660c287",
+    "time_utc": "2026-10-14 03:27–03:30",
+    "version": "0.2.6",
+    "creo": "12.4.0.0",
+    "passed": [
+      "version_tools_environment",
+      "update_fields_and_shared_cache",
+      "public_prerelease_equal_version",
+      "actual_parallel_calls",
+      "online_plate_400_mm3_saved_reloaded"
+    ],
+    "unverified": [
+      "higher_public_version_and_reminder",
+      "local_version_higher",
+      "network_failure_timeout_rate_limit",
+      "modeling_during_network_failure",
+      "unknown_no_comparable_release",
+      "creo10"
+    ],
+    "job_id": "563ee955f3e7454eae708824dc8aed0b",
+    "model_id": "unavailable_in_public_results",
+    "source_commit": "not_exposed_by_tested_interface"
+  }
+}
