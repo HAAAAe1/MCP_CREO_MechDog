@@ -553,8 +553,7 @@
     "tools/test_surface_features.py": "3e87f5b3f3a280816596758f813252a5f1f4c3fe600f2456cb964fc00c8df122",
     "tools/test_udf.py": "1f8bb3d4787f06386ea4a6bd35997a6aa28a19a62b08b5edf3b8787d71e98955",
     "tools/test_unit.py": "e571f5da226afc67c18348ab57bd58aeca5d30ec5a32c12a03ed8062a055b839",
-    "tools/test_v021.py": "2b2d7ddfc000076acf2e795f90ebe40e910b845c084b78fc780ccdcbeb728731",
-    "version.py": "1abf7561f943b452a61b8858119fdb717ab014413a7fc942d77d11e0f37ea0cb"
+    "tools/test_v021.py": "2b2d7ddfc000076acf2e795f90ebe40e910b845c084b78fc780ccdcbeb728731"
   },
   "cpp_files_checked": 15,
   "python_files_checked": 47,
