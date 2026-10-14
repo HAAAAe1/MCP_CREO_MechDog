@@ -1,6 +1,7 @@
 """Portable, hash-checked discovery of the project's MIT native Blend seeds."""
 
 from __future__ import annotations
+
 import hashlib
 import json
 import re
