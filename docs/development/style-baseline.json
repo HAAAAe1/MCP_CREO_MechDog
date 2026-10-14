@@ -46,13 +46,6 @@
       "count": 1
     },
     {
-      "path": "seeds.py",
-      "code": "I001",
-      "message": "Import block is un-sorted or un-formatted",
-      "source": "from __future__ import annotations",
-      "count": 1
-    },
-    {
       "path": "tests/test_development_validation.py",
       "code": "I001",
       "message": "Import block is un-sorted or un-formatted",
@@ -528,7 +521,6 @@
     "profile_checks.py": "b52afbc4674dc55afbd752de106cce5d9d5f7165e16bedae05f69bf8945eea21",
     "schema.py": "58e9bcc01e25da90dd84b1d26d42652ea0b401162b72beea8674bf76e01828fe",
     "seed_library/resolve_seed.py": "4f521efb1143aed7a067ed04c9b1b6389073be5a676bbd2d9baaf785dfcd4f04",
-    "seeds.py": "36930cae2690cc431760d528f5933fc07d5cddbf88814ec415e75c88167d3af5",
     "tests/test_development_validation.py": "77b0ed3dda61af75076b1ad43e368e215c4e11c68a754c363887d79a5e4505b0",
     "tests/test_general_validation.py": "e73dfe4e130282a0534ec87a7121cb0e56eff2869f72c6f754e9d039516c5c53",
     "tests/test_installation_validation.py": "375da5ee196d7b752fc5f6c44e7970c5b362500288b8bb130684856bb4542d49",
