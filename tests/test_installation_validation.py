@@ -189,10 +189,22 @@ class InstallationValidation(unittest.TestCase):
 
     @unittest.skipUnless(os.name == "nt", "Windows installer integration")
     def test_installer_native_failure_leaves_client_config_and_resume_instructions(self):
-        includes = self.sdk()
+        self.sdk()
         (self.root / "tools").mkdir()
-        for name in ("setup.ps1", "bridge.py", "capabilities.py", "version.py", "seeds.py"):
+        for name in (
+            "setup.ps1",
+            "pyproject.toml",
+            "bridge.py",
+            "capabilities.py",
+            "version.py",
+            "seeds.py",
+        ):
             shutil.copy2(ROOT / name, self.root / name)
+        shutil.copytree(
+            ROOT / "src",
+            self.root / "src",
+            ignore=shutil.ignore_patterns("__pycache__", "*.egg-info"),
+        )
         shutil.copy2(ROOT / "LICENSE", self.root / "LICENSE")
         (self.root / "docs").mkdir()
         shutil.copy2(ROOT / "docs/seed_manifest.json", self.root / "docs/seed_manifest.json")

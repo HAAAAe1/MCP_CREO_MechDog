@@ -19,8 +19,9 @@ import bridge
 import creo_startup
 import generic_bridge as general
 import seeds
-import update_check
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS, families
+from creo_mechdog import update_check
+from creo_mechdog.paths import SOURCE_PATHS
 from schema import (
     AirfoilProfile,
     AirfoilSketchOp,
@@ -38,11 +39,18 @@ logging.basicConfig(level=logging.WARNING)
 startup = creo_startup.CreoStartup()
 updates = update_check.UpdateChecker()
 _CODE_ROOT = Path(__file__).resolve().parent
+if SOURCE_PATHS.resource_root != _CODE_ROOT:
+    raise RuntimeError(
+        "Python package belongs to another source checkout; run this installation's "
+        "python -m pip install --no-deps -e <source directory> before starting server.py"
+    )
 _SOURCE_NAMES = (
     "server.py",
     "bridge.py",
     "creo_startup.py",
-    "update_check.py",
+    "src/creo_mechdog/__init__.py",
+    "src/creo_mechdog/paths.py",
+    "src/creo_mechdog/update_check.py",
     "version.py",
     "generic_bridge.py",
     "schema.py",
@@ -243,6 +251,9 @@ async def creo_capabilities() -> dict[str, Any]:
             "python_executable": sys.executable,
             "server_entry": str(Path(__file__).resolve()),
             "code_root": str(_CODE_ROOT),
+            "python_package_root": str(SOURCE_PATHS.code_root),
+            "resource_root": str(SOURCE_PATHS.resource_root),
+            "data_root": str(SOURCE_PATHS.data_root),
             "source_fingerprints_at_startup": dict(_LOADED_FINGERPRINTS),
             "source_changed_since_startup": _source_fingerprints() != _LOADED_FINGERPRINTS,
         },

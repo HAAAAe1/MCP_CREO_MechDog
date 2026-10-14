@@ -26,7 +26,8 @@ sys.path.insert(0, str(ROOT))
 from version import VERSION
 
 OFFLINE_SERVER = """
-import server, update_check
+import server
+from creo_mechdog import update_check
 async def offline():
     raise update_check.UpdateFailure('Controlled developer-test network failure')
 update_check.fetch_releases = offline

@@ -136,6 +136,14 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C
 
 包含本次建模增量的源码内附 MIT 种子库，安装器验证并注册，`creo_new_loft_part` 按数量/模式自动选择，不要求手填路径和特征 ID。库内有九个原生 PRT：2/3/4/6 截面的直线和平滑，以及 5 截面平滑；详细步骤见 [SEED_LIBRARY.md](SEED_LIBRARY.md)。新电脑需要重新安装并验证，不直接复制旧 `.venv`、二进制、配置或会话 ID；同机换客户端可以共用安装目录，见 [MIGRATION.md](MIGRATION.md)。
 
+## Python 包的渐进迁移（DEV-002）
+
+当前源码的更新检查实现位于 `src/creo_mechdog/update_check.py`，新的业务模块继续放入此包。`setup.ps1` 安装运行依赖后通过 `pip install --no-deps --editable <源码目录>` 安装包；开发环境可执行 `python -m pip install -r requirements-dev.txt`。根 `server.py`、`bridge.py` 和 `version.py` 入口继续保留，客户端命令无需改为 src 路径。
+
+已有开发环境更新源码后，需要用该环境的 Python 执行 `python -m pip install --no-deps -e .`，再重启 MCP。移动整个安装目录后重跑安装，不直接复制旧虚拟环境；服务拒绝混用来自另一源码目录的包。当前安装方式以完整源码目录为基础，包元数据用于本地安装，不代表单独 wheel 已包含 SDK、种子与原生执行器。
+
+能力查询 `runtime.python_package_root` 标明 Python 包位置，`resource_root` 和 `data_root` 默认仍为原安装目录；旧 `runtime.code_root` 保留原源码根语义。配置、模型、任务和构建仍在原目录，第一批不会在 src 下生成另一套数据。
+
 ## 版本检查与升级提醒（FEAT-020）
 
 包含此功能的源码提供 `creo_check_update(force=false)`，能力查询与启动状态增加 `update` 快照；启动和建模不等待联网。检查包含公开预发布、使用 24 小时进程缓存，失败冷却 15 分钟。字段、超时边界及完整升级步骤见 [版本检查说明](UPDATE_CHECK.md)。旧版必须先手动升级一次，才能收到后续版本提醒；本项尚未发布，当前已发布 0.2.6 仍为 81 个工具。

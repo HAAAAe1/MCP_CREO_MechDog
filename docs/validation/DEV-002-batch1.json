@@ -1,0 +1,274 @@
+{
+  "work_item": "DEV-002",
+  "batch": 1,
+  "date": "2026-10-14",
+  "batch_status": "completed",
+  "overall_status": "in_progress",
+  "version": "0.2.6",
+  "development_check": {
+    "work_item": "DEV-002",
+    "version": "0.2.6",
+    "timestamp_utc": "2026-10-14T03:44:37.046527+00:00",
+    "environment": {
+      "os": "Windows",
+      "python": "3.12.14"
+    },
+    "source": {
+      "commit": "123c30818862d058a6d4d8309b664771217effe4",
+      "dirty": true,
+      "checked_source_sha256": "ddba31ba9c521fd196fb13e8201fca47d453408242db9f97ad6e0399f6b2cdbe"
+    },
+    "native_validation": "not_run",
+    "unit_tests": "passed",
+    "success": true,
+    "style_summary": {
+      "lint_findings": 68,
+      "unformatted_files": 51,
+      "cpp_files_checked": 15,
+      "python_files_checked": 60
+    },
+    "tools": {
+      "ruff": "0.17.0",
+      "clang-format": "23.1.3"
+    },
+    "configuration": {
+      "pyproject.toml": "b6fdec9a5b332300304f92c2fbe61455b7cfaaaeecfb1cd2880f83d5658249dd",
+      ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+      "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc"
+    }
+  },
+  "unit_tests": {
+    "version": "0.2.6",
+    "timestamp": 1791949505.444294,
+    "tests_run": 149,
+    "success": true,
+    "failures": 0,
+    "errors": 0
+  },
+  "extracted_check": {
+    "work_item": "DEV-002",
+    "version": "0.2.6",
+    "timestamp_utc": "2026-10-14T03:46:39.560890+00:00",
+    "environment": {
+      "os": "Windows",
+      "python": "3.12.14"
+    },
+    "source": {
+      "commit": null,
+      "dirty": null,
+      "checked_source_sha256": "ddba31ba9c521fd196fb13e8201fca47d453408242db9f97ad6e0399f6b2cdbe"
+    },
+    "native_validation": "not_run",
+    "unit_tests": "passed",
+    "success": true,
+    "style_summary": {
+      "lint_findings": 68,
+      "unformatted_files": 51,
+      "cpp_files_checked": 15,
+      "python_files_checked": 60
+    },
+    "tools": {
+      "ruff": "0.17.0",
+      "clang-format": "23.1.3"
+    },
+    "configuration": {
+      "pyproject.toml": "b6fdec9a5b332300304f92c2fbe61455b7cfaaaeecfb1cd2880f83d5658249dd",
+      ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+      "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc"
+    }
+  },
+  "extracted_unit_tests": {
+    "version": "0.2.6",
+    "timestamp": 1791949634.2587416,
+    "tests_run": 149,
+    "success": true,
+    "failures": 0,
+    "errors": 0
+  },
+  "standard_source_install": "pip install --no-deps --editable .",
+  "extracted_install": "fresh venv; pip install -r requirements-dev.txt, including editable package; success",
+  "paths": {
+    "code": "src/creo_mechdog",
+    "resources": "existing source root",
+    "data": "existing installation root; runtime override not enabled in batch 1"
+  },
+  "source_fingerprints": {
+    "pyproject.toml": "b6fdec9a5b332300304f92c2fbe61455b7cfaaaeecfb1cd2880f83d5658249dd",
+    "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc",
+    "setup.ps1": "c263ee8c65d72a413e92304c6a39e68a74a8e256aa2ad15bbb5cd7d280e1b636",
+    "server.py": "0eebf4bb95c0d2977c7e889422ece8bae7df18e6ca4e3c71b29b37551539bfed",
+    "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
+    "src/creo_mechdog/paths.py": "389dca158e3a7d02337ca3a099a1872bf858e38cc8108d78172cff235256dff5",
+    "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+    "tests/unit/test_paths.py": "d7ae01e517214f81abf25ea72265d1a2c2abe9a68cd525fa1aa3c2c29bdde49e",
+    "tests/unit/test_update_check.py": "20bd9db147b82bdef2b9cf0ed60c025bae733f661a9f119aa1d76584427399b7",
+    "tools/package.py": "48c6e1c9c812537b9d7c291cfc8f6627e1d895b0afdc7739669711d428423f79"
+  },
+  "update_implementation_byte_identical_to": "da57ab9:update_check.py",
+  "mcp_reports": {
+    "dev002-mcp.json": {
+      "sha256": "abf994100531614f5f77d59d325105a6832df45e477312bf91888217d9456339",
+      "tested_at": "2026-10-14T03:43:52.813668+00:00",
+      "success": true,
+      "runtime": {
+        "python_executable": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+        "server_entry": "E:\\Projects\\MCP_CREO_MechDog\\server.py",
+        "code_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "python_package_root": "E:\\Projects\\MCP_CREO_MechDog\\src\\creo_mechdog",
+        "resource_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "data_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "source_fingerprints_at_startup": {
+          "server.py": "0eebf4bb95c0d2977c7e889422ece8bae7df18e6ca4e3c71b29b37551539bfed",
+          "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+          "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+          "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
+          "src/creo_mechdog/paths.py": "389dca158e3a7d02337ca3a099a1872bf858e38cc8108d78172cff235256dff5",
+          "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+          "version.py": "e435cf56bd44265eea70a5d9b0a690e41df6c97f4690b33509d1659baa046e59",
+          "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+          "schema.py": "58e9bcc01e25da90dd84b1d26d42652ea0b401162b72beea8674bf76e01828fe",
+          "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229"
+        },
+        "source_changed_since_startup": false
+      },
+      "tool_count": 82,
+      "network": "controlled developer injection",
+      "update": {
+        "status": "failed",
+        "current_version": "0.2.6",
+        "latest_version": null,
+        "is_prerelease": null,
+        "release_url": null,
+        "download_url": null,
+        "checked_at": "2026-10-14T03:43:54.125712+00:00",
+        "last_success_at": null,
+        "message": "无法确认更新；15 分钟后可重试。已有版本信息仅为上次成功缓存。",
+        "error": "Controlled developer-test network failure",
+        "from_cache": true,
+        "stale": false
+      },
+      "startup": {
+        "launch_reserved": true,
+        "launch_attempt": 14,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "state": "building_worker",
+        "connected": false,
+        "message": "Preparing the native connection worker",
+        "retry_allowed": false,
+        "updated_at": "2026-10-14T03:43:54.150651+00:00",
+        "update": {
+          "status": "failed",
+          "current_version": "0.2.6",
+          "latest_version": null,
+          "is_prerelease": null,
+          "release_url": null,
+          "download_url": null,
+          "checked_at": "2026-10-14T03:43:54.125712+00:00",
+          "last_success_at": null,
+          "message": "无法确认更新；15 分钟后可重试。已有版本信息仅为上次成功缓存。",
+          "error": "Controlled developer-test network failure",
+          "from_cache": true,
+          "stale": false
+        }
+      },
+      "modeling": {
+        "status": "not_requested"
+      }
+    },
+    "dev002-mcp-live.json": {
+      "sha256": "f580be18ec7006aa0980c0f693995bcfbace476870b4fd2f9dcc42405952f5d0",
+      "tested_at": "2026-10-14T03:47:24.350342+00:00",
+      "success": true,
+      "runtime": {
+        "python_executable": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+        "server_entry": "E:\\Projects\\MCP_CREO_MechDog\\server.py",
+        "code_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "python_package_root": "E:\\Projects\\MCP_CREO_MechDog\\src\\creo_mechdog",
+        "resource_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "data_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "source_fingerprints_at_startup": {
+          "server.py": "0eebf4bb95c0d2977c7e889422ece8bae7df18e6ca4e3c71b29b37551539bfed",
+          "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+          "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+          "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
+          "src/creo_mechdog/paths.py": "389dca158e3a7d02337ca3a099a1872bf858e38cc8108d78172cff235256dff5",
+          "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+          "version.py": "e435cf56bd44265eea70a5d9b0a690e41df6c97f4690b33509d1659baa046e59",
+          "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+          "schema.py": "58e9bcc01e25da90dd84b1d26d42652ea0b401162b72beea8674bf76e01828fe",
+          "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229"
+        },
+        "source_changed_since_startup": false
+      },
+      "tool_count": 82,
+      "network": "real GitHub",
+      "update": {
+        "status": "up_to_date",
+        "current_version": "0.2.6",
+        "latest_version": "0.2.6",
+        "is_prerelease": true,
+        "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.2.6",
+        "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.2.6/MCP_CREO_MechDog-0.2.6-source.zip",
+        "checked_at": "2026-10-14T03:47:26.665449+00:00",
+        "last_success_at": "2026-10-14T03:47:26.665449+00:00",
+        "message": "当前版本已是最高可比较的公开版本。",
+        "error": null,
+        "from_cache": true,
+        "stale": false
+      },
+      "startup": {
+        "launch_reserved": true,
+        "launch_attempt": 14,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "state": "building_worker",
+        "connected": false,
+        "message": "Preparing the native connection worker",
+        "retry_allowed": false,
+        "updated_at": "2026-10-14T03:47:25.639133+00:00",
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.2.6",
+          "latest_version": "0.2.6",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.2.6",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.2.6/MCP_CREO_MechDog-0.2.6-source.zip",
+          "checked_at": "2026-10-14T03:47:26.665449+00:00",
+          "last_success_at": "2026-10-14T03:47:26.665449+00:00",
+          "message": "当前版本已是最高可比较的公开版本。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      },
+      "modeling": {
+        "status": "not_requested"
+      }
+    }
+  },
+  "style_baseline_review": {
+    "configuration_hashes_changed": [
+      "pyproject.toml",
+      "requirements-dev.txt"
+    ],
+    "removed_diagnostics": [
+      "tests/test_installation_validation.py:I001",
+      "tests/test_installation_validation.py:F841"
+    ],
+    "removed_unformatted_file": "tests/test_installation_validation.py",
+    "new_allowances": 0,
+    "baseline_not_rebuilt": true
+  },
+  "source_archive": {
+    "path": "build/DEV-002-batch1-source.zip",
+    "sha256": "a0ad476d321c9d2efd67de3a9079ee978dc36285ac7ecb4133026df2719a59c6",
+    "note": "Verification archive created before this evidence file; runtime fingerprints match."
+  },
+  "not_verified": [
+    "No native modeling rerun: no native/bridge implementation moved in batch 1; FEAT-020 and BUG-005 native acceptance remains separate",
+    "Remaining root Python modules and integration tests not yet migrated",
+    "Independent writable data configuration not enabled for production consumers",
+    "Regular wheel-only deployment not supported; full source installation required"
+  ]
+}

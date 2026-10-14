@@ -20,6 +20,8 @@
 
 开发源码已实现 [FEAT-020 版本检查与提醒](docs/UPDATE_CHECK.md)，尚待 Creo 实机与发布验收；0.2.6 旧发布不包含此功能，需先手动升级一次才可收到后续更新提醒。
 
+DEV-002 已开始分批迁移：更新检查实现位于 `src/creo_mechdog/`，对应测试位于 `tests/unit/`。现有开发环境更新源码后先执行 `python -m pip install --no-deps -e .`；正常安装由 `setup.ps1` 完成包安装。根入口和数据位置继续保留，见 [迁移任务卡](docs/work-items/DEV-002.md)。
+
 ## 安装
 
 准备 Windows x64、Python 3.12+ x64、Creo Parametric 10 或 12 及匹配的 Toolkit SDK、MSVC x64 C++ 构建工具和可用的 PTC 许可。Creo 软件、SDK、模板和许可需要自行取得；MIT 适用于本项目代码、文档及种子库的原创内容，不提供 PTC 软件授权。第三方依赖和 PTC 前置条件见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

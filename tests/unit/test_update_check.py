@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock, Mock, patch
 import httpx2
 
 import server
-import update_check as updates
+from creo_mechdog import update_check as updates
 
 
 def release(tag="v0.3.0", *, prerelease=False, draft=False, published=True, assets=None):

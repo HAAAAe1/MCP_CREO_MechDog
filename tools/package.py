@@ -23,7 +23,6 @@ def source_files():
         "server.py",
         "bridge.py",
         "creo_startup.py",
-        "update_check.py",
         "seeds.py",
         "airfoil.py",
         "profile_checks.py",
@@ -46,6 +45,7 @@ def source_files():
     )
     files = [ROOT / name for name in names]
     for directory, extensions in {
+        "src/creo_mechdog": {".py"},
         "native": {".cpp", ".hpp", ".h"},
         "tools": {".py"},
         "tests": {".py"},
