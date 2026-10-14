@@ -1408,6 +1408,8 @@ async def creo_inspect_model(
     complete=false and next_cursor. Repeat with the same detail/section and cursor.
     Sections: features, dimensions, surfaces, edges, bodies, datum_planes,
     parameters, aliases, components, feature_geometry, sketch_dimensions.
+    Drawings also support sheets/views/notes/tables/models/shown_dimensions;
+    metadata preserves additional inspection fields.
     Feature sections omit nested collections, available separately. Pages are
     bound to the snapshot and limited to 32 KiB, default 50/max 200 records.
     Model changes invalidate cursors. Use refresh_model for live Creo inspection.

@@ -46,6 +46,14 @@ def model(count=3):
 
 
 class ModelQueryTests(unittest.TestCase):
+    def test_new_failed_model_does_not_claim_verified_saved_snapshot(self):
+        source = model()
+        source.update(status="failed", revision=0, inspection=None, part_file=None)
+        page = inspect_page(source)
+        self.assertEqual(page["snapshot"]["source"], "unavailable")
+        self.assertFalse(page["inspection"]["inspection_available"])
+        self.assertTrue(all(value is None for value in page["inspection"]["counts"].values()))
+
     def test_missing_and_empty_counts_are_distinct(self):
         state = inspection_summary({"features": [], "counts": {"surfaces": 5}})
         self.assertEqual(state["counts"]["features"], 0)
@@ -138,6 +146,28 @@ class ModelQueryTests(unittest.TestCase):
 
 
 class QueryClientTests(unittest.IsolatedAsyncioTestCase):
+    async def test_large_drawing_does_not_silently_drop_drawing_sections(self):
+        source = model()
+        source.update(model_type="drawing")
+        source["inspection"] = {
+            "model_type": "drawing",
+            "units": "mm",
+            "sheets": [{"sheet": 1}],
+            "views": [{"id": i, "name": "view" * 100} for i in range(100)],
+            "notes": [],
+            "tables": [{"id": 5, "cells": [["hello"]]}],
+            "models": [],
+            "shown_dimensions": [],
+            "new_metadata": {"state": "known"},
+        }
+
+        async def call(tool, arguments):
+            return inspect_page(source, arguments["detail"], cursor=arguments.get("cursor"))
+
+        result = await read_full_model(call, source["model_id"])
+        for key, value in source["inspection"].items():
+            self.assertEqual(result["inspection"][key], value)
+
     async def test_collect_all_sections_and_reassemble_nested_features(self):
         source = model(150)
 

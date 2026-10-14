@@ -56,6 +56,7 @@ async def read_full_model(
             "dimensions",
             "feature_geometry",
             "sketch_dimensions",
+            "metadata",
         ):
             state[name] = records
     for name in ("aliases", "parameters"):
@@ -63,6 +64,8 @@ async def read_full_model(
             target = result if name == "aliases" else state
             target[name] = {record["name"]: record["value"] for record in sections[name]}
     features = {f["id"]: f for f in state.get("features", [])}
+    for record in sections.get("metadata", []):
+        state[record["name"]] = record["value"]
     for name, field in (
         ("dimensions", "dimensions"),
         ("feature_geometry", "geometry_items"),

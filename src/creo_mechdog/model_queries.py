@@ -22,6 +22,13 @@ SECTIONS = (
     "components",
     "feature_geometry",
     "sketch_dimensions",
+    "sheets",
+    "views",
+    "notes",
+    "tables",
+    "models",
+    "shown_dimensions",
+    "metadata",
 )
 
 
@@ -83,8 +90,9 @@ def model_summary(model: dict[str, Any]) -> dict[str, Any]:
         if key in model
     }
     result["inspection"] = inspection_summary(model.get("inspection"))
+    saved = bool(model.get("inspection")) and bool(model.get("part_file"))
     result["snapshot"] = {
-        "source": "saved_verified",
+        "source": "saved_verified" if saved else "unavailable",
         "revision": model.get("revision"),
         "at": model.get("updated_at"),
         "live_state_verified": False,
@@ -118,6 +126,9 @@ def decode_cursor(cursor: str | None) -> dict[str, Any] | None:
 
 def section_records(model: dict[str, Any], section: str) -> list[Any] | None:
     state = model.get("inspection") or {}
+    if section == "metadata":
+        excluded = set(SECTIONS) | set(inspection_summary(state)) | {"counts"}
+        return [{"name": key, "value": val} for key, val in state.items() if key not in excluded]
     if section in ("aliases", "parameters"):
         values = model.get("aliases") if section == "aliases" else state.get("parameters")
         return (

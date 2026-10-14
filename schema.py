@@ -568,7 +568,7 @@ class LoftOp(StrictModel):
 
     @field_validator("sections", mode="before")
     @classmethod
-    def normalize_section_ids(cls, values):
+    def normalize_section_ids(cls, values: Any) -> Any:
         # Some public clients stringify integer branches of anyOf. Numeric
         # strings cannot be valid feature labels (labels start with a letter).
         if isinstance(values, list):
