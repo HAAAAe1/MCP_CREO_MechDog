@@ -42,6 +42,11 @@ static std::set<int> visited_edges;
 static std::wstring generic_job;
 static int temporarily_suppressed_loft = -1;
 static J operation_results = J::array();
+static std::string generic_phase = "loading_request";
+static void generic_stage(const std::string &phase) {
+    generic_phase = phase;
+    log("PHASE=%s\n", phase.c_str());
+}
 static V vec(const J &j) {
     return {j.at(0).get<double>(), j.at(1).get<double>(), j.at(2).get<double>()};
 }
@@ -119,8 +124,16 @@ static ProError dimension_cb(ProDimension *dim, ProError status, ProAppData data
     if (!e) {
         ProDimensionSymbolGet(dim, symbol);
         ProDimensionTypeGet(dim, &type);
+        ProBoolean relation_driven = PRO_B_FALSE;
+        ProError relation_code = ProDimensionIsReldriven(dim, &relation_driven);
         list->push_back(
-            {{"id", dim->id}, {"value", value}, {"symbol", utf8(symbol)}, {"type", (int)type}});
+            {{"id", dim->id},
+             {"value", value},
+             {"symbol", utf8(symbol)},
+             {"type", (int)type},
+             {"relation_query_code", relation_code},
+             {"relation_driven",
+              relation_code == PRO_TK_NO_ERROR ? J(relation_driven == PRO_B_TRUE) : J(nullptr)}});
     }
     return PRO_TK_NO_ERROR;
 }
@@ -315,12 +328,16 @@ static J inspection(bool require_healthy = true) {
         CK(ProSolidBodyStateGet(&list[i], &state));
         J b = {{"id", list[i].id}, {"state", (int)state}};
         if (state == PRO_BODY_STATE_ACTIVE) {
-            solid = true;
-            Pro3dPnt bounds[2];
-            CK(ProSolidBodyOutlineGet(&list[i], bounds));
-            b["bbox"] = J::array({xyz(bounds[0]), xyz(bounds[1])});
+            size_t previous_surfaces = gsurfaces.size();
             CK(ProSolidBodySurfaceVisit(&list[i], inspect_surface,
                                         (ProAppData)(intptr_t)list[i].id));
+            b["has_geometry"] = gsurfaces.size() > previous_surfaces;
+            if (b["has_geometry"].get<bool>()) {
+                solid = true;
+                Pro3dPnt bounds[2];
+                CK(ProSolidBodyOutlineGet(&list[i], bounds));
+                b["bbox"] = J::array({xyz(bounds[0]), xyz(bounds[1])});
+            }
         }
         bodies.push_back(b);
     }
@@ -965,6 +982,49 @@ static void extrude_or_revolve(const J &op, bool revolve) {
     if (active == 1 && !op.value("skip_empty_body_cleanup", false))
         remove_empty_body();
 }
+static bool hole_plane_normal(ProSelection selection, V &normal, const char *role) {
+    ProModelitem item;
+    CK(ProSelectionModelitemGet(selection, &item));
+    if (item.type != PRO_SURFACE)
+        return false; // Edge/axis references retain Toolkit's own validation.
+    ProSurface surface;
+    CK(ProSurfaceInit((ProSolid)board, item.id, &surface));
+    ProGeomitemdata *data = nullptr;
+    CK(ProSurfaceDataGet(surface, &data));
+    bool planar =
+        data && data->data.p_surface_data && data->data.p_surface_data->type == PRO_SRF_PLANE;
+    if (planar) {
+        const auto &plane = data->data.p_surface_data->srf_shape.plane;
+        normal = {plane.e3[0], plane.e3[1], plane.e3[2]};
+    }
+    if (data)
+        CK(ProGeomitemdataFree(&data));
+    if (!planar)
+        throw std::runtime_error(std::string("Linear hole ") + role +
+                                 " must be planar; use a plane/straight edge reference");
+    normal = normalized(normal);
+    return true;
+}
+static void validate_hole_planes(ProSelection face, ProSelection first, ProSelection second) {
+    V primary, normals[2];
+    if (!hole_plane_normal(face, primary, "placement"))
+        throw std::runtime_error("Linear hole placement must be a planar surface or datum plane");
+    bool planar[2] = {hole_plane_normal(first, normals[0], "reference1"),
+                      hole_plane_normal(second, normals[1], "reference2")};
+    for (int i = 0; i < 2; ++i) {
+        if (!planar[i])
+            continue;
+        V projected = add(normals[i], scale(primary, -dot(primary, normals[i])));
+        if (dot(projected, projected) < 1e-14)
+            throw std::runtime_error(
+                "Hole reference" + std::to_string(i + 1) +
+                " is parallel to placement; choose a plane crossing the placement plane");
+        normals[i] = normalized(projected);
+    }
+    if (planar[0] && planar[1] && fabs(dot(normals[0], normals[1])) > 1 - 1e-7)
+        throw std::runtime_error(
+            "Hole secondary planes do not provide independent location constraints");
+}
 static void generic_hole(const J &op) {
     ProElement root = node(nullptr, PRO_E_FEATURE_TREE);
     integer(root, PRO_E_FEATURE_TYPE, PRO_FEAT_HOLE);
@@ -988,26 +1048,41 @@ static void generic_hole(const J &op) {
     integer(com, PRO_E_HLE_ADD_PARAMETERS, PRO_HOLE_NO_PARAMETERS_FLAG);
     integer(com, PRO_E_HLE_ADD_NOTE, PRO_HOLE_NO_NOTE_FLAG);
     ProElement placement = node(root, PRO_E_HLE_PLACEMENT);
-    ProSelection face = resolve(op["placement"]), r1 = resolve(op["reference1"]),
-                 r2 = resolve(op["reference2"]);
-    ref(placement, PRO_E_HLE_PRIM_REF, face);
-    integer(placement, PRO_E_HLE_PL_TYPE, PRO_HLE_PL_TYPE_LIN);
-    ref(placement, PRO_E_HLE_DIM_REF1, r1);
-    ref(placement, PRO_E_HLE_DIM_REF2, r2);
-    double a = op.value("offset1", 0.0), b = op.value("offset2", 0.0);
-    integer(placement, PRO_E_HLE_PLC_ALIGN_OPT1,
-            a == 0 ? PRO_HLE_PLC_ALIGN : PRO_HLE_PLC_NOT_ALIGN);
-    integer(placement, PRO_E_HLE_PLC_ALIGN_OPT2,
-            b == 0 ? PRO_HLE_PLC_ALIGN : PRO_HLE_PLC_NOT_ALIGN);
-    real(placement, PRO_E_HLE_DIM_DIST1, a);
-    real(placement, PRO_E_HLE_DIM_DIST2, b);
-    integer(node(root, PRO_E_BODY), PRO_E_BODY_USE, PRO_BODY_USE_ALL);
-    ProFeature f = create(root);
-    CK(ProElementFree(&root));
-    ProSelectionFree(&face);
-    ProSelectionFree(&r1);
-    ProSelectionFree(&r2);
-    remember(op, f);
+    ProSelection face = nullptr, r1 = nullptr, r2 = nullptr;
+    try {
+        face = resolve(op["placement"]);
+        r1 = resolve(op["reference1"]);
+        r2 = resolve(op["reference2"]);
+        validate_hole_planes(face, r1, r2);
+        ref(placement, PRO_E_HLE_PRIM_REF, face);
+        integer(placement, PRO_E_HLE_PL_TYPE, PRO_HLE_PL_TYPE_LIN);
+        ref(placement, PRO_E_HLE_DIM_REF1, r1);
+        ref(placement, PRO_E_HLE_DIM_REF2, r2);
+        double a = op.value("offset1", 0.0), b = op.value("offset2", 0.0);
+        integer(placement, PRO_E_HLE_PLC_ALIGN_OPT1,
+                a == 0 ? PRO_HLE_PLC_ALIGN : PRO_HLE_PLC_NOT_ALIGN);
+        integer(placement, PRO_E_HLE_PLC_ALIGN_OPT2,
+                b == 0 ? PRO_HLE_PLC_ALIGN : PRO_HLE_PLC_NOT_ALIGN);
+        real(placement, PRO_E_HLE_DIM_DIST1, a);
+        real(placement, PRO_E_HLE_DIM_DIST2, b);
+        integer(node(root, PRO_E_BODY), PRO_E_BODY_USE, PRO_BODY_USE_ALL);
+        ProFeature f = create(root);
+        CK(ProElementFree(&root));
+        ProSelectionFree(&face);
+        ProSelectionFree(&r1);
+        ProSelectionFree(&r2);
+        remember(op, f);
+    } catch (...) {
+        if (face)
+            ProSelectionFree(&face);
+        if (r1)
+            ProSelectionFree(&r1);
+        if (r2)
+            ProSelectionFree(&r2);
+        if (root)
+            ProElementFree(&root);
+        throw;
+    }
 }
 static void curve_collection(ProElement element, const J &refs) {
     ProCollection coll;
@@ -1482,6 +1557,12 @@ static void execute_operation(const J &op) {
         for (auto v : op["values"]) {
             ProDimension d;
             CK(ProModelitemInit(board, v["id"], PRO_DIMENSION, &d));
+            ProBoolean relation_driven = PRO_B_FALSE;
+            CK(ProDimensionIsReldriven(&d, &relation_driven));
+            if (relation_driven)
+                throw std::runtime_error("Dimension " + std::to_string(v["id"].get<int>()) +
+                                         " is controlled by relations; edit its driving parameter "
+                                         "or relation instead");
             CK(ProDimensionValueSet(&d, v["value"]));
         }
     } else if (kind == "set_sketch_dimensions") {
@@ -1673,12 +1754,16 @@ static std::wstring latest_model_file() {
 }
 static int run_generic(const std::wstring &job) {
     generic_job = job;
+    generic_phase = "loading_request";
+    last_toolkit_error.clear();
     J report = {{"success", false},
                 {"saved_file_reloaded_and_verified", false},
                 {"rollback_succeeded", false}};
     J request;
     ProProcessHandle process = {};
     bool connected = false, mutated = false;
+    int operation_index = -1;
+    bool executing_operation = false;
     std::wstring checkpoint;
     board_log = _wfsopen((job + L"\\native.log").c_str(), L"w", _SH_DENYNO);
     if (!board_log)
@@ -1696,6 +1781,7 @@ static int run_generic(const std::wstring &job) {
             checkpoint = wide(model["part_file"]);
         char empty[] = "";
         ProBoolean random = PRO_B_FALSE;
+        generic_stage("connect");
         CK(connect_creo(&process));
         connected = true;
         report["connected"] = true;
@@ -1753,6 +1839,7 @@ static int run_generic(const std::wstring &job) {
         CK(ProUnitsystemUnitGet(&us, PRO_UNITTYPE_LENGTH, &unit));
         if (wcscmp(unit.name, L"mm"))
             throw std::runtime_error("Expected millimeter model units");
+        generic_stage("loaded_blend_validation");
         report["loft_checks"]["loaded"] = verify_loft_settings(L"loaded");
         J seed_profiles;
         if (request.contains("loft_seed")) {
@@ -1762,10 +1849,16 @@ static int run_generic(const std::wstring &job) {
             suppress_seed_for_profiles(request["loft_seed"]["feature_id"], true);
         }
         for (auto op : request["operations"]) {
+            ++operation_index;
+            executing_operation = true;
+            generic_stage("execute_" + op["op"].get<std::string>());
+            log("OPERATION_INDEX=%d INPUT=%s\n", operation_index, op.dump().c_str());
             if (!request.value("readonly", false))
                 mutated = true;
             execute_operation(op);
+            executing_operation = false;
         }
+        generic_stage("verify_model");
         if (request.contains("loft_seed")) {
             suppress_seed_for_profiles(request["loft_seed"]["feature_id"], false);
             bind_loft_seed(request["loft_seed"], seed_profiles);
@@ -1778,8 +1871,9 @@ static int run_generic(const std::wstring &job) {
         verify_assertions(state, request.value("assertions", J::object()));
         std::wstring saved = checkpoint;
         if (!request.value("readonly", false)) {
+            generic_stage("before_save_blend_validation");
             report["loft_checks"]["before_save"] = verify_loft_settings(L"before_save");
-            log("PHASE=save_and_reload\n");
+            generic_stage("save_and_reload");
             ProPath destination;
             path(destination, folder);
             CK(ProMdlnameBackup(board, destination));
@@ -1794,9 +1888,14 @@ static int run_generic(const std::wstring &job) {
             state = inspection();
             verify_saved(before, state);
             verify_assertions(state, request.value("assertions", J::object()));
+            generic_stage("after_reload_blend_validation");
             report["loft_checks"]["after_reload"] = verify_loft_settings(L"after_reload");
             report["saved_file_reloaded_and_verified"] = true;
         }
+        state["inspection_source"] =
+            request.value("readonly", false) ? "live_query" : "saved_reloaded";
+        state["inspection_available"] = true;
+        generic_stage("display_preview");
         CK(ProMdlDisplay(board));
         CK(ProMdlWindowGet(board, &win));
         CK(ProWindowCurrentSet(win));
@@ -1821,13 +1920,25 @@ static int run_generic(const std::wstring &job) {
         log("BUILD_SUCCESS=1\n");
     } catch (ProError error) {
         report["toolkit_code"] = error;
-        report["message"] =
-            "Toolkit operation failed; inspect native.log and its element error list";
+        report["message"] = "Toolkit call " + last_toolkit_error + " failed with code " +
+                            std::to_string(error) + " during " + generic_phase;
         log("BUILD_FAILED=%d\n", error);
     } catch (const std::exception &error) {
         report["message"] = error.what();
         report["toolkit_code"] = PRO_TK_GENERAL_ERROR;
         log("BUILD_FAILED=%s\n", error.what());
+    }
+    if (!report["success"].get<bool>()) {
+        report["failed_stage"] = generic_phase;
+        report["failed_toolkit_call"] =
+            last_toolkit_error.empty() ? J(nullptr) : J(last_toolkit_error);
+        report["failed_operation_index"] = executing_operation ? J(operation_index) : J(nullptr);
+        // An intermediate inspection is useful diagnostic evidence but is not
+        // the restored/current model. Publish it separately, never as a baseline.
+        if (report.contains("inspection"))
+            report["failure_inspection"] = report["inspection"];
+        report["inspection"] = nullptr;
+        report["inspection_source"] = "unavailable";
     }
     if (!report["success"].get<bool>() && connected && mutated && !checkpoint.empty()) {
         log("PHASE=rollback_to_saved_checkpoint\n");
@@ -1840,10 +1951,16 @@ static int run_generic(const std::wstring &job) {
         if (!loaded) {
             try {
                 CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
-                verify_saved(request["model"]["inspection"], inspection());
+                J restored = inspection();
+                verify_saved(request["model"]["inspection"], restored);
                 aliases = request["model"]["aliases"];
                 report["loft_checks"]["rollback"] = verify_loft_settings(L"rollback");
-                ProMdlDisplay(board);
+                CK(ProMdlDisplay(board));
+                restored["inspection_source"] = "rollback_verified";
+                restored["inspection_available"] = true;
+                report["inspection"] = restored;
+                report["inspection_source"] = "rollback_verified";
+                report["aliases"] = aliases;
                 report["rollback_succeeded"] = true;
             } catch (const std::exception &e) {
                 report["rollback_message"] = e.what();

@@ -132,6 +132,24 @@ static void generic_boolean(const J &op) {
     remember(op, f);
 }
 static void generic_rib(const J &op) {
+    J state = inspection();
+    if (!state["has_solid"].get<bool>())
+        throw std::runtime_error(
+            "Rib requires an existing solid body and an intersecting open profile");
+    int sketch_id = feature_id(op["sketch"]);
+    for (const auto &meta : aliases) {
+        if (meta.value("feature_id", -1) != sketch_id || !meta.contains("geometry"))
+            continue;
+        for (const auto &entity : meta["geometry"]) {
+            if (entity.value("construction", false) || entity.value("type", "") == "centerline")
+                continue;
+            std::string kind = entity.value("type", "");
+            if (kind == "circle" || kind == "ellipse" || kind == "rectangle" ||
+                ((kind == "polyline" || kind == "spline") && entity.value("closed", false)))
+                throw std::runtime_error(
+                    "Rib requires an open profile; closed sketch contours are not accepted");
+        }
+    }
     ProElement root = node(nullptr, PRO_E_FEATURE_TREE);
     integer(root, PRO_E_FEATURE_TYPE, PRO_FEAT_RIB);
     integer(root, PRO_E_FEATURE_FORM, PRO_EXTRUDE);
@@ -141,8 +159,8 @@ static void generic_rib(const J &op) {
     ProSelection s = selection(feature_id(op["sketch"]), PRO_FEATURE);
     ref(node(section, PRO_E_STD_SECTION), PRO_E_SEC_USE_SKETCH, s);
     ProSelectionFree(&s);
-    integer(section, PRO_E_STD_MATRLSIDE,
-            op.value("flip", false) ? PRO_RIB_SEC_SIDE_TWO : PRO_RIB_SEC_SIDE_ONE);
+    // ProRib.h: material side is ignored until the standard section is fully
+    // defined. Apply the requested side to the extracted native section below.
     real(root, PRO_E_RIB_THICKNESS, op["thickness"]);
     std::string side = op["side"];
     integer(root, PRO_E_RIB_SIDE_OPTS,
@@ -156,5 +174,10 @@ static void generic_rib(const J &op) {
                             op.value("flip", false) ? PRO_RIB_SEC_SIDE_TWO : PRO_RIB_SEC_SIDE_ONE));
     redefine(&f, root);
     CK(ProFeatureElemtreeFree(&f, root));
+    ProFeatStatus status;
+    CK(ProFeatureStatusGet(&f, &status));
+    if (status != PRO_FEAT_ACTIVE)
+        throw std::runtime_error("Rib regeneration failed on the requested material side; check "
+                                 "profile/body intersection, flip and thickness side");
     remember(op, f);
 }

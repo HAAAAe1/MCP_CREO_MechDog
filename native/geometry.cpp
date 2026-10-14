@@ -63,10 +63,13 @@ static void log(const char *fmt, ...) {
     va_end(a);
     fflush(board_log);
 }
+static std::string last_toolkit_error;
 static void check(ProError e, const char *op) {
     log("%s=%d\n", op, e);
-    if (e != PRO_TK_NO_ERROR)
+    if (e != PRO_TK_NO_ERROR) {
+        last_toolkit_error = op;
         throw e;
+    }
 }
 #define CK(x) check((x), #x)
 static ProElement node(ProElement parent, int id) {
