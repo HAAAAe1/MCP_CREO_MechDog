@@ -130,7 +130,7 @@ def install_seed_library(directory: str | None = None, archive_file: str | None 
         if not source.is_absolute() or not source.is_file():
             raise ValueError("archive_file must be an existing absolute local ZIP path")
         # Accept only the published library, not arbitrary executable ZIP contents.
-        expected_digest = "72b291e6b839cf41eaa8e86fd40897a3bb190e57cb6d4560dabc9aa8fc459fce"
+        expected_digest = "9928ed610478ec8fffcc78a8e7925b7f980464276a207a69aa635cfa3a8d1de6"
         if hashlib.sha256(source.read_bytes()).hexdigest() != expected_digest:
             raise ValueError("Archive SHA256 differs from the published MIT seed library")
         if destination.exists():
