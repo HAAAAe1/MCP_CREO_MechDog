@@ -1,0 +1,28 @@
+{
+  "work_item": "FEAT-019",
+  "date": "2026-10-13",
+  "origin": "User-provided WorkBuddy MCP-only final acceptance",
+  "report": {
+    "source_path": "E:\\Projects\\workcreo\\FEAT-019_建模验收报告.md",
+    "archive": "docs/validation/FEAT-019-WorkBuddy-report.md",
+    "sha256": "092e4baec167fbd4579150c3fd358d3bebf4a9e8c6a5d742d3c0dc3273f50961"
+  },
+  "artifacts": [
+    {
+      "name": "feat019_probe.stp",
+      "bytes": 9970,
+      "sha256": "f45722d9ef5095d70ed89fb195b9e95a8a5dd22c4cde99b41e08646312703e5f"
+    },
+    {
+      "name": "feat019_probe_preview.jpg",
+      "bytes": 15474,
+      "sha256": "d183c605ccdfd7338551745dc601e90aaa65deb7791406e67a3daf4e302e09f5"
+    },
+    {
+      "name": "feature_49.xml",
+      "bytes": 6785,
+      "sha256": "636aafede5083ca3d78af2fd46730c5bbf4ff5391b0e432e445a2fb913442c0e"
+    }
+  ],
+  "policy": "Binary previews and test geometry remain in the original local directory; only report and hashes are committed."
+}

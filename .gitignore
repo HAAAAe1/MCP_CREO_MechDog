@@ -14,3 +14,4 @@ native/constants.inc
 *.zip
 *.sha256
 .pytest_cache/
+.ruff_cache/

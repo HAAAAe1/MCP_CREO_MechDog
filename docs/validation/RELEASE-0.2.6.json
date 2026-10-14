@@ -1,0 +1,244 @@
+{
+  "work_item": "DEV-011",
+  "version": "0.2.6",
+  "date": "2026-10-14",
+  "release_kind": "pre-release",
+  "included_branch_heads": {
+    "codex/development-standards": "de78847",
+    "codex/bug-002-registry-write": "0702029",
+    "codex/feat-019-creo-autostart": "d0f841a"
+  },
+  "environment": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14",
+    "creo": "12.4.0.0",
+    "sdk": "matching Creo 12.4 SDK",
+    "compiler": "VS 2022 x64; installer preflight passed"
+  },
+  "development_check": {
+    "work_item": "DEV-011",
+    "version": "0.2.6",
+    "timestamp_utc": "2026-10-14T01:16:09.196740+00:00",
+    "environment": {
+      "os": "Windows",
+      "python": "3.12.14"
+    },
+    "source": {
+      "commit": "3fa635f1219218d247ca8c6b35af67675d8aec7c",
+      "dirty": false,
+      "checked_source_sha256": "0317ba4787af1844ca0c5ac13d24873a12c50222bf39dd9dfdce5f2d585c6b8f"
+    },
+    "native_validation": "not_run",
+    "unit_tests": "passed",
+    "success": true,
+    "style_summary": {
+      "lint_findings": 70,
+      "unformatted_files": 52,
+      "cpp_files_checked": 15,
+      "python_files_checked": 53
+    },
+    "tools": {
+      "ruff": "0.17.0",
+      "clang-format": "23.1.3"
+    },
+    "configuration": {
+      "pyproject.toml": "0b5551fbf14055060e36a829d48aaee700f44dfdb2336027393af45ce5691060",
+      ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+      "requirements-dev.txt": "5ad03a1fbb24e3e72d8cc46afb089bb9c1d0a2ff715b563ee5958cf7b8f199f1"
+    }
+  },
+  "unit_test_report": {
+    "version": "0.2.6",
+    "timestamp": 1791940587.488205,
+    "tests_run": 121,
+    "success": true,
+    "failures": 0,
+    "errors": 0
+  },
+  "runtime_normalized_sha256": {
+    "airfoil.py": "92432a354ccd19060370fd4a19bf184a785af34ac5b46ec058ce17790428403f",
+    "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+    "capabilities.py": "43980fe5b39407a46b1a87d6dad94ecd90e37d939fa738e188aa347f75ca6593",
+    "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+    "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+    "native/advanced.cpp": "4eefd397f6694d1bef185bd47ed7cbc530cc80e600337a1c1dd375c679f67d4d",
+    "native/blend_create.cpp": "7c07275e0ef786c359379f13ce826420916a6383d66230900e9ce26b6f063be3",
+    "native/blend_sync.cpp": "882d59ad6d0f1942f254fb7f7ed97286e3e099306016e9537997c63c43b490d2",
+    "native/drawing.cpp": "0f57da831a390b33b5998e6b277633f6458b257094b5004aa0efeb1820aec78a",
+    "native/generic.cpp": "79759cfc86e75b88c36756f7cb1e3064aa4ac68c121f90494f92320ecb0cbcc0",
+    "native/geometry.cpp": "b245c9819e8812b258f71c400675f29731f853dcb52fbbc89a6bc56a40a48a31",
+    "native/loft_mode.cpp": "dc55dde3632e0b214a5fd5066157e876ab56ce72d5850d25c63bc09b669f7dc6",
+    "native/loft_seed.cpp": "aee4e53e8418d7b5c57a50bc8797c1f1a9ee71b24818d31bd4d77e171f1bd888",
+    "native/placement.cpp": "87b732b85a0a0581e2a07d82c7c893f17756d90d8869bdd41b2608db031d325d",
+    "native/sketch_coordinates.cpp": "e229ea20e83c0ba9e3780a2c17cff18d178cc6d3baebdc0bc2d0ce43eba4ba85",
+    "native/sketch_edit.cpp": "f7ec7be57782c73f26cbb179601429a2405942a0db0ea3b6b61116895f7fb51f",
+    "native/sketch_solver.cpp": "1cfc3f60b26f5bc2442a6fb6ccdb3a38c7fefe389ca001b8805035b4cdd9d224",
+    "native/surfaces.cpp": "37c2b70fb4904a2cc2fe03d34be202a0130af416e0b6b454235ff04e811b2d7a",
+    "native/udf.cpp": "f0e076a63b1bc6a9fa1c44665dffcbbaa6806ec3242b1b091145deaf6d0fa736",
+    "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229",
+    "profile_checks.py": "b52afbc4674dc55afbd752de106cce5d9d5f7165e16bedae05f69bf8945eea21",
+    "schema.py": "58e9bcc01e25da90dd84b1d26d42652ea0b401162b72beea8674bf76e01828fe",
+    "seeds.py": "c05804c3e16843ebcca5c4e88858c8725935710042656123330a4d79627bb599",
+    "server.py": "bc04ea8f1dccaa2470728794b862cc2c1e72099ca118891162c579a7683d8266",
+    "version.py": "e435cf56bd44265eea70a5d9b0a690e41df6c97f4690b33509d1659baa046e59"
+  },
+  "runtime_unchanged_since_d0f841a_except_seed_distribution_and_version": {
+    "airfoil.py": true,
+    "bridge.py": true,
+    "capabilities.py": true,
+    "creo_startup.py": true,
+    "generic_bridge.py": true,
+    "native/advanced.cpp": true,
+    "native/blend_create.cpp": true,
+    "native/blend_sync.cpp": true,
+    "native/drawing.cpp": true,
+    "native/generic.cpp": true,
+    "native/geometry.cpp": true,
+    "native/loft_mode.cpp": true,
+    "native/loft_seed.cpp": true,
+    "native/placement.cpp": true,
+    "native/sketch_coordinates.cpp": true,
+    "native/sketch_edit.cpp": true,
+    "native/sketch_solver.cpp": true,
+    "native/surfaces.cpp": true,
+    "native/udf.cpp": true,
+    "native/worker.cpp": true,
+    "profile_checks.py": true,
+    "schema.py": true,
+    "server.py": true
+  },
+  "native_build": {
+    "command": ".venv/Scripts/python.exe bridge.py build",
+    "success": true,
+    "worker_sha256": "3528e876af1c472cc47d57e755b7c65b646a90e30331fac36003441e19c7b8ba",
+    "blend_dll_sha256": "20b59bffb9f46eceeb9adca934a96f12d23976921a26acbe91eba1199b4c420c"
+  },
+  "native_startup_retry": {
+    "work_item": "FEAT-019",
+    "version": "0.2.6",
+    "timestamp_utc": "2026-10-14T01:13:35.482278+00:00",
+    "command": [
+      "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+      "E:\\Projects\\MCP_CREO_MechDog\\tools\\test_creo_startup.py",
+      "--retry",
+      "--output",
+      "build/release-0.2.6/startup-retry.json"
+    ],
+    "source": {
+      "commit": "5276e85c3776d9ee647d4481d0bda9c9fe93f9c5",
+      "dirty": false,
+      "fingerprints": {
+        "server.py": "bc04ea8f1dccaa2470728794b862cc2c1e72099ca118891162c579a7683d8266",
+        "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+        "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+        "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229",
+        "tools/test_creo_startup.py": "45c13775b0811fa02dcc0ec79fa80539724f8657e140e0bde6f52fbf4b574ac9"
+      }
+    },
+    "environment": {
+      "os": "Windows-11-10.0.26100-SP0",
+      "python": "3.12.14",
+      "creo_root": "C:\\Program Files\\PTC\\Creo 12.4.0.0",
+      "creo": "12.4.0.0"
+    },
+    "initial_creo_process_count": 0,
+    "initial_inventory_uncertain": false,
+    "cold_start": true,
+    "clients": [],
+    "jobs": [],
+    "success": false,
+    "handshake_seconds": [
+      1.25,
+      1.2970000000004802
+    ],
+    "modeling_before_ready": {
+      "startup_state": "waiting_for_connection",
+      "is_error": true,
+      "content": [
+        {
+          "type": "text",
+          "text": "Error executing tool creo_new_part: Creo is not ready (waiting_for_connection): Creo is starting or awaiting interaction; Toolkit has not confirmed readiness. Check startup dialogs if this persists; poll creo_startup_status. No modeling job was queued.",
+          "annotations": null,
+          "meta": null
+        }
+      ]
+    },
+    "protocol_version": "2026-07-28",
+    "error": {
+      "type": "ExceptionGroup",
+      "message": "unhandled errors in a TaskGroup (1 sub-exception)"
+    },
+    "creo_worker.exe_sha256": "3528e876af1c472cc47d57e755b7c65b646a90e30331fac36003441e19c7b8ba",
+    "creo_blend_sync.dll_sha256": "20b59bffb9f46eceeb9adca934a96f12d23976921a26acbe91eba1199b4c420c"
+  },
+  "native_startup_raw_console": "startup=waiting_for_connection Creo is starting or awaiting interaction; Toolkit has not confirmed readiness. Check startup dialogs if this persists\nstartup=waiting_for_connection Creo is starting or awaiting interaction; Toolkit has not confirmed readiness. Check startup dialogs if this persists\nWARNING:creo_startup:Creo startup failed (TimeoutExpired)\nstartup=configuration_error Startup preparation failed (TimeoutExpired); check installation/configuration and build logs\nstartup=building_worker Preparing the native connection worker\nFEAT-019 startup validation: success=False; report=build\\release-0.2.6\\startup-retry.json\n",
+  "mcp_protocol": {
+    "command": ".venv/Scripts/python.exe build/release-0.2.6/probe_mcp.py",
+    "version": "0.2.6",
+    "tool_count": 81,
+    "seed_count": 9,
+    "runtime_source_drift": false,
+    "native_connected": false
+  },
+  "distribution": {
+    "work_item": "DEV-011",
+    "version": "0.2.6",
+    "success": true,
+    "seed_count": 9,
+    "seed_hashes_verified": true,
+    "source_allowlist_verified": true,
+    "licenses_verified": true,
+    "current_document_links_verified": true,
+    "actual_seed_zip_install_into_empty_directory": true,
+    "seed_archive_sha256": "9928ed610478ec8fffcc78a8e7925b7f980464276a207a69aa635cfa3a8d1de6"
+  },
+  "installation": {
+    "check_only_success": true,
+    "full_fresh_install_and_modeling": "not_run"
+  },
+  "extracted_candidate_check": {
+    "work_item": "DEV-011",
+    "version": "0.2.6",
+    "timestamp_utc": "2026-10-14T01:14:06.036307+00:00",
+    "environment": {
+      "os": "Windows",
+      "python": "3.12.14"
+    },
+    "source": {
+      "commit": null,
+      "dirty": null,
+      "checked_source_sha256": "2f08efa7ca559d1bda796ae6557cac53a96a1dd448d40d478836875e46521745"
+    },
+    "native_validation": "not_run",
+    "unit_tests": "passed",
+    "success": true,
+    "style_summary": {
+      "lint_findings": 70,
+      "unformatted_files": 52,
+      "cpp_files_checked": 15,
+      "python_files_checked": 53
+    },
+    "tools": {
+      "ruff": "0.17.0",
+      "clang-format": "23.1.3"
+    },
+    "configuration": {
+      "pyproject.toml": "0b5551fbf14055060e36a829d48aaee700f44dfdb2336027393af45ce5691060",
+      ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+      "requirements-dev.txt": "5ad03a1fbb24e3e72d8cc46afb089bb9c1d0a2ff715b563ee5958cf7b8f199f1"
+    }
+  },
+  "not_verified": [
+    "Creo 10 formal baseline",
+    "current native modeling geometry, parameter editing, saved reload, rollback after failed Toolkit startup",
+    "true multi-client concurrent startup",
+    "successful reconnect after all clients exit",
+    "full modeling families and parameter branches",
+    "full fresh setup followed by modeling"
+  ],
+  "historical_evidence": {
+    "BUG-002": "docs/validation/BUG-002.md, original 2026-10-13 Creo 12.4 evidence",
+    "FEAT-019": "docs/validation/FEAT-019.md, original 2026-10-13 accepted WorkBuddy evidence"
+  },
+  "archive_checksums": "Final source and seed ZIP SHA256 are published in their .zip.sha256 sidecars and GitHub Release body; the source archive cannot embed its own final checksum."
+}

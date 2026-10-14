@@ -1,20 +1,25 @@
 """Local, file-backed job runner for the Creo Toolkit worker. Never logs licenses."""
+
 from __future__ import annotations
 
 import argparse
-from contextlib import contextmanager
-from datetime import datetime, timezone
+import ctypes
 import hashlib
 import json
 import math
 import msvcrt
 import os
-from pathlib import Path
 import re
+import stat
 import subprocess
 import sys
 import time
 import uuid
+from contextlib import contextmanager
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import TextIO
+
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS
 
 ROOT = Path(__file__).resolve().parent
@@ -22,25 +27,163 @@ JOBS = ROOT / "jobs"
 HIDDEN = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
 JOB_ID = re.compile(r"[a-f0-9]{32}\Z")
 MODEL_NAME = re.compile(r"[a-z][a-z0-9_]{0,30}\Z")
+JSON_REPLACE_TIMEOUT = 1.0
+JSON_REPLACE_MAX_ATTEMPTS = 25
+
+if os.name == "nt":
+    from ctypes import wintypes
+
+    _kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    _create_file = _kernel32.CreateFileW
+    _create_file.argtypes = (
+        wintypes.LPCWSTR,
+        wintypes.DWORD,
+        wintypes.DWORD,
+        wintypes.LPVOID,
+        wintypes.DWORD,
+        wintypes.DWORD,
+        wintypes.HANDLE,
+    )
+    _create_file.restype = wintypes.HANDLE
+    _close_handle = _kernel32.CloseHandle
+    _close_handle.argtypes = (wintypes.HANDLE,)
+    _close_handle.restype = wintypes.BOOL
+    _set_file_information = _kernel32.SetFileInformationByHandle
+    _set_file_information.argtypes = (
+        wintypes.HANDLE,
+        ctypes.c_int,
+        wintypes.LPVOID,
+        wintypes.DWORD,
+    )
+    _set_file_information.restype = wintypes.BOOL
+
+    class _FileRenameInfo(ctypes.Structure):
+        _fields_ = (
+            ("flags", wintypes.DWORD),
+            ("root_directory", wintypes.HANDLE),
+            ("name_length", wintypes.DWORD),
+            ("name", wintypes.WCHAR * 1),
+        )
 
 
 def now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _open_json_reader(path: Path) -> TextIO:
+    if os.name != "nt":
+        return path.open(encoding="utf-8-sig")
+    # CRT readers omit FILE_SHARE_DELETE and can block an otherwise atomic rename.
+    # Share read/write/delete; the handle still reads one complete file version.
+    handle = _create_file(str(path), 0x80000000, 0x1 | 0x2 | 0x4, None, 3, 0x80, None)
+    if handle == ctypes.c_void_p(-1).value:
+        error = ctypes.WinError(ctypes.get_last_error())
+        error.filename = str(path)
+        raise error
+    try:
+        descriptor = msvcrt.open_osfhandle(handle, os.O_RDONLY | os.O_BINARY)
+    except BaseException:
+        _close_handle(handle)
+        raise
+    # open_osfhandle transfers ownership to the descriptor; never close both.
+    try:
+        return os.fdopen(descriptor, encoding="utf-8-sig")
+    except BaseException:
+        os.close(descriptor)
+        raise
+
+
 def read_json(path: Path) -> dict:
-    return json.loads(path.read_text(encoding="utf-8-sig"))
+    with _open_json_reader(path) as stream:
+        return json.load(stream)
+
+
+def _atomic_replace(temp: Path, path: Path) -> None:
+    if os.name != "nt":
+        os.replace(temp, path)
+        return
+    # MoveFileEx (os.replace) rejects an open destination even with shared delete.
+    # FileRenameInfoEx replaces in one filesystem operation, keeping old readers
+    # on the old file. Do not use ReplaceFileW: some failures remove the target.
+    handle = _create_file(str(temp), 0x10000, 0x1 | 0x2 | 0x4, None, 3, 0x80, None)
+    if handle == ctypes.c_void_p(-1).value:
+        error = ctypes.WinError(ctypes.get_last_error())
+        error.filename = str(temp)
+        raise error
+    try:
+        name = str(path.absolute()).encode("utf-16-le")
+        buffer = ctypes.create_string_buffer(
+            max(ctypes.sizeof(_FileRenameInfo), _FileRenameInfo.name.offset + len(name) + 2)
+        )
+        info = _FileRenameInfo.from_buffer(buffer)
+        info.flags = 0x1 | 0x2  # REPLACE_IF_EXISTS | POSIX_SEMANTICS; respects read-only/ACLs.
+        info.name_length = len(name)
+        ctypes.memmove(ctypes.addressof(buffer) + _FileRenameInfo.name.offset, name, len(name))
+        if not _set_file_information(handle, 22, buffer, len(buffer)):  # FileRenameInfoEx
+            code = ctypes.get_last_error()
+            if code in (1, 50, 87):  # Filesystem/Windows lacks the extended rename API.
+                os.replace(temp, path)
+            else:
+                error = ctypes.WinError(code)
+                error.filename = str(temp)
+                error.filename2 = str(path)
+                raise error
+    finally:
+        _close_handle(handle)
+
+
+def _replace_json(temp: Path, path: Path) -> None:
+    deadline = time.monotonic() + JSON_REPLACE_TIMEOUT
+    delay = 0.005
+    for attempt in range(1, JSON_REPLACE_MAX_ATTEMPTS + 1):
+        try:
+            _atomic_replace(temp, path)
+            return
+        except OSError as exc:
+            winerror = getattr(exc, "winerror", None)
+            retryable = os.name == "nt" and winerror in (5, 32, 33)
+            # WinError 5 also covers permanent ACL/read-only failures. Read-only
+            # is identifiable; ambiguous ACL/external-handle cases share a bound.
+            if retryable and winerror == 5:
+                try:
+                    retryable = not (path.stat().st_file_attributes & stat.FILE_ATTRIBUTE_READONLY)
+                except OSError:
+                    retryable = False
+            remaining = deadline - time.monotonic()
+            if not retryable or remaining <= 0 or attempt == JSON_REPLACE_MAX_ATTEMPTS:
+                exc.add_note(
+                    f"JSON atomic replace failed: {path}; attempts={attempt}; budget={JSON_REPLACE_TIMEOUT}s"
+                )
+                raise
+            time.sleep(min(delay, remaining))
+            delay = min(delay * 2, 0.05)
 
 
 def write_json(path: Path, value: dict) -> None:
+    content = json.dumps(value, ensure_ascii=False, indent=2)
     temp = path.with_suffix(path.suffix + f".{uuid.uuid4().hex}.tmp")
-    temp.write_text(json.dumps(value, ensure_ascii=False, indent=2), encoding="utf-8")
-    os.replace(temp, path)
+    owned = False
+    try:
+        with temp.open("x", encoding="utf-8") as stream:
+            owned = True
+            stream.write(content)
+        _replace_json(temp, path)
+    except BaseException as exc:
+        if owned:
+            try:
+                temp.unlink(missing_ok=True)
+            except OSError as cleanup_error:
+                exc.add_note(
+                    f"Could not remove this writer's temporary file {temp}: {cleanup_error}"
+                )
+        raise
 
 
 def config() -> dict:
     if not (ROOT / "config.json").is_file():
-        raise ValueError("Missing config.json: run setup.ps1, or copy config.example.json and set your installation paths")
+        raise ValueError(
+            "Missing config.json: run setup.ps1, or copy config.example.json and set your installation paths"
+        )
     value = read_json(ROOT / "config.json")
     for key in ("creo_root", "vcvars64"):
         if any(c in value[key] for c in '\r\n"%'):
@@ -50,15 +193,23 @@ def config() -> dict:
 
 def job_path(job_id: str) -> Path:
     if not JOB_ID.fullmatch(job_id):
-        raise ValueError("job_id must be the 32 hexadecimal characters returned by an MCP modeling tool")
+        raise ValueError(
+            "job_id must be the 32 hexadecimal characters returned by an MCP modeling tool"
+        )
     path = JOBS / job_id
     if path.is_symlink() or path.is_junction():
         raise ValueError("Job directories cannot be links")
     return path
 
 
-def validate_spec(length: float, width: float, thickness: float, radius: float,
-                  holes: list[dict], model_name: str | None = None) -> dict:
+def validate_spec(
+    length: float,
+    width: float,
+    thickness: float,
+    radius: float,
+    holes: list[dict],
+    model_name: str | None = None,
+) -> dict:
     values = {"length": length, "width": width, "thickness": thickness, "radius": radius}
     for name, v in values.items():
         if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v):
@@ -68,7 +219,9 @@ def validate_spec(length: float, width: float, thickness: float, radius: float,
     if radius < 0 or radius >= min(length, width) / 2:
         raise ValueError("corner_radius must be >= 0 and less than half the shorter side")
     if model_name is not None and not MODEL_NAME.fullmatch(model_name):
-        raise ValueError("model_name: lowercase letter followed by lowercase letters, digits or _, max 31 characters")
+        raise ValueError(
+            "model_name: lowercase letter followed by lowercase letters, digits or _, max 31 characters"
+        )
     if len(holes) > 50:
         raise ValueError("At most 50 through holes are supported")
     checked: list[dict] = []
@@ -86,7 +239,10 @@ def validate_spec(length: float, width: float, thickness: float, radius: float,
         if signed_distance + h["diameter"] / 2 >= -1e-4:
             raise ValueError(f"Hole {i + 1} intersects or touches the outer boundary")
         for j, prior in enumerate(checked):
-            if math.hypot(h["x"] - prior["x"], h["y"] - prior["y"]) <= (h["diameter"] + prior["diameter"]) / 2 + 1e-4:
+            if (
+                math.hypot(h["x"] - prior["x"], h["y"] - prior["y"])
+                <= (h["diameter"] + prior["diameter"]) / 2 + 1e-4
+            ):
                 raise ValueError(f"Holes {j + 1} and {i + 1} overlap or touch")
         checked.append({k: float(v) for k, v in h.items()})
     return {**{k: float(v) for k, v in values.items()}, "holes": checked, "model_name": model_name}
@@ -97,10 +253,7 @@ def toolkit_lock(wait_seconds: float = 0):
     """Serialize all native calls across MCP clients and detached jobs."""
     lock = ROOT / "toolkit.lock"
     with lock.open("a+b") as f:
-        f.seek(0, 2)
-        if f.tell() == 0:
-            f.write(b"0")
-            f.flush()
+        # Windows byte-range locking also covers empty files; no pre-lock write.
         deadline = time.monotonic() + wait_seconds
         while True:
             try:
@@ -109,13 +262,19 @@ def toolkit_lock(wait_seconds: float = 0):
                 break
             except OSError:
                 if time.monotonic() >= deadline:
-                    raise RuntimeError("Creo Toolkit is busy with another task; query its job and try later")
+                    raise ToolkitBusy(
+                        "Creo Toolkit is busy with another task; query its job and try later"
+                    )
                 time.sleep(0.25)
         try:
             yield
         finally:
             f.seek(0)
             msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
+
+
+class ToolkitBusy(RuntimeError):
+    """A native call is active; startup must wait without launching another Creo."""
 
 
 def license_setting_state(value: str | None) -> str:
@@ -157,29 +316,97 @@ def resolve_license_environment() -> tuple[str | None, dict]:
                 psf_value = match[1].strip()
                 break
     psf_state = license_setting_state(psf_value)
-    use_psf = env_state in ("unset", "missing_local_path") and psf_state not in ("unset", "missing_local_path")
+    use_psf = env_state in ("unset", "missing_local_path") and psf_state not in (
+        "unset",
+        "missing_local_path",
+    )
     selected = psf_value if use_psf else configured
     selected_state = psf_state if use_psf else env_state
     warnings = []
     if env_state == "missing_local_path":
-        warnings.append("Environment license paths do not exist; using parametric.psf" if use_psf else
-                        "Environment license paths do not exist and parametric.psf has no usable fallback; correct the local license setting")
+        warnings.append(
+            "Environment license paths do not exist; using parametric.psf"
+            if use_psf
+            else "Environment license paths do not exist and parametric.psf has no usable fallback; correct the local license setting"
+        )
     if selected_state == "partially_missing":
         warnings.append("Some local license paths do not exist; retained other configured entries")
-    return selected, {"source": "parametric.psf" if use_psf else ("environment" if configured else "unset"),
-                      "environment_state": env_state, "psf_state": psf_state,
-                      "selected_state": selected_state, "fallback_used": use_psf and env_state != "unset",
-                      "warnings": warnings}
+    return selected, {
+        "source": "parametric.psf" if use_psf else ("environment" if configured else "unset"),
+        "environment_state": env_state,
+        "psf_state": psf_state,
+        "selected_state": selected_state,
+        "fallback_used": use_psf and env_state != "unset",
+        "warnings": warnings,
+    }
+
+
+def windows_process_environment() -> dict[str, str]:
+    """Supply Windows prerequisites omitted by restricted stdio host environments."""
+    import win32api
+    import win32profile
+    import win32security
+
+    env = os.environ.copy()
+    token = win32security.OpenProcessToken(win32api.GetCurrentProcess(), 10)
+    try:
+        defaults = win32profile.CreateEnvironmentBlock(token, False)
+    finally:
+        token.Close()
+    # Restore only Windows runtime variables, without importing unrelated user
+    # credentials, third-party configuration or overriding the MCP host's PATH.
+    prerequisites = {
+        "ALLUSERSPROFILE",
+        "COMPUTERNAME",
+        "COMSPEC",
+        "COMMONPROGRAMFILES",
+        "COMMONPROGRAMFILES(X86)",
+        "COMMONPROGRAMW6432",
+        "NUMBER_OF_PROCESSORS",
+        "OS",
+        "PROCESSOR_IDENTIFIER",
+        "PROCESSOR_LEVEL",
+        "PROCESSOR_REVISION",
+        "PROGRAMDATA",
+        "PROGRAMFILES",
+        "PROGRAMFILES(X86)",
+        "PROGRAMW6432",
+        "PUBLIC",
+        "SYSTEMROOT",
+        "SYSTEMDRIVE",
+        "TMP",
+        "USERDOMAIN",
+        "USERDOMAIN_ROAMINGPROFILE",
+        "WINDIR",
+    }
+    for key, value in defaults.items():
+        if key.upper() in prerequisites:
+            env.setdefault(key.upper(), value)
+    windows_root = env.get("SYSTEMROOT") or env.get("SystemRoot")
+    if not windows_root:
+        raise ValueError("SYSTEMROOT is required for Creo processes")
+    env.setdefault("COMSPEC", str(Path(windows_root) / "System32/cmd.exe"))
+    if "TEMP" in env and "TMP" not in os.environ:
+        env["TMP"] = env["TEMP"]
+    return env
 
 
 def native_environment() -> dict[str, str]:
     common = Path(config()["creo_root"]) / "Common Files"
-    env = os.environ.copy()
+    env = windows_process_environment()
     selected = config().get("creo_session_id")
     if selected:
         env["MECHDOG_CREO_SESSION_ID"] = selected
+    else:
+        env.pop("MECHDOG_CREO_SESSION_ID", None)
     env["PRO_COMM_MSG_EXE"] = str(common / "x86e_win64/obj/pro_comm_msg.exe")
-    env["PATH"] = os.pathsep.join(str(common / p) for p in ("x86e_win64/lib", "x86e_win64/obj", "libs/dfor/lib")) + os.pathsep + env.get("PATH", "")
+    env["PATH"] = (
+        os.pathsep.join(
+            str(common / p) for p in ("x86e_win64/lib", "x86e_win64/obj", "libs/dfor/lib")
+        )
+        + os.pathsep
+        + env.get("PATH", "")
+    )
     # Child-process environment only; do not return or log the license value.
     license_value, _ = resolve_license_environment()
     if license_value:
@@ -207,13 +434,21 @@ def check_environment() -> dict:
     }
     checks = {key: {"exists": p.is_file(), "path": str(p)} for key, p in files.items()}
     license_value, license_diagnostics = resolve_license_environment()
-    return {"platform": sys.platform, "creo_root": str(root), "checks": checks,
-            "ready_to_build": all(p.is_file() for p in files.values()),
-            "compiler_environment": "unverified_here; build runs vcvars64 and checks compiler, UCRT and Windows SDK",
-            "license_setting_present": bool(license_value), "license_diagnostics": license_diagnostics,
-            "license_usable": "unverified_here; only successful native feature creation proves it",
-            "transport": "stdio", "supported_features": [op for op in REGISTERED_OPERATIONS if op not in UNAVAILABLE_OPERATIONS],
-            "complete_creo_coverage": False}
+    return {
+        "platform": sys.platform,
+        "creo_root": str(root),
+        "checks": checks,
+        "ready_to_build": all(p.is_file() for p in files.values()),
+        "compiler_environment": "unverified_here; build runs vcvars64 and checks compiler, UCRT and Windows SDK",
+        "license_setting_present": bool(license_value),
+        "license_diagnostics": license_diagnostics,
+        "license_usable": "unverified_here; only successful native feature creation proves it",
+        "transport": "stdio",
+        "supported_features": [
+            op for op in REGISTERED_OPERATIONS if op not in UNAVAILABLE_OPERATIONS
+        ],
+        "complete_creo_coverage": False,
+    }
 
 
 def build_native() -> Path:
@@ -226,13 +461,22 @@ def build_native() -> Path:
     # Always refresh before checking the cached binary. The generator only writes
     # changed content, so upgrades and SDK changes cannot retain an obsolete map.
     with (build / "generate_constants.log").open("wb") as log:
-        generated = subprocess.run([sys.executable, str(ROOT / "tools/generate_constants.py")],
-                                   cwd=ROOT, stdout=log, stderr=subprocess.STDOUT,
-                                   timeout=30, creationflags=HIDDEN)
+        generated = subprocess.run(
+            [sys.executable, str(ROOT / "tools/generate_constants.py")],
+            cwd=ROOT,
+            stdout=log,
+            stderr=subprocess.STDOUT,
+            timeout=30,
+            creationflags=HIDDEN,
+        )
     if generated.returncode:
-        raise RuntimeError(f"SDK constant generation failed; see {build / 'generate_constants.log'}")
+        raise RuntimeError(
+            f"SDK constant generation failed; see {build / 'generate_constants.log'}"
+        )
     digest = hashlib.sha256()
-    for p in sorted(p for p in (ROOT / "native").rglob("*") if p.suffix in (".cpp", ".h", ".hpp", ".inc")):
+    for p in sorted(
+        p for p in (ROOT / "native").rglob("*") if p.suffix in (".cpp", ".h", ".hpp", ".inc")
+    ):
         digest.update(p.read_bytes())
     # Enum values and ABI declarations come from SDK headers. A names-only map
     # can stay identical while these change during an SDK maintenance upgrade.
@@ -242,78 +486,138 @@ def build_native() -> Path:
         data = b"\0SDK_HEADER\0" + p.relative_to(includes).as_posix().encode() + p.read_bytes()
         digest.update(data)
         abi.update(data)
-    settings = json.dumps(c, sort_keys=True).encode()
+    startup_keys = {"auto_start_creo", "creo_startup_timeout_seconds", "creo_startup_psf"}
+    settings = json.dumps(
+        {key: value for key, value in c.items() if key not in startup_keys}, sort_keys=True
+    ).encode()
     digest.update(settings)
     abi.update(settings)
     callback = hashlib.sha256(b"MSVC17_MD_DLL_v1" + abi.digest())
     for relative in ("native/blend_sync.cpp", "native/third_party/json.hpp"):
         source = ROOT / relative
-        if source.is_file(): callback.update(relative.encode() + source.read_bytes())
+        if source.is_file():
+            callback.update(relative.encode() + source.read_bytes())
     callback_fingerprint = callback.hexdigest()
     callback_stamp = build / "blend_sync_build.json"
+
     def record_callback():
-        write_json(callback_stamp, {"fingerprint": callback_fingerprint,
-                   "sha256": hashlib.sha256(blend_dll.read_bytes()).hexdigest()})
+        write_json(
+            callback_stamp,
+            {
+                "fingerprint": callback_fingerprint,
+                "sha256": hashlib.sha256(blend_dll.read_bytes()).hexdigest(),
+            },
+        )
+
     fingerprint = digest.hexdigest()
     stamp = build / "source.sha256"
     if exe.exists() and blend_dll.exists() and stamp.exists() and stamp.read_text() == fingerprint:
         # Migrate a previously verified combined cache without rebuilding the
         # identical DLL. Changing unrelated worker code should not replace it.
-        if not callback_stamp.exists(): record_callback()
+        if not callback_stamp.exists():
+            record_callback()
         cached = read_json(callback_stamp)
-        if (cached.get("fingerprint") == callback_fingerprint
-                and cached.get("sha256") == hashlib.sha256(blend_dll.read_bytes()).hexdigest()):
+        if (
+            cached.get("fingerprint") == callback_fingerprint
+            and cached.get("sha256") == hashlib.sha256(blend_dll.read_bytes()).hexdigest()
+        ):
             return exe
     if not check_environment()["ready_to_build"]:
         raise RuntimeError("Creo SDK, template or MSVC is missing; call creo_check_environment")
     sdk = Path(c["creo_root"]) / "Common Files/protoolkit"
-    libs = " ".join(f'"{sdk / "x86e_win64/obj" / name}"' for name in ("protkmd_NU.lib", "ptasyncmd.lib", "ucore.lib", "udata.lib"))
-    dll_libs = " ".join(f'"{sdk / "x86e_win64/obj" / name}"' for name in ("protk_dllmd_NU.lib", "ucore.lib", "udata.lib"))
+    libs = " ".join(
+        f'"{sdk / "x86e_win64/obj" / name}"'
+        for name in ("protkmd_NU.lib", "ptasyncmd.lib", "ucore.lib", "udata.lib")
+    )
+    dll_libs = " ".join(
+        f'"{sdk / "x86e_win64/obj" / name}"'
+        for name in ("protk_dllmd_NU.lib", "ucore.lib", "udata.lib")
+    )
     cached_callback = read_json(callback_stamp) if callback_stamp.is_file() else {}
-    reuse_callback = (blend_dll.is_file() and cached_callback.get("fingerprint") == callback_fingerprint
-                      and cached_callback.get("sha256") == hashlib.sha256(blend_dll.read_bytes()).hexdigest())
-    callback_script = "" if reuse_callback else f'''
-cl /nologo /MD /EHsc /std:c++17 /W3 /DPRO_MACHINE=36 /DPRO_OS=4 /I"{sdk / 'includes'}" /c "{ROOT / 'native/blend_sync.cpp'}" /Fo"{build / 'blend_sync.obj'}"
+    reuse_callback = (
+        blend_dll.is_file()
+        and cached_callback.get("fingerprint") == callback_fingerprint
+        and cached_callback.get("sha256") == hashlib.sha256(blend_dll.read_bytes()).hexdigest()
+    )
+    callback_script = (
+        ""
+        if reuse_callback
+        else f'''
+cl /nologo /MD /EHsc /std:c++17 /W3 /DPRO_MACHINE=36 /DPRO_OS=4 /I"{sdk / "includes"}" /c "{ROOT / "native/blend_sync.cpp"}" /Fo"{build / "blend_sync.obj"}"
 if errorlevel 1 exit /b 2
-link /nologo /DLL /MACHINE:X64 /OUT:"{blend_dll}" "{build / 'blend_sync.obj'}" {dll_libs} kernel32.lib user32.lib wsock32.lib advapi32.lib mpr.lib winspool.lib netapi32.lib psapi.lib gdi32.lib shell32.lib comdlg32.lib ole32.lib ws2_32.lib
+link /nologo /DLL /MACHINE:X64 /OUT:"{blend_dll}" "{build / "blend_sync.obj"}" {dll_libs} kernel32.lib user32.lib wsock32.lib advapi32.lib mpr.lib winspool.lib netapi32.lib psapi.lib gdi32.lib shell32.lib comdlg32.lib ole32.lib ws2_32.lib
 if errorlevel 1 exit /b 3
 '''
+    )
     script = build / "build.cmd"
-    script.write_text(f'''@echo off
+    script.write_text(
+        f'''@echo off
 setlocal
-call "{c['vcvars64']}"
+call "{c["vcvars64"]}"
 if errorlevel 1 exit /b 1
-"{sys.executable}" "{ROOT / 'tools/compiler_preflight.py'}"
+"{sys.executable}" "{ROOT / "tools/compiler_preflight.py"}"
 if errorlevel 1 exit /b 4
-cl /nologo /MD /EHsc /std:c++17 /bigobj /W3 /DPRO_MACHINE=36 /DPRO_OS=4 /DPRO_USE_VAR_ARGS /I"{sdk / 'includes'}" /c "{ROOT / 'native/worker.cpp'}" /Fo"{build / 'worker.obj'}"
+cl /nologo /MD /EHsc /std:c++17 /bigobj /W3 /DPRO_MACHINE=36 /DPRO_OS=4 /DPRO_USE_VAR_ARGS /I"{sdk / "includes"}" /c "{ROOT / "native/worker.cpp"}" /Fo"{build / "worker.obj"}"
 if errorlevel 1 exit /b 2
-link /nologo /MACHINE:X64 /SUBSYSTEM:CONSOLE /OUT:"{exe}" "{build / 'worker.obj'}" {libs} kernel32.lib user32.lib wsock32.lib advapi32.lib mpr.lib winspool.lib netapi32.lib psapi.lib gdi32.lib shell32.lib comdlg32.lib ole32.lib ws2_32.lib
+link /nologo /MACHINE:X64 /SUBSYSTEM:CONSOLE /OUT:"{exe}" "{build / "worker.obj"}" {libs} kernel32.lib user32.lib wsock32.lib advapi32.lib mpr.lib winspool.lib netapi32.lib psapi.lib gdi32.lib shell32.lib comdlg32.lib ole32.lib ws2_32.lib
 if errorlevel 1 exit /b 3
 {callback_script}
 exit /b 0
-''', encoding="utf-8")
+''',
+        encoding="utf-8",
+    )
     with (build / "build.log").open("wb") as log:
-        result = subprocess.run(["cmd.exe", "/d", "/c", str(script)], cwd=build, stdout=log, stderr=subprocess.STDOUT, timeout=120, creationflags=HIDDEN)
+        result = subprocess.run(
+            ["cmd.exe", "/d", "/c", str(script)],
+            cwd=build,
+            stdout=log,
+            stderr=subprocess.STDOUT,
+            timeout=120,
+            creationflags=HIDDEN,
+        )
     if result.returncode:
         if result.returncode == 4:
-            raise RuntimeError(f"MSVC/Windows SDK environment preflight failed; inspect {build / 'build.log'} (SDK discovery or registry access may be blocked)")
+            raise RuntimeError(
+                f"MSVC/Windows SDK environment preflight failed; inspect {build / 'build.log'} (SDK discovery or registry access may be blocked)"
+            )
         raise RuntimeError(f"Native build failed ({result.returncode}); see {build / 'build.log'}")
     stamp.write_text(fingerprint)
     record_callback()
-    constants = subprocess.run([str(exe), "constants"], env=native_environment(), capture_output=True, timeout=20, creationflags=HIDDEN)
+    constants = subprocess.run(
+        [str(exe), "constants"],
+        env=native_environment(),
+        capture_output=True,
+        timeout=20,
+        creationflags=HIDDEN,
+    )
     if constants.returncode == 0:
         (build / "constants.json").write_bytes(constants.stdout)
     return exe
 
 
-def session_status() -> dict:
+def session_status(connect_timeout_seconds: int = 30) -> dict:
+    if (
+        isinstance(connect_timeout_seconds, bool)
+        or not isinstance(connect_timeout_seconds, int)
+        or not 1 <= connect_timeout_seconds <= 30
+    ):
+        raise ValueError("connect_timeout_seconds must be 1–30")
     with toolkit_lock():
         exe = build_native()
-        result = subprocess.run([str(exe), "status"], cwd=ROOT / "build", env=native_environment(), capture_output=True, timeout=50, creationflags=HIDDEN)
+        result = subprocess.run(
+            [str(exe), "status", str(connect_timeout_seconds)],
+            cwd=ROOT / "build",
+            env=native_environment(),
+            capture_output=True,
+            timeout=connect_timeout_seconds + min(connect_timeout_seconds, 15) + 5,
+            creationflags=HIDDEN,
+        )
     try:
         value = json.loads(result.stdout.decode("utf-8"))
     except (ValueError, UnicodeDecodeError):
-        raise RuntimeError(f"Toolkit worker failed without a result (exit {result.returncode}); check the Creo session and runtime libraries") from None
+        raise RuntimeError(
+            f"Toolkit worker failed without a result (exit {result.returncode}); check the Creo session and runtime libraries"
+        ) from None
     value["worker_exit_code"] = result.returncode
     return value
 
@@ -329,15 +633,27 @@ def create_job(spec: dict) -> dict:
         raise ValueError("Project path is too long for this Creo Toolkit build")
     spec = dict(spec)
     spec["model_name"] = spec["model_name"] or f"ai_plate_{job_id[:12]}"
-    manifest = {"job_id": job_id, "status": "queued", "created_at": now(), "spec": spec,
-                "job_directory": str(directory), "output_directory": str(output),
-                "message": "Call creo_get_job until succeeded, failed or unknown_outcome. Do not repeat create_plate to poll."}
+    manifest = {
+        "job_id": job_id,
+        "status": "queued",
+        "created_at": now(),
+        "spec": spec,
+        "job_directory": str(directory),
+        "output_directory": str(output),
+        "message": "Call creo_get_job until succeeded, failed or unknown_outcome. Do not repeat create_plate to poll.",
+    }
     write_json(directory / "job.json", manifest)
     try:
         with (directory / "runner.log").open("ab") as log:
-            subprocess.Popen([sys.executable, str(ROOT / "bridge.py"), "run-job", job_id], cwd=ROOT,
-                             stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT,
-                             creationflags=HIDDEN, close_fds=True)
+            subprocess.Popen(
+                [sys.executable, str(ROOT / "bridge.py"), "run-job", job_id],
+                cwd=ROOT,
+                stdin=subprocess.DEVNULL,
+                stdout=log,
+                stderr=subprocess.STDOUT,
+                creationflags=HIDDEN,
+                close_fds=True,
+            )
     except Exception as exc:
         manifest.update(status="failed", message=str(exc), finished_at=now())
         write_json(directory / "job.json", manifest)
@@ -350,50 +666,101 @@ def run_job(job_id: str) -> None:
     manifest = read_json(directory / "job.json")
     if manifest.get("kind") == "generic":
         from generic_bridge import run_generic_job
+
         run_generic_job(job_id, manifest)
         return
     try:
         with toolkit_lock(wait_seconds=120):
-            manifest.update(status="running", stage="building_worker", started_at=now(), runner_pid=os.getpid())
+            manifest.update(
+                status="running", stage="building_worker", started_at=now(), runner_pid=os.getpid()
+            )
             write_json(directory / "job.json", manifest)
             exe = build_native()
-            spec = validate_spec(**{k: manifest["spec"][k] for k in ("length", "width", "thickness", "radius", "holes", "model_name")})
+            spec = validate_spec(
+                **{
+                    k: manifest["spec"][k]
+                    for k in ("length", "width", "thickness", "radius", "holes", "model_name")
+                }
+            )
             common = Path(config()["creo_root"]) / "Common Files"
-            lines = [spec["model_name"], manifest["output_directory"], str(common / "templates/mmns_part_solid_abs.prt"),
-                     " ".join(format(spec[k], ".17g") for k in ("length", "width", "thickness", "radius")), str(len(spec["holes"]))]
-            lines.extend(" ".join(format(h[k], ".17g") for k in ("x", "y", "diameter")) for h in spec["holes"])
+            lines = [
+                spec["model_name"],
+                manifest["output_directory"],
+                str(common / "templates/mmns_part_solid_abs.prt"),
+                " ".join(
+                    format(spec[k], ".17g") for k in ("length", "width", "thickness", "radius")
+                ),
+                str(len(spec["holes"])),
+            ]
+            lines.extend(
+                " ".join(format(h[k], ".17g") for k in ("x", "y", "diameter"))
+                for h in spec["holes"]
+            )
             (directory / "native_spec.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
             manifest.update(stage="creating_native_features")
             write_json(directory / "job.json", manifest)
             with (directory / "worker.log").open("wb") as log:
-                proc = subprocess.run([str(exe), "create", str(directory)], cwd=directory, env=native_environment(),
-                                      stdout=log, stderr=subprocess.STDOUT, timeout=config()["native_timeout_seconds"], creationflags=HIDDEN)
+                proc = subprocess.run(
+                    [str(exe), "create", str(directory)],
+                    cwd=directory,
+                    env=native_environment(),
+                    stdout=log,
+                    stderr=subprocess.STDOUT,
+                    timeout=config()["native_timeout_seconds"],
+                    creationflags=HIDDEN,
+                )
             result_path = directory / "native_result.json"
             if not result_path.exists():
-                manifest.update(status="unknown_outcome", message=f"Worker exited {proc.returncode} without a result; inspect Creo and native.log before retrying")
+                manifest.update(
+                    status="unknown_outcome",
+                    message=f"Worker exited {proc.returncode} without a result; inspect Creo and native.log before retrying",
+                )
             else:
                 result = read_json(result_path)
                 manifest["result"] = result
-                if proc.returncode == 0 and result.get("success") and result.get("saved_file_reloaded_and_verified"):
+                if (
+                    proc.returncode == 0
+                    and result.get("success")
+                    and result.get("saved_file_reloaded_and_verified")
+                ):
                     part = Path(result["part_file"])
-                    if part.parent.resolve() != (directory / "output").resolve() or not part.is_file():
-                        raise RuntimeError("Native result references a missing or unexpected part file")
+                    if (
+                        part.parent.resolve() != (directory / "output").resolve()
+                        or not part.is_file()
+                    ):
+                        raise RuntimeError(
+                            "Native result references a missing or unexpected part file"
+                        )
                     result["sha256"] = hashlib.sha256(part.read_bytes()).hexdigest()
-                    result["preview_file"] = str(directory / "output/preview.jpg") if result["preview_code"] == 0 else None
-                    manifest.update(status="succeeded", stage="verified", message="Native PRT saved, reloaded and verified; sketch/extrude/round/hole features are editable")
+                    result["preview_file"] = (
+                        str(directory / "output/preview.jpg")
+                        if result["preview_code"] == 0
+                        else None
+                    )
+                    manifest.update(
+                        status="succeeded",
+                        stage="verified",
+                        message="Native PRT saved, reloaded and verified; sketch/extrude/round/hole features are editable",
+                    )
                 else:
-                    manifest.update(status="failed", message=f"Toolkit code {result['toolkit_code']}; inspect native.log. Partial new model may remain in Creo. Do not blindly retry.")
+                    manifest.update(
+                        status="failed",
+                        message=f"Toolkit code {result['toolkit_code']}; inspect native.log. Partial new model may remain in Creo. Do not blindly retry.",
+                    )
     except subprocess.TimeoutExpired:
-        manifest.update(status="unknown_outcome", message="Native helper timed out and was stopped; Creo may contain a partial/new model. Inspect Creo before retrying.")
+        manifest.update(
+            status="unknown_outcome",
+            message="Native helper timed out and was stopped; Creo may contain a partial/new model. Inspect Creo before retrying.",
+        )
     except Exception as exc:
         manifest.update(status="failed", message=str(exc))
     manifest["finished_at"] = now()
     write_json(directory / "job.json", manifest)
 
 
-def get_job(job_id: str, detail: str = 'full') -> dict:
-    if detail not in ('compact', 'full'):
-        raise ValueError('detail must be compact or full')
+def get_job(job_id: str, detail: str = "full") -> dict:
+    if detail not in ("compact", "full"):
+        raise ValueError("detail must be compact or full")
     directory = job_path(job_id)
     if not (directory / "job.json").exists():
         raise ValueError("Unknown job_id")
@@ -407,49 +774,102 @@ def get_job(job_id: str, detail: str = 'full') -> dict:
         if manifest["status"] in ("failed", "unknown_outcome"):
             manifest["native_log_tail"] = tail[-4000:]
     if manifest["status"] in ("queued", "running"):
-        age = (datetime.now(timezone.utc) - datetime.fromisoformat(manifest["created_at"])).total_seconds()
-        timeout = config().get("generic_timeout_seconds",600) if manifest.get("kind") == "generic" else config()["native_timeout_seconds"]
+        age = (
+            datetime.now(timezone.utc) - datetime.fromisoformat(manifest["created_at"])
+        ).total_seconds()
+        timeout = (
+            config().get("generic_timeout_seconds", 600)
+            if manifest.get("kind") == "generic"
+            else config()["native_timeout_seconds"]
+        )
         if age > 120 + 120 + timeout + 30:
-            manifest.update(status="unknown_outcome", message="Job exceeded its expected lifetime; inspect runner.log and Creo before retrying")
-    if detail == 'compact':
+            manifest.update(
+                status="unknown_outcome",
+                message="Job exceeded its expected lifetime; inspect runner.log and Creo before retrying",
+            )
+    if detail == "compact":
         manifest = compact_job(manifest)
     return manifest
 
 
 def compact_job(manifest: dict) -> dict:
     """Bound polling payloads without losing the outcome or recovery information."""
-    keys = ('job_id','kind','model_id','status','stage','revision','readonly',
-            'created_at','started_at','finished_at','message','construction')
+    keys = (
+        "job_id",
+        "kind",
+        "model_id",
+        "status",
+        "stage",
+        "revision",
+        "readonly",
+        "created_at",
+        "started_at",
+        "finished_at",
+        "message",
+        "construction",
+    )
     summary = {key: manifest[key] for key in keys if key in manifest}
-    summary['detail'] = 'compact'
-    summary['operation_count'] = len(manifest.get('operations', []))
-    result = manifest.get('result')
+    summary["detail"] = "compact"
+    summary["operation_count"] = len(manifest.get("operations", []))
+    result = manifest.get("result")
     if result:
-        result_keys = ('success','toolkit_code','message','part_file','sha256',
-                       'saved_file_reloaded_and_verified','rollback_succeeded',
-                       'rollback_message','rollback_code','preview_file','connected',
-                       'volume_mm3','expected_volume_mm3','extrude_count','round_count','hole_count')
-        native = {key:result[key] for key in result_keys if key in result}
-        inspection = result.get('inspection', {})
-        native['inspection'] = {key:inspection[key] for key in
-                                ('healthy','has_solid','units','model_type','volume_mm3') if key in inspection}
-        native['inspection']['counts'] = {key:len(inspection.get(key,[])) for key in
-                                          ('features','surfaces','edges','bodies','components')}
-        native['operations'] = [{key:op[key] for key in
-                                 ('op','label','succeeded','file','feature_id','elapsed_seconds','message') if key in op}
-                                for op in result.get('operations',[])]
-        summary['result'] = native
-    if 'native_log_tail' in manifest:
-        summary['native_log_tail'] = manifest['native_log_tail'][-2000:]
-    summary['full_result_available'] = bool(result)
+        result_keys = (
+            "success",
+            "toolkit_code",
+            "message",
+            "part_file",
+            "sha256",
+            "saved_file_reloaded_and_verified",
+            "rollback_succeeded",
+            "rollback_message",
+            "rollback_code",
+            "preview_file",
+            "connected",
+            "volume_mm3",
+            "expected_volume_mm3",
+            "extrude_count",
+            "round_count",
+            "hole_count",
+        )
+        native = {key: result[key] for key in result_keys if key in result}
+        inspection = result.get("inspection", {})
+        native["inspection"] = {
+            key: inspection[key]
+            for key in ("healthy", "has_solid", "units", "model_type", "volume_mm3")
+            if key in inspection
+        }
+        native["inspection"]["counts"] = {
+            key: len(inspection.get(key, []))
+            for key in ("features", "surfaces", "edges", "bodies", "components")
+        }
+        native["operations"] = [
+            {
+                key: op[key]
+                for key in (
+                    "op",
+                    "label",
+                    "succeeded",
+                    "file",
+                    "feature_id",
+                    "elapsed_seconds",
+                    "message",
+                )
+                if key in op
+            }
+            for op in result.get("operations", [])
+        ]
+        summary["result"] = native
+    if "native_log_tail" in manifest:
+        summary["native_log_tail"] = manifest["native_log_tail"][-2000:]
+    summary["full_result_available"] = bool(result)
     return summary
 
 
-def list_jobs(limit: int = 10, detail: str = 'compact') -> list[dict]:
+def list_jobs(limit: int = 10, detail: str = "compact") -> list[dict]:
     if not 1 <= limit <= 50:
         raise ValueError("limit must be 1–50")
-    if detail not in ('compact','full'):
-        raise ValueError('detail must be compact or full')
+    if detail not in ("compact", "full"):
+        raise ValueError("detail must be compact or full")
     paths = sorted(JOBS.glob("*/job.json"), key=lambda p: p.stat().st_mtime, reverse=True)
     return [get_job(p.parent.name, detail=detail) for p in paths[:limit]]
 
@@ -465,4 +885,10 @@ if __name__ == "__main__":
         with toolkit_lock():
             print(build_native())
     else:
-        print(json.dumps(session_status() if args.action == "status" else check_environment(), ensure_ascii=False, indent=2))
+        print(
+            json.dumps(
+                session_status() if args.action == "status" else check_environment(),
+                ensure_ascii=False,
+                indent=2,
+            )
+        )

@@ -1,0 +1,514 @@
+{
+  "work_item": "BUG-002",
+  "status": "complete_for_user_authorized_local_scope",
+  "version": "0.2.5",
+  "timestamp_utc": "2026-10-13T10:12:38.260972+00:00",
+  "branch": "codex/bug-002-registry-write",
+  "scope_decision": "User accepted current Creo 12.4 local validation; another machine will run Creo 10. No release or general Creo 12 support upgrade.",
+  "source": {
+    "delivery_head": {
+      "commit": "4a23aae0693b35a4c00913fda2c4a7d725b92fb2",
+      "dirty": true
+    },
+    "format_commit": "518ece19fe365b59aa391397d5de15d24a792080",
+    "implementation_commit": "66d3106",
+    "baseline_cleanup_commit": "4a23aae",
+    "checked_source_sha256": "0a0a50c750a731a2c301f06d1b51f363290efeb1f93c3f86dcaf272cd9c43d13",
+    "normalized_file_sha256": {
+      "bridge.py": "e8bd3328f440c49f57b228fa79c1244bc6fdc203af5779eed5f60885d9df507f",
+      "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+      "tests/test_registry_io.py": "11acd9cff7e0832773b1115a5f8307fce4fcdb1bcab7defbb822904572f91df3",
+      "tools/test_registry_io.py": "a19c85363b28c16b960848b0d28204ba171da101f22889682ad84a9f25dcf3cc",
+      "tools/test_registry_native.py": "911cb46f613c0373f3d1aee93984dae65f91337192e2804ee4657039d70675b9"
+    }
+  },
+  "environment": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14",
+    "filesystem": "E: local NTFS",
+    "creo": "12.4.0.0",
+    "sdk": "matching Creo 12.4 Toolkit SDK",
+    "msvc": "VS 2022 Enterprise / 14.44.35207",
+    "windows_sdk": "10.0.26100.0",
+    "tools": {
+      "ruff": "0.17.0",
+      "clang-format": "23.1.3"
+    }
+  },
+  "retry": {
+    "errors": [
+      5,
+      32,
+      33
+    ],
+    "budget_seconds": 1.0,
+    "initial_delay_seconds": 0.005,
+    "maximum_delay_seconds": 0.05,
+    "maximum_attempts": 25,
+    "readonly": "immediate failure",
+    "ambiguous_access_denied": "bounded; not assumed to be contention"
+  },
+  "reproduction": {
+    "source": {
+      "commit": "de788478a0c258d6dbf2cdfb8f56ebe98110a8f4",
+      "dirty": true,
+      "bridge_sha256": "fb4b71a6fa741cba1cd6a4bd10360def0dea4153d78163dfc2978bdec663e788",
+      "probe_sha256": "b6a90e80e37dc40eb74e707f796e53a6d55a3a98290050f484969e52767ae0e4"
+    },
+    "timestamp_utc": "2026-10-13T09:52:37.388160+00:00",
+    "command": [
+      "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+      "E:\\Projects\\MCP_CREO_MechDog\\tools\\test_registry_io.py",
+      "--baseline",
+      "--output",
+      "build/BUG-002-reproduction.json"
+    ],
+    "parameters": {
+      "readers": 3,
+      "writes": 400,
+      "rounds": 5
+    },
+    "write_attempts": 4000,
+    "write_failures": 3978,
+    "read_failures": 79,
+    "winerrors": [
+      5
+    ],
+    "temporary_files_before_cleanup": 3982,
+    "fixture_removed": true,
+    "report": {
+      "path": "build/BUG-002-reproduction.json",
+      "sha256": "a6e262f09fb351fb442c7d884cfd7bcf04b4c759a63cbaf8a46f08f2ac338d7f"
+    }
+  },
+  "registry_validation": {
+    "source": {
+      "commit": "518ece19fe365b59aa391397d5de15d24a792080",
+      "dirty": true,
+      "bridge_sha256": "e8bd3328f440c49f57b228fa79c1244bc6fdc203af5779eed5f60885d9df507f",
+      "probe_sha256": "a19c85363b28c16b960848b0d28204ba171da101f22889682ad84a9f25dcf3cc"
+    },
+    "timestamp_utc": "2026-10-13T10:00:56.294188+00:00",
+    "command": [
+      "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+      "E:\\Projects\\MCP_CREO_MechDog\\tools\\test_registry_io.py",
+      "--readers",
+      "3",
+      "--writes",
+      "400",
+      "--rounds",
+      "5"
+    ],
+    "parameters": {
+      "readers": 3,
+      "writes": 400,
+      "rounds": 5
+    },
+    "success": true,
+    "write_success": 4000,
+    "read_success": 54333,
+    "write_errors": 0,
+    "read_errors": 0,
+    "temporary_files_before_cleanup": 0,
+    "fixture_removed": true,
+    "files": [
+      {
+        "file": "job.json",
+        "serial": {
+          "writes": 100,
+          "errors": [],
+          "final_sequence": 100
+        },
+        "rounds": [
+          {
+            "write_success": 400,
+            "read_success": 6610,
+            "last_successful_sequence": 400,
+            "final_sequence": 400,
+            "temporary_files": 0,
+            "elapsed_seconds": 0.9069999999992433
+          },
+          {
+            "write_success": 400,
+            "read_success": 5140,
+            "last_successful_sequence": 400,
+            "final_sequence": 400,
+            "temporary_files": 0,
+            "elapsed_seconds": 0.75
+          },
+          {
+            "write_success": 400,
+            "read_success": 5103,
+            "last_successful_sequence": 400,
+            "final_sequence": 400,
+            "temporary_files": 0,
+            "elapsed_seconds": 0.8589999999967404
+          },
+          {
+            "write_success": 400,
+            "read_success": 5417,
+            "last_successful_sequence": 400,
+            "final_sequence": 400,
+            "temporary_files": 0,
+            "elapsed_seconds": 0.9370000000053551
+          },
+          {
+            "write_success": 400,
+            "read_success": 6035,
+            "last_successful_sequence": 400,
+            "final_sequence": 400,
+            "temporary_files": 0,
+            "elapsed_seconds": 1.0469999999986612
+          }
+        ],
+        "transient": {
+          "conflict_triggered": true,
+          "attempts": 8,
+          "elapsed_seconds": 0.23400000000401633,
+          "final_sequence": 1,
+          "temporary_files": 0
+        },
+        "persistent": {
+          "conflict_triggered": true,
+          "attempts": 23,
+          "elapsed_seconds": 1.0,
+          "old_bytes_preserved": true,
+          "temporary_files": 0,
+          "error_type": "PermissionError",
+          "winerror": 32
+        }
+      },
+      {
+        "file": "model.json",
+        "serial": {
+          "writes": 100,
+          "errors": [],
+          "final_sequence": 100
+        },
+        "rounds": [
+          {
+            "write_success": 400,
+            "read_success": 5190,
+            "last_successful_sequence": 400,
+            "final_sequence": 400,
+            "temporary_files": 0,
+            "elapsed_seconds": 0.7660000000032596
+          },
+          {
+            "write_success": 400,
+            "read_success": 5163,
+            "last_successful_sequence": 400,
+            "final_sequence": 400,
+            "temporary_files": 0,
+            "elapsed_seconds": 0.8899999999994179
+          },
+          {
+            "write_success": 400,
+            "read_success": 5108,
+            "last_successful_sequence": 400,
+            "final_sequence": 400,
+            "temporary_files": 0,
+            "elapsed_seconds": 0.75
+          },
+          {
+            "write_success": 400,
+            "read_success": 5152,
+            "last_successful_sequence": 400,
+            "final_sequence": 400,
+            "temporary_files": 0,
+            "elapsed_seconds": 0.875
+          },
+          {
+            "write_success": 400,
+            "read_success": 5415,
+            "last_successful_sequence": 400,
+            "final_sequence": 400,
+            "temporary_files": 0,
+            "elapsed_seconds": 0.8130000000019209
+          }
+        ],
+        "transient": {
+          "conflict_triggered": true,
+          "attempts": 8,
+          "elapsed_seconds": 0.23399999999674037,
+          "final_sequence": 1,
+          "temporary_files": 0
+        },
+        "persistent": {
+          "conflict_triggered": true,
+          "attempts": 23,
+          "elapsed_seconds": 1.0,
+          "old_bytes_preserved": true,
+          "temporary_files": 0,
+          "error_type": "PermissionError",
+          "winerror": 32
+        }
+      }
+    ],
+    "report": {
+      "path": "build/BUG-002-registry-io.json",
+      "sha256": "f590b7c4fdc84f5f353652b7b3bff1d69ab158c73afedd3ce580d66d621aa18c"
+    },
+    "probe_change_from_baseline": "Same parameters and data; fixed probe wraps _atomic_replace instead of os.replace to count actual extended rename attempts."
+  },
+  "unit_validation": {
+    "targeted_tests_run": 21,
+    "all_tests_run": 90,
+    "success": true,
+    "failures": 0,
+    "errors": 0,
+    "development_check": {
+      "work_item": "BUG-002",
+      "version": "0.2.5",
+      "timestamp_utc": "2026-10-13T10:04:58.808714+00:00",
+      "environment": {
+        "os": "Windows",
+        "python": "3.12.14"
+      },
+      "source": {
+        "commit": "518ece19fe365b59aa391397d5de15d24a792080",
+        "dirty": true,
+        "checked_source_sha256": "0a0a50c750a731a2c301f06d1b51f363290efeb1f93c3f86dcaf272cd9c43d13"
+      },
+      "native_validation": "not_run",
+      "unit_tests": "passed",
+      "success": true,
+      "style_summary": {
+        "lint_findings": 72,
+        "unformatted_files": 56,
+        "cpp_files_checked": 15,
+        "python_files_checked": 50
+      },
+      "tools": {
+        "ruff": "0.17.0",
+        "clang-format": "23.1.3"
+      },
+      "configuration": {
+        "pyproject.toml": "0b5551fbf14055060e36a829d48aaee700f44dfdb2336027393af45ce5691060",
+        ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+        "requirements-dev.txt": "5ad03a1fbb24e3e72d8cc46afb089bb9c1d0a2ff715b563ee5958cf7b8f199f1"
+      }
+    },
+    "reports": [
+      {
+        "path": "build/development_check.json",
+        "sha256": "aecfe56bbe6d7127efa567e36eeda0aa19852caab8ed3c425d179038d79cc204"
+      },
+      {
+        "path": "build/unit_test_report.json",
+        "sha256": "29b6730f7e058073670151bd3815fd77b79d51810b3f1e9a1afb1f00b304a5b4"
+      }
+    ]
+  },
+  "native_validation": {
+    "success": true,
+    "acceptance_baseline": "experimental compatibility",
+    "source": {
+      "commit": "518ece19fe365b59aa391397d5de15d24a792080",
+      "dirty": true,
+      "fingerprints": {
+        "bridge.py": "e8bd3328f440c49f57b228fa79c1244bc6fdc203af5779eed5f60885d9df507f",
+        "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+        "tools/test_registry_native.py": "911cb46f613c0373f3d1aee93984dae65f91337192e2804ee4657039d70675b9"
+      }
+    },
+    "timestamp_utc": "2026-10-13T10:05:33.271523+00:00",
+    "command": [
+      "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+      "E:\\Projects\\MCP_CREO_MechDog\\tools\\test_registry_native.py",
+      "--readers",
+      "3",
+      "--output",
+      "build/BUG-002-native-creo12.json"
+    ],
+    "connected": true,
+    "polling_reads": 3574,
+    "polling_errors": 0,
+    "jobs": [
+      {
+        "job_id": "cb8ed43c6bbf41a1ad421fd08746273f",
+        "status": "succeeded",
+        "revision": 1,
+        "saved_file_reloaded_and_verified": true,
+        "rollback_succeeded": false,
+        "volume_mm3": 399.9999999999999
+      },
+      {
+        "job_id": "4324992847f9430a8d126f2da90c5bbd",
+        "status": "succeeded",
+        "revision": 2,
+        "saved_file_reloaded_and_verified": true,
+        "rollback_succeeded": false,
+        "volume_mm3": 399.9999999999999
+      },
+      {
+        "job_id": "a7d44b3fbb584607b8d3799ec28fbe3e",
+        "status": "failed",
+        "revision": null,
+        "saved_file_reloaded_and_verified": false,
+        "rollback_succeeded": true,
+        "volume_mm3": null
+      },
+      {
+        "job_id": "3a584630faab4a06a91e2881be3e0779",
+        "status": "succeeded",
+        "revision": 2,
+        "saved_file_reloaded_and_verified": false,
+        "rollback_succeeded": false,
+        "volume_mm3": 399.9999999999999
+      }
+    ],
+    "stale_revision_rejected": true,
+    "rollback_succeeded": true,
+    "original_file_unchanged": true,
+    "revision_correct": true,
+    "pending_job_cleared": true,
+    "live_geometry_and_parameters_restored": true,
+    "temporary_files": 0,
+    "scope": "Direct current-source submit/run_job plus real native worker; detached MCP transport requires separate validation",
+    "worker_sha256": "71c4411863c2e5ca07f6a257674537119c1d294dc7a24de976fa67b913533621",
+    "blend_dll_sha256": "20b59bffb9f46eceeb9adca934a96f12d23976921a26acbe91eba1199b4c420c",
+    "native_build_fingerprint": "3d21f5162af57c081a9cc940f526b023ab4585a7233478240ee571b2e658f5a7",
+    "report": {
+      "path": "build/BUG-002-native-creo12.json",
+      "sha256": "3b34a0fc0e59966ddd4252d1e2b1702b1580e04b59a58993a392aa9c4e2e28da"
+    }
+  },
+  "mcp_validation": {
+    "general_success": true,
+    "general_cases": 6,
+    "all_general_saved_file_reloaded_and_verified": true,
+    "guards": {
+      "success": true,
+      "stale_revision_rejected": true,
+      "rollback_succeeded": true,
+      "original_file_unchanged": true,
+      "revision_unchanged": true,
+      "live_geometry_and_parameters_restored": true
+    },
+    "commands": [
+      ".\\.venv\\Scripts\\python.exe tools/test_general.py",
+      ".\\.venv\\Scripts\\python.exe tools/test_guards.py"
+    ],
+    "source_files_match_native_run": true,
+    "reports": [
+      {
+        "path": "build/general_integration_test.json",
+        "sha256": "9ce228cfbe948afa0bfb2a7e8bc1a241761e3f7a5c2eca48c76670297e93c492"
+      },
+      {
+        "path": "build/guards_integration_test.json",
+        "sha256": "8328e5ad4b393d1d27654d901550455e5310476e42cc17a17621e49d9923ffc4"
+      }
+    ]
+  },
+  "unvalidated": [
+    "Creo 10: handed off per user instruction",
+    "Hosted Windows CI: not yet run",
+    "Other Windows/filesystems/network shares/ACL and security-software combinations",
+    "Concurrent polling over detached MCP transport (direct runner polling and detached serial flow validated separately)",
+    "BUG-001 recovery/cross-file transactions"
+  ],
+  "package_validation": {
+    "success": true,
+    "validation_archive": ".tmp/BUG-002-handoff-validation.zip",
+    "archive_sha256": "e817e90522168c90faa2885920c5fd8eec6e1d6fbc6b90bec3a7de68d40cc432",
+    "files": 169,
+    "extracted_development_check": {
+      "work_item": "BUG-002",
+      "version": "0.2.5",
+      "timestamp_utc": "2026-10-13T10:13:03.991348+00:00",
+      "environment": {
+        "os": "Windows",
+        "python": "3.12.14"
+      },
+      "source": {
+        "commit": null,
+        "dirty": null,
+        "checked_source_sha256": "0a0a50c750a731a2c301f06d1b51f363290efeb1f93c3f86dcaf272cd9c43d13"
+      },
+      "native_validation": "not_run",
+      "unit_tests": "passed",
+      "success": true,
+      "style_summary": {
+        "lint_findings": 72,
+        "unformatted_files": 56,
+        "cpp_files_checked": 15,
+        "python_files_checked": 50
+      },
+      "tools": {
+        "ruff": "0.17.0",
+        "clang-format": "23.1.3"
+      },
+      "configuration": {
+        "pyproject.toml": "0b5551fbf14055060e36a829d48aaee700f44dfdb2336027393af45ce5691060",
+        ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+        "requirements-dev.txt": "5ad03a1fbb24e3e72d8cc46afb089bb9c1d0a2ff715b563ee5958cf7b8f199f1"
+      }
+    },
+    "extracted_unit_tests": {
+      "version": "0.2.5",
+      "timestamp": 1791886405.3279586,
+      "tests_run": 90,
+      "success": true,
+      "failures": 0,
+      "errors": 0
+    },
+    "source_fingerprint_matches": true,
+    "local_config_constants_binaries_and_runtime_data_excluded": true,
+    "summary_scope": "Verified archive preceded this final documentation-only update. Final handoff packaging preserves the same tested code."
+  },
+  "workbuddy_final_mcp_validation": {
+    "reported_date": "2026-10-13",
+    "provenance": "User-provided WorkBuddy test summary in this chat; not independently rerun during archival",
+    "result": "passed",
+    "steps_reported": 8,
+    "steps_passed_reported": 8,
+    "test_method": "Direct MCP tool calls; no local test scripts; no source modifications",
+    "tested_head_reported": "91036fc76f2078839a6bb5491ac2550b5ef907bd",
+    "tested_worktree_dirty_reported": false,
+    "source_identity_reported": {
+      "equivalent_code_commit": "8d7920a",
+      "documentation_only_changes": [
+        "AGENTS.md",
+        "docs/BACKLOG.md",
+        "docs/DEVELOPMENT.md"
+      ],
+      "files_reported_equal": [
+        "server.py",
+        "bridge.py",
+        "generic_bridge.py"
+      ],
+      "line_endings": "User reports autocrlf=true; no difference after CR-at-EOL normalization",
+      "implementation_markers_reported": [
+        "SetFileInformationByHandle",
+        "shared-delete reader",
+        "FileRenameInfoEx",
+        "REPLACE_IF_EXISTS|POSIX_SEMANTICS"
+      ]
+    },
+    "repository_identity_checked_at_archival": {
+      "timestamp_utc": "2026-10-13T10:59:40.042339+00:00",
+      "method": "Compare LF-normalized worktree file text against git show 8d7920a:<file>; check changed filenames through 91036fc",
+      "files_match": true,
+      "normalized_sha256": {
+        "server.py": "a0a1bf74dd4d10f32f7b3c3f0fd01f6093e4705c746b75dab0cbeccac96ee982",
+        "bridge.py": "e8bd3328f440c49f57b228fa79c1244bc6fdc203af5779eed5f60885d9df507f",
+        "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf"
+      },
+      "scope": "Repository content only; running MCP service identity is based on user report"
+    },
+    "raw_tool_returns_provided": false,
+    "job_ids_provided": false,
+    "model_ids_provided": false,
+    "parallel_polling_details_provided": false,
+    "machine_environment_details_provided": false,
+    "version_check_scope": "Attached identity record; no source-inspection requirement is added to future WorkBuddy MCP-only test prompts",
+    "limitations": [
+      "No individual step/tool return details were supplied; per-step outcomes are not fabricated",
+      "Does not independently verify file-lock injection, retry bounds or stress polling",
+      "Creo 10 validation remains pending",
+      "No MCP tests rerun during archival"
+    ]
+  }
+}

@@ -1,0 +1,658 @@
+{
+  "work_item": "FEAT-019",
+  "status": "completed_user_accepted_workbuddy_creo_12_4",
+  "date": "2026-10-13",
+  "version": "0.2.5",
+  "branch": "codex/feat-019-creo-autostart",
+  "environment": {
+    "os": "Windows 11 x64",
+    "python": "3.12.14",
+    "creo": "12.4.0.0",
+    "compatibility": "experimental",
+    "formal_creo_10": "not_run"
+  },
+  "source": {
+    "commit": "4b18579b44c733ea30ae3537c8cad537a3ce61c2",
+    "dirty": true,
+    "fingerprints": {
+      "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+      "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+      "server.py": "416e5bcfe4565bd4846a46601203c41a92d617641605d1bfa0d1c7b422b3e42c",
+      "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229",
+      "tests/test_creo_startup.py": "eb19108f81b741c5484c9aabb3226203bb7ad1cb0e5342f090d99003dfa365b2",
+      "tools/test_creo_startup.py": "b539e396a9c4d4235601bbf8ac7dc4618762a732513829c6afba968ff9248524"
+    }
+  },
+  "checks": {
+    "windows_unit_and_language": {
+      "work_item": "FEAT-019",
+      "version": "0.2.5",
+      "timestamp_utc": "2026-10-13T13:08:10.299998+00:00",
+      "environment": {
+        "os": "Windows",
+        "python": "3.12.14"
+      },
+      "source": {
+        "commit": "5042d05b4cd79c432e2263d89e7950d12c866595",
+        "dirty": true,
+        "checked_source_sha256": "77bf6a8e493432dcd7c29aa1227d808e37a9078cc9c0e51f243c7530fff488f6"
+      },
+      "native_validation": "not_run",
+      "unit_tests": "passed",
+      "success": true,
+      "style_summary": {
+        "lint_findings": 71,
+        "unformatted_files": 54,
+        "cpp_files_checked": 15,
+        "python_files_checked": 53
+      },
+      "tools": {
+        "ruff": "0.17.0",
+        "clang-format": "23.1.3"
+      },
+      "configuration": {
+        "pyproject.toml": "0b5551fbf14055060e36a829d48aaee700f44dfdb2336027393af45ce5691060",
+        ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+        "requirements-dev.txt": "5ad03a1fbb24e3e72d8cc46afb089bb9c1d0a2ff715b563ee5958cf7b8f199f1"
+      }
+    },
+    "unit_count": 119,
+    "two_process_coordinator_repeats": {
+      "count": 15,
+      "passed": true,
+      "native_sdk": "controlled_substitute"
+    },
+    "extracted_package": {
+      "report": {
+        "work_item": "FEAT-019",
+        "version": "0.2.5",
+        "timestamp_utc": "2026-10-13T13:14:25.262270+00:00",
+        "environment": {
+          "os": "Windows",
+          "python": "3.12.14"
+        },
+        "source": {
+          "commit": null,
+          "dirty": null,
+          "checked_source_sha256": "77bf6a8e493432dcd7c29aa1227d808e37a9078cc9c0e51f243c7530fff488f6"
+        },
+        "native_validation": "not_run",
+        "unit_tests": "passed",
+        "success": true,
+        "style_summary": {
+          "lint_findings": 71,
+          "unformatted_files": 54,
+          "cpp_files_checked": 15,
+          "python_files_checked": 53
+        },
+        "tools": {
+          "ruff": "0.17.0",
+          "clang-format": "23.1.3"
+        },
+        "configuration": {
+          "pyproject.toml": "0b5551fbf14055060e36a829d48aaee700f44dfdb2336027393af45ce5691060",
+          ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+          "requirements-dev.txt": "5ad03a1fbb24e3e72d8cc46afb089bb9c1d0a2ff715b563ee5958cf7b8f199f1"
+        }
+      },
+      "unit_count": 119,
+      "zip_sha256": "4669d5ef3d521c67133feb8be11b085cfbf01e137a06abb8163c3c7c11f756ed",
+      "first_run_from_empty_build_directory": true
+    },
+    "native_build": {
+      "creo_sdk": "12.4",
+      "success": true,
+      "scope": "build/cache only, no geometry claim",
+      "worker_sha256": "3528e876af1c472cc47d57e755b7c65b646a90e30331fac36003441e19c7b8ba"
+    },
+    "runtime_identity_followup": {
+      "date": "2026-10-13",
+      "source_commit": "c839caaea9dd11fa0ce1b8a16b5730b97c809495",
+      "dirty": true,
+      "public_mcp_runtime": {
+        "python_executable": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+        "server_entry": "E:\\Projects\\MCP_CREO_MechDog\\server.py",
+        "code_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "source_fingerprints_at_startup": {
+          "server.py": "bc04ea8f1dccaa2470728794b862cc2c1e72099ca118891162c579a7683d8266",
+          "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+          "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+          "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+          "schema.py": "58e9bcc01e25da90dd84b1d26d42652ea0b401162b72beea8674bf76e01828fe",
+          "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229"
+        },
+        "source_changed_since_startup": false
+      },
+      "windows_unit_and_language": {
+        "work_item": "FEAT-019",
+        "version": "0.2.5",
+        "timestamp_utc": "2026-10-13T14:23:17.208277+00:00",
+        "environment": {
+          "os": "Windows",
+          "python": "3.12.14"
+        },
+        "source": {
+          "commit": "c839caaea9dd11fa0ce1b8a16b5730b97c809495",
+          "dirty": true,
+          "checked_source_sha256": "159d0391cb8119357778bc55c022a1961a2b7fb9a4b28249016f3e110c11b5bf"
+        },
+        "native_validation": "not_run",
+        "unit_tests": "passed",
+        "success": true,
+        "style_summary": {
+          "lint_findings": 71,
+          "unformatted_files": 54,
+          "cpp_files_checked": 15,
+          "python_files_checked": 53
+        },
+        "tools": {
+          "ruff": "0.17.0",
+          "clang-format": "23.1.3"
+        },
+        "configuration": {
+          "pyproject.toml": "0b5551fbf14055060e36a829d48aaee700f44dfdb2336027393af45ce5691060",
+          ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+          "requirements-dev.txt": "5ad03a1fbb24e3e72d8cc46afb089bb9c1d0a2ff715b563ee5958cf7b8f199f1"
+        }
+      },
+      "unit_count": 121,
+      "cold_start": {
+        "report_sha256": "54c8c5ff118c700fdc77ce2ac25145245a4981e2fe307cf1a10bb2f0c6b88444",
+        "command": [
+          "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+          "E:\\Projects\\MCP_CREO_MechDog\\tools\\test_creo_startup.py",
+          "--require-cold",
+          "--retry",
+          "--output",
+          "build\\FEAT-019-runtime-identity-cold.json"
+        ],
+        "source": {
+          "commit": "c839caaea9dd11fa0ce1b8a16b5730b97c809495",
+          "dirty": true,
+          "fingerprints": {
+            "server.py": "bc04ea8f1dccaa2470728794b862cc2c1e72099ca118891162c579a7683d8266",
+            "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+            "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+            "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229",
+            "tools/test_creo_startup.py": "b539e396a9c4d4235601bbf8ac7dc4618762a732513829c6afba968ff9248524"
+          }
+        },
+        "environment": {
+          "os": "Windows-11-10.0.26100-SP0",
+          "python": "3.12.14",
+          "creo_root": "C:\\Program Files\\PTC\\Creo 12.4.0.0",
+          "creo": "12.4.0.0"
+        },
+        "initial_creo_process_count": 0,
+        "success": false,
+        "error": {
+          "type": "ExceptionGroup",
+          "message": "unhandled errors in a TaskGroup (1 sub-exception)"
+        },
+        "jobs_submitted": 0,
+        "gui_launch_observed": true
+      },
+      "installed_and_development_status_comparison": {
+        "installed_toolkit_code": -4,
+        "development_toolkit_code": -4,
+        "connected": false
+      },
+      "workbuddy_final_black_box": "not_run"
+    }
+  },
+  "mcp_admission": {
+    "work_item": "FEAT-019",
+    "source": {
+      "commit": "4b18579b44c733ea30ae3537c8cad537a3ce61c2",
+      "dirty": true,
+      "fingerprints": {
+        "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+        "server.py": "416e5bcfe4565bd4846a46601203c41a92d617641605d1bfa0d1c7b422b3e42c",
+        "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+        "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229"
+      }
+    },
+    "timestamp": "2026-10-13T13:14:22.480585+00:00",
+    "scope": "actual MCP handshake, capability and pre-ready modeling rejection against existing manual session; no native modeling or cold-start lifetime claim",
+    "handshake_seconds": 1.4219999999986612,
+    "tool_count": 81,
+    "startup": {
+      "launch_reserved": true,
+      "launch_attempt": 10,
+      "auto_start_enabled": true,
+      "selected_session_configured": false,
+      "state": "building_worker",
+      "connected": false,
+      "message": "Preparing the native connection worker",
+      "retry_allowed": false,
+      "updated_at": "2026-10-13T13:14:23.927212+00:00"
+    },
+    "modeling_response": {
+      "is_error": true,
+      "content": [
+        {
+          "type": "text",
+          "text": "Error executing tool creo_new_part: Creo is not ready (building_worker): Preparing the native connection worker; poll creo_startup_status. No modeling job was queued.",
+          "annotations": null,
+          "meta": null
+        }
+      ]
+    },
+    "job_list_unchanged": true,
+    "creo_process_identity_preserved": true,
+    "success": true
+  },
+  "workbuddy_final_mcp_acceptance": "not_run",
+  "native_attempts": [
+    {
+      "success": false,
+      "cold_start": true,
+      "initial_creo_process_count": 0,
+      "handshake_seconds": [
+        1.3430000000007567,
+        1.4530000000013388
+      ],
+      "no_duplicate_launch": true,
+      "error": {
+        "type": "ExceptionGroup",
+        "message": "unhandled errors in a TaskGroup (1 sub-exception)"
+      },
+      "source": {
+        "commit": "6a623e7bca511b115882cbbf386ef0e8a7b29f1b",
+        "dirty": true,
+        "fingerprints": {
+          "server.py": "b531d7591e3234fbd29132669df3a7aa860ac94bee8ed254f71ab170d4257379",
+          "bridge.py": "c54427b30b179568ed1f0114e5126a9b68ff9f9852647b539b0b524d9d11eb2c",
+          "creo_startup.py": "ef84fa56b93e0812ba4dd9b52c57e9408ab8b6b6910af7482a8d532d8776490a",
+          "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229",
+          "tools/test_creo_startup.py": "cb536797052b74bc44bc6e8b2b44126327d2ee4a3b100dd09666e9a20a81305f"
+        }
+      },
+      "report_local": "build/FEAT-019-startup-verified.json",
+      "report_sha256": "99c3672b514fa687edd6c59c75d14b44452a336114d622dd6ca7fa64285ea303",
+      "jobs": [
+        {
+          "job_id": "a422bf88763843408ab0d4d88e1ed6e3",
+          "model_id": "0d6e7bd8e4114161a9aa24f6b3283570",
+          "tool": "creo_execute_plan",
+          "status": "succeeded",
+          "revision": 1,
+          "saved_file_reloaded_and_verified": true,
+          "message": "General feature plan completed"
+        },
+        {
+          "job_id": "6654c693a32440019bc12e70adbe096c",
+          "model_id": "0d6e7bd8e4114161a9aa24f6b3283570",
+          "tool": "creo_set_parameters",
+          "status": "failed",
+          "revision": null,
+          "saved_file_reloaded_and_verified": false,
+          "message": "Toolkit operation failed; inspect native.log and its element error list"
+        }
+      ]
+    },
+    {
+      "success": false,
+      "cold_start": true,
+      "initial_creo_process_count": 0,
+      "handshake_seconds": [
+        1.235000000000582,
+        1.4059999999954016
+      ],
+      "error": {
+        "type": "ExceptionGroup",
+        "message": "unhandled errors in a TaskGroup (1 sub-exception)"
+      },
+      "source": {
+        "commit": "6a623e7bca511b115882cbbf386ef0e8a7b29f1b",
+        "dirty": true,
+        "fingerprints": {
+          "server.py": "b531d7591e3234fbd29132669df3a7aa860ac94bee8ed254f71ab170d4257379",
+          "bridge.py": "c54427b30b179568ed1f0114e5126a9b68ff9f9852647b539b0b524d9d11eb2c",
+          "creo_startup.py": "0ce42526b5608e330621e6a701de02bc1c07abb8533fb053bbb76e3dc80cc8eb",
+          "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229",
+          "tools/test_creo_startup.py": "cb536797052b74bc44bc6e8b2b44126327d2ee4a3b100dd09666e9a20a81305f"
+        }
+      },
+      "report_local": "build/FEAT-019-startup-final-pass.json",
+      "report_sha256": "178a598b1b2759f6817feab44cf3c0aad7c389f17b72cedc0bc31638000fcdcb",
+      "jobs": []
+    },
+    {
+      "success": false,
+      "cold_start": false,
+      "initial_creo_process_count": 2,
+      "handshake_seconds": [
+        1.3589999999967404,
+        1.4380000000019209
+      ],
+      "error": {
+        "type": "ExceptionGroup",
+        "message": "unhandled errors in a TaskGroup (1 sub-exception)"
+      },
+      "source": {
+        "commit": "6a623e7bca511b115882cbbf386ef0e8a7b29f1b",
+        "dirty": true,
+        "fingerprints": {
+          "server.py": "b531d7591e3234fbd29132669df3a7aa860ac94bee8ed254f71ab170d4257379",
+          "bridge.py": "8dff945f43c906f86aa5decedeee400893784e66085cd04ab5b8f5a382fc6fe0",
+          "creo_startup.py": "5cc447058346139f19df6fc5357390c8ff686f17209bcc883e2eb8591eba7888",
+          "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229",
+          "tools/test_creo_startup.py": "a4fd24d47b616cf4eeb8ba3dab2e0ed6756af23c6a918626b66891b5101a3299"
+        }
+      },
+      "report_local": "build/FEAT-019-startup-reuse-pass.json",
+      "report_sha256": "000b679413a2ed18afff017983d39e975da375f1fa06ca2b9743948306cdb0e1",
+      "jobs": []
+    },
+    {
+      "success": false,
+      "cold_start": true,
+      "initial_creo_process_count": 0,
+      "handshake_seconds": [
+        1.3280000000013388,
+        1.4530000000013388
+      ],
+      "error": {
+        "type": "ExceptionGroup",
+        "message": "unhandled errors in a TaskGroup (1 sub-exception)"
+      },
+      "source": {
+        "commit": "6a623e7bca511b115882cbbf386ef0e8a7b29f1b",
+        "dirty": true,
+        "fingerprints": {
+          "server.py": "b531d7591e3234fbd29132669df3a7aa860ac94bee8ed254f71ab170d4257379",
+          "bridge.py": "8dff945f43c906f86aa5decedeee400893784e66085cd04ab5b8f5a382fc6fe0",
+          "creo_startup.py": "5cc447058346139f19df6fc5357390c8ff686f17209bcc883e2eb8591eba7888",
+          "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229",
+          "tools/test_creo_startup.py": "a4fd24d47b616cf4eeb8ba3dab2e0ed6756af23c6a918626b66891b5101a3299"
+        }
+      },
+      "report_local": "build/FEAT-019-startup-retest.json",
+      "report_sha256": "101b98118b7f45022309d678d3a522a602e0719cb2b9b44d97d05b1163228d0c",
+      "jobs": []
+    },
+    {
+      "success": false,
+      "cold_start": true,
+      "initial_creo_process_count": 0,
+      "handshake_seconds": [
+        1.3289999999979045,
+        1.4530000000013388
+      ],
+      "error": {
+        "type": "ExceptionGroup",
+        "message": "unhandled errors in a TaskGroup (1 sub-exception)"
+      },
+      "source": {
+        "commit": "6a623e7bca511b115882cbbf386ef0e8a7b29f1b",
+        "dirty": true,
+        "fingerprints": {
+          "server.py": "416e5bcfe4565bd4846a46601203c41a92d617641605d1bfa0d1c7b422b3e42c",
+          "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+          "creo_startup.py": "e7f94f20ca696e6db7b9f37de962b361e4824b9aad77c07c5e487b5d887ec07b",
+          "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229",
+          "tools/test_creo_startup.py": "426d11178816ae1c657a0a17c363d1e9ab335e11ab64ebfe4bcff2971fa902f0"
+        }
+      },
+      "report_local": "build/FEAT-019-startup-public-env.json",
+      "report_sha256": "a76c1b9459e1f05131598b7193c618827b69114e8949bc8e433c0784130a7c8b",
+      "jobs": []
+    },
+    {
+      "success": false,
+      "cold_start": true,
+      "initial_creo_process_count": 0,
+      "handshake_seconds": [
+        1.3119999999980791,
+        1.4680000000007567
+      ],
+      "error": {
+        "type": "ExceptionGroup",
+        "message": "unhandled errors in a TaskGroup (1 sub-exception)"
+      },
+      "source": {
+        "commit": "6a623e7bca511b115882cbbf386ef0e8a7b29f1b",
+        "dirty": true,
+        "fingerprints": {
+          "server.py": "416e5bcfe4565bd4846a46601203c41a92d617641605d1bfa0d1c7b422b3e42c",
+          "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+          "creo_startup.py": "70d32e79b460b0851571b654dfa971a2d8707e73ca22bd48fc9923e6f6a29176",
+          "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229",
+          "tools/test_creo_startup.py": "426d11178816ae1c657a0a17c363d1e9ab335e11ab64ebfe4bcff2971fa902f0"
+        }
+      },
+      "report_local": "build/FEAT-019-startup-interactive-desktop.json",
+      "report_sha256": "106876d1796e75ebbaa3a04b7287a462e93aa5d2510a6eb6f46eff22208fabfc",
+      "jobs": []
+    },
+    {
+      "success": false,
+      "cold_start": true,
+      "initial_creo_process_count": 0,
+      "handshake_seconds": [
+        1.375,
+        1.562999999994645
+      ],
+      "error": {
+        "type": "ExceptionGroup",
+        "message": "unhandled errors in a TaskGroup (1 sub-exception)"
+      },
+      "source": {
+        "commit": "6a623e7bca511b115882cbbf386ef0e8a7b29f1b",
+        "dirty": true,
+        "fingerprints": {
+          "server.py": "416e5bcfe4565bd4846a46601203c41a92d617641605d1bfa0d1c7b422b3e42c",
+          "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+          "creo_startup.py": "bd54e12ad4cff23406d09fbb189c50e413fc984c63c6b5983ef13c239ca97203",
+          "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229",
+          "tools/test_creo_startup.py": "426d11178816ae1c657a0a17c363d1e9ab335e11ab64ebfe4bcff2971fa902f0"
+        }
+      },
+      "report_local": "build/FEAT-019-startup-explorer-broker.json",
+      "report_sha256": "07077e2b2160132c75dd044bb9f5081d341a4416d5c517959c64558079327873",
+      "jobs": []
+    },
+    {
+      "success": false,
+      "cold_start": true,
+      "initial_creo_process_count": 0,
+      "handshake_seconds": [
+        1.3590000000040163,
+        1.625
+      ],
+      "error": {
+        "type": "ExceptionGroup",
+        "message": "unhandled errors in a TaskGroup (1 sub-exception)"
+      },
+      "source": {
+        "commit": "6a623e7bca511b115882cbbf386ef0e8a7b29f1b",
+        "dirty": true,
+        "fingerprints": {
+          "server.py": "416e5bcfe4565bd4846a46601203c41a92d617641605d1bfa0d1c7b422b3e42c",
+          "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+          "creo_startup.py": "0a42a5a45e4cec1c110c6526ce3408961b09a2e50056ac5c0013bc4a5549f224",
+          "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229",
+          "tools/test_creo_startup.py": "426d11178816ae1c657a0a17c363d1e9ab335e11ab64ebfe4bcff2971fa902f0"
+        }
+      },
+      "report_local": "build/FEAT-019-startup-clean-nameservice.json",
+      "report_sha256": "3b4e92cc99dc2b0c55baf46b71f14fe8169bf1148d54f1ad19736c2024d8f819",
+      "jobs": []
+    },
+    {
+      "success": false,
+      "scope": "operator normal exit followed by normal manual launch; connection baseline only, no modeling",
+      "source": {
+        "commit": "5042d05b4cd79c432e2263d89e7950d12c866595",
+        "dirty": true,
+        "fingerprints": {
+          "server.py": "416e5bcfe4565bd4846a46601203c41a92d617641605d1bfa0d1c7b422b3e42c",
+          "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+          "creo_startup.py": "d81a20b6a54c30a0010efef24da47d1451a9c4a77055fc92a82ac207b06d2be9",
+          "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229"
+        }
+      },
+      "session_status": {
+        "connected": false,
+        "connection_state": "not_found_or_unreadable",
+        "toolkit_code": -4,
+        "current_model": "",
+        "current_model_code": -8,
+        "model_type": -1,
+        "release_numeric": 0,
+        "disconnect_code": 0,
+        "feature_creation_license": "requires_actual_modeling_test",
+        "worker_exit_code": 20
+      },
+      "independent_sdk_probe": {
+        "code": -4,
+        "timeout_seconds": 5,
+        "display": null,
+        "user": null,
+        "stderr_bytes": 0
+      },
+      "token_checks": {
+        "same_user_logon": true,
+        "same_windows_session": true,
+        "same_elevation": true
+      },
+      "explicit_runtime_environment_probe": {
+        "PRO_DIRECTORY_and_PRO_MACHINE_TYPE": -4,
+        "also_PRO_LANG_english": -4
+      },
+      "native_modeling": "not_run_due_to_connection_failure",
+      "report_local": "build/FEAT-019-manual-baseline.json",
+      "report_sha256": "29b3ff771250776f436b4fde0416650ce20ea14a78903ddff7bc59f45bfaec47",
+      "jobs": []
+    }
+  ],
+  "acceptance": {
+    "date": "2026-10-13",
+    "authority": "User explicitly accepted WorkBuddy final MCP test and requested closure",
+    "source_commit_at_codex_recheck": "efc0292",
+    "dirty_at_codex_recheck": false,
+    "runtime_at_codex_recheck": {
+      "python_executable": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+      "server_entry": "E:\\Projects\\MCP_CREO_MechDog\\server.py",
+      "code_root": "E:\\Projects\\MCP_CREO_MechDog",
+      "source_fingerprints_at_startup": {
+        "server.py": "bc04ea8f1dccaa2470728794b862cc2c1e72099ca118891162c579a7683d8266",
+        "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+        "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+        "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+        "schema.py": "58e9bcc01e25da90dd84b1d26d42652ea0b401162b72beea8674bf76e01828fe",
+        "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229"
+      },
+      "source_changed_since_startup": false
+    },
+    "workbuddy_source_commit": "not reported through MCP; do not infer from version alone",
+    "report": {
+      "source_path": "E:\\Projects\\workcreo\\FEAT-019_建模验收报告.md",
+      "archive": "docs/validation/FEAT-019-WorkBuddy-report.md",
+      "sha256": "092e4baec167fbd4579150c3fd358d3bebf4a9e8c6a5d742d3c0dc3273f50961"
+    },
+    "artifacts_manifest": "FEAT-019-WorkBuddy-artifacts.json",
+    "environment": {
+      "creo": "12.4.0.0",
+      "compatibility": "experimental",
+      "formal_creo_10": "not_run"
+    },
+    "workbuddy_reported_startup": {
+      "state": "ready",
+      "connected": true,
+      "toolkit_code": 0,
+      "launched_by_coordinator": true,
+      "source_changed_since_startup": false
+    },
+    "codex_read_only_mcp_recheck": {
+      "success": true,
+      "model_id": "8fa908a662b3407792d314b154362414",
+      "revision": 6,
+      "pending_job": null,
+      "volume_mm3": 9980.0,
+      "jobs": [
+        {
+          "job_id": "ef065a85bb5c41d3b1770204f5f0e960",
+          "status": "succeeded",
+          "revision": 1,
+          "saved_file_reloaded_and_verified": true,
+          "volume_mm3": null
+        },
+        {
+          "job_id": "935b068afb8042ebb2b9c8eb823b0612",
+          "status": "succeeded",
+          "revision": 2,
+          "saved_file_reloaded_and_verified": true,
+          "volume_mm3": null
+        },
+        {
+          "job_id": "258afd752ceb47d8ad75a3c815a176ab",
+          "status": "succeeded",
+          "revision": 3,
+          "saved_file_reloaded_and_verified": true,
+          "volume_mm3": 9999.999999999998
+        },
+        {
+          "job_id": "fb2fb91fadfa42d1a8c6e30d2449f9f9",
+          "status": "succeeded",
+          "revision": 4,
+          "saved_file_reloaded_and_verified": true,
+          "volume_mm3": 19999.999999999996
+        },
+        {
+          "job_id": "926509366ed3403d80406cba827826e3",
+          "status": "succeeded",
+          "revision": 5,
+          "saved_file_reloaded_and_verified": true,
+          "volume_mm3": 9999.999999999998
+        },
+        {
+          "job_id": "7e9aecae4b6f4276ba6e3afc89f64e28",
+          "status": "succeeded",
+          "revision": 6,
+          "saved_file_reloaded_and_verified": true,
+          "volume_mm3": 9980.0
+        }
+      ]
+    },
+    "codex_new_cold_start_smoke": {
+      "success": false,
+      "scope": "Separate Codex stdio client; new modeling not submitted",
+      "runtime": {
+        "python_executable": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+        "server_entry": "E:\\Projects\\MCP_CREO_MechDog\\server.py",
+        "code_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "source_fingerprints_at_startup": {
+          "server.py": "bc04ea8f1dccaa2470728794b862cc2c1e72099ca118891162c579a7683d8266",
+          "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+          "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+          "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+          "schema.py": "58e9bcc01e25da90dd84b1d26d42652ea0b401162b72beea8674bf76e01828fe",
+          "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229"
+        },
+        "source_changed_since_startup": false
+      },
+      "startup_terminal": {
+        "launch_reserved": true,
+        "launch_attempt": 12,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "state": "configuration_error",
+        "connected": false,
+        "message": "Startup preparation failed (TimeoutExpired); check installation/configuration and build logs",
+        "retry_allowed": true,
+        "updated_at": "2026-10-13T14:48:00.399061+00:00"
+      },
+      "report_sha256": "f4904917d26112a666b95a0ac61dc51416587e78da810e0accd84cdc5bfa74c0",
+      "followup": "BUG-005"
+    },
+    "unverified": [
+      "Creo 10 formal baseline",
+      "Real multi-client simultaneous GUI startup count",
+      "All clients closed then successful Toolkit reconnect",
+      "All modeling families",
+      "Part parameter mutation in this final WorkBuddy report"
+    ]
+  }
+}

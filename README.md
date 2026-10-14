@@ -1,10 +1,14 @@
-# MCP_CREO_MechDog 0.2.5
+# MCP_CREO_MechDog 0.2.6
 
-本地 Windows MCP 服务，连接已打开的 Creo Parametric 10，通过官方 C/C++ Toolkit 创建、查询和修改**原生参数化特征**。建模由任意支持的草图轮廓及顺序特征组成：新建零件 → 草图 → 拉伸/旋转 → 切除/孔 → 后续特征。原先的底板接口保留为快捷工具。
+开发维护从 [开发入口](docs/DEVELOPMENT.md) 和 [统一功能台账](docs/BACKLOG.md) 开始。每项工作先定义验收；语言与单元检查、Creo 实机验收分别记录。项目采用渐进布局整理，当前支持环境见 [兼容矩阵](docs/COMPATIBILITY.md)。
 
-**本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 本版对客户端公开 **80 个可用工具**；`creo_loft` 已通过直接创建和已有零件追加验收并开放。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
+本地 Windows MCP 服务，按需启动或连接 Creo Parametric 10，通过官方 C/C++ Toolkit 创建、查询和修改**原生参数化特征**。建模由任意支持的草图轮廓及顺序特征组成：新建零件 → 草图 → 拉伸/旋转 → 切除/孔 → 后续特征。原先的底板接口保留为快捷工具。
 
-当前版本为 **0.2.5**。本轮完成选定的 **1、2、3、4、8、10 项**：能力与工具列表一致、精简任务查询、九个 MIT 混合种子、扫掠四个分支、复杂/大坐标草图尺寸策略，以及向已有零件追加原生混合。57 项自动检查与本机原生建模验收通过。详见 [版本说明](docs/RELEASE_NOTES_0.2.5.md)、[逐项验收](docs/PROGRESS_025.md) 和 [结构化证据](docs/validation_increment_025.json)。
+**本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 本版对客户端公开 **81 个可用工具**；`creo_loft` 已通过直接创建和已有零件追加验收并开放。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
+
+当前版本为 **0.2.6**，合并开发规范、Windows 登记原子写入修复和 MCP 自动启动 Creo 三个分支。版本号按用户指定从 0.2.5 递增至 0.2.6。发布范围与限制见 [版本说明](docs/RELEASE_NOTES_0.2.6.md)，本轮检查见 [发布验收](docs/validation/RELEASE-0.2.6.md)。0.2.5 的建模能力与验收保留为历史，见 [原版本说明](docs/RELEASE_NOTES_0.2.5.md)、[逐项验收](docs/PROGRESS_025.md) 和 [结构化证据](docs/validation_increment_025.json)。
+
+本版包含 [FEAT-019 自动启动](docs/work-items/FEAT-019.md)：后台检测、启动协调和建模就绪保护已实现；用户于 2026-10-13 接受 WorkBuddy / Creo 12.4 的自动启动、Toolkit 就绪及建模/保存重载验收。Creo 10 正式基线未测；Codex 冷启动连接复测失败另列 [BUG-005](docs/work-items/BUG-005.md)。见 [原验收证据](docs/validation/FEAT-019.md)。
 
 普通混合可直接创建或追加，范围见 [直接混合](docs/DIRECT_BLEND_0.2.5.md)；种子复用见 [调用说明](docs/LOFT_SEED.md)、[多截面](docs/MULTISECTION_BLEND.md)。草图支持 `dimensioning="auto" / "autodim" / "coordinates"`，坐标模式的范围与尺寸编辑规则见 [草图说明](docs/SKETCH_STABILITY_0.2.5.md)。迁移步骤见 [种子库](docs/SEED_LIBRARY.md) 和 [换电脑、换 Agent](docs/MIGRATION.md)。
 
@@ -27,7 +31,7 @@
 
    如果 Python 没有加入 PATH，可加 `-Python 'C:\Path\To\python.exe'`。如果编译器没有自动找到，可加 `-VcVars64 'C:\Path\To\vcvars64.bat'`。这两个示例路径需要替换。
 3. 安装成功后，脚本生成本机 `config.json`、`.venv/`、`build/` 和 `client-config.json`。将 `client-config.json` 中的服务配置加入支持本地 stdio MCP 的 AI 客户端。
-4. 打开一个 Creo 10 会话，让 AI 调用 `creo_check_environment` 和 `creo_session_status`；连接成功后再提交建模计划。成功建模及保存重载验证才证明相应操作在该环境可用。
+4. 启动客户端中的 MCP 服务，服务自动复用已有 Creo 或按配置启动。让 AI 调用 `creo_startup_status` 等待 `state == "ready"`，再用 `creo_session_status` 确认连接后提交建模计划。若 Creo 显示启动对话框，由使用者处理。成功建模及保存重载验证才证明相应操作在该环境可用。
 
 脚本不修改全局客户端配置。完整安装与排错说明见 [docs/INSTALL.md](docs/INSTALL.md)；GitHub 源码发布步骤见 [docs/PUBLISH_GITHUB.md](docs/PUBLISH_GITHUB.md)。GitHub 仓库用于分发源码，服务在使用者的电脑运行。
 
@@ -66,7 +70,7 @@
 
 ## 接入与调用
 
-保持一个 Creo 10 会话打开，把以下本地 stdio 服务配置加入支持 MCP 的客户端：
+把以下本地 stdio 服务配置加入支持 MCP 的客户端：
 
 ```json
 {
@@ -154,7 +158,7 @@
 - `creo_create_feature_tree` 可扩展符合本机 SDK 的特征结构，但无法保证所有 PTC 特征类型和选项均可创建。
 - 不承诺任意文字描述都自动成功。AI 需要规划有效的轮廓、基准、尺寸和特征顺序；无效几何由 Creo 返回错误。
 
-服务串行执行 Toolkit 操作，只连接已打开的唯一 Creo 会话，不自动关闭 Creo。输出保存在项目 `models/` 和 `jobs/` 内，不提供任意命令/代码执行工具，不输出许可服务器内容或修改安装目录。正在交互建模或有模态对话框时，应先处理该会话状态。
+服务串行执行 Toolkit 操作，后台检测并复用已有会话，无会话时按配置启动；连接确认前拒绝建模入队，不自动关闭 Creo。输出保存在项目 `models/` 和 `jobs/` 内，不提供任意命令/代码执行工具，不输出许可服务器内容或修改安装目录。正在交互建模或有模态对话框时，应先处理该会话状态。
 
 ## 开发与测试
 
@@ -171,6 +175,8 @@
 ```
 
 除输入验证外，上述集成测试会实际连接 Creo 并创建或修改独立测试模型。`test_v021.py` 默认验证启用功能和禁用接口的拒绝行为；禁用接口的拒绝测试不是建模成功证明。日志位于任务 `native.log`/`runner.log`/`job.json` 和 `build/build.log`；证据在 `build/*integration_test.json`。保存目录较长时应缩短项目路径。
+
+Windows 登记文件读取允许共享删除，写入使用单步原子替换；短暂占用最多重试 1 秒，持续失败保留旧登记并报错，不会自动重复原生操作。登记读写压力与并发实机轮询可分别运行 `tools/test_registry_io.py` 和 `tools/test_registry_native.py --readers 3`。本次 Creo 12.4 结果及 Creo 10 复测步骤见 [BUG-002 验证与交接](docs/validation/BUG-002.md)。
 
 实现依据：[PTC 草图特征 Element Tree 文档](https://support.ptc.com/help/creo_toolkit/protoolkit_plus/usascii/creo_toolkit/user_guide/Element_Tree_for_Sketched_Features.html)、本机 Creo 10 Toolkit 头文件与示例、[官方 MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk)。实际本机建模成功、保存重载成功的记录才证明该路径可用，SDK/许可环境文件存在本身不能证明许可可用。
 

@@ -1,0 +1,37 @@
+name: Development checks
+
+on:
+  push:
+    branches: [main, "codex/**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-unit-and-style:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements.lock.txt
+            requirements-dev.txt
+      - name: Install locked runtime and development dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Check style regressions and run unit validation
+        run: python tools/dev_check.py
+      - name: Upload development evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: development-checks
+          path: |
+            build/development_check.json
+            build/unit_test_report.json
+          if-no-files-found: warn
