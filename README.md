@@ -1,12 +1,12 @@
-# MCP_CREO_MechDog 0.2.6
+# MCP_CREO_MechDog 0.3.0
 
 开发维护从 [开发入口](docs/DEVELOPMENT.md) 和 [统一功能台账](docs/BACKLOG.md) 开始。每项工作先定义验收；语言与单元检查、Creo 实机验收分别记录。项目采用渐进布局整理，当前支持环境见 [兼容矩阵](docs/COMPATIBILITY.md)。
 
 本地 Windows MCP 服务，按需启动或连接 Creo Parametric 10 / 12，通过官方 C/C++ Toolkit 创建、查询和修改**原生参数化特征**。Creo 10 为正式验收基线；Creo 12 已验证可用，已有实机记录使用 12.4.0.0，具体功能与未测范围见 [兼容矩阵](docs/COMPATIBILITY.md)。建模由任意支持的草图轮廓及顺序特征组成：新建零件 → 草图 → 拉伸/旋转 → 切除/孔 → 后续特征。原先的底板接口保留为快捷工具。
 
-**本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 当前开发源码对客户端公开 **82 个可用工具**（已发布 0.2.6 为 81 个）；`creo_loft` 已通过直接创建和已有零件追加验收并开放。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
+**本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 本版对客户端公开 **82 个可用工具**（0.2.6 为 81 个）；`creo_loft` 已通过直接创建和已有零件追加验收并开放。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
 
-当前版本为 **0.2.6**，合并开发规范、Windows 登记原子写入修复和 MCP 自动启动 Creo 三个分支。版本号按用户指定从 0.2.5 递增至 0.2.6。发布范围与限制见 [版本说明](docs/RELEASE_NOTES_0.2.6.md)，本轮检查见 [发布验收](docs/validation/RELEASE-0.2.6.md)。0.2.5 的建模能力与验收保留为历史，见 [原版本说明](docs/RELEASE_NOTES_0.2.5.md)、[逐项验收](docs/PROGRESS_025.md) 和 [结构化证据](docs/validation_increment_025.json)。
+当前版本为 **0.3.0**，包含 FEAT-020 更新检查、DEV-002 第一批 Python 包迁移及 BUG-006 引用契约修复，保留原提交历史合入 main。发布范围与限制见 [版本说明](docs/RELEASE_NOTES_0.3.0.md)，本轮检查见 [发布验收](docs/validation/RELEASE-0.3.0.md)。历史 [0.2.6](docs/RELEASE_NOTES_0.2.6.md) 与 [0.2.5](docs/RELEASE_NOTES_0.2.5.md) 的版本说明和验证保持原日期。
 
 本版包含 [FEAT-019 自动启动](docs/work-items/FEAT-019.md)：后台检测、启动协调和建模就绪保护已实现；用户于 2026-10-13 接受 WorkBuddy / Creo 12.4 的自动启动、Toolkit 就绪及建模/保存重载验收，并于 2026-10-14 确认补充 Creo 12 已验证可用的说明。FEAT-019 的 Creo 10 正式基线专项复测未执行；Codex 冷启动连接复测失败另列 [BUG-005](docs/work-items/BUG-005.md)。见 [原验收证据](docs/validation/FEAT-019.md)。
 
@@ -18,11 +18,11 @@
 
 历史 0.21 验证通过 20 项输入校验、64 个成功原生任务，其中 56 个修改任务通过保存重载。只读查询/导出不计入修改任务；禁用放样的拒绝行为不计为建模成功。
 
-开发源码已实现 [FEAT-020 版本检查与提醒](docs/UPDATE_CHECK.md)，尚待 Creo 实机与发布验收；0.2.6 旧发布不包含此功能，需先手动升级一次才可收到后续更新提醒。
+0.3.0 已包含 [FEAT-020 版本检查与提醒](docs/UPDATE_CHECK.md)。WorkBuddy 已验证联网查询、缓存一致性、并发及联网建模；断网期间建模、高版本提醒展示等仍未验证。0.2.6 旧发布需先手动升级一次才可收到后续更新提醒。
 
 DEV-002 已开始分批迁移：更新检查实现位于 `src/creo_mechdog/`，对应测试位于 `tests/unit/`。现有开发环境更新源码后先执行 `python -m pip install --no-deps -e .`；正常安装由 `setup.ps1` 完成包安装。根入口和数据位置继续保留，见 [迁移任务卡](docs/work-items/DEV-002.md)。
 
-模型引用须按具体工具的参数形状选择，见 [引用格式](docs/REFERENCE_SYNTAX.md)。开发源码已兼容 axis_pattern 的通用 datum_feature 轴标签；旧发布需要更新源码并重启 MCP 后使用。
+模型引用须按具体工具的参数形状选择，见 [引用格式](docs/REFERENCE_SYNTAX.md)。0.3.0 兼容 axis_pattern 的通用 datum_feature 轴标签，用户已确认 WorkBuddy N1 验收通过；旧发布需要更新源码并重启 MCP 后使用。
 
 ## 安装
 

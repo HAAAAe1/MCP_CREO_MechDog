@@ -716,5 +716,30 @@
       "errors": 0
     },
     "seed_sha256": "9928ed610478ec8fffcc78a8e7925b7f980464276a207a69aa635cfa3a8d1de6"
+  },
+  "workbuddy_report": {
+    "path": "FEAT-020-WorkBuddy-report.md",
+    "sha256": "c8662d443e2bed7824528316dd0af43e69af9329f7641e9677a96a61c660c287",
+    "time_utc": "2026-10-14 03:27–03:30",
+    "version": "0.2.6",
+    "creo": "12.4.0.0",
+    "passed": [
+      "version_tools_environment",
+      "update_fields_and_shared_cache",
+      "public_prerelease_equal_version",
+      "actual_parallel_calls",
+      "online_plate_400_mm3_saved_reloaded"
+    ],
+    "unverified": [
+      "higher_public_version_and_reminder",
+      "local_version_higher",
+      "network_failure_timeout_rate_limit",
+      "modeling_during_network_failure",
+      "unknown_no_comparable_release",
+      "creo10"
+    ],
+    "job_id": "563ee955f3e7454eae708824dc8aed0b",
+    "model_id": "unavailable_in_public_results",
+    "source_commit": "not_exposed_by_tested_interface"
   }
 }

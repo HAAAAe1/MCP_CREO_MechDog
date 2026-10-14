@@ -1,6 +1,6 @@
 # 统一开发台账
 
-建立日期：2026-10-13。最近进度同步：2026-10-14。当前服务/源码版本：0.2.6。未来开发以本表为唯一排期与状态入口；原报告和版本记录保留为来源，不能用旧序号代替固定 ID。
+建立日期：2026-10-13。最近进度同步：2026-10-14。当前服务/源码版本：0.3.0。未来开发以本表为唯一排期与状态入口；原报告和版本记录保留为来源，不能用旧序号代替固定 ID。
 
 ## 使用规则
 
@@ -8,7 +8,7 @@ ID 一经分配不复用：`BUG` 为缺陷，`FEAT` 为能力，`DEV` 为工程�
 
 用户于 2026-10-13 调整当前排期：BUG-002 已完成，下一项先做 [FEAT-019：MCP 自动启动 Creo](work-items/FEAT-019.md)，随后推进 DEV-002。FEAT-019 包含启动所需的最小会话检测与就绪判定，与 FEAT-001 衔接；FEAT-001 的完整检测能力仍单独验收。其他 P1 稳定性条目继续保留，BUG-004 在实验兼容环境核实。功能拓展先建立独立验收范围，再排期。下表验收摘要不是已经通过的结论；详细来源保留在 [原问题快照](待完善功能清单.md)，复杂工作使用 [模板](templates/WORK_ITEM.md)。
 
-2026-10-14 当前执行进度：FEAT-020 已实现并提交 `da57ab9`；DEV-002 第一批已完成并提交 `3888c1d`，整体继续开发；BUG-006 引用契约修复已提交 `ccc7366`，等待原生最终验收。最新 BUG-006 开发检查与全新解压安装均通过 158 项单元/语言守卫，现有风格欠账为 67 条 Ruff、36 个 Python 与 14 个 C++ 未格式化文件，未新增容许项。上述改动仍在开发分支，未发布新版本。
+2026-10-14 当前执行进度：FEAT-020 实现 da57ab9、DEV-002 第一批 3888c1d、BUG-006 修复 ccc7366 纳入 0.3.0；用户确认 WorkBuddy N1(P1) 通过，BUG-006 已完成。FEAT-020 原始 WorkBuddy 报告已补录，仍有未测场景，保持验收中；DEV-002 整体继续开发。版本合并与发布由 DEV-013 跟踪，保留提交历史与旧附件。
 
 验收分工按用户 2026-10-14 的要求执行：本机验证 Creo 12，Creo 10 由协助者在其他机器验证。当前 Codex 实机重查仍未取得 Toolkit 就绪，不能将接口、单元或分发检查通过写成建模与保存重载通过。后续 DEV-002 继续逐批迁移校验和建模辅助模块，服务及桥接实现尚未迁移。
 
@@ -16,16 +16,16 @@ ID 一经分配不复用：`BUG` 为缺陷，`FEAT` 为能力，`DEV` 为工程�
 
 | ID | 优先级 | 状态 | 目标版本 | 范围与完成条件 |
 | --- | --- | --- | --- | --- |
-| [FEAT-020](work-items/FEAT-020.md) | P2 | 验收中 | 0.3.0 | 实现提交 `da57ab9`：GitHub 公开 Release（含预发布、分页、SemVer）、异步缓存与三个 MCP 接口；本项 21 项新回归及当时 142 项全量检查通过，真实 stdio 联网通过；更新模块后由 DEV-002 迁入包内。网络失败下原生建模、WorkBuddy 最终验收与 0.3.0 发布待完成；见 [本项证据](validation/FEAT-020.md) 与 [复测步骤](validation/FEAT-020-WorkBuddy-test.md) |
+| [FEAT-020](work-items/FEAT-020.md) | P2 | 验收中 | 0.3.0 | 实现提交 `da57ab9`：GitHub 公开 Release（含预发布、分页、SemVer）、异步缓存与三个 MCP 接口；本项 21 项新回归及当时 142 项全量检查通过，真实 stdio 联网通过；更新模块后由 DEV-002 迁入包内。WorkBuddy 更新/缓存/真实并发及联网 400 mm³ 板件保存重载通过；断网、高版本提醒等未测，实现随 0.3.0 预发布；见 [本项证据](validation/FEAT-020.md) 与 [复测步骤](validation/FEAT-020-WorkBuddy-test.md) |
 | [FEAT-019](work-items/FEAT-019.md) | P1 | 已完成 | 0.2.6 | 用户接受 WorkBuddy / Creo 12.4 最终 MCP 验收：自动启动与真实 Toolkit 就绪、新建/草图/拉伸/尺寸驱动/倒角、保存重载通过；Codex MCP 只读复核 6 个成功修改任务与 revision=6 / volume=9980 mm³；121 项 Windows 单元/语言检查通过；Creo 10 及真实多客户端并发/退出后重连未测，Codex 冷启动失败单列 BUG-005；见 [证据](validation/FEAT-019.md) |
-| [BUG-006](work-items/BUG-006.md) | P1 | 验收中 | 未排期 | 修复提交 `ccc7366`：axis_pattern 兼容 datum_feature 轴标签，补齐逐工具引用契约与可操作错误；9 项新回归、158 项全量检查、真实 stdio schema 与全新解压安装回归通过；本机显式重查 launch_attempt=15 / timeout，未提交阵列任务；原生几何与保存重载待验收，见 [证据](validation/BUG-006.md)、[引用说明](REFERENCE_SYNTAX.md) 与 [WorkBuddy 复测](validation/BUG-006-WorkBuddy-test.md) |
+| [BUG-006](work-items/BUG-006.md) | P1 | 已完成 | 0.3.0 | 修复提交 `ccc7366`：axis_pattern 兼容 datum_feature 轴标签，补齐逐工具引用契约与可操作错误；9 项新回归、158 项全量检查、真实 stdio schema 与全新解压安装回归通过；开发者启动重查 timeout 保留原记录；用户于 2026-10-14 确认 WorkBuddy N1(P1) 通过，未提供详细新报告或任务/模型 ID；见 [证据](validation/BUG-006.md)、[引用说明](REFERENCE_SYNTAX.md) 与 [WorkBuddy 复测](validation/BUG-006-WorkBuddy-test.md) |
 | [BUG-005](work-items/BUG-005.md) | P1 | 待核实 | 未排期 | 原 Codex 挂载/Toolkit 连接差异仍待核实；BUG-006 本机新服务显式重查仍 timeout、无建模任务，见 [最新接口与启动记录](validation/BUG-006.md)；未修复或确认根因，不改写 WorkBuddy / FEAT-019 已接受的独立原生验收 |
 
 ## 工程整理
 
 | ID | 优先级 | 状态 | 目标版本 | 范围与完成条件 |
 | --- | --- | --- | --- | --- |
-| [DEV-013](work-items/DEV-013.md) | P1 | 开发中 | 0.3.0 | 按用户要求保留提交历史合并已完成批次，登记 WorkBuddy N1 验收确认，执行版本、源码/种子分发检查并发布；FEAT-020 未测场景与 DEV-002 后续批次继续保留；见 [发布条目](work-items/DEV-013.md) |
+| [DEV-013](work-items/DEV-013.md) | P1 | 验收中 | 0.3.0 | 按用户要求保留提交历史合并已完成批次，登记 WorkBuddy N1 验收确认，执行版本、源码/种子分发检查并发布；FEAT-020 未测场景与 DEV-002 后续批次继续保留；见 [发布条目](work-items/DEV-013.md) |
 | [DEV-012](work-items/DEV-012.md) | P2 | 已完成 | 0.2.6 文档补充 | 根据用户确认与已有 Creo 12.4 实机证据，统一 Creo 10 / Creo 12 可用性说明并补充 12.4 安装示例；文档链接与范围一致性检查通过，GitHub Release 正文已修改并回读核对；历史测试日期、未测分支、BUG-005、标签及附件保持原样；本次未执行新实机测试，见 [记录](work-items/DEV-012.md) |
 | [DEV-011](work-items/DEV-011.md) | P1 | 已完成 | 0.2.6 | 合并近两日三个开发分支至 main；121 项单元/语言守卫、SDK 构建、协议、解压与九种子 ZIP 安装通过；v0.2.6 预发布，源码/种子附件及 SHA256；本轮 Toolkit 超时、Creo 10 未测、BUG-005 保留，见 [发布证据](validation/RELEASE-0.2.6.md) |
 | [DEV-001](work-items/DEV-001.md) | P1 | 已完成 | 0.2.6 | 开发入口、台账、模板、语言基线与守卫、Windows CI 配置、源码分发同步；[本批验收](validation/DEV-001.md) |

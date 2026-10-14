@@ -1,7 +1,7 @@
 {
   "work_item": "BUG-006",
   "date": "2026-10-14",
-  "status": "acceptance_pending",
+  "status": "accepted_by_user",
   "version": "0.2.6",
   "source_report": {
     "name": "MCP_CREO_MechDog_dev_全量工具测试报告.md",
@@ -316,5 +316,18 @@
     "failures": 0,
     "errors": 0
   },
-  "extracted_install": "Fresh venv; pip install -r requirements-dev.txt; passed"
+  "extracted_install": "Fresh venv; pip install -r requirements-dev.txt; passed",
+  "target_release": "0.3.0",
+  "workbuddy_acceptance": {
+    "date": "2026-10-14",
+    "source": "human confirmation in current conversation",
+    "scope": "N1(P1)",
+    "confirmation": "刚我已经通过workbuddy 测试通过了 N1(P1)的内容了。",
+    "implementation_commit": "ccc7366",
+    "detailed_report": "not_provided",
+    "job_id": "not_provided",
+    "model_id": "not_provided",
+    "geometry_and_reload_raw_results": "not_provided",
+    "creo10": "not_verified_here"
+  }
 }
