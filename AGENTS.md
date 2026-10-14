@@ -18,7 +18,7 @@
 
 ## 构建、测试与开发命令
 
-在仓库根目录使用 PowerShell 执行以下命令。安装需要 Windows x64、Python 3.12+、Creo 10、匹配的 Toolkit SDK、可用许可及 MSVC x64 构建工具。
+在仓库根目录使用 PowerShell 执行以下命令。安装需要 Windows x64、Python 3.12+、Creo 10 或 Creo 12、匹配的 Toolkit SDK、可用许可及 MSVC x64 构建工具。
 
 - `.\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 10.0.0.0'`：创建虚拟环境、安装锁定版本的依赖、生成配置和常量表，并编译执行器。请替换为实际安装路径。
 - `.\.venv\Scripts\python.exe bridge.py build`：编译变更后的原生源码，或复用已有执行器。
@@ -51,7 +51,7 @@ Python 使用四个空格缩进，函数和模块采用 `snake_case`，类采用
 
 单元测试使用 `unittest`，文件命名为 `tests/test_*.py`，测试方法命名为 `test_*`。修改输入校验或保护逻辑时补充回归用例。项目未设置数值化覆盖率门槛。修改原生建模代码后，运行对应的 `tools/test_*.py`，检查任务成功、几何断言通过，以及 `saved_file_reloaded_and_verified` 为 `true`。明确记录本次验证范围，不能用历史证据代替当前验证。
 
-Windows CI 仅承担语言与单元检查；原生构建及建模由具备匹配 SDK、许可的环境验收。Creo 10 是正式验收基线，Creo 12 为实验兼容，范围见 `docs/COMPATIBILITY.md`。新证据记录条目、源码提交与 dirty 状态、受测源码指纹、命令、环境和未测范围。
+Windows CI 仅承担语言与单元检查；原生构建及建模由具备匹配 SDK、许可的环境验收。Creo 10 是正式验收基线，Creo 12 已验证可用，已记录的实机版本为 12.4.0.0，范围见 `docs/COMPATIBILITY.md`；不同版本的发布回归分别记录，不互相替代。新证据记录条目、源码提交与 dirty 状态、受测源码指纹、命令、环境和未测范围。
 
 ## 提交与合并请求要求
 

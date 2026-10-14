@@ -2,9 +2,9 @@
 
 ## 需要的环境
 
-正式验收基线为 Creo 10，Creo 12 暂列实验兼容；具体已测范围与未测项见 [兼容矩阵](COMPATIBILITY.md)。仅做 Python 单元和语言检查的开发环境见 [开发入口](DEVELOPMENT.md)，不必先运行完整 Creo 安装流程。
+可使用 Creo 10 或 Creo 12。Creo 10 为正式验收基线；Creo 12 已验证可用，已有实机记录使用 12.4.0.0，具体已测范围与未测项见 [兼容矩阵](COMPATIBILITY.md)。仅做 Python 单元和语言检查的开发环境见 [开发入口](DEVELOPMENT.md)，不必先运行完整 Creo 安装流程。
 
-- Windows x64；Creo 10 为正式验收基线。0.2.6 本轮使用 Creo 12.4 实验环境，Toolkit 启动复测失败，具体结果见 [发布验收](validation/RELEASE-0.2.6.md)。
+- Windows x64；Creo Parametric 10 或 12，使用与目标安装匹配的 SDK。Creo 12.4 已有自动启动、建模、参数编辑和保存重载的成功实机记录；0.2.6 发布时另一次冷启动复测失败，保留原结果见 [发布验收](validation/RELEASE-0.2.6.md)。
 - Python 3.12+ x64；本版安装实测使用 Python 3.12。
 - 与 Creo 安装匹配的 C/C++ Toolkit SDK，包括头文件和 x64 链接库。
 - Creo 公制模板 `Common Files/templates/mmns_part_solid_abs.prt` 和 `mmns_asm_design_abs.asm`。安装器与环境检查都要求这两份文件，即使首次只建零件，也需安装公制装配模板。
@@ -22,6 +22,12 @@
 
 ```powershell
 .\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 10.0.0.0'
+```
+
+Creo 12.4 的安装示例：
+
+```powershell
+.\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 12.4.0.0'
 ```
 
 `-CreoRoot` 指向包含 `Common Files` 和 `Parametric` 的安装目录，按实际位置替换。脚本优先使用明确提供的参数，其次使用已有本机 `config.json`；首次安装参考 `config.example.json`。编译器可由 Visual Studio 的 `vswhere` 检测。

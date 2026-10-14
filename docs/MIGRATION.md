@@ -21,14 +21,14 @@ MCP_CREO_MechDog 0.2.6 在安装 Creo 的 Windows 电脑上运行，通过本地
 
 ## 换到另一台电脑
 
-1. 在目标 Windows x64 电脑准备 Creo 10、匹配 Toolkit SDK、MSVC x64 / Windows SDK、Python 3.12+ x64 和可用的 Toolkit 运行许可。Creo 10 为正式基线，0.2.6 本机仅有 Creo 12.4 实验环境，本版 Creo 10 复测未执行。
+1. 在目标 Windows x64 电脑准备 Creo 10 或 Creo 12、匹配 Toolkit SDK、MSVC x64 / Windows SDK、Python 3.12+ x64 和可用的 Toolkit 运行许可。Creo 10 为正式基线，Creo 12 已验证可用，已有实机记录使用 12.4.0.0；具体范围见 [兼容矩阵](COMPATIBILITY.md)。
 2. 下载0.2.6 源码包，内附 `seed_library/`。源码解压到例如 `C:\MCP_CREO_MechDog`，执行：
 
    ```powershell
    .\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 10.0.0.0'
    ```
 
-   填写目标机真实的 Creo 路径；其他程序路径选项见 [INSTALL.md](INSTALL.md)。重新生成本机环境、执行器和客户端配置，不直接复制原电脑的 `.venv`、二进制、`config.json` 或会话 ID。
+   填写目标机真实的 Creo 路径；Creo 12.4 可使用 `-CreoRoot 'C:\Program Files\PTC\Creo 12.4.0.0'`，其他程序路径选项见 [INSTALL.md](INSTALL.md)。重新生成本机环境、执行器和客户端配置，不直接复制原电脑的 `.venv`、二进制、`config.json` 或会话 ID。
 3. 安装器自动验证并注册随源码的种子库。调用 `creo_list_seeds` 确认可用数量为 9（2/3/4/6 直线和平滑，5 平滑）。若另有原始库目录，可用 `creo_install_seed_library(directory=...)` 注册；无需向 Agent 提供种子内部 ID。步骤见 [SEED_LIBRARY.md](SEED_LIBRARY.md)。
 4. 将新生成的 `client-config.json` 配置到目标 Agent，打开一个 Creo 会话。
 5. 调用 `creo_capabilities` 确认 `version == "0.2.6"`，检查 `creo_check_environment` 和 `creo_session_status`。再创建一个小零件，核对任务成功、原生特征树和保存重载，验证目标机实际运行条件。
