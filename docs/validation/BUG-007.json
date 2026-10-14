@@ -1,7 +1,7 @@
 {
   "work_item": "BUG-007",
   "date": "2026-10-14",
-  "status": "implementation_pending_resident_initialization_and_positive_validation",
+  "status": "acceptance_pending_workbuddy",
   "fix_completed": false,
   "branch": "codex/bug-007-direct-loft",
   "installed_mcp_status": {
@@ -16220,14 +16220,12 @@
   "native_behavior_changed": true,
   "workbuddy_acceptance": "not_run",
   "unverified": [
-    "resident callback initial registration and active handle/protocol handshake",
-    "successful direct Blend with resident callback",
-    "continuous three rounds of successful direct loft",
-    "direct smooth/three-section/existing-solid positive cases",
-    "actual foreign modal and NEVER/ALWAYS configuration scenes",
+    "WorkBuddy final acceptance on E:/Projects/MCP_CREO_MechDog repair build",
     "Creo 10",
-    "WorkBuddy final acceptance",
-    "deployment and restart of C:/MCP_CREO_MechDog"
+    "actual foreign modal and NEVER/ALWAYS configuration scenes",
+    "direct invalid feature reference separately exercised",
+    "concurrent modeling requests",
+    "C:/MCP_CREO_MechDog deployment and service restart"
   ],
   "desktop_route_reproduction_in_progress": {
     "status": "unknown_outcome",
@@ -48138,7 +48136,7 @@
       "setup": "In Creo Auxiliary Applications, register protk.dat and start this application; review any DLL prompt yourself. Modeling never changes the security policy.",
       "registry_shortcut": "E:\\Projects\\MCP_CREO_MechDog\\build\\blend_callback.protk.dat"
     },
-    "runtime_positive_validation": "not_run; operator initialization has not been observed",
+    "runtime_positive_validation": "passed: resident native handle/prepare/macro/release and saved reload",
     "security_policy_changed": false,
     "modeling_dll_load_removed": true,
     "implementation_commit": "65ccf3e3d536521a8956174c55ced85bb1ee9997",
@@ -76582,7 +76580,62 @@
     "execute_plan_rejection_elapsed_seconds": 6.469,
     "native_fallback_seconds": 600,
     "fallback_shortened": false,
-    "successful_macro_budget": "not calibrated: positive path not run",
-    "foreign_modal_validation": "not run"
+    "successful_macro_budget": "normal modeling acceptance threshold 30 seconds on Creo12.4; actual whole-job 8.2-9.8s; not a hard interruption promise for arbitrary external modal state",
+    "foreign_modal_validation": "not run",
+    "successful_direct_elapsed_seconds": [
+      8.985,
+      8.922,
+      9.047,
+      9.313,
+      9.047,
+      9.563,
+      9.828
+    ],
+    "successful_plan_elapsed_seconds": 8.218
+  },
+  "developer_fix_and_native_regression_passed": true,
+  "resident_validation": {
+    "record_file": "BUG-007-resident.json",
+    "record_sha256": "7527005dd0b9294a68b56fb361ae286d3f2f9c626f6022f6ce1e13bc272cb4b5",
+    "source": {
+      "commit": "dcf88ac39f331225cb5f3d1c6f172418ba126e96",
+      "dirty": true,
+      "fingerprints": {
+        "airfoil.py": "92432a354ccd19060370fd4a19bf184a785af34ac5b46ec058ce17790428403f",
+        "bridge.py": "eaf89dda55134f493fc4ea26c8c3186bb8385b73aaf283aa59777388d4d7023e",
+        "capabilities.py": "42039dd336d393bc9fd926a9269d74cee3317c86ece28f97e8c2250b66324a34",
+        "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+        "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+        "profile_checks.py": "b52afbc4674dc55afbd752de106cce5d9d5f7165e16bedae05f69bf8945eea21",
+        "schema.py": "2ae43d811cf1400e128e26820eb1fa96db459b1143f77acbb6adbf84e6d9b2ba",
+        "seeds.py": "57a0daff92b2d74613ed67dfac587cce9ed8e48de66bbdc3a2047a3c02ad867d",
+        "server.py": "f63410f2816567b667c3d53b0275dbef35a39e1f35dfaa43c63d3ade62668329",
+        "version.py": "f79e4faea31bddd8335eb8124cefd159cf6ca33e24a28a1dd6a7eeb2abef911b",
+        "src/creo_mechdog/blend_callback.py": "5d7cd97d46d52dd08080ccd117ef14748b0fd16600477e9467d5a6450c1d2e5f",
+        "src/creo_mechdog/paths.py": "389dca158e3a7d02337ca3a099a1872bf858e38cc8108d78172cff235256dff5",
+        "src/creo_mechdog/references.py": "584a6c6ae235e798d3a97e26c6af3c3509a518db2e7495d6cecd496dcfa1c640",
+        "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+        "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
+        "native/advanced.cpp": "4eefd397f6694d1bef185bd47ed7cbc530cc80e600337a1c1dd375c679f67d4d",
+        "native/blend_create.cpp": "50c0fe6e470154f2c6c0801a5dfd92568ba37997592abefe20db74ed15115033",
+        "native/blend_sync.cpp": "c2c6d4a6af6f06e5c705034a82b23d9d3920070b11cc26100378fc3b8434a220",
+        "native/drawing.cpp": "0f57da831a390b33b5998e6b277633f6458b257094b5004aa0efeb1820aec78a",
+        "native/generic.cpp": "79759cfc86e75b88c36756f7cb1e3064aa4ac68c121f90494f92320ecb0cbcc0",
+        "native/geometry.cpp": "b245c9819e8812b258f71c400675f29731f853dcb52fbbc89a6bc56a40a48a31",
+        "native/loft_mode.cpp": "9a4543f474d26f245392acce239070865dd0c5cf28d957859dbd585fa461fada",
+        "native/loft_seed.cpp": "2ea07eb7960eed9ec522e9c90562383e64f41461d9ebe737fe83f600757deaa3",
+        "native/placement.cpp": "87b732b85a0a0581e2a07d82c7c893f17756d90d8869bdd41b2608db031d325d",
+        "native/sketch_coordinates.cpp": "e229ea20e83c0ba9e3780a2c17cff18d178cc6d3baebdc0bc2d0ce43eba4ba85",
+        "native/sketch_edit.cpp": "f7ec7be57782c73f26cbb179601429a2405942a0db0ea3b6b61116895f7fb51f",
+        "native/sketch_solver.cpp": "1cfc3f60b26f5bc2442a6fb6ccdb3a38c7fefe389ca001b8805035b4cdd9d224",
+        "native/surfaces.cpp": "37c2b70fb4904a2cc2fe03d34be202a0130af416e0b6b454235ff04e811b2d7a",
+        "native/udf.cpp": "f0e076a63b1bc6a9fa1c44665dffcbbaa6806ec3242b1b091145deaf6d0fa736",
+        "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229",
+        "tools/test_direct_loft.py": "2342aa69f85ba504fd56590237870133231cc83863aa7e99e6c5df60b285a317"
+      }
+    },
+    "job_count": 48,
+    "success": true,
+    "workbuddy_acceptance": "not_run"
   }
 }

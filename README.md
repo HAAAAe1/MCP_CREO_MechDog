@@ -12,7 +12,7 @@
 
 普通混合可直接创建或追加，范围见 [直接混合](docs/DIRECT_BLEND_0.2.5.md)；种子复用见 [调用说明](docs/LOFT_SEED.md)、[多截面](docs/MULTISECTION_BLEND.md)。草图支持 `dimensioning="auto" / "autodim" / "coordinates"`，坐标模式的范围与尺寸编辑规则见 [草图说明](docs/SKETCH_STABILITY_0.2.5.md)。迁移步骤见 [种子库](docs/SEED_LIBRARY.md) 和 [换电脑、换 Agent](docs/MIGRATION.md)。
 
-BUG-007开发分支已将直接Blend的首次DLL加载移出建模作业：先通过Creo辅助应用程序初始化 `creo_capabilities.direct_blend_callback.registry_file` 指向的回调，再提交loft。未初始化时明确拒绝，MCP保留原有安全策略。当前完整正例与WorkBuddy验收仍待完成，不能用历史直接Blend验收替代；见 [本次记录](docs/validation/BUG-007.md)。新建种子放样不需要此回调。
+BUG-007开发分支已将直接Blend的首次DLL加载移出建模作业：先通过Creo辅助应用程序初始化 `creo_capabilities.direct_blend_callback.registry_file` 指向的回调，再提交loft。未初始化时明确拒绝，MCP保留原有安全策略。Creo12.4本轮完整正例、三轮串行、已有实体追加及回滚/重载已通过开发者验证，WorkBuddy最终验收仍待完成；见 [本次记录](docs/validation/BUG-007.md)。新建种子放样不需要此回调。
 
 工程图、曲面、布尔、筋、UDF、钣金和装配沿用已有接口与各自的验收范围。此前 [安装修复](docs/INSTALL_FIX_2026-10-10.md) 和 [建模增量](docs/PORTABLE_MODELING_2026-10-11.md) 保留原版本历史记录；新版本不会自动改写已发布的 GitHub 源码或附件。
 
