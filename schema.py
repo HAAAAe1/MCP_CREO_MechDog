@@ -8,6 +8,8 @@ from typing import Annotated, Any, Literal, Union
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, model_validator
 
+from creo_mechdog.references import PatternAxis
+
 
 class StrictModel(BaseModel):
     model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
@@ -282,7 +284,7 @@ class AxisPatternOp(StrictModel):
     op: Literal["axis_pattern"]
     label: Label
     leader: str | int
-    axis: dict[str, Any]
+    axis: PatternAxis
     count: Annotated[int, Field(ge=2, le=360)] = 2
     increment_deg: Annotated[float, Field(gt=-360, le=360)] = 180
 
@@ -290,8 +292,6 @@ class AxisPatternOp(StrictModel):
     def nonzero_angle(self):
         if abs(self.increment_deg) < 1e-8:
             raise ValueError("Pattern angular increment must be nonzero")
-        if self.axis.get("kind") not in ("axis", "datum_axis_feature"):
-            raise ValueError("Pattern requires an axis reference")
         return self
 
 

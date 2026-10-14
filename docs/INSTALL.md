@@ -147,3 +147,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C
 ## 版本检查与升级提醒（FEAT-020）
 
 包含此功能的源码提供 `creo_check_update(force=false)`，能力查询与启动状态增加 `update` 快照；启动和建模不等待联网。检查包含公开预发布、使用 24 小时进程缓存，失败冷却 15 分钟。字段、超时边界及完整升级步骤见 [版本检查说明](UPDATE_CHECK.md)。旧版必须先手动升级一次，才能收到后续版本提醒；本项尚未发布，当前已发布 0.2.6 仍为 81 个工具。
+
+## 引用参数核对（BUG-006）
+
+使用 capabilities.references.by_tool 查询工具特定种类和结构。axis_pattern.axis 支持几何轴 ID、datum_axis_feature 标签，并兼容 datum_feature 轴标签；其它参数中的 datum_feature 仍为基准平面。钣金边是裸引用，倒圆/倒角是集合数组，草图字典支撑面使用 reference 包装。更新源码后重启 MCP，并核对 schema、runtime 指纹及 [引用说明](REFERENCE_SYNTAX.md)；旧的同版本安装不能仅由版本号确认本项修复。

@@ -22,6 +22,8 @@
 
 DEV-002 已开始分批迁移：更新检查实现位于 `src/creo_mechdog/`，对应测试位于 `tests/unit/`。现有开发环境更新源码后先执行 `python -m pip install --no-deps -e .`；正常安装由 `setup.ps1` 完成包安装。根入口和数据位置继续保留，见 [迁移任务卡](docs/work-items/DEV-002.md)。
 
+模型引用须按具体工具的参数形状选择，见 [引用格式](docs/REFERENCE_SYNTAX.md)。开发源码已兼容 axis_pattern 的通用 datum_feature 轴标签；旧发布需要更新源码并重启 MCP 后使用。
+
 ## 安装
 
 准备 Windows x64、Python 3.12+ x64、Creo Parametric 10 或 12 及匹配的 Toolkit SDK、MSVC x64 C++ 构建工具和可用的 PTC 许可。Creo 软件、SDK、模板和许可需要自行取得；MIT 适用于本项目代码、文档及种子库的原创内容，不提供 PTC 软件授权。第三方依赖和 PTC 前置条件见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

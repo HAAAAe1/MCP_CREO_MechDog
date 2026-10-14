@@ -22,6 +22,7 @@ import seeds
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS, families
 from creo_mechdog import update_check
 from creo_mechdog.paths import SOURCE_PATHS
+from creo_mechdog.references import PatternAxis, reference_capabilities
 from schema import (
     AirfoilProfile,
     AirfoilSketchOp,
@@ -50,6 +51,7 @@ _SOURCE_NAMES = (
     "creo_startup.py",
     "src/creo_mechdog/__init__.py",
     "src/creo_mechdog/paths.py",
+    "src/creo_mechdog/references.py",
     "src/creo_mechdog/update_check.py",
     "version.py",
     "generic_bridge.py",
@@ -89,6 +91,7 @@ mcp = MCPServer(
     "Mutation tools return a job_id: poll creo_get_job with detail=compact, then use its model_id and latest revision. "
     "Inspect surfaces/edges/dimensions before choosing raw references. Always provide expected_revision "
     "when modifying an existing MCP model. Models and native files persist across clients. "
+    "Consult creo_capabilities.references.by_tool for each parameter's kind and container shape. "
     "Success requires status=succeeded and saved_file_reloaded_and_verified=true for mutations. "
     "Create sheetmetal/assembly models with the corresponding new-model tools or model_type in execute_plan. "
     "Use creo_capabilities for enabled and tested operations; reserved unavailable tools reject before native mutation. "
@@ -292,13 +295,7 @@ async def creo_capabilities() -> dict[str, Any]:
             "XZ": "u=+X,v=+Z,normal=-Y",
             "YZ": "u=+Y,v=+Z,normal=+X",
         },
-        "references": {
-            "datum_plane": {"kind": "datum_plane", "axis": "z", "offset": 0},
-            "planar_solid_face": {"kind": "plane", "normal": [0, 0, 1], "offset": 10},
-            "raw_face": {"kind": "surface", "id": "from inspection"},
-            "raw_edge": {"kind": "edge", "id": "from inspection"},
-            "datum_label": {"kind": "datum_feature", "label": "plane_label"},
-        },
+        "references": reference_capabilities(),
         "arbitrary_planar_support": "plane={reference:{kind:surface,id:...},origin:[x,y,z],u_axis:[x,y,z]}",
         "workflow": "submit once -> poll get_job -> inspect model -> choose references -> append using expected_revision",
         "scope": "MCP-owned native part, sheetmetal, assembly and drawing models. Tool availability does not prove every option or Creo operation is supported; consult validation evidence and coverage documentation.",
@@ -561,11 +558,19 @@ async def creo_axis_pattern(
     expected_revision: int,
     label: str,
     leader: str | int,
-    axis: dict[str, Any],
+    axis: PatternAxis,
     count: int = 2,
     increment_deg: float = 180,
 ) -> dict[str, Any]:
-    """Create a native angular pattern of a feature or MCP feature group. Axis must precede the leader; use an independent datum axis and creo_reorder_features if necessary."""
+    """Create a native angular pattern of a feature or MCP feature group.
+
+    axis is a bare {kind:'axis',id:N} geometry selection or
+    {kind:'datum_axis_feature',label:'axis_label'}. For compatibility, a
+    {kind:'datum_feature',label:'axis_label'} in this parameter means an axis
+    and is normalized to datum_axis_feature. A datum_plane or surface cannot
+    substitute for an axis. Axis must precede the leader; use an independent
+    datum axis and creo_reorder_features if necessary.
+    """
     return await invoke(
         general.submit,
         [
@@ -648,7 +653,12 @@ async def creo_create_sketch(
     expected_revision: int,
     label: str,
     entities: list[Entity],
-    plane: Literal["XY", "XZ", "YZ"] | dict[str, Any] = "XY",
+    plane: Annotated[
+        Literal["XY", "XZ", "YZ"] | dict[str, Any],
+        Field(
+            description="XY/XZ/YZ, or {reference:{kind:'surface',id:N},origin:[x,y,z],u_axis:[x,y,z]}; frame fields optional. A dictionary plane requires the reference container."
+        ),
+    ] = "XY",
     offset: float = 0,
     dimensions: list[SketchDimension] | None = None,
     constraints: list[SketchConstraint] | None = None,
@@ -773,7 +783,12 @@ async def creo_round(
     expected_revision: int,
     label: str,
     radius: float,
-    references: list[dict[str, Any]],
+    references: Annotated[
+        list[dict[str, Any]],
+        Field(
+            description="Set list: [{edge:{kind:'edge',id:N}}] or [{surfaces:[{kind:'surface',id:A},{kind:'surface',id:B}]}]. Bare edge objects are not sets."
+        ),
+    ],
 ) -> dict[str, Any]:
     """Create a native constant-radius fillet on edges or face pairs. Each set is {edge:reference} or {surfaces:[reference,reference]}."""
     return await invoke(
@@ -791,7 +806,12 @@ async def creo_chamfer(
     expected_revision: int,
     label: str,
     distance: float,
-    references: list[dict[str, Any]],
+    references: Annotated[
+        list[dict[str, Any]],
+        Field(
+            description="Set list: [{edge:{kind:'edge',id:N}}] or [{surfaces:[{kind:'surface',id:A},{kind:'surface',id:B}]}]. Bare edge objects are not sets."
+        ),
+    ],
 ) -> dict[str, Any]:
     """Create equal-distance native chamfer sets on explicit edges or face pairs."""
     return await invoke(
@@ -1079,7 +1099,12 @@ async def creo_sheetmetal_flange(
     model_id: str,
     expected_revision: int,
     label: str,
-    edge: dict[str, Any],
+    edge: Annotated[
+        dict[str, Any],
+        Field(
+            description="Bare edge selection {kind:'edge',id:N} from model inspection. Do not add a reference/edge wrapper inside this parameter."
+        ),
+    ],
     height: float,
     angle: float = 90,
     radius: float = 1,

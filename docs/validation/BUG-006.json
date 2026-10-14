@@ -1,0 +1,320 @@
+{
+  "work_item": "BUG-006",
+  "date": "2026-10-14",
+  "status": "acceptance_pending",
+  "version": "0.2.6",
+  "source_report": {
+    "name": "MCP_CREO_MechDog_dev_全量工具测试报告.md",
+    "sha256": "09435617990060d6ca257fd0d2344135050f72fac4d5e8071422d40b6e56642f",
+    "sections": [
+      "6/P0-1",
+      "7/N1",
+      "9/1"
+    ],
+    "reported_input": {
+      "kind": "datum_feature",
+      "label": "t82_da1"
+    },
+    "original_error": "Pattern requires an axis reference",
+    "report_environment": "Creo 12.4.0.0, release_numeric=44; this is prior report environment, not current native acceptance"
+  },
+  "development_check": {
+    "work_item": "BUG-006",
+    "version": "0.2.6",
+    "timestamp_utc": "2026-10-14T05:47:52.703702+00:00",
+    "environment": {
+      "os": "Windows",
+      "python": "3.12.14"
+    },
+    "source": {
+      "commit": "391e6a7f477c0a3c0427b652c32d172c31eb78cd",
+      "dirty": true,
+      "checked_source_sha256": "fc2a19752bab7086951156ab376b490fbd08e7d34f851af5bc8a36e85c75913b"
+    },
+    "native_validation": "not_run",
+    "unit_tests": "passed",
+    "success": true,
+    "style_summary": {
+      "lint_findings": 67,
+      "unformatted_files": 50,
+      "cpp_files_checked": 15,
+      "python_files_checked": 63
+    },
+    "tools": {
+      "ruff": "0.17.0",
+      "clang-format": "23.1.3"
+    },
+    "configuration": {
+      "pyproject.toml": "b6fdec9a5b332300304f92c2fbe61455b7cfaaaeecfb1cd2880f83d5658249dd",
+      ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+      "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc"
+    }
+  },
+  "unit_tests": {
+    "version": "0.2.6",
+    "timestamp": 1791956902.4595592,
+    "tests_run": 158,
+    "success": true,
+    "failures": 0,
+    "errors": 0
+  },
+  "new_tests": 9,
+  "source_fingerprints": {
+    "schema.py": "2ae43d811cf1400e128e26820eb1fa96db459b1143f77acbb6adbf84e6d9b2ba",
+    "server.py": "0dc9503af56a28a87d98eeb2fb98f7f7da7f97f24be031417740a2144de45674",
+    "src/creo_mechdog/references.py": "584a6c6ae235e798d3a97e26c6af3c3509a518db2e7495d6cecd496dcfa1c640",
+    "tests/unit/test_reference_contract.py": "b7321c56632dcafa3425c1450441a280900d589f148cae6dd948d1dbd2accb0e",
+    "tools/test_reference_contract.py": "b2cdfeaedef849637d2b301d30118a3c297730cfa6286b4bd959342e80c22ed6"
+  },
+  "mcp": {
+    "bug006-mcp-protocol.json": {
+      "sha256": "bee6909e6cf388d02b982678c8b3d6ea89ec2115d0eb659c90453e2024f0f044",
+      "success": true,
+      "protocol_verified": true,
+      "reported_axis_passed_wire_validation": true,
+      "native": "not_requested",
+      "tool_count": 82,
+      "runtime": {
+        "python_executable": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+        "server_entry": "E:\\Projects\\MCP_CREO_MechDog\\server.py",
+        "code_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "python_package_root": "E:\\Projects\\MCP_CREO_MechDog\\src\\creo_mechdog",
+        "resource_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "data_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "source_fingerprints_at_startup": {
+          "server.py": "0dc9503af56a28a87d98eeb2fb98f7f7da7f97f24be031417740a2144de45674",
+          "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+          "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+          "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
+          "src/creo_mechdog/paths.py": "389dca158e3a7d02337ca3a099a1872bf858e38cc8108d78172cff235256dff5",
+          "src/creo_mechdog/references.py": "584a6c6ae235e798d3a97e26c6af3c3509a518db2e7495d6cecd496dcfa1c640",
+          "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+          "version.py": "e435cf56bd44265eea70a5d9b0a690e41df6c97f4690b33509d1659baa046e59",
+          "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+          "schema.py": "2ae43d811cf1400e128e26820eb1fa96db459b1143f77acbb6adbf84e6d9b2ba",
+          "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229"
+        },
+        "source_changed_since_startup": false
+      },
+      "startup": null,
+      "jobs": [],
+      "error_calls": [
+        {
+          "tool": "creo_axis_pattern",
+          "input": {
+            "model_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "expected_revision": 0,
+            "label": "bad",
+            "leader": "leader",
+            "axis": {
+              "kind": "datum_plane",
+              "axis": "z"
+            }
+          },
+          "elapsed_seconds": 0.0,
+          "is_error": true,
+          "structured_content": null,
+          "content": [
+            {
+              "type": "text",
+              "text": "Error executing tool creo_axis_pattern: 1 validation error for creo_axis_patternArguments\naxis\n  Value error, Pattern requires an axis reference. Bare axis selection: {kind:'axis',id:N} from model inspection, or {kind:'datum_axis_feature',label:'axis_label'}. In axis_pattern only, {kind:'datum_feature',label:'axis_label'} is a compatibility alias for datum_axis_feature. A plane normal such as {kind:'datum_plane',axis:'z'} is not a rotation axis. Do not wrap this selection in reference/edge. [type=value_error, input_value={'kind': 'datum_plane', 'axis': 'z'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error",
+              "annotations": null,
+              "meta": null
+            }
+          ]
+        },
+        {
+          "tool": "creo_axis_pattern",
+          "input": {
+            "model_id": "invalid_model",
+            "expected_revision": 0,
+            "label": "probe",
+            "leader": "leader",
+            "axis": {
+              "kind": "datum_feature",
+              "label": "t82_da1"
+            }
+          },
+          "elapsed_seconds": 0.0,
+          "is_error": true,
+          "structured_content": null,
+          "content": [
+            {
+              "type": "text",
+              "text": "Error executing tool creo_axis_pattern: Creo is not ready (building_worker): Preparing the native connection worker; poll creo_startup_status. No modeling job was queued.",
+              "annotations": null,
+              "meta": null
+            }
+          ]
+        }
+      ]
+    },
+    "bug006-mcp-creo12-final.json": {
+      "sha256": "232464377016eb4213731e81f58d78682951fb58eaa254265e937d56fb2ef4b7",
+      "success": false,
+      "protocol_verified": true,
+      "reported_axis_passed_wire_validation": true,
+      "native": "unverified_toolkit_not_ready",
+      "tool_count": 82,
+      "runtime": {
+        "python_executable": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+        "server_entry": "E:\\Projects\\MCP_CREO_MechDog\\server.py",
+        "code_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "python_package_root": "E:\\Projects\\MCP_CREO_MechDog\\src\\creo_mechdog",
+        "resource_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "data_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "source_fingerprints_at_startup": {
+          "server.py": "0dc9503af56a28a87d98eeb2fb98f7f7da7f97f24be031417740a2144de45674",
+          "bridge.py": "5bcabee684d2204611a88b55aeea66834ac3fd6e756a69e6f03401f4ce9be703",
+          "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+          "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
+          "src/creo_mechdog/paths.py": "389dca158e3a7d02337ca3a099a1872bf858e38cc8108d78172cff235256dff5",
+          "src/creo_mechdog/references.py": "584a6c6ae235e798d3a97e26c6af3c3509a518db2e7495d6cecd496dcfa1c640",
+          "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+          "version.py": "e435cf56bd44265eea70a5d9b0a690e41df6c97f4690b33509d1659baa046e59",
+          "generic_bridge.py": "09b80d3d49e271fb2dd9ea3d676bb22a8028dbaad40d25e901a3bd051f9ff8cf",
+          "schema.py": "2ae43d811cf1400e128e26820eb1fa96db459b1143f77acbb6adbf84e6d9b2ba",
+          "native/worker.cpp": "3f84ca5a792e989d08f64df84005f45b0ba9ba9f623542eae22eb6c8011cd229"
+        },
+        "source_changed_since_startup": false
+      },
+      "startup": {
+        "launch_reserved": true,
+        "launch_attempt": 15,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "state": "timeout",
+        "connected": false,
+        "message": "Toolkit did not become ready within the startup budget; inspect Creo dialogs/environment, then request retry. Existing Creo processes were preserved",
+        "retry_allowed": true,
+        "updated_at": "2026-10-14T05:47:51.352921+00:00",
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.2.6",
+          "latest_version": "0.2.6",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.2.6",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.2.6/MCP_CREO_MechDog-0.2.6-source.zip",
+          "checked_at": "2026-10-14T05:45:45.988604+00:00",
+          "last_success_at": "2026-10-14T05:45:45.988604+00:00",
+          "message": "当前版本已是最高可比较的公开版本。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      },
+      "jobs": [],
+      "error_calls": [
+        {
+          "tool": "creo_axis_pattern",
+          "input": {
+            "model_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "expected_revision": 0,
+            "label": "bad",
+            "leader": "leader",
+            "axis": {
+              "kind": "datum_plane",
+              "axis": "z"
+            }
+          },
+          "elapsed_seconds": 0.0,
+          "is_error": true,
+          "structured_content": null,
+          "content": [
+            {
+              "type": "text",
+              "text": "Error executing tool creo_axis_pattern: 1 validation error for creo_axis_patternArguments\naxis\n  Value error, Pattern requires an axis reference. Bare axis selection: {kind:'axis',id:N} from model inspection, or {kind:'datum_axis_feature',label:'axis_label'}. In axis_pattern only, {kind:'datum_feature',label:'axis_label'} is a compatibility alias for datum_axis_feature. A plane normal such as {kind:'datum_plane',axis:'z'} is not a rotation axis. Do not wrap this selection in reference/edge. [type=value_error, input_value={'kind': 'datum_plane', 'axis': 'z'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error",
+              "annotations": null,
+              "meta": null
+            }
+          ]
+        },
+        {
+          "tool": "creo_axis_pattern",
+          "input": {
+            "model_id": "invalid_model",
+            "expected_revision": 0,
+            "label": "probe",
+            "leader": "leader",
+            "axis": {
+              "kind": "datum_feature",
+              "label": "t82_da1"
+            }
+          },
+          "elapsed_seconds": 0.0,
+          "is_error": true,
+          "structured_content": null,
+          "content": [
+            {
+              "type": "text",
+              "text": "Error executing tool creo_axis_pattern: Creo is not ready (building_worker): Preparing the native connection worker; poll creo_startup_status. No modeling job was queued.",
+              "annotations": null,
+              "meta": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "native_source_changed": false,
+  "baseline_review": {
+    "removed": [
+      "schema.py:I001",
+      "schema.py formatting debt"
+    ],
+    "added_allowances": 0,
+    "not_rebuilt": true
+  },
+  "not_verified": [
+    "Actual axis pattern after this fix: Toolkit startup timeout; no modeling job submitted",
+    "Saved-file reload and native geometry for the reported alias on Creo 12",
+    "External Creo 10 native acceptance",
+    "WorkBuddy final MCP acceptance"
+  ],
+  "source_archive": {
+    "path": "build/BUG-006-source.zip",
+    "sha256": "3e458f6397e0ade6d1e24947476201514311d32a8c3303c7aa7a55023d311a73",
+    "note": "Verification ZIP made before evidence metadata; tested runtime fingerprint matches."
+  },
+  "extracted_development_check": {
+    "work_item": "BUG-006",
+    "version": "0.2.6",
+    "timestamp_utc": "2026-10-14T05:50:34.400328+00:00",
+    "environment": {
+      "os": "Windows",
+      "python": "3.12.14"
+    },
+    "source": {
+      "commit": null,
+      "dirty": null,
+      "checked_source_sha256": "fc2a19752bab7086951156ab376b490fbd08e7d34f851af5bc8a36e85c75913b"
+    },
+    "native_validation": "not_run",
+    "unit_tests": "passed",
+    "success": true,
+    "style_summary": {
+      "lint_findings": 67,
+      "unformatted_files": 50,
+      "cpp_files_checked": 15,
+      "python_files_checked": 63
+    },
+    "tools": {
+      "ruff": "0.17.0",
+      "clang-format": "23.1.3"
+    },
+    "configuration": {
+      "pyproject.toml": "b6fdec9a5b332300304f92c2fbe61455b7cfaaaeecfb1cd2880f83d5658249dd",
+      ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+      "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc"
+    }
+  },
+  "extracted_unit_tests": {
+    "version": "0.2.6",
+    "timestamp": 1791957071.6485264,
+    "tests_run": 158,
+    "success": true,
+    "failures": 0,
+    "errors": 0
+  },
+  "extracted_install": "Fresh venv; pip install -r requirements-dev.txt; passed"
+}
