@@ -12,6 +12,7 @@ from pathlib import Path
 
 import bridge
 from capabilities import require_available
+from creo_mechdog.model_queries import inspect_page, list_page, model_summary
 from schema import Assertions, LoftOp, validate_operations
 
 MODELS = bridge.ROOT / "models"
@@ -33,11 +34,22 @@ def model_info(model_id: str) -> dict:
     return bridge.read_json(path)
 
 
-def list_models(limit: int = 10) -> dict:
+def list_models(limit: int = 10, detail: str = "compact", cursor: str | None = None) -> dict:
     if not 1 <= limit <= 50:
         raise ValueError("limit must be 1–50")
     paths = sorted(MODELS.glob("*/model.json"), key=lambda p: p.stat().st_mtime, reverse=True)
-    return {"models": [bridge.read_json(p) for p in paths[:limit]]}
+    models = [model_summary(bridge.read_json(p)) for p in paths]
+    return list_page(models, model_info, detail, limit, cursor)
+
+
+def inspect_model(
+    model_id: str,
+    detail: str = "compact",
+    section: str | None = None,
+    limit: int = 50,
+    cursor: str | None = None,
+) -> dict:
+    return inspect_page(model_info(model_id), detail, section, limit, cursor)
 
 
 def component_graph(source: dict, target_id: str, seen: set[str] | None = None) -> dict[str, dict]:

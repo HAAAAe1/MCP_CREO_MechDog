@@ -24,6 +24,8 @@ from pathlib import Path
 from mcp import Client
 from mcp.client.stdio import StdioServerParameters
 
+from creo_mechdog.query_client import read_full_model
+
 ROOT = Path(__file__).resolve().parents[1]
 if __name__ == "__main__" and not __package__:
     raise SystemExit(
@@ -122,6 +124,8 @@ class Probe:
         )
 
     async def call(self, tool: str, inputs: dict, expect_error: bool = False) -> dict:
+        if tool == "creo_inspect_model" and "detail" not in inputs and not expect_error:
+            return await read_full_model(self.call, inputs["model_id"])
         started = time.monotonic()
         entry = {"tool": tool, "input": inputs, "at": datetime.now(timezone.utc).isoformat()}
         self.report["calls"].append(entry)

@@ -834,18 +834,15 @@ def compact_job(manifest: dict) -> dict:
             "extrude_count",
             "round_count",
             "hole_count",
+            "failed_stage",
+            "failed_toolkit_call",
+            "failed_operation_index",
+            "inspection_source",
         )
         native = {key: result[key] for key in result_keys if key in result}
-        inspection = result.get("inspection", {})
-        native["inspection"] = {
-            key: inspection[key]
-            for key in ("healthy", "has_solid", "units", "model_type", "volume_mm3")
-            if key in inspection
-        }
-        native["inspection"]["counts"] = {
-            key: len(inspection.get(key, []))
-            for key in ("features", "surfaces", "edges", "bodies", "components")
-        }
+        from creo_mechdog.model_queries import inspection_summary
+
+        native["inspection"] = inspection_summary(result.get("inspection"))
         native["operations"] = [
             {
                 key: op[key]

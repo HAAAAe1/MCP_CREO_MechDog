@@ -10,6 +10,8 @@ from pathlib import Path
 from mcp import Client
 from mcp.client.stdio import StdioServerParameters
 
+from creo_mechdog.query_client import read_full_model
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from version import VERSION
@@ -25,6 +27,8 @@ if report.get("version") != VERSION:
 
 
 async def call(c, name, args):
+    if name == "creo_inspect_model" and "detail" not in args:
+        return await read_full_model(lambda tool, values: call(c, tool, values), args["model_id"])
     r = await c.call_tool(name, args)
     if r.is_error:
         raise RuntimeError(str(r.content))

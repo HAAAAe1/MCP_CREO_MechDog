@@ -1012,6 +1012,8 @@ async def creo_loft(
     before modeling using capabilities.direct_blend_callback.registry_file. If absent,
     the native worker rejects before DLL loading with BLEND_CALLBACK_SETUP_REQUIRED.
     Reuses the prepared callback across jobs; MCP does not change Creo security policy.
+    sections accepts sketch labels or integer feature IDs; digit-only strings are
+    normalized to feature IDs for public-client compatibility. References must be distinct.
     """
     return await invoke(
         general.submit,
@@ -1393,9 +1395,24 @@ async def creo_lookup_constants(prefix: str, limit: int = 100) -> dict[str, Any]
 
 
 @mcp.tool(annotations=READ)
-async def creo_inspect_model(model_id: str) -> dict[str, Any]:
-    """Get the latest verified model snapshot: revision, feature labels/IDs, dimensions, faces, edges, bodies and parameters. This is the saved snapshot; use refresh_model to inspect live Creo."""
-    return await invoke(general.model_info, model_id)
+async def creo_inspect_model(
+    model_id: str,
+    detail: Literal["compact", "full"] = "compact",
+    section: str | None = None,
+    limit: int = 50,
+    cursor: str | None = None,
+) -> dict[str, Any]:
+    """Read a saved verified snapshot, compact by default (identity/revision/status/volume/counts).
+
+    Use detail=full for geometry; large snapshots return data grouped by section,
+    complete=false and next_cursor. Repeat with the same detail/section and cursor.
+    Sections: features, dimensions, surfaces, edges, bodies, datum_planes,
+    parameters, aliases, components, feature_geometry, sketch_dimensions.
+    Feature sections omit nested collections, available separately. Pages are
+    bound to the snapshot and limited to 32 KiB, default 50/max 200 records.
+    Model changes invalidate cursors. Use refresh_model for live Creo inspection.
+    """
+    return await invoke(general.inspect_model, model_id, detail, section, limit, cursor)
 
 
 @mcp.tool(annotations=READ)
@@ -1405,9 +1422,19 @@ async def creo_refresh_model(model_id: str) -> dict[str, Any]:
 
 
 @mcp.tool(annotations=READ)
-async def creo_list_models(limit: int = 10) -> dict[str, Any]:
-    """List persistent MCP-owned part models and their latest verified snapshots."""
-    return await invoke(general.list_models, limit)
+async def creo_list_models(
+    limit: int = 10,
+    detail: Literal["compact", "full"] = "compact",
+    cursor: str | None = None,
+) -> dict[str, Any]:
+    """List owned models, compact by default. Repeat next_cursor with the same detail.
+
+    limit remains 1–50; 32 KiB budget can return fewer models. complete describes
+    the list page, while each full model may have its own inspection next_cursor.
+    Use inspect_model(detail=full, section=...) for model detail. Model changes
+    invalidate the list cursor; snapshots are saved states, not live queries.
+    """
+    return await invoke(general.list_models, limit, detail, cursor)
 
 
 @mcp.tool(annotations=CREATE)

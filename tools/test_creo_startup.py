@@ -24,11 +24,16 @@ from mcp.client.stdio import StdioServerParameters
 
 import bridge
 import creo_startup
+from creo_mechdog.query_client import read_full_model
 from tools.dev_check import git_state, source_hash
 from version import VERSION
 
 
 async def call(client: Client, name: str, args: dict) -> dict:
+    if name == "creo_inspect_model" and "detail" not in args:
+        return await read_full_model(
+            lambda tool, values: call(client, tool, values), args["model_id"]
+        )
     result = await client.call_tool(name, args)
     if result.is_error:
         raise RuntimeError(f"{name}: {result.content}")
