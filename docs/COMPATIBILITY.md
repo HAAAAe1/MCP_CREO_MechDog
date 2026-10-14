@@ -4,7 +4,7 @@
 
 本次按用户确认补充 Creo 12 可用性说明，文档条目见 [DEV-012](work-items/DEV-012.md)。这次文档修订未执行新的实机测试；以下历史测试与 0.2.6 发布复测各自保留原日期和结果。
 
-后续BUG-007开发验证单列：Creo12.4 / release=44下复现600秒DLL确认等待；65ccf3e移除建模中的DLL加载。常驻初始化后两/三截面straight/smooth、三轮串行、已有底座追加、标签/ID引用、计划入口、原特征/revision/失败回滚和保存重载通过；未初始化及非XY拒绝、后续小件、两/三截面straight种子编辑回归通过。WorkBuddy最终验收、Creo10、外部模态及NEVER/ALWAYS实际场景未测。详细源码身份和实测范围见 [本项记录](validation/BUG-007.md)，不外推到历史发布或所有参数分支。
+后续BUG-007开发验证单列：Creo12.4 / release=44下复现600秒DLL确认等待；65ccf3e移除建模中的DLL加载。常驻初始化后两/三截面straight/smooth、三轮串行、已有底座追加、标签/ID引用、计划入口、原特征/revision/失败回滚和保存重载通过；未初始化及非XY拒绝、后续小件、两/三截面straight种子编辑回归通过。WorkBuddy最终本环境标签放样核心已通过，整数公开引用失败独立为BUG-028；Creo10、外部模态及NEVER/ALWAYS实际场景未测。详细源码身份和实测范围见 [本项记录](validation/BUG-007.md)，不外推到历史发布或所有参数分支。
 
 | 环境 | 支持定位 | 证据与范围 | 本轮状态 |
 | --- | --- | --- | --- |
@@ -22,3 +22,5 @@ FEAT-019 专项（2026-10-13）：Creo 12.4 / 匹配 SDK 已构建，121 项 Win
 FEAT-020 专项（2026-10-14）：Windows / Python 3.12 的版本、缓存、网络分支及 stdio MCP 更新接口已验证；Creo 10 正式基线本机不可用，Creo 12.4 的联网失败下原生建模仍待实际 Toolkit 就绪验证。新功能不修改 C++，但历史原生成功不能替代本项集成验收；最终状态见 [本次证据](validation/FEAT-020.md)。
 
 0.3.0（2026-10-14）：BUG-006 N1 按用户确认的 WorkBuddy 测试记为通过，未提供详细新报告；FEAT-020 的 [WorkBuddy 原报告](validation/FEAT-020-WorkBuddy-report.md) 在 Creo 12.4 / 0.2.6 开发服务验证更新接口、缓存、实际并发和联网条件下板件保存重载，高版本及断网场景未测。原 C++ 未变，本次没有全量原生回归；Creo 10 由其他机器协助者验证，当前未补录。DEV-002 第一批仅迁移 Python 更新模块与测试；整体继续开发。发布源码及分发检查见 [0.3.0 记录](validation/RELEASE-0.3.0.md)，BUG-005 仍待核实。
+
+2026-10-14 P1联合开发验证：Windows/Python3.12.14/Creo12.4安装及匹配SDK，公开release_numeric=44；引用兼容、简单/含放样件尺寸关系及回滚、基准面/边参考孔、合法原生筋、真实inspection与查询分页通过。原始Creo10尺寸/关系及合法基准面孔失败未在本机复现；最终WorkBuddy和Creo10单独验收。逐轮源码/构建身份、dirty及未测范围见[联合证据](validation/P1-MODELING-REPAIR.md)，不外推到公开0.3.0附件。

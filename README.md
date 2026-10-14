@@ -159,7 +159,11 @@ DEV-002 已开始分批迁移：更新检查实现位于 `src/creo_mechdog/`，�
 
 每次修改成功后，执行器检查单位、所有原生特征的活动/完整状态及实体状态；保存 `.prt.N` 或 `.asm.N`，擦除该 MCP 零件的内存模型，从实际保存文件重载、重新生成，再对比特征 ID/类型/名称、尺寸值、实体数量、体积和参数。可额外提供 `require_solid`、`volume_mm3`、`volume_tolerance` 断言。体积计算临时使用密度 1，不修改材料。
 
-`creo_inspect_model` 返回最近已验证的快照；人工在 Creo 修改后，用 `creo_refresh_model` 获取实况。实时查询不会替换已保存模型的基线，也不会保存或接受人工修改。已有模型修改前会检测模型与记录是否一致；因任务失败或人工修改而不一致时，不应盲目重复提交。
+`creo_list_models` 与 `creo_inspect_model` 默认返回 compact 摘要，保留身份、revision、状态、体积、真实计数和快照时间。需要几何时显式使用 `detail="full"`，可指定 `section="dimensions"`、`"surfaces"`、`"edges"`、`"features"` 等。详情默认每页50条、最多200条，响应预算32 KiB；出现 `next_cursor` 时保持 detail/section 继续分页，模型改变后重新查询。大快照的 `data` 按 section 返回；特征内的尺寸、几何项和草图尺寸分别分页，未知计数为 null，不能当作0。小快照的 full 保留原 inspection/aliases 布局。Python调用方可用 `creo_mechdog.query_client.read_full_model` 收集全部页并重建快照。
+
+`creo_inspect_model` 返回最近已验证的保存快照，snapshot明确不代表实时状态；人工在 Creo 修改后，用 `creo_refresh_model` 获取实况。实时查询不会替换已保存模型的基线，也不会保存或接受人工修改。已有模型修改前会检测模型与记录是否一致；因任务失败或人工修改而不一致时，不应盲目重复提交。失败作业的 inspection 仅在恢复并验证成功时代表恢复模型；失败中间状态另列 failure_inspection，无法取得真实状态时为 null。
+
+`creo_loft.sections` 和计划中 `op="loft"` 支持草图标签、整数feature_id，以及为客户端兼容接受的纯十进制数字字符串；例如 `[40,"49"]` 归一化为整数ID。归一化后的重复引用被拒绝，不影响其他参数的字符串语义。原生几何与公开客户端验收范围仍分别记录。
 
 现有 MCP 零件任务失败，会尝试从任务开始前的保存文件恢复；只有 `rollback_succeeded` 确认成功才能继续。版本号不随失败增加。辅助进程崩溃、超时或结果不能确认时标记 `unknown_outcome`，保留现场供检查。新零件失败可能留下本任务的部分模型。
 
