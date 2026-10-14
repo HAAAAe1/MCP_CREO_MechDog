@@ -96,9 +96,13 @@ extern "C" __declspec(dllexport) int user_initialize(int, char **, char *, char 
                 return PRO_TK_BAD_INPUTS;
         // Persist Creo's real identifier before exposing the command. A later worker
         // can locate this module after a loader prompt outlives the original process.
+        outcome["initialize_stage"] = "before_application_id";
+        outcome["initialize_tick_ms"] = GetTickCount64();
+        persist();
         ProName application_id;
         ProError identified = ProToolkitDllIdGet(nullptr, application_id);
         outcome["application_id_code"] = identified;
+        outcome["initialize_stage"] = "after_application_id";
         if (!identified) {
             std::wstring id = application_id;
             outcome["application_id"] = std::string(id.begin(), id.end());
@@ -106,10 +110,13 @@ extern "C" __declspec(dllexport) int user_initialize(int, char **, char *, char 
         persist();
         if (identified)
             return identified;
+        outcome["initialize_stage"] = "before_command_register";
+        persist();
         uiCmdCmdId action;
         ProError code = ProCmdActionAdd(command.data(), select_section, uiProeAsynch, access,
                                         PRO_B_FALSE, PRO_B_FALSE, &action);
         outcome["initialize_code"] = code;
+        outcome["initialize_stage"] = "after_command_register";
         persist();
         return code;
     } catch (...) {

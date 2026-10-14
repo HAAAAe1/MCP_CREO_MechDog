@@ -1,19 +1,28 @@
 // Ordinary Blend settings are not exposed through the FET in Creo 10.
 // Read the numbered Blended surfaces row in Creo's own UTF-8 feature report.
+template <typename Call> static ProError trace_blend_call(const char *name, Call call) {
+    const auto started = GetTickCount64();
+    log("PHASE=%s\n", name);
+    log("TK_CALL_BEGIN name=%s tick_ms=%llu\n", name, started);
+    ProError code = call();
+    log("TK_CALL_END name=%s code=%d elapsed_ms=%llu\n", name, code, GetTickCount64() - started);
+    return code;
+}
+
 static void activate_blend_context() {
     // Creo 10 can reject edit-reference queries on a valid but undisplayed model.
     // Feature-info output also needs the target current, including after reload.
     log("PHASE=activate_blend_context\n");
     // Reuse the current/base window. ObjectwindowCreate would accumulate windows
     // during repeated jobs; PTC recommends Display for a single target model.
-    CK(ProMdlDisplay(board));
-    CK(ProMdlWindowGet(board, &win));
-    CK(ProWindowCurrentSet(win));
+    CK(trace_blend_call("blend_model_display", [] { return ProMdlDisplay(board); }));
+    CK(trace_blend_call("blend_window_get", [] { return ProMdlWindowGet(board, &win); }));
+    CK(trace_blend_call("blend_window_current_set", [] { return ProWindowCurrentSet(win); }));
     // CurrentSet only changes Toolkit's graphics context, not the active model.
     // Activate is supported by this asynchronous worker and must precede queries.
-    CK(ProWindowActivate(win));
+    CK(trace_blend_call("blend_window_activate", [] { return ProWindowActivate(win); }));
     ProMdl current = nullptr;
-    CK(ProMdlCurrentGet(&current));
+    CK(trace_blend_call("blend_model_current_get", [&] { return ProMdlCurrentGet(&current); }));
     if (current != board)
         throw std::runtime_error("Cannot activate the target Blend model; finish any modal Creo "
                                  "command before retrying");
@@ -80,8 +89,10 @@ static J read_blend_setting(int feature_id, const std::wstring &phase) {
     std::wstring filename = L"blend_" + std::to_wstring(feature_id) + L"_" + phase + L".txt";
     ProMdlFileName name;
     wcscpy_s(name, filename.c_str());
-    ProError exported = ProOutputFileMdlnameWrite(board, name, PRO_FEAT_INFO, nullptr, &feature_id,
-                                                  nullptr, nullptr);
+    ProError exported = trace_blend_call("blend_feature_info", [&] {
+        return ProOutputFileMdlnameWrite(board, name, PRO_FEAT_INFO, nullptr, &feature_id, nullptr,
+                                         nullptr);
+    });
     ProError restored = ProDirectoryChange(previous);
     check(exported, "ExportBlendFeatureInfo");
     check(restored, "RestoreFeatureInfoDirectory");

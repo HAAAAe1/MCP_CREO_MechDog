@@ -83,8 +83,10 @@ static void generic_loft(const J &op) {
     ProCharPath dll, textdir;
     strcpy_s(dll, utf8((callback_dir / L"callback.dll").wstring()).c_str());
     strcpy_s(textdir, utf8(callback_dir.wstring()).c_str());
-    ProError loaded =
-        ProToolkitDllLoad(display, dll, textdir, PRO_B_FALSE, &module, &initialized, nullptr);
+    ProError loaded = trace_blend_call("blend_dll_load", [&] {
+        return ProToolkitDllLoad(display, dll, textdir, PRO_B_FALSE, &module, &initialized,
+                                 nullptr);
+    });
     log("BLEND_DLL_LOAD=%d INITIALIZE=%d\n", loaded, initialized);
     try {
         check(loaded, "LoadBlendSelectionCallback");
@@ -108,7 +110,8 @@ static void generic_loft(const J &op) {
                  wide(op.value("interpolation", "straight") == "smooth" ? "Smooth" : "Straight") +
                  L"`; ~ Activate `main_dlg_cur` `dashInst0.Done`; ~ Activate `main_dlg_cur` "
                  L"`dashInst0.Quit`; ~ Activate `UI Message Dialog` `yes`;";
-        CK(ProMacroLoad(macro.data()));
+        CK(trace_blend_call("blend_macro_submit", [&] { return ProMacroLoad(macro.data()); }));
+        log("PHASE=blend_feature_validation\n");
         J after = inspection();
         std::ifstream file(callback_dir / L"callback_result.json");
         J selected;
@@ -151,8 +154,9 @@ static void generic_loft(const J &op) {
                   {"construction", "native_blend_synchronous_selection"}});
     } catch (...) {
         if (module)
-            ProToolkitDllUnload(module);
+            trace_blend_call("blend_dll_unload_after_error",
+                             [&] { return ProToolkitDllUnload(module); });
         throw;
     }
-    CK(ProToolkitDllUnload(module));
+    CK(trace_blend_call("blend_dll_unload", [&] { return ProToolkitDllUnload(module); }));
 }
