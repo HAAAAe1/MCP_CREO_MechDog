@@ -19,6 +19,7 @@ import bridge
 import creo_startup
 import generic_bridge as general
 import seeds
+import update_check
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS, families
 from schema import (
     AirfoilProfile,
@@ -35,11 +36,14 @@ from version import VERSION
 
 logging.basicConfig(level=logging.WARNING)
 startup = creo_startup.CreoStartup()
+updates = update_check.UpdateChecker()
 _CODE_ROOT = Path(__file__).resolve().parent
 _SOURCE_NAMES = (
     "server.py",
     "bridge.py",
     "creo_startup.py",
+    "update_check.py",
+    "version.py",
     "generic_bridge.py",
     "schema.py",
     "native/worker.cpp",
@@ -59,9 +63,11 @@ _LOADED_FINGERPRINTS = _source_fingerprints()
 @asynccontextmanager
 async def server_lifespan(app):
     startup.start()
+    updates.start()
     try:
         yield {}
     finally:
+        await updates.stop()
         startup.stop()
 
 
@@ -80,6 +86,11 @@ mcp = MCPServer(
     "Use creo_capabilities for enabled and tested operations; reserved unavailable tools reject before native mutation. "
     "Creo startup detection runs in the background; poll creo_startup_status until ready before modeling. "
     "Use creo_startup_status(retry=true) to recheck a failed/manual startup; no session is automatically closed. "
+    "On first use call creo_check_update and inspect update in capabilities/startup status. "
+    "If status=update_available and stale=false, tell the user the current/latest versions, prerelease flag, "
+    "release_url and download_url and the manual upgrade steps in message. "
+    "Remind only once per latest_version in the current client session; do not interrupt modeling. "
+    "Failed/unknown/checking/stale update information never proves the installation is up to date. "
     "Do not retry unknown_outcome without inspection.",
 )
 READ = ToolAnnotations(
@@ -87,6 +98,9 @@ READ = ToolAnnotations(
 )
 CREATE = ToolAnnotations(
     read_only_hint=False, destructive_hint=False, idempotent_hint=False, open_world_hint=False
+)
+NETWORK_READ = ToolAnnotations(
+    read_only_hint=True, destructive_hint=False, idempotent_hint=True, open_world_hint=True
 )
 
 
@@ -121,7 +135,25 @@ async def creo_session_status() -> dict[str, Any]:
 @mcp.tool(annotations=CREATE)
 async def creo_startup_status(retry: bool = False) -> dict[str, Any]:
     """Read background Creo startup state without waiting for initialization. retry=true rechecks process/session state and may launch the configured Creo if auto-start is enabled and no existing/pending startup exists. Does not close any Creo session. Poll until state=ready before modeling; inspect message on timeout, disabled or selection_required."""
-    return startup.start(retry=True) if retry else startup.status()
+    result = startup.start(retry=True) if retry else startup.status()
+    return {**result, "update": updates.snapshot()}
+
+
+@mcp.tool(annotations=NETWORK_READ)
+async def creo_check_update(force: bool = False) -> dict[str, Any]:
+    """Check public GitHub Releases, including prereleases, against the running version.
+
+    Returns the same update object as capabilities.update and startup_status.update:
+    status (not_checked/checking/update_available/up_to_date/failed/unknown),
+    current_version/latest_version/is_prerelease/release_url/download_url,
+    checked_at/last_success_at/from_cache/stale/message/error. Times are UTC ISO 8601.
+    Uses a process-local 24-hour cache; force=true refreshes it, except during the
+    15-minute failure/unknown cooldown. Concurrent checks share one request. A fresh
+    check has a 5-second total network budget across all pages; other tools never wait
+    for it. Failed checks may retain previous successful links with stale=true.
+    Only accesses the public GitHub API; never downloads, installs or changes files.
+    """
+    return await updates.check(force)
 
 
 @mcp.tool(annotations=CREATE)
@@ -206,6 +238,7 @@ async def creo_capabilities() -> dict[str, Any]:
     return {
         "name": "MCP_CREO_MechDog",
         "version": VERSION,
+        "update": updates.snapshot(),
         "runtime": {
             "python_executable": sys.executable,
             "server_entry": str(Path(__file__).resolve()),

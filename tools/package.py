@@ -23,6 +23,7 @@ def source_files():
         "server.py",
         "bridge.py",
         "creo_startup.py",
+        "update_check.py",
         "seeds.py",
         "airfoil.py",
         "profile_checks.py",

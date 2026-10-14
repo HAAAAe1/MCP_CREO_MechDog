@@ -72,7 +72,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C
 
 启动客户端中的 MCP 服务，后台自动复用已有会话或启动配置的 Creo。处理启动时出现的登录、许可及其他模态对话框，然后让 AI：
 
-1. 调用 `creo_capabilities`，确认当前版本为 `0.2.6`，81 个工具可用；查看 `families`、`seed_library` 和 `unavailable_operations`。直接混合及已有零件追加已开放，受范围限制；见 [版本说明](RELEASE_NOTES_0.2.6.md)。
+1. 调用 `creo_capabilities`，确认当前运行版本和工具数（开发源码为 82 个工具，已发布 0.2.6 为 81 个）；查看 `families`、`seed_library` 和 `unavailable_operations`。直接混合及已有零件追加已开放，受范围限制；见 [版本说明](RELEASE_NOTES_0.2.6.md)。
 2. 调用 `creo_check_environment`，确认 SDK、模板和编译器路径正确。
 3. 调用 `creo_startup_status` 等待 `state == "ready"`，再调用 `creo_session_status` 确认 `connected == true`。等待时建模请求明确拒绝，未创建任务。
 4. 提交一个新零件建模计划；只提交一次，使用 `creo_get_job` 查询任务进度。
@@ -135,3 +135,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C
 升级流程同上，保留本机配置、模型和任务目录，等待原生任务完成后更新代码并重跑 `setup.ps1`。不必手动删除 `native/constants.inc`；构建会自动更新。新接口及限制见 [版本说明](RELEASE_NOTES_0.2.6.md)。更新源码后重启客户端中的 MCP 服务，调用 `creo_capabilities` 确认 `version == "0.2.6"`。只打开一个 Creo 会话；高级配置 `creo_session_id` 可固定 Toolkit 连接目标，重启会话后需重新取得有效 ID，程序拒绝连接回退。重跑安装保留已有 ID，不会自动猜测新的连接目标。
 
 包含本次建模增量的源码内附 MIT 种子库，安装器验证并注册，`creo_new_loft_part` 按数量/模式自动选择，不要求手填路径和特征 ID。库内有九个原生 PRT：2/3/4/6 截面的直线和平滑，以及 5 截面平滑；详细步骤见 [SEED_LIBRARY.md](SEED_LIBRARY.md)。新电脑需要重新安装并验证，不直接复制旧 `.venv`、二进制、配置或会话 ID；同机换客户端可以共用安装目录，见 [MIGRATION.md](MIGRATION.md)。
+
+## 版本检查与升级提醒（FEAT-020）
+
+包含此功能的源码提供 `creo_check_update(force=false)`，能力查询与启动状态增加 `update` 快照；启动和建模不等待联网。检查包含公开预发布、使用 24 小时进程缓存，失败冷却 15 分钟。字段、超时边界及完整升级步骤见 [版本检查说明](UPDATE_CHECK.md)。旧版必须先手动升级一次，才能收到后续版本提醒；本项尚未发布，当前已发布 0.2.6 仍为 81 个工具。

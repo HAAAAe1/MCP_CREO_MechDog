@@ -169,6 +169,7 @@ class DevelopmentWorkflow(unittest.TestCase):
         root = package.ROOT
         files = {path.relative_to(root).as_posix() for path in package.source_files()}
         required = {
+            "update_check.py",
             "AGENTS.md",
             "pyproject.toml",
             ".clang-format",
