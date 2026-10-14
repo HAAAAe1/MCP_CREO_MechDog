@@ -2,13 +2,13 @@
 
 开发维护从 [开发入口](docs/DEVELOPMENT.md) 和 [统一功能台账](docs/BACKLOG.md) 开始。每项工作先定义验收；语言与单元检查、Creo 实机验收分别记录。项目采用渐进布局整理，当前支持环境见 [兼容矩阵](docs/COMPATIBILITY.md)。
 
-本地 Windows MCP 服务，按需启动或连接 Creo Parametric 10，通过官方 C/C++ Toolkit 创建、查询和修改**原生参数化特征**。建模由任意支持的草图轮廓及顺序特征组成：新建零件 → 草图 → 拉伸/旋转 → 切除/孔 → 后续特征。原先的底板接口保留为快捷工具。
+本地 Windows MCP 服务，按需启动或连接 Creo Parametric 10 / 12，通过官方 C/C++ Toolkit 创建、查询和修改**原生参数化特征**。Creo 10 为正式验收基线；Creo 12 已验证可用，已有实机记录使用 12.4.0.0，具体功能与未测范围见 [兼容矩阵](docs/COMPATIBILITY.md)。建模由任意支持的草图轮廓及顺序特征组成：新建零件 → 草图 → 拉伸/旋转 → 切除/孔 → 后续特征。原先的底板接口保留为快捷工具。
 
 **本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 本版对客户端公开 **81 个可用工具**；`creo_loft` 已通过直接创建和已有零件追加验收并开放。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
 
 当前版本为 **0.2.6**，合并开发规范、Windows 登记原子写入修复和 MCP 自动启动 Creo 三个分支。版本号按用户指定从 0.2.5 递增至 0.2.6。发布范围与限制见 [版本说明](docs/RELEASE_NOTES_0.2.6.md)，本轮检查见 [发布验收](docs/validation/RELEASE-0.2.6.md)。0.2.5 的建模能力与验收保留为历史，见 [原版本说明](docs/RELEASE_NOTES_0.2.5.md)、[逐项验收](docs/PROGRESS_025.md) 和 [结构化证据](docs/validation_increment_025.json)。
 
-本版包含 [FEAT-019 自动启动](docs/work-items/FEAT-019.md)：后台检测、启动协调和建模就绪保护已实现；用户于 2026-10-13 接受 WorkBuddy / Creo 12.4 的自动启动、Toolkit 就绪及建模/保存重载验收。Creo 10 正式基线未测；Codex 冷启动连接复测失败另列 [BUG-005](docs/work-items/BUG-005.md)。见 [原验收证据](docs/validation/FEAT-019.md)。
+本版包含 [FEAT-019 自动启动](docs/work-items/FEAT-019.md)：后台检测、启动协调和建模就绪保护已实现；用户于 2026-10-13 接受 WorkBuddy / Creo 12.4 的自动启动、Toolkit 就绪及建模/保存重载验收，并于 2026-10-14 确认补充 Creo 12 已验证可用的说明。FEAT-019 的 Creo 10 正式基线专项复测未执行；Codex 冷启动连接复测失败另列 [BUG-005](docs/work-items/BUG-005.md)。见 [原验收证据](docs/validation/FEAT-019.md)。
 
 普通混合可直接创建或追加，范围见 [直接混合](docs/DIRECT_BLEND_0.2.5.md)；种子复用见 [调用说明](docs/LOFT_SEED.md)、[多截面](docs/MULTISECTION_BLEND.md)。草图支持 `dimensioning="auto" / "autodim" / "coordinates"`，坐标模式的范围与尺寸编辑规则见 [草图说明](docs/SKETCH_STABILITY_0.2.5.md)。迁移步骤见 [种子库](docs/SEED_LIBRARY.md) 和 [换电脑、换 Agent](docs/MIGRATION.md)。
 
@@ -20,7 +20,7 @@
 
 ## 安装
 
-准备 Windows x64、Python 3.12+ x64、Creo Parametric 10 及匹配的 Toolkit SDK、MSVC x64 C++ 构建工具和可用的 PTC 许可。Creo 软件、SDK、模板和许可需要自行取得；MIT 适用于本项目代码、文档及种子库的原创内容，不提供 PTC 软件授权。第三方依赖和 PTC 前置条件见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+准备 Windows x64、Python 3.12+ x64、Creo Parametric 10 或 12 及匹配的 Toolkit SDK、MSVC x64 C++ 构建工具和可用的 PTC 许可。Creo 软件、SDK、模板和许可需要自行取得；MIT 适用于本项目代码、文档及种子库的原创内容，不提供 PTC 软件授权。第三方依赖和 PTC 前置条件见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
 1. 下载源码，解压到较短的可写目录，例如 `C:\MCP_CREO_MechDog`；下列命令在该目录执行。
 2. 运行安装脚本，填写自己的 Creo 安装根目录：
@@ -28,6 +28,14 @@
    ```powershell
    .\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 10.0.0.0'
    ```
+
+   Creo 12.4 的安装示例：
+
+   ```powershell
+   .\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 12.4.0.0'
+   ```
+
+   按自己的安装位置替换路径，使用对应版本的 Toolkit SDK 在目标机重新构建。
 
    如果 Python 没有加入 PATH，可加 `-Python 'C:\Path\To\python.exe'`。如果编译器没有自动找到，可加 `-VcVars64 'C:\Path\To\vcvars64.bat'`。这两个示例路径需要替换。
 3. 安装成功后，脚本生成本机 `config.json`、`.venv/`、`build/` 和 `client-config.json`。将 `client-config.json` 中的服务配置加入支持本地 stdio MCP 的 AI 客户端。
