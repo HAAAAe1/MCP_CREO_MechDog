@@ -1011,7 +1011,26 @@ static void validate_hole_planes(ProSelection face, ProSelection first, ProSelec
         throw std::runtime_error("Linear hole placement must be a planar surface or datum plane");
     bool planar[2] = {hole_plane_normal(first, normals[0], "reference1"),
                       hole_plane_normal(second, normals[1], "reference2")};
+    ProSelection references[] = {first, second};
     for (int i = 0; i < 2; ++i) {
+        ProModelitem item;
+        CK(ProSelectionModelitemGet(references[i], &item));
+        if (item.type == PRO_EDGE) {
+            ProEdge edge;
+            CK(ProEdgeInit((ProSolid)board, item.id, &edge));
+            ProGeomitemdata *data = nullptr;
+            CK(ProEdgeDataGet(edge, &data));
+            Pro3dPnt start, end;
+            ProError line = ProLinedataGet(data->data.p_curve_data, start, end);
+            CK(ProGeomitemdataFree(&data));
+            if (line)
+                throw std::runtime_error("Linear hole requires straight edge references");
+            V direction = normalized(add(vec(xyz(end)), scale(vec(xyz(start)), -1)));
+            if (fabs(dot(primary, direction)) > 1e-7)
+                throw std::runtime_error("Hole edge references must lie in the placement plane");
+            normals[i] = normalized(cross(primary, direction));
+            planar[i] = true;
+        }
         if (!planar[i])
             continue;
         V projected = add(normals[i], scale(primary, -dot(primary, normals[i])));
@@ -1023,9 +1042,50 @@ static void validate_hole_planes(ProSelection face, ProSelection first, ProSelec
     }
     if (planar[0] && planar[1] && fabs(dot(normals[0], normals[1])) > 1 - 1e-7)
         throw std::runtime_error(
-            "Hole secondary planes do not provide independent location constraints");
+            "Hole secondary references do not provide independent location constraints");
 }
-static void generic_hole(const J &op) {
+static void seed_hole_edge_selections(ProSelection &face, ProSelection &first,
+                                      ProSelection &second) {
+    ProModelitem refs[2];
+    CK(ProSelectionModelitemGet(first, &refs[0]));
+    CK(ProSelectionModelitemGet(second, &refs[1]));
+    if (refs[0].type != PRO_EDGE && refs[1].type != PRO_EDGE)
+        return;
+    ProModelitem primary;
+    CK(ProSelectionModelitemGet(face, &primary));
+    ProSurface surface;
+    CK(ProSurfaceInit((ProSolid)board, primary.id, &surface));
+    ProGeomitemdata *data = nullptr;
+    CK(ProSurfaceDataGet(surface, &data));
+    V origin = vec(xyz(data->data.p_surface_data->srf_shape.plane.origin));
+    V normal = normalized(vec(xyz(data->data.p_surface_data->srf_shape.plane.e3)));
+    ProPoint3d pick;
+    for (int i = 0; i < 3; ++i)
+        pick[i] =
+            (data->data.p_surface_data->xyz_min[i] + data->data.p_surface_data->xyz_max[i]) / 2;
+    CK(ProGeomitemdataFree(&data));
+    CK(ProSelectionPoint3dSet(pick, &face));
+    ProUvParam uv;
+    CK(ProSurfaceParamEval((ProSolid)board, surface, pick, uv));
+    CK(ProSelectionUvParamSet(face, uv));
+    // Creo uses the selected points to choose the signed side of edge-derived planes.
+    // An ID-only selection can choose an outward side on an identical later request.
+    log("HOLE_PLACEMENT_PICK=%.9f,%.9f,%.9f\n", pick[0], pick[1], pick[2]);
+    ProSelection *selections[] = {&first, &second};
+    for (int i = 0; i < 2; ++i) {
+        if (refs[i].type != PRO_EDGE)
+            continue;
+        ProEdge edge;
+        CK(ProEdgeInit((ProSolid)board, refs[i].id, &edge));
+        ProVector derivative, second_derivative, direction;
+        CK(ProEdgeXyzdataEval(edge, 0.5, pick, derivative, second_derivative, direction));
+        if (fabs(dot(add(vec(xyz(pick)), scale(origin, -1)), normal)) > 1e-6)
+            throw std::runtime_error("Hole edge references must lie in the placement plane");
+        CK(ProSelectionPoint3dSet(pick, selections[i]));
+    }
+}
+static J generic_hole(const J &op) {
+    double before_volume = volume();
     ProElement root = node(nullptr, PRO_E_FEATURE_TREE);
     integer(root, PRO_E_FEATURE_TYPE, PRO_FEAT_HOLE);
     integer(root, PRO_E_FEATURE_FORM, PRO_HLE_TYPE_STRAIGHT);
@@ -1054,6 +1114,7 @@ static void generic_hole(const J &op) {
         r1 = resolve(op["reference1"]);
         r2 = resolve(op["reference2"]);
         validate_hole_planes(face, r1, r2);
+        seed_hole_edge_selections(face, r1, r2);
         ref(placement, PRO_E_HLE_PRIM_REF, face);
         integer(placement, PRO_E_HLE_PL_TYPE, PRO_HLE_PL_TYPE_LIN);
         ref(placement, PRO_E_HLE_DIM_REF1, r1);
@@ -1067,11 +1128,33 @@ static void generic_hole(const J &op) {
         real(placement, PRO_E_HLE_DIM_DIST2, b);
         integer(node(root, PRO_E_BODY), PRO_E_BODY_USE, PRO_BODY_USE_ALL);
         ProFeature f = create(root);
+        CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
+        double removed = before_volume - volume();
+        log("HOLE_MATERIAL_REMOVED_MM3=%.12f\n", removed);
+        if (removed <= std::max(1e-9, fabs(before_volume) * 1e-12))
+            throw std::runtime_error("Hole removes no material; check reference offsets, "
+                                     "placement, flip and overlap with existing holes");
+        J axes = J::array();
+        J geometry = J::array();
+        CK(ProFeatureGeomitemVisit(&f, PRO_AXIS, collect_geom_ids, nullptr, &axes));
+        for (const auto &axis : axes) {
+            ProGeomitem item;
+            CK(ProModelitemInit(board, axis["id"], PRO_AXIS, &item));
+            ProGeomitemdata *data = nullptr;
+            CK(ProGeomitemdataGet(&item, &data));
+            Pro3dPnt start, end;
+            CK(ProLinedataGet(data->data.p_curve_data, start, end));
+            log("HOLE_AXIS id=%d start=%.9f,%.9f,%.9f end=%.9f,%.9f,%.9f\n", axis["id"].get<int>(),
+                start[0], start[1], start[2], end[0], end[1], end[2]);
+            geometry.push_back({{"id", axis["id"]}, {"start", xyz(start)}, {"end", xyz(end)}});
+            CK(ProGeomitemdataFree(&data));
+        }
         CK(ProElementFree(&root));
         ProSelectionFree(&face);
         ProSelectionFree(&r1);
         ProSelectionFree(&r2);
         remember(op, f);
+        return {{"feature_id", f.id}, {"material_removed_mm3", removed}, {"axes", geometry}};
     } catch (...) {
         if (face)
             ProSelectionFree(&face);
@@ -1471,6 +1554,7 @@ static J populate_profile(ProSection section, const J &op) {
 #include "placement.cpp"
 static void execute_operation(const J &op) {
     std::string kind = op.at("op");
+    J details = J::object();
     log("PHASE=%s%s%s\n", kind.c_str(), op.contains("label") ? ":" : "",
         op.value("label", "").c_str());
     if (kind == "sketch" || kind == "airfoil_sketch")
@@ -1490,7 +1574,7 @@ static void execute_operation(const J &op) {
     else if (kind == "extrude" || kind == "revolve")
         extrude_or_revolve(op, kind == "revolve");
     else if (kind == "hole")
-        generic_hole(op);
+        details = generic_hole(op);
     else if (kind == "round" || kind == "chamfer")
         generic_round(op, kind == "chamfer");
     else if (kind == "shell")
@@ -1649,8 +1733,8 @@ static void execute_operation(const J &op) {
     if (kind != "export" && kind != "dump_tree" && kind != "udf_inspect")
         CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
     inspection();
-    operation_results.push_back(
-        {{"op", kind}, {"label", op.value("label", "")}, {"succeeded", true}});
+    details.update({{"op", kind}, {"label", op.value("label", "")}, {"succeeded", true}});
+    operation_results.push_back(details);
 }
 static void verify_assertions(const J &state, const J &a) {
     if (a.contains("volume_mm3")) {

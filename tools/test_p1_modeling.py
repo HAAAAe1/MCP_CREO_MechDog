@@ -431,6 +431,243 @@ async def hole_edges_and_zero(p: Probe, args: argparse.Namespace) -> None:
         assert abs(hole["result"]["inspection"]["volume_mm3"] - (24000 - 160 * math.pi)) < 0.01
 
 
+async def hole_surface_edges(p: Probe, args: argparse.Namespace) -> None:
+    """BUG-022: compare edge ordering and placement forms on fresh, unperforated parts."""
+    observations = p.report.setdefault("hole_reference_observations", [])
+    for placement_kind, swapped, flip in (
+        ("surface", True, False),
+        ("plane", True, False),
+        ("surface", False, False),
+        ("surface", True, True),
+    ):
+        case = f"hole_refs_{placement_kind}_{swapped}_{flip}"
+        base = await p.job("creo_execute_plan", {"operations": box()}, case + "_base")
+        state = base["result"]["inspection"]
+        top = next(
+            s["id"] for s in state["surfaces"] if "normal" in s and abs(s["origin"][2] - 10) < 1e-6
+        )
+        edges = [
+            next(
+                e["id"]
+                for e in state["edges"]
+                if "start" in e
+                and "end" in e
+                and abs(e["start"][axis]) < 1e-6
+                and abs(e["end"][axis]) < 1e-6
+                and abs(e["start"][2] - 10) < 1e-6
+                and abs(e["end"][2] - 10) < 1e-6
+            )
+            for axis in (0, 1)
+        ]
+        if swapped:
+            edges.reverse()
+        hole = await p.job(
+            "creo_hole",
+            {
+                **identity(base),
+                "label": "hole",
+                "diameter": 8,
+                "placement": (
+                    {"kind": "surface", "id": top}
+                    if placement_kind == "surface"
+                    else {"kind": "plane", "axis": "z", "offset": 10}
+                ),
+                "reference1": {"kind": "edge", "id": edges[0]},
+                "reference2": {"kind": "edge", "id": edges[1]},
+                "offset1": 10,
+                "offset2": 10,
+                "flip": flip,
+            },
+            case,
+            allow_failure=args.reproduce,
+            expected_failure=flip and not args.reproduce,
+        )
+        after = hole["result"].get("inspection") or {}
+        observations.append(
+            {
+                "case": case,
+                "job_id": hole["job_id"],
+                "volume_mm3": after.get("volume_mm3"),
+                "cylinders": [s for s in after.get("surfaces", []) if "radius" in s],
+            }
+        )
+        p.save()
+        if not args.reproduce and not flip:
+            assert abs(after["volume_mm3"] - (24000 - 160 * math.pi)) < 0.01
+            assert hole["revision"] == base["revision"] + 1
+            cylinders = observations[-1]["cylinders"]
+            assert cylinders, observations[-1]
+            for cylinder in cylinders:
+                assert abs(cylinder["radius"] - 4) < 1e-6
+                assert all(abs(cylinder["origin"][i] - 10) < 1e-6 for i in (0, 1))
+
+
+def edge_hole_input(base: dict, z: float = 10, swapped: bool = True) -> dict:
+    state = base["result"]["inspection"]
+    placement = next(
+        s["id"]
+        for s in state["surfaces"]
+        if "normal" in s and abs(s["normal"][2]) > 0.99 and abs(s["origin"][2] - z) < 1e-6
+    )
+    edges = [
+        next(
+            e["id"]
+            for e in state["edges"]
+            if "start" in e
+            and "end" in e
+            and abs(e["start"][axis]) < 1e-6
+            and abs(e["end"][axis]) < 1e-6
+            and abs(e["start"][2] - z) < 1e-6
+            and abs(e["end"][2] - z) < 1e-6
+        )
+        for axis in (0, 1)
+    ]
+    if swapped:
+        edges.reverse()
+    return {
+        "label": "hole",
+        "diameter": 8,
+        "placement": {"kind": "surface", "id": placement},
+        "reference1": {"kind": "edge", "id": edges[0]},
+        "reference2": {"kind": "edge", "id": edges[1]},
+        "offset1": 12,
+        "offset2": 8,
+    }
+
+
+def verify_hole_geometry(
+    result: dict, volume: float, xy: tuple[float, float], label: str = "hole"
+) -> None:
+    state = result["result"]["inspection"]
+    assert abs(state["volume_mm3"] - volume) < 0.01, state["volume_mm3"]
+    assert state["healthy"] and state["has_solid"]
+    cylinders = [s for s in state["surfaces"] if "radius" in s]
+    assert any(
+        abs(s["radius"] - 4) < 1e-6 and all(abs(s["origin"][i] - xy[i]) < 1e-6 for i in (0, 1))
+        for s in cylinders
+    ), cylinders
+    native = result["result"]["aliases"][label]["feature_id"]
+    feature = next(f for f in state["features"] if f["id"] == native)
+    assert feature["type"] == 911 and not feature["incomplete"]
+    receipt = next(o for o in result["result"]["operations"] if o["op"] == "hole")
+    assert receipt["feature_id"] == native and receipt["material_removed_mm3"] > 0
+    assert receipt["axes"]
+    for axis in receipt["axes"]:
+        for endpoint in ("start", "end"):
+            assert all(abs(axis[endpoint][i] - xy[i]) < 1e-6 for i in (0, 1))
+
+
+async def hole_reference_matrix(p: Probe, args: argparse.Namespace) -> None:
+    for placement, swapped, z, blind in (
+        ("surface", True, 10, False),
+        ("plane", True, 10, False),
+        ("surface", False, 10, False),
+        ("surface", True, 10, True),
+        ("surface", True, 0, True),
+    ):
+        case = f"hole_suite_{placement}_{swapped}_{z}_{blind}"
+        base = await p.job("creo_execute_plan", {"operations": box()}, case + "_base")
+        inputs = edge_hole_input(base, z, swapped)
+        # Side one drills into the selected solid face, including the bottom face.
+        inputs["flip"] = False
+        if placement == "plane":
+            inputs["placement"] = {"kind": "plane", "axis": "z", "offset": z}
+        if blind:
+            inputs["depth"] = 5
+        result = await p.job("creo_hole", {**identity(base), **inputs}, case)
+        assert result["revision"] == base["revision"] + 1
+        verify_hole_geometry(
+            result, 24000 - (80 if blind else 160) * math.pi, (8, 12) if swapped else (12, 8)
+        )
+
+
+async def hole_reference_suite(p: Probe, args: argparse.Namespace) -> None:
+    await hole_reference_matrix(p, args)
+    await hole_reference_sequence(p, args)
+
+
+async def hole_reference_sequence(p: Probe, args: argparse.Namespace) -> None:
+    base = await p.job("creo_execute_plan", {"operations": box()}, "hole_sequence_base")
+    inputs = edge_hole_input(base)
+    datum = await p.job(
+        "creo_hole",
+        {
+            **identity(base),
+            **inputs,
+            "label": "hole_datum",
+            "reference1": {"kind": "datum_plane", "axis": "x"},
+            "reference2": {"kind": "datum_plane", "axis": "y"},
+            "offset1": 30,
+            "offset2": 20,
+        },
+        "hole_sequence_datum",
+    )
+    verify_hole_geometry(datum, 24000 - 160 * math.pi, (30, 20), "hole_datum")
+    edge = await p.job(
+        "creo_hole",
+        {**identity(datum), **inputs, "offset1": 10, "offset2": 10},
+        "hole_sequence_edge",
+    )
+    verify_hole_geometry(edge, 24000 - 320 * math.pi, (10, 10))
+    assert edge["revision"] == datum["revision"] + 1
+    digest = hashlib.sha256(Path(edge["result"]["part_file"]).read_bytes()).hexdigest()
+    for name, change in (
+        ("duplicate", {"offset1": 10, "offset2": 10}),
+        ("outside", {"offset1": 80, "offset2": 80}),
+        ("negative_outside", {"offset1": -10, "offset2": 45}),
+        ("wrong_direction", {"offset1": 10, "offset2": 45, "flip": True}),
+        ("parallel", {"reference2": inputs["reference1"]}),
+        (
+            "curved",
+            {
+                "reference1": {
+                    "kind": "edge",
+                    "id": next(
+                        e["id"] for e in edge["result"]["inspection"]["edges"] if "start" not in e
+                    ),
+                }
+            },
+        ),
+        (
+            "normal_edge",
+            {
+                "reference1": {
+                    "kind": "edge",
+                    "id": next(
+                        e["id"]
+                        for e in base["result"]["inspection"]["edges"]
+                        if "start" in e and abs(e["start"][2] - e["end"][2]) > 9
+                    ),
+                }
+            },
+        ),
+        (
+            "off_plane",
+            {"reference1": edge_hole_input(base, z=0)["reference1"]},
+        ),
+    ):
+        failure = await p.job(
+            "creo_hole",
+            {**identity(edge), **inputs, "label": "invalid", **change},
+            "hole_sequence_" + name,
+            expected_failure=True,
+        )
+        if name in {"duplicate", "outside", "negative_outside", "wrong_direction"}:
+            assert "removes no material" in failure["message"], failure["message"]
+        elif name == "curved":
+            assert "straight edge" in failure["message"], failure["message"]
+        elif name in {"normal_edge", "off_plane"}:
+            assert "placement plane" in failure["message"], failure["message"]
+        await verify_rollback(p, edge, failure, digest)
+    last = await p.job(
+        "creo_hole",
+        {**identity(edge), **inputs, "label": "hole_after", "offset1": 10, "offset2": 45},
+        "hole_sequence_after_failure",
+    )
+    verify_hole_geometry(last, 24000 - 480 * math.pi, (45, 10), "hole_after")
+    assert last["revision"] == edge["revision"] + 1
+
+
 async def inspection_and_plan_ids(p: Probe, args: argparse.Namespace) -> None:
     empty = await p.job("creo_new_part", {}, "empty_part")
     assert empty["result"]["inspection"]["has_solid"] is False
@@ -574,6 +811,10 @@ async def run(args: argparse.Namespace) -> dict:
                     "pattern": pattern_edit,
                     "negative_geometry": negative_geometry,
                     "hole_edges_and_zero": hole_edges_and_zero,
+                    "hole_surface_edges": hole_surface_edges,
+                    "hole_reference_suite": hole_reference_suite,
+                    "hole_reference_matrix": hole_reference_matrix,
+                    "hole_reference_sequence": hole_reference_sequence,
                     "inspection_and_plan_ids": inspection_and_plan_ids,
                     "unavailable_and_nonintersecting": unavailable_and_nonintersecting,
                 }[name](p, args)
@@ -593,7 +834,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--cases",
-        default="dimensions,holes,hole_edges_and_zero,ribs,references,inspection_and_plan_ids,negative_geometry,unavailable_and_nonintersecting,queries",
+        default="dimensions,holes,hole_edges_and_zero,hole_reference_suite,ribs,references,inspection_and_plan_ids,negative_geometry,unavailable_and_nonintersecting,queries",
     )
     parser.add_argument("--reproduce", action="store_true")
     parser.add_argument("--retry", action="store_true")

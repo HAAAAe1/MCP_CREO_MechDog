@@ -763,7 +763,13 @@ async def creo_hole(
     depth: float | None = None,
     flip: bool = False,
 ) -> dict[str, Any]:
-    """Create native straight hole on a planar face. Two reference planes and signed offsets locate it. Omit depth for through-all; depth makes a blind hole."""
+    """Create a native straight hole on a planar face using two independent planar
+    references or coplanar straight edges and signed offsets. For edge references,
+    the placement-face center selects the reference side. Omit depth for through-all;
+    depth makes a blind hole. flip reverses the native cutting side. A hole that removes
+    no material fails and rolls back. Successful operation details include native axes
+    and material_removed_mm3.
+    """
     op = {
         "op": "hole",
         "label": label,
