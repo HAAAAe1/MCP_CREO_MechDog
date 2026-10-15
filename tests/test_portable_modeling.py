@@ -7,10 +7,10 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-import airfoil
 import bridge
 import seeds
-from schema import AirfoilProfile, validate_operations
+from creo_mechdog import airfoil
+from creo_mechdog.schema import AirfoilProfile, validate_operations
 
 ROOT = Path(__file__).resolve().parents[1]
 

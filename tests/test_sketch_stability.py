@@ -4,8 +4,8 @@ import unittest
 from unittest.mock import patch
 
 import generic_bridge
-from profile_checks import closed_profile
-from schema import validate_operations
+from creo_mechdog.profile_checks import closed_profile
+from creo_mechdog.schema import validate_operations
 
 
 class SketchStability(unittest.TestCase):

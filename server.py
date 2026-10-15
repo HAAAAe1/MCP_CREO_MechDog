@@ -24,7 +24,7 @@ from creo_mechdog import update_check
 from creo_mechdog.blend_callback import callback_setup_status
 from creo_mechdog.paths import SOURCE_PATHS
 from creo_mechdog.references import PatternAxis, reference_capabilities
-from schema import (
+from creo_mechdog.schema import (
     AirfoilProfile,
     AirfoilSketchOp,
     AirfoilStation,
@@ -55,9 +55,14 @@ _SOURCE_NAMES = (
     "src/creo_mechdog/references.py",
     "src/creo_mechdog/update_check.py",
     "src/creo_mechdog/blend_callback.py",
+    "src/creo_mechdog/schema.py",
+    "src/creo_mechdog/profile_checks.py",
+    "src/creo_mechdog/airfoil.py",
     "version.py",
     "generic_bridge.py",
     "schema.py",
+    "profile_checks.py",
+    "airfoil.py",
     "native/worker.cpp",
 )
 

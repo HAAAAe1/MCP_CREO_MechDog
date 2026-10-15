@@ -173,7 +173,7 @@ async def main(stage):
                     "operations": [{"op": "export", "format": "stl"}],
                 },
             )
-            import airfoil
+            from creo_mechdog import airfoil
             from tools.test_multisection_blend import plane_boundary, stl_vertices
 
             path = next(

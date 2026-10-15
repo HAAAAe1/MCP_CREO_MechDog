@@ -5,8 +5,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from creo_mechdog.schema import validate_operations
 from generic_bridge import submit
-from schema import validate_operations
 
 
 class DevelopmentValidation(unittest.TestCase):

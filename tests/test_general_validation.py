@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from schema import validate_operations
+from creo_mechdog.schema import validate_operations
 
 
 class GeneralValidation(unittest.TestCase):

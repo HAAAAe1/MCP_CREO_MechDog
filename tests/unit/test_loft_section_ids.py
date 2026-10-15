@@ -9,7 +9,7 @@ from unittest.mock import Mock, patch
 import bridge
 import generic_bridge as general
 import server
-from schema import validate_operations
+from creo_mechdog.schema import validate_operations
 
 
 class LoftSectionIds(unittest.TestCase):

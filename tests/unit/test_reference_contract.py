@@ -13,7 +13,7 @@ import bridge
 import generic_bridge as general
 import server
 from creo_mechdog.references import reference_capabilities
-from schema import AxisPatternOp, validate_operations
+from creo_mechdog.schema import AxisPatternOp, validate_operations
 
 ROOT = Path(__file__).resolve().parents[2]
 

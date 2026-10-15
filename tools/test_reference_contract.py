@@ -38,6 +38,7 @@ async def run(args: argparse.Namespace) -> dict:
                 for name in (
                     "server.py",
                     "schema.py",
+                    "src/creo_mechdog/schema.py",
                     "src/creo_mechdog/references.py",
                     "tools/test_reference_contract.py",
                 )

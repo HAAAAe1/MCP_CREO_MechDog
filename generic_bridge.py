@@ -13,7 +13,7 @@ from pathlib import Path
 import bridge
 from capabilities import require_available
 from creo_mechdog.model_queries import inspect_page, list_page, model_summary
-from schema import Assertions, LoftOp, validate_operations
+from creo_mechdog.schema import Assertions, LoftOp, validate_operations
 
 MODELS = bridge.ROOT / "models"
 
@@ -92,8 +92,8 @@ def new_loft_part(
         a["offset"] >= b["offset"] for a, b in zip(sections, sections[1:])
     ):
         raise ValueError("This workflow requires XY sketches with strictly increasing Z offsets")
-    import airfoil
-    from profile_checks import closed_profile
+    from creo_mechdog import airfoil
+    from creo_mechdog.profile_checks import closed_profile
 
     for section in sections:
         entities = (
@@ -254,7 +254,7 @@ def submit(
         )
         if duplicate:
             raise ValueError(f"Feature labels already exist: {sorted(duplicate)}")
-        import airfoil
+        from creo_mechdog import airfoil
 
         operations = airfoil.prepare(operations, model["aliases"])
         # Initialize from a solid template. Native first-wall conversion creates

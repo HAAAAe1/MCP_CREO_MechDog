@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from capabilities import require_available
+from creo_mechdog.schema import validate_operations
 from generic_bridge import component_graph, submit
-from schema import validate_operations
 
 
 class AdvancedValidation(unittest.TestCase):
