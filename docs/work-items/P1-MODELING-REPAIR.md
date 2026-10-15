@@ -25,4 +25,6 @@ Windows：tools/dev_check.py；原生：匹配SDK构建及 tools/test_p1_modelin
 
 ## 当前结果
 
+2026-10-15更新：BUG-022本环境边参考追加修复已由用户确认[WorkBuddy四场景全部通过](../validation/BUG-022-WorkBuddy-retest-20261015.md)，原Creo10来源仍待核实。本次确认授权提交、推送当前开发分支；其他条目及发布各自验收，不随BUG-022一并关闭。下段保留2026-10-14开发验证时的历史结论。
+
 [本轮联合证据](../validation/P1-MODELING-REPAIR.md)：191项统一检查、匹配SDK构建、最终原生源码115个作业及阶段性31个作业均符合预期；原始Creo10 BUG-021/022仍待核实，其他四项开发验证通过，等待最终WorkBuddy。代码已分批提交，版本仍0.3.0，未发布。
