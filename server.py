@@ -21,6 +21,7 @@ import generic_bridge as general
 import seeds
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS, families
 from creo_mechdog import update_check
+from creo_mechdog.blend_callback import callback_setup_status
 from creo_mechdog.paths import SOURCE_PATHS
 from creo_mechdog.references import PatternAxis, reference_capabilities
 from schema import (
@@ -53,6 +54,7 @@ _SOURCE_NAMES = (
     "src/creo_mechdog/paths.py",
     "src/creo_mechdog/references.py",
     "src/creo_mechdog/update_check.py",
+    "src/creo_mechdog/blend_callback.py",
     "version.py",
     "generic_bridge.py",
     "schema.py",
@@ -301,6 +303,7 @@ async def creo_capabilities() -> dict[str, Any]:
         "scope": "MCP-owned native part, sheetmetal, assembly and drawing models. Tool availability does not prove every option or Creo operation is supported; consult validation evidence and coverage documentation.",
         "complete_creo_coverage": False,
         "seed_library": await invoke(seeds.list_seeds),
+        "direct_blend_callback": callback_setup_status(bridge.ROOT / "build"),
         "release_status": "pre-release candidate; requested complete coverage has not been achieved",
         "families": families(),
         "unavailable_operations": UNAVAILABLE_OPERATIONS,
@@ -760,7 +763,13 @@ async def creo_hole(
     depth: float | None = None,
     flip: bool = False,
 ) -> dict[str, Any]:
-    """Create native straight hole on a planar face. Two reference planes and signed offsets locate it. Omit depth for through-all; depth makes a blind hole."""
+    """Create a native straight hole on a planar face using two independent planar
+    references or coplanar straight edges and signed offsets. For edge references,
+    the placement-face center selects the reference side. Omit depth for through-all;
+    depth makes a blind hole. flip reverses the native cutting side. A hole that removes
+    no material fails and rolls back. Successful operation details include native axes
+    and material_removed_mm3.
+    """
     op = {
         "op": "hole",
         "label": label,
@@ -1005,7 +1014,12 @@ async def creo_loft(
     """Append a native solid Blend using independent MCP-owned XY sketches, ordered by increasing Z.
 
     Straight/smooth, default-body add only. Cut, surface and new_body are rejected.
-    First use of the synchronous DLL may require the human to accept Creo's loader warning.
+    Manually initialize the resident callback before modeling under every loader policy
+    before modeling using capabilities.direct_blend_callback.registry_file. If absent,
+    the native worker rejects before DLL loading with BLEND_CALLBACK_SETUP_REQUIRED.
+    Reuses the prepared callback across jobs; MCP does not change Creo security policy.
+    sections accepts sketch labels or integer feature IDs; digit-only strings are
+    normalized to feature IDs for public-client compatibility. References must be distinct.
     """
     return await invoke(
         general.submit,
@@ -1387,9 +1401,26 @@ async def creo_lookup_constants(prefix: str, limit: int = 100) -> dict[str, Any]
 
 
 @mcp.tool(annotations=READ)
-async def creo_inspect_model(model_id: str) -> dict[str, Any]:
-    """Get the latest verified model snapshot: revision, feature labels/IDs, dimensions, faces, edges, bodies and parameters. This is the saved snapshot; use refresh_model to inspect live Creo."""
-    return await invoke(general.model_info, model_id)
+async def creo_inspect_model(
+    model_id: str,
+    detail: Literal["compact", "full"] = "compact",
+    section: str | None = None,
+    limit: int = 50,
+    cursor: str | None = None,
+) -> dict[str, Any]:
+    """Read a saved verified snapshot, compact by default (identity/revision/status/volume/counts).
+
+    Use detail=full for geometry; large snapshots return data grouped by section,
+    complete=false and next_cursor. Repeat with the same detail/section and cursor.
+    Sections: features, dimensions, surfaces, edges, bodies, datum_planes,
+    parameters, aliases, components, feature_geometry, sketch_dimensions.
+    Drawings also support sheets/views/notes/tables/models/shown_dimensions;
+    metadata preserves additional inspection fields.
+    Feature sections omit nested collections, available separately. Pages are
+    bound to the snapshot and limited to 32 KiB, default 50/max 200 records.
+    Model changes invalidate cursors. Use refresh_model for live Creo inspection.
+    """
+    return await invoke(general.inspect_model, model_id, detail, section, limit, cursor)
 
 
 @mcp.tool(annotations=READ)
@@ -1399,9 +1430,19 @@ async def creo_refresh_model(model_id: str) -> dict[str, Any]:
 
 
 @mcp.tool(annotations=READ)
-async def creo_list_models(limit: int = 10) -> dict[str, Any]:
-    """List persistent MCP-owned part models and their latest verified snapshots."""
-    return await invoke(general.list_models, limit)
+async def creo_list_models(
+    limit: int = 10,
+    detail: Literal["compact", "full"] = "compact",
+    cursor: str | None = None,
+) -> dict[str, Any]:
+    """List owned models, compact by default. Repeat next_cursor with the same detail.
+
+    limit remains 1–50; 32 KiB budget can return fewer models. complete describes
+    the list page, while each full model may have its own inspection next_cursor.
+    Use inspect_model(detail=full, section=...) for model detail. Model changes
+    invalidate the list cursor; snapshots are saved states, not live queries.
+    """
+    return await invoke(general.list_models, limit, detail, cursor)
 
 
 @mcp.tool(annotations=CREATE)

@@ -1,0 +1,151 @@
+{
+  "work_item": "DEV-015",
+  "version": "0.3.1",
+  "base_commit": "559f52d377d06a12f11af423d53b3fd543a3bb86",
+  "branch": "codex/release-031",
+  "source_worktree_development": {
+    "work_item": "DEV-015",
+    "version": "0.3.1",
+    "timestamp_utc": "2026-10-15T04:31:35.157657+00:00",
+    "environment": {
+      "os": "Windows",
+      "python": "3.12.14"
+    },
+    "source": {
+      "commit": "559f52d377d06a12f11af423d53b3fd543a3bb86",
+      "dirty": true,
+      "checked_source_sha256": "eb75f192e600a5c4a7565208dfff153fc40eb3ec63f77878d9f38785401fa013"
+    },
+    "native_validation": "not_run",
+    "unit_tests": "passed",
+    "success": true,
+    "style_summary": {
+      "lint_findings": 55,
+      "unformatted_files": 38,
+      "cpp_files_checked": 15,
+      "python_files_checked": 74
+    },
+    "tools": {
+      "ruff": "0.17.0",
+      "clang-format": "23.1.3"
+    },
+    "configuration": {
+      "pyproject.toml": "b6fdec9a5b332300304f92c2fbe61455b7cfaaaeecfb1cd2880f83d5658249dd",
+      ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+      "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc"
+    }
+  },
+  "source_worktree_unit": {
+    "version": "0.3.1",
+    "timestamp": 1792038733.6727347,
+    "tests_run": 191,
+    "success": true,
+    "failures": 0,
+    "errors": 0
+  },
+  "extracted_source_development": {
+    "work_item": "DEV-015",
+    "version": "0.3.1",
+    "timestamp_utc": "2026-10-15T04:34:18.459530+00:00",
+    "environment": {
+      "os": "Windows",
+      "python": "3.12.14"
+    },
+    "source": {
+      "commit": null,
+      "dirty": null,
+      "checked_source_sha256": "eb75f192e600a5c4a7565208dfff153fc40eb3ec63f77878d9f38785401fa013"
+    },
+    "native_validation": "not_run",
+    "unit_tests": "passed",
+    "success": true,
+    "style_summary": {
+      "lint_findings": 55,
+      "unformatted_files": 38,
+      "cpp_files_checked": 15,
+      "python_files_checked": 74
+    },
+    "tools": {
+      "ruff": "0.17.0",
+      "clang-format": "23.1.3"
+    },
+    "configuration": {
+      "pyproject.toml": "b6fdec9a5b332300304f92c2fbe61455b7cfaaaeecfb1cd2880f83d5658249dd",
+      ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+      "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc"
+    }
+  },
+  "extracted_source_unit": {
+    "version": "0.3.1",
+    "timestamp": 1792038893.8993733,
+    "tests_run": 191,
+    "success": true,
+    "failures": 0,
+    "errors": 0
+  },
+  "package_check": {
+    "version": "0.3.1",
+    "source_zip_sha256": "823d8bd677e739c3dd83796c3b9cecbda58f34f461affcb0a726dc4ddacc5159",
+    "seed_zip_sha256": "7d0e722e2fac144b4df6e8bdf7479f693c9e8eed575b3dd59fb5a45ada9bc10b",
+    "source_members": 252,
+    "seeds": 9,
+    "seed_archive_install": true,
+    "zip_crc": true,
+    "native_unchanged_since": "559f52d377d06a12f11af423d53b3fd543a3bb86",
+    "generic_cpp_sha256": "72bb9c87518edd8f6a05851d69ce322a47133578609998c4b4fe90b132fcfe97",
+    "root": "C:\\Users\\Administrator\\.codex\\worktrees\\release-031\\MCP_CREO_MechDog"
+  },
+  "fresh_stdio": {
+    "version": "0.3.1",
+    "runtime": {
+      "python_executable": "C:\\Users\\Administrator\\.codex\\worktrees\\release-031\\MCP_CREO_MechDog\\build\\fresh-source\\.venv\\Scripts\\python.exe",
+      "server_entry": "C:\\Users\\Administrator\\.codex\\worktrees\\release-031\\MCP_CREO_MechDog\\build\\fresh-source\\MCP_CREO_MechDog\\server.py",
+      "code_root": "C:\\Users\\Administrator\\.codex\\worktrees\\release-031\\MCP_CREO_MechDog\\build\\fresh-source\\MCP_CREO_MechDog",
+      "python_package_root": "C:\\Users\\Administrator\\.codex\\worktrees\\release-031\\MCP_CREO_MechDog\\build\\fresh-source\\MCP_CREO_MechDog\\src\\creo_mechdog",
+      "resource_root": "C:\\Users\\Administrator\\.codex\\worktrees\\release-031\\MCP_CREO_MechDog\\build\\fresh-source\\MCP_CREO_MechDog",
+      "data_root": "C:\\Users\\Administrator\\.codex\\worktrees\\release-031\\MCP_CREO_MechDog\\build\\fresh-source\\MCP_CREO_MechDog",
+      "source_fingerprints_at_startup": {
+        "server.py": "24322a18d66ca8e4d1a1806cc991d89bfc8632ebf87982fb02a4fb14c15ea63b",
+        "bridge.py": "29431be0182b5c6d59dd8cd2c5dd078499ac1233b2befca1016adba0a52324a8",
+        "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+        "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
+        "src/creo_mechdog/paths.py": "389dca158e3a7d02337ca3a099a1872bf858e38cc8108d78172cff235256dff5",
+        "src/creo_mechdog/references.py": "584a6c6ae235e798d3a97e26c6af3c3509a518db2e7495d6cecd496dcfa1c640",
+        "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+        "src/creo_mechdog/blend_callback.py": "5d7cd97d46d52dd08080ccd117ef14748b0fd16600477e9467d5a6450c1d2e5f",
+        "version.py": "03d9ad0a146f85ae2f6ed7042adea89d8a2996ea818f2614c906c6f7d79baa94",
+        "generic_bridge.py": "b8b1a3f2b24298bc787c613294a2dc0736244e7ab1a1e96a9bf0c69e429c0a0b",
+        "schema.py": "9cbd671d85d738ff9cc9dae4ebb2926034457aea71950e6d802cf7d825c2998d",
+        "native/worker.cpp": "19b4f46da5a7555abcd131c3d79592e7857f68e65ce99b22ebc1a6282fa57b50"
+      },
+      "source_changed_since_startup": false
+    },
+    "seed_count": 9,
+    "list_models": {
+      "models": [],
+      "detail": "compact",
+      "complete": true,
+      "next_cursor": null
+    },
+    "scope": "fresh source installation metadata/stdio only; no Creo config or modeling request; native readiness not asserted"
+  },
+  "commands": [
+    "python tools/dev_check.py --work-item DEV-015",
+    "python tools/package_seeds.py --output build/MCP_CREO_MechDog-0.3.1-seed-library.zip",
+    "python tools/package.py --output build/MCP_CREO_MechDog-0.3.1-source-preflight.zip",
+    "fresh-source: python -m pip install -r requirements-dev.txt",
+    "fresh-source: python tools/dev_check.py --work-item DEV-015",
+    "fresh-source stdio: creo_capabilities / creo_list_seeds / creo_list_models"
+  ],
+  "native_scope": "All native source files unchanged from tested 559f52d; no 0.3.1 full native release regression rerun. Prior 0.3.0 evidence preserved.",
+  "unverified": [
+    "Creo10 original reported scenarios",
+    "BUG-028 plan integer/digit/mixed final WorkBuddy branches",
+    "32KiB exact response-byte and single-record over-budget black-box cases",
+    "full 0.3.1 native suite",
+    "unknown outcome recovery",
+    "concurrency",
+    "arbitrary rotated/nonrectangular hole faces"
+  ],
+  "publication": "No GitHub Release/tag/upload performed by this main-integration preparation"
+}

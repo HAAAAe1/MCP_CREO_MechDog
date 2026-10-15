@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import TextIO
 
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS
+from creo_mechdog.blend_callback import prepare_callback
 
 ROOT = Path(__file__).resolve().parent
 JOBS = ROOT / "jobs"
@@ -501,13 +502,15 @@ def build_native() -> Path:
     callback_stamp = build / "blend_sync_build.json"
 
     def record_callback():
+        callback_sha256 = hashlib.sha256(blend_dll.read_bytes()).hexdigest()
         write_json(
             callback_stamp,
             {
                 "fingerprint": callback_fingerprint,
-                "sha256": hashlib.sha256(blend_dll.read_bytes()).hexdigest(),
+                "sha256": callback_sha256,
             },
         )
+        prepare_callback(build, callback_sha256)
 
     fingerprint = digest.hexdigest()
     stamp = build / "source.sha256"
@@ -521,6 +524,7 @@ def build_native() -> Path:
             cached.get("fingerprint") == callback_fingerprint
             and cached.get("sha256") == hashlib.sha256(blend_dll.read_bytes()).hexdigest()
         ):
+            prepare_callback(build, cached["sha256"])
             return exe
     if not check_environment()["ready_to_build"]:
         raise RuntimeError("Creo SDK, template or MSVC is missing; call creo_check_environment")
@@ -830,18 +834,15 @@ def compact_job(manifest: dict) -> dict:
             "extrude_count",
             "round_count",
             "hole_count",
+            "failed_stage",
+            "failed_toolkit_call",
+            "failed_operation_index",
+            "inspection_source",
         )
         native = {key: result[key] for key in result_keys if key in result}
-        inspection = result.get("inspection", {})
-        native["inspection"] = {
-            key: inspection[key]
-            for key in ("healthy", "has_solid", "units", "model_type", "volume_mm3")
-            if key in inspection
-        }
-        native["inspection"]["counts"] = {
-            key: len(inspection.get(key, []))
-            for key in ("features", "surfaces", "edges", "bodies", "components")
-        }
+        from creo_mechdog.model_queries import inspection_summary
+
+        native["inspection"] = inspection_summary(result.get("inspection"))
         native["operations"] = [
             {
                 key: op[key]

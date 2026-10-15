@@ -427,7 +427,25 @@ int wmain(int argc, wchar_t *argv[]) {
         << ",\"preview_code\":" << preview_code << ",\"disconnect_code\":" << disconnect_code
         << ",\"saved_file_reloaded_and_verified\":" << (result ? "false" : "true") << "}";
     std::ofstream report(job + L"\\native_result.json", std::ios::binary);
-    report << out.str();
+    J plate_result = J::parse(out.str());
+    // Plate verification currently records feature-type counts, not a complete
+    // geometry snapshot. Keep the verified volume; unqueried counts stay null.
+    plate_result["inspection"] = {
+        {"inspection_source", result ? "unavailable" : "saved_reloaded"},
+        {"inspection_available", result == 0},
+        {"volume_mm3", result ? J(nullptr) : J(measured)},
+        {"units", "mm"},
+        {"model_type", "part"},
+        {"counts",
+         {{"features", nullptr},
+          {"surfaces", nullptr},
+          {"edges", nullptr},
+          {"bodies", result ? J(nullptr) : J(1)},
+          {"components", nullptr}}},
+        {"verified_feature_counts",
+         result ? J(nullptr)
+                : J{{"extrude", counts[0]}, {"round", counts[1]}, {"hole", counts[2]}}}};
+    report << plate_result.dump(2);
     report.close();
     if (board_log)
         fclose(board_log);
