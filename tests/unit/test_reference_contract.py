@@ -214,7 +214,7 @@ class ReferenceQueueTests(unittest.IsolatedAsyncioTestCase):
         self.enterContext(patch.object(bridge, "JOBS", self.root / "jobs"))
         self.enterContext(patch.object(general, "MODELS", self.root / "models"))
         self.enterContext(
-            patch.object(bridge, "toolkit_lock", side_effect=lambda: contextlib.nullcontext())
+            patch.object(bridge, "toolkit_lock", side_effect=lambda **kw: contextlib.nullcontext())
         )
         self.enterContext(
             patch.object(bridge, "config", return_value={"creo_root": str(self.root / "creo")})

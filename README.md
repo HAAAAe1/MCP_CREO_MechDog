@@ -105,6 +105,10 @@ DEV-002 已开始分批迁移：更新检查实现位于 `src/creo_mechdog/`，�
 4. 保留 `model_id` 和最新 `revision`。修改已有零件时提供 `expected_revision`；版本不一致会拒绝旧请求。
 5. 查询实际面/边/尺寸 ID 后追加特征。引用发生变化时重新查询，不复用猜测的拓扑 ID。
 
+Toolkit 操作共用一个通道，提交时忙碌会立即拒绝；响应保持 MCP `isError=true`，JSON 文本与 `structuredContent` 同时给出 `status="busy"`、`accepted=false`、`blocking_job_id`、`blocking_model_id`、`blocking_operation`、`retry_after_seconds` 和 `retry_guidance`。未创建新任务。占用者可能是任务、提交登记、连接探针或构建；无法确定时 ID 为 null，不能猜测最近的任务就是占用者。1 秒是建议重查间隔，不是完成时间承诺。已接受的任务只轮询，不重新提交；未知结果先检查模型。
+
+任务模型登记（revision、pending_job、保存结果）在锁内收尾，释放通道后才发布持久化终态。观察到旧任务 succeeded 后，其他客户端仍可能取得通道，此时按新响应的占用者处理。`creo_get_job`、`creo_list_jobs`、`creo_inspect_model`、`creo_list_models` 读取持久化快照，不等待 Toolkit；`creo_refresh_model`、导出和实际连接检查仍需要通道。已接受后台 runner 最多等锁 120 秒；没有公开 FIFO、容量或排队顺序保证，本次没有增加队列能力。开发与 WorkBuddy 验收范围见 [BUG-009](docs/work-items/BUG-009.md)。
+
 例如创建有原生特征树的圆柱：
 
 ```json

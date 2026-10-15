@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import ctypes
+import errno
 import hashlib
 import json
 import math
@@ -249,8 +250,29 @@ def validate_spec(
     return {**{k: float(v) for k, v in values.items()}, "holes": checked, "model_name": model_name}
 
 
+def toolkit_owner() -> dict:
+    """Best-effort owner snapshot; only a failed OS lock proves channel contention."""
+    try:
+        value = read_json(ROOT / "toolkit-owner.lock")
+    except (OSError, ValueError):
+        return {}
+    if not isinstance(value, dict):
+        return {}
+    return {
+        key: value[key]
+        for key in ("job_id", "model_id", "operation", "pid", "since")
+        if key in value
+    }
+
+
 @contextmanager
-def toolkit_lock(wait_seconds: float = 0):
+def toolkit_lock(
+    wait_seconds: float = 0,
+    *,
+    operation: str = "native_operation",
+    job_id: str | None = None,
+    model_id: str | None = None,
+):
     """Serialize all native calls across MCP clients and detached jobs."""
     lock = ROOT / "toolkit.lock"
     with lock.open("a+b") as f:
@@ -261,21 +283,65 @@ def toolkit_lock(wait_seconds: float = 0):
                 f.seek(0)
                 msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
                 break
-            except OSError:
+            except OSError as exc:
+                if exc.errno not in (errno.EACCES, errno.EAGAIN, errno.EDEADLK):
+                    raise
                 if time.monotonic() >= deadline:
-                    raise ToolkitBusy(
-                        "Creo Toolkit is busy with another task; query its job and try later"
-                    )
+                    raise ToolkitBusy(holder=toolkit_owner()) from None
                 time.sleep(0.25)
         try:
+            write_json(
+                ROOT / "toolkit-owner.lock",
+                {
+                    "job_id": job_id,
+                    "model_id": model_id,
+                    "operation": operation,
+                    "pid": os.getpid(),
+                    "since": now(),
+                },
+            )
             yield
         finally:
-            f.seek(0)
-            msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
+            try:
+                # Remove before unlock: deleting afterwards could erase the next owner.
+                (ROOT / "toolkit-owner.lock").unlink(missing_ok=True)
+            finally:
+                f.seek(0)
+                msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
 
 
 class ToolkitBusy(RuntimeError):
     """A native call is active; startup must wait without launching another Creo."""
+
+    def __init__(self, message: str | None = None, *, holder: dict | None = None):
+        holder = holder or {}
+        job_id = holder.get("job_id")
+        guidance = (
+            f"Poll creo_get_job(job_id='{job_id}', detail='compact') until terminal; "
+            "inspect unknown_outcome before retrying. "
+            if job_id
+            else "No occupying job could be determined; the owner may be a session probe, "
+            "build or another client. "
+        )
+        guidance += (
+            "This request was not accepted. Retry this request after 1 second only when "
+            "the occupying operation has finished; re-read the model revision before writing. "
+            "Do not resubmit an already accepted job."
+        )
+        self.payload = {
+            "status": "busy",
+            "code": "toolkit_busy",
+            "accepted": False,
+            "blocking_job_id": job_id,
+            "blocking_model_id": holder.get("model_id"),
+            "blocking_operation": holder.get("operation"),
+            "owner_snapshot": holder or None,
+            "owner_determined": bool(holder),
+            "retry_after_seconds": 1,
+            "retry_guidance": guidance,
+            "message": message or "Creo Toolkit is busy with another operation",
+        }
+        super().__init__(f"{self.payload['message']}. {guidance}")
 
 
 def license_setting_state(value: str | None) -> str:
@@ -606,7 +672,7 @@ def session_status(connect_timeout_seconds: int = 30) -> dict:
         or not 1 <= connect_timeout_seconds <= 30
     ):
         raise ValueError("connect_timeout_seconds must be 1–30")
-    with toolkit_lock():
+    with toolkit_lock(operation="session_status"):
         exe = build_native()
         result = subprocess.run(
             [str(exe), "status", str(connect_timeout_seconds)],
@@ -627,42 +693,43 @@ def session_status(connect_timeout_seconds: int = 30) -> dict:
 
 
 def create_job(spec: dict) -> dict:
-    JOBS.mkdir(exist_ok=True)
-    job_id = uuid.uuid4().hex
-    directory = job_path(job_id)
-    directory.mkdir()
-    output = directory / "output"
-    output.mkdir()
-    if len(str(output)) >= 230:
-        raise ValueError("Project path is too long for this Creo Toolkit build")
-    spec = dict(spec)
-    spec["model_name"] = spec["model_name"] or f"ai_plate_{job_id[:12]}"
-    manifest = {
-        "job_id": job_id,
-        "status": "queued",
-        "created_at": now(),
-        "spec": spec,
-        "job_directory": str(directory),
-        "output_directory": str(output),
-        "message": "Call creo_get_job until succeeded, failed or unknown_outcome. Do not repeat create_plate to poll.",
-    }
-    write_json(directory / "job.json", manifest)
-    try:
-        with (directory / "runner.log").open("ab") as log:
-            subprocess.Popen(
-                [sys.executable, str(ROOT / "bridge.py"), "run-job", job_id],
-                cwd=ROOT,
-                stdin=subprocess.DEVNULL,
-                stdout=log,
-                stderr=subprocess.STDOUT,
-                creationflags=HIDDEN,
-                close_fds=True,
-            )
-    except Exception as exc:
-        manifest.update(status="failed", message=str(exc), finished_at=now())
+    with toolkit_lock(operation="submit_plate"):
+        JOBS.mkdir(exist_ok=True)
+        job_id = uuid.uuid4().hex
+        directory = job_path(job_id)
+        directory.mkdir()
+        output = directory / "output"
+        output.mkdir()
+        if len(str(output)) >= 230:
+            raise ValueError("Project path is too long for this Creo Toolkit build")
+        spec = dict(spec)
+        spec["model_name"] = spec["model_name"] or f"ai_plate_{job_id[:12]}"
+        manifest = {
+            "job_id": job_id,
+            "status": "queued",
+            "created_at": now(),
+            "spec": spec,
+            "job_directory": str(directory),
+            "output_directory": str(output),
+            "message": "Call creo_get_job until succeeded, failed or unknown_outcome. Do not repeat create_plate to poll.",
+        }
         write_json(directory / "job.json", manifest)
-        raise
-    return manifest
+        try:
+            with (directory / "runner.log").open("ab") as log:
+                subprocess.Popen(
+                    [sys.executable, str(ROOT / "bridge.py"), "run-job", job_id],
+                    cwd=ROOT,
+                    stdin=subprocess.DEVNULL,
+                    stdout=log,
+                    stderr=subprocess.STDOUT,
+                    creationflags=HIDDEN,
+                    close_fds=True,
+                )
+        except Exception as exc:
+            manifest.update(status="failed", message=str(exc), finished_at=now())
+            write_json(directory / "job.json", manifest)
+            raise
+        return manifest
 
 
 def run_job(job_id: str) -> None:
@@ -674,7 +741,7 @@ def run_job(job_id: str) -> None:
         run_generic_job(job_id, manifest)
         return
     try:
-        with toolkit_lock(wait_seconds=120):
+        with toolkit_lock(wait_seconds=120, operation="create_plate", job_id=job_id):
             manifest.update(
                 status="running", stage="building_worker", started_at=now(), runner_pid=os.getpid()
             )
@@ -811,6 +878,8 @@ def compact_job(manifest: dict) -> dict:
         "finished_at",
         "message",
         "construction",
+        "busy",
+        "recovery_required",
     )
     summary = {key: manifest[key] for key in keys if key in manifest}
     summary["detail"] = "compact"
@@ -883,7 +952,7 @@ if __name__ == "__main__":
     if args.action == "run-job":
         run_job(args.job_id)
     elif args.action == "build":
-        with toolkit_lock():
+        with toolkit_lock(operation="build_native"):
             print(build_native())
     else:
         print(

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import json
 import logging
 import sys
 from contextlib import asynccontextmanager
@@ -12,7 +13,7 @@ from typing import Annotated, Any, Literal
 
 from mcp.server import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
-from mcp.types import ToolAnnotations
+from mcp.types import CallToolResult, TextContent, ToolAnnotations
 from pydantic import BaseModel, ConfigDict, Field
 
 import bridge
@@ -100,6 +101,8 @@ mcp = MCPServer(
     "when modifying an existing MCP model. Models and native files persist across clients. "
     "Consult creo_capabilities.references.by_tool for each parameter's kind and container shape. "
     "Success requires status=succeeded and saved_file_reloaded_and_verified=true for mutations. "
+    "Busy errors mean this request was not accepted; inspect blocking_job_id, blocking_model_id "
+    "and retry_guidance. Poll accepted jobs instead of resubmitting them. "
     "Create sheetmetal/assembly models with the corresponding new-model tools or model_type in execute_plan. "
     "Use creo_capabilities for enabled and tested operations; reserved unavailable tools reject before native mutation. "
     "Creo startup detection runs in the background; poll creo_startup_status until ready before modeling. "
@@ -134,6 +137,12 @@ async def invoke(fn, *args, **kwargs):
         if fn in (bridge.create_job, general.submit, general.new_loft_part):
             startup.require_ready()
         return await asyncio.to_thread(fn, *args, **kwargs)
+    except bridge.ToolkitBusy as exc:
+        return CallToolResult(
+            is_error=True,
+            content=[TextContent(type="text", text=json.dumps(exc.payload, ensure_ascii=False))],
+            structured_content=exc.payload,
+        )
     except (ValueError, RuntimeError, OSError) as exc:
         raise ToolError(str(exc)) from None
 
@@ -269,6 +278,23 @@ async def creo_capabilities() -> dict[str, Any]:
         },
         "unit": "mm",
         "angle_unit": "degrees",
+        "scheduling": {
+            "native_channels": 1,
+            "admission": "reject_busy_without_creating_a_job",
+            "busy_error": "isError=true with matching JSON text and structuredContent",
+            "owner_fields": ["blocking_job_id", "blocking_model_id", "blocking_operation"],
+            "retry_after_seconds": 1,
+            "retry_interval_is_completion_estimate": False,
+            "terminal_contract": "Model finalized under channel lock; job terminal published after release. Another caller may then occupy the channel.",
+            "runner_channel_wait_seconds": 120,
+            "queue_guarantees": "No public FIFO, capacity or admission-wait guarantee",
+            "non_native_queries": [
+                "creo_get_job",
+                "creo_list_jobs",
+                "creo_inspect_model",
+                "creo_list_models",
+            ],
+        },
         "tool_count": len(await mcp.list_tools()),
         "enabled_tool_count": len(await mcp.list_tools()),
         "disabled_tools_hidden": True,

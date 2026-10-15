@@ -167,7 +167,7 @@ def submit(
         op["op"] not in ("dump_tree", "export", "udf_inspect") for op in operations
     ):
         raise ValueError("Read-only requests may only inspect/export")
-    with bridge.toolkit_lock():
+    with bridge.toolkit_lock(operation="submit", model_id=model_id):
         new = model_id is None
         if new:
             if model_type not in ("part", "sheetmetal", "assembly", "drawing"):
@@ -193,7 +193,14 @@ def submit(
             path = model_path(model_id)
             model = model_info(model_id)
             if model.get("pending_job"):
-                raise ValueError(f"Model has pending job {model['pending_job']}; poll it first")
+                raise bridge.ToolkitBusy(
+                    "Model has a pending job",
+                    holder={
+                        "job_id": model["pending_job"],
+                        "model_id": model_id,
+                        "operation": "pending_job",
+                    },
+                )
             if model["status"] != "ready":
                 raise ValueError("Model is not ready; inspect its last job before recovery")
             if expected_revision is None and not readonly:
@@ -361,90 +368,108 @@ def run_generic_job(job_id: str, manifest: dict):
     path = model_path(model["model_id"])
     worker_started = False
     try:
-        with bridge.toolkit_lock(wait_seconds=120):
-            manifest.update(status="running", stage="building_worker", started_at=bridge.now())
-            bridge.write_json(directory / "job.json", manifest)
-            exe = bridge.build_native()
-            manifest["stage"] = "executing_feature_plan"
-            bridge.write_json(directory / "job.json", manifest)
-            with (directory / "worker.log").open("wb") as log:
-                worker_started = True
-                proc = subprocess.run(
-                    [str(exe), "generic", str(directory)],
-                    cwd=directory,
-                    env=bridge.native_environment(),
-                    stdout=log,
-                    stderr=subprocess.STDOUT,
-                    timeout=bridge.config().get("generic_timeout_seconds", 600),
-                    creationflags=bridge.HIDDEN,
-                )
-            result_file = directory / "native_result.json"
-            if not result_file.exists():
-                manifest.update(
-                    status="unknown_outcome",
-                    message=f"Native worker exited {proc.returncode} without a result; inspect Creo before retrying",
-                )
-                model["status"] = "unknown_outcome"
-            else:
-                result = bridge.read_json(result_file)
-                manifest["result"] = result
-                if proc.returncode == 0 and result.get("success"):
-                    if not request["readonly"] and not result.get(
-                        "saved_file_reloaded_and_verified"
-                    ):
-                        raise RuntimeError("Saved model was not verified")
-                    part = Path(result["part_file"])
-                    if part.parent.resolve() != (path / "output").resolve() or not part.is_file():
-                        raise RuntimeError("Unexpected native output file")
-                    result["sha256"] = hashlib.sha256(part.read_bytes()).hexdigest()
-                    if request["readonly"]:
-                        model.update(
-                            status="ready",
-                            last_live_inspection=result["inspection"],
-                            last_query_at=bridge.now(),
+        with bridge.toolkit_lock(
+            wait_seconds=120, operation="execute_plan", job_id=job_id, model_id=model["model_id"]
+        ):
+            try:
+                manifest.update(status="running", stage="building_worker", started_at=bridge.now())
+                bridge.write_json(directory / "job.json", manifest)
+                exe = bridge.build_native()
+                manifest["stage"] = "executing_feature_plan"
+                bridge.write_json(directory / "job.json", manifest)
+                with (directory / "worker.log").open("wb") as log:
+                    worker_started = True
+                    proc = subprocess.run(
+                        [str(exe), "generic", str(directory)],
+                        cwd=directory,
+                        env=bridge.native_environment(),
+                        stdout=log,
+                        stderr=subprocess.STDOUT,
+                        timeout=bridge.config().get("generic_timeout_seconds", 600),
+                        creationflags=bridge.HIDDEN,
+                    )
+                result_file = directory / "native_result.json"
+                if not result_file.exists():
+                    manifest.update(
+                        status="unknown_outcome",
+                        message=f"Native worker exited {proc.returncode} without a result; inspect Creo before retrying",
+                    )
+                    model["status"] = "unknown_outcome"
+                else:
+                    result = bridge.read_json(result_file)
+                    manifest["result"] = result
+                    if proc.returncode == 0 and result.get("success"):
+                        if not request["readonly"] and not result.get(
+                            "saved_file_reloaded_and_verified"
+                        ):
+                            raise RuntimeError("Saved model was not verified")
+                        part = Path(result["part_file"])
+                        if (
+                            part.parent.resolve() != (path / "output").resolve()
+                            or not part.is_file()
+                        ):
+                            raise RuntimeError("Unexpected native output file")
+                        result["sha256"] = hashlib.sha256(part.read_bytes()).hexdigest()
+                        if request["readonly"]:
+                            model.update(
+                                status="ready",
+                                last_live_inspection=result["inspection"],
+                                last_query_at=bridge.now(),
+                            )
+                        else:
+                            model["revision"] += 1
+                            model.update(
+                                status="ready",
+                                aliases=result["aliases"],
+                                inspection=result["inspection"],
+                                part_file=result["part_file"],
+                                updated_at=bridge.now(),
+                                last_job=job_id,
+                            )
+                        manifest.update(
+                            status="succeeded",
+                            stage="verified",
+                            message="General feature plan completed",
+                            revision=model["revision"],
                         )
                     else:
-                        model["revision"] += 1
-                        model.update(
-                            status="ready",
-                            aliases=result["aliases"],
-                            inspection=result["inspection"],
-                            part_file=result["part_file"],
-                            updated_at=bridge.now(),
-                            last_job=job_id,
+                        model["status"] = (
+                            "ready"
+                            if (request["readonly"] or result.get("rollback_succeeded"))
+                            and model.get("part_file")
+                            else "failed"
                         )
-                    manifest.update(
-                        status="succeeded",
-                        stage="verified",
-                        message="General feature plan completed",
-                        revision=model["revision"],
-                    )
-                else:
-                    model["status"] = (
-                        "ready"
-                        if (request["readonly"] or result.get("rollback_succeeded"))
-                        and model.get("part_file")
-                        else "failed"
-                    )
-                    manifest.update(
-                        status="failed",
-                        message=result.get("message", f"Toolkit code {result.get('toolkit_code')}"),
-                    )
-    except subprocess.TimeoutExpired:
+                        manifest.update(
+                            status="failed",
+                            message=result.get(
+                                "message", f"Toolkit code {result.get('toolkit_code')}"
+                            ),
+                        )
+            except subprocess.TimeoutExpired:
+                manifest.update(
+                    status="unknown_outcome",
+                    message="Native worker timed out; inspect Creo and the model before retrying",
+                )
+                model["status"] = "unknown_outcome"
+            except Exception as exc:
+                manifest.update(
+                    status="unknown_outcome" if worker_started else "failed", message=str(exc)
+                )
+                model["status"] = (
+                    "unknown_outcome"
+                    if worker_started
+                    else ("ready" if model.get("part_file") else "failed")
+                )
+            model["pending_job"] = None
+            model["last_job"] = job_id
+            bridge.write_json(path / "model.json", model)
+    except bridge.ToolkitBusy as exc:
+        # No worker ran. Never rewrite a model while another owner holds the channel.
         manifest.update(
-            status="unknown_outcome",
-            message="Native worker timed out; inspect Creo and the model before retrying",
+            status="failed",
+            message=str(exc),
+            busy=exc.payload,
+            recovery_required="Model reservation retained; inspect before recovery",
         )
-        model["status"] = "unknown_outcome"
-    except Exception as exc:
-        manifest.update(status="unknown_outcome" if worker_started else "failed", message=str(exc))
-        model["status"] = (
-            "unknown_outcome"
-            if worker_started
-            else ("ready" if model.get("part_file") else "failed")
-        )
-    model["pending_job"] = None
-    model["last_job"] = job_id
-    bridge.write_json(path / "model.json", model)
     manifest["finished_at"] = bridge.now()
     bridge.write_json(directory / "job.json", manifest)

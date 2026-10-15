@@ -477,7 +477,7 @@ class CreoStartup:
         preparation_deadline = time.monotonic() + 180
         while not self._stop.is_set():
             try:
-                with bridge.toolkit_lock():
+                with bridge.toolkit_lock(operation="startup_build"):
                     bridge.build_native()
                 break
             except bridge.ToolkitBusy:
