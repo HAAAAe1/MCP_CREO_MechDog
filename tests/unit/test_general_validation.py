@@ -1,9 +1,8 @@
-import math
-import sys
-import unittest
-from pathlib import Path
+"""DEV-002 pure validation and modeling-helper regressions."""
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import math
+import unittest
+
 from creo_mechdog.schema import validate_operations
 
 

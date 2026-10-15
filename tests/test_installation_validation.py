@@ -198,6 +198,9 @@ class InstallationValidation(unittest.TestCase):
             "capabilities.py",
             "version.py",
             "seeds.py",
+            "schema.py",
+            "airfoil.py",
+            "profile_checks.py",
         ):
             shutil.copy2(ROOT / name, self.root / name)
         shutil.copytree(
