@@ -38,7 +38,7 @@
 
 ## 构建、测试与开发命令
 
-在仓库根目录使用 PowerShell 执行以下命令。安装需要 Windows x64、Python 3.12+、Creo 10 或 Creo 12、匹配的 Toolkit SDK、可用许可及 MSVC x64 构建工具。
+在仓库根目录使用 PowerShell 执行以下命令。安装需要 Windows x64、Python 3.12+、Creo 9、10 或 12、匹配的 Toolkit SDK、可用许可及 MSVC x64 构建工具。Creo 9 与 Toolkit 9 已纳入支持/要求范围（支持范围见 `docs/COMPATIBILITY.md`）：当前源码在 Creo 9 SDK 上编译需 [BUG-033](docs/work-items/BUG-033.md) 的探测宏修复（仍为待开发），且 Creo 9 建模运行时未在本机验收，其他环境按反馈补录。
 
 - `.\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 10.0.0.0'`：创建虚拟环境、安装锁定版本的依赖、生成配置和常量表，并编译执行器。请替换为实际安装路径。
 - `.\.venv\Scripts\python.exe bridge.py build`：编译变更后的原生源码，或复用已有执行器。
@@ -77,7 +77,7 @@ Toolkit 调用共用单一通道：提交时通道忙碌立即返回 `status="bu
 
 单元测试使用 `unittest`，新增文件命名为 `tests/unit/test_*.py`，测试方法命名为 `test_*`；现有 `discover -s tests` 递归发现入口继续覆盖两种布局。修改输入校验或保护逻辑时补充回归用例。项目未设置数值化覆盖率门槛。修改原生建模代码后，运行对应的 `tools/test_*.py`，检查任务成功、几何断言通过，以及 `saved_file_reloaded_and_verified` 为 `true`。明确记录本次验证范围，不能用历史证据代替当前验证。
 
-Windows CI 仅承担语言与单元检查；当前开发与发布的原生验收使用本机 Windows x64 / Creo 12.4.0.0 / 匹配 SDK 和许可，按实际改动范围取得证据。2026-10-15 用户取消全项目 Creo 10 独立复测、双版本验收及正式基线门槛，不因缺少 Creo 10 结果阻塞完成、合入或发布。朋友反馈具体问题后再登记或沿用条目跟进；历史版本、环境和未测事实保留，不把本机通过外推为其他环境通过，范围见 `docs/COMPATIBILITY.md`。新证据记录条目、源码提交与 dirty 状态、受测源码指纹、命令、环境和未测范围。
+Windows CI 仅承担语言与单元检查；当前开发与发布的原生验收使用本机 Windows x64 / Creo 12.4.0.0 / 匹配 SDK 和许可，按实际改动范围取得证据。2026-10-15 用户取消全项目 Creo 10 独立复测、双版本验收及正式基线门槛，不因缺少 Creo 10 结果阻塞完成、合入或发布。朋友反馈具体问题后再登记或沿用条目跟进；历史版本、环境和未测事实保留，不把本机通过外推为其他环境通过。Creo 9 与 Toolkit 9 已按文档口径纳入支持/要求范围，仅声明编译可用性（依赖 BUG-033），其建模运行时本机未验收，范围见 `docs/COMPATIBILITY.md`。新证据记录条目、源码提交与 dirty 状态、受测源码指纹、命令、环境和未测范围。
 
 ## 提交与合并请求要求
 

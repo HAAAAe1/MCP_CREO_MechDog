@@ -93,3 +93,7 @@
 本次[任务卡文档检查](../validation/FEAT-029-task-card-2026-10-16.json)记录文件指纹、提交与 dirty、链接及锚点、台账范围与元数据、表格和空白检查；该记录只验证文档，不构成功能验收。
 
 后续证据须记录条目、受测版本、提交、dirty、源码及 worker/DLL/资源指纹、日期、Windows/Python/Creo/SDK/编译器环境、命令、结果和未测范围；升级前后及回退各阶段分别标识。收尾同步 [统一台账](../BACKLOG.md)、[兼容范围](../COMPATIBILITY.md)、[安装说明](../INSTALL.md)、[迁移说明](../MIGRATION.md)与相应版本说明；合入 main 时按[发布规则](../development/RELEASING.md#合入-main-必须同步发布)生成并发布对应新版本。
+
+## 2026-10-16：0.3.2 回调注册负担补录
+
+[0.3.2 报告 B](../validation/FEEDBACK-0.3.2.md) P1-1 记录 0.3.0 可直接完成的两截面直接放样在 0.3.2 返回 `BLEND_CALLBACK_SETUP_REQUIRED`，要求在 Creo 辅助应用程序注册并启动回调 DLL，报告称 `callback_result.json` 不存在；该行为属已声明机制，不作回归缺陷重开，但自动化成本与"升级后需重新注册"的负担归本卡。[0.3.2 报告 C](../validation/FEEDBACK-0.3.2.md) 第 1、2 节进一步记录：`blend_sync.cpp` 逐字节不变但同机两次编译产出不同 DLL，而登记路径按 DLL 哈希建不可变副本目录，重编译即让既有注册指向失效路径（报告方 3 小时累积 3 个 sha 目录）。构建与登记路径的解耦单独登记为 [DEV-027](DEV-027.md)，本卡继续承接"兼容升级尽量免重复注册"的主目标；上述两处均未在本仓库复现，报告环境与证据边界见补录。
