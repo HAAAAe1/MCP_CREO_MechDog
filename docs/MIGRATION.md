@@ -21,7 +21,7 @@ MCP_CREO_MechDog 0.3.0 在安装 Creo 的 Windows 电脑上运行，通过本地
 
 ## 换到另一台电脑
 
-1. 在目标 Windows x64 电脑准备 Creo 10 或 Creo 12、匹配 Toolkit SDK、MSVC x64 / Windows SDK、Python 3.12+ x64 和可用的 Toolkit 运行许可。当前开发与发布使用本机 Creo 12.4.0.0 验收，不要求 Creo 10 独立复测；其他环境收到具体测试反馈后再跟进，具体范围见 [兼容矩阵](COMPATIBILITY.md)。
+1. 在目标 Windows x64 电脑准备 Creo 9、10 或 12、匹配 Toolkit SDK、MSVC x64 / Windows SDK、Python 3.12+ x64 和可用的 Toolkit 运行许可。当前开发与发布使用本机 Creo 12.4.0.0 验收，不要求 Creo 10 独立复测；Creo 9 与 Toolkit 9 已纳入支持/要求范围，[BUG-033](work-items/BUG-033.md) 编译探测修复已实现，本机无 Creo 9 SDK，实机编译及运行时均未验收。其他环境收到具体测试反馈后再跟进，具体范围见 [兼容矩阵](COMPATIBILITY.md)。
 2. 下载0.3.0 源码包，内附 `seed_library/`。源码解压到例如 `C:\MCP_CREO_MechDog`，执行：
 
    ```powershell

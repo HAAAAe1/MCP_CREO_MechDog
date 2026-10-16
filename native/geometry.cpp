@@ -43,6 +43,9 @@
 #include <ProBodyOpts.h>
 #include <ProUtil.h>
 #include <ProWindows.h>
+#include <map>
+// Both the plate and generic hole implementations need the SDK probes.
+#include "constants.inc"
 
 static FILE *board_log = nullptr;
 static ProMdl board = nullptr;
@@ -430,7 +433,10 @@ static void hole(int index, double x, double y, double dia) {
             PRO_HLE_STRGHT_NONE_DEPTH);
     integer(com, PRO_E_HLE_CRDIR_FLIP, PRO_HLE_CR_IN_SIDE_ONE);
     integer(com, PRO_E_HLE_TOP_CLEARANCE, PRO_HOLE_GEN_CLRNCE);
+#if defined(MECHDOG_HAS_PRO_E_HLE_ADD_PARAMETERS) &&                                               \
+    defined(MECHDOG_HAS_PRO_HOLE_NO_PARAMETERS_FLAG)
     integer(com, PRO_E_HLE_ADD_PARAMETERS, PRO_HOLE_NO_PARAMETERS_FLAG);
+#endif
     integer(com, PRO_E_HLE_ADD_NOTE, PRO_HOLE_NO_NOTE_FLAG);
     ProElement place = node(root, PRO_E_HLE_PLACEMENT);
     ref(place, PRO_E_HLE_PRIM_REF, face);

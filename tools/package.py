@@ -43,6 +43,7 @@ def source_files():
         ".clang-format",
         ".editorconfig",
         "tools/test_result_delivery.cpp",
+        "docs/validation/DEV-028-WorkBuddy-report-20261016.txt",
     )
     files = [ROOT / name for name in names]
     for directory, extensions in {

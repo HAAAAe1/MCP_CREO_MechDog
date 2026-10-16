@@ -23,6 +23,13 @@ from typing import TextIO
 
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS
 from creo_mechdog.blend_callback import prepare_callback
+from creo_mechdog.build_support import (
+    compiler_setup_script,
+    diagnose_build_failure,
+    read_build_log_tail,
+    validate_compiler_env,
+    validate_local_path,
+)
 from creo_mechdog.recovery import job_evidence, process_identity
 
 ROOT = Path(__file__).resolve().parent
@@ -191,9 +198,10 @@ def config() -> dict:
             "Missing config.json: run setup.ps1, or copy config.example.json and set your installation paths"
         )
     value = read_json(ROOT / "config.json")
-    for key in ("creo_root", "vcvars64"):
-        if any(c in value[key] for c in '\r\n"%'):
-            raise ValueError(f"Invalid local path: {key}")
+    validate_local_path(value.get("creo_root"), "creo_root")
+    value["vcvars64_env"] = validate_compiler_env(value.get("vcvars64_env"))
+    if value["vcvars64_env"] is None:
+        validate_local_path(value.get("vcvars64"), "vcvars64")
     return value
 
 
@@ -501,16 +509,25 @@ def check_environment() -> dict:
         "communication_executable": common / "x86e_win64/obj/pro_comm_msg.exe",
         "metric_template": common / "templates/mmns_part_solid_abs.prt",
         "metric_assembly_template": common / "templates/mmns_asm_design_abs.asm",
-        "compiler_setup": Path(c["vcvars64"]),
     }
     checks = {key: {"exists": p.is_file(), "path": str(p)} for key, p in files.items()}
+    explicit_env = validate_compiler_env(c.get("vcvars64_env")) is not None
+    checks["compiler_setup"] = (
+        {"exists": True, "path": "config.json:vcvars64_env", "source": "vcvars64_env"}
+        if explicit_env
+        else {"exists": Path(c["vcvars64"]).is_file(), "path": c["vcvars64"]}
+    )
     license_value, license_diagnostics = resolve_license_environment()
     return {
         "platform": sys.platform,
         "creo_root": str(root),
         "checks": checks,
-        "ready_to_build": all(p.is_file() for p in files.values()),
-        "compiler_environment": "unverified_here; build runs vcvars64 and checks compiler, UCRT and Windows SDK",
+        "ready_to_build": all(item["exists"] for item in checks.values()),
+        "compiler_environment": (
+            "unverified_here; build uses explicit vcvars64_env and checks compiler, UCRT and Windows SDK"
+            if explicit_env
+            else "unverified_here; build runs vcvars64 and checks compiler, UCRT and Windows SDK"
+        ),
         "license_setting_present": bool(license_value),
         "license_diagnostics": license_diagnostics,
         "license_usable": "unverified_here; only successful native feature creation proves it",
@@ -626,9 +643,8 @@ if errorlevel 1 exit /b 3
     script = build / "build.cmd"
     script.write_text(
         f'''@echo off
-setlocal
-call "{c["vcvars64"]}"
-if errorlevel 1 exit /b 1
+setlocal DisableDelayedExpansion
+{compiler_setup_script(c)}
 "{sys.executable}" "{ROOT / "tools/compiler_preflight.py"}"
 if errorlevel 1 exit /b 4
 cl /nologo /MD /EHsc /std:c++17 /bigobj /W3 /DPRO_MACHINE=36 /DPRO_OS=4 /DPRO_USE_VAR_ARGS /I"{sdk / "includes"}" /c "{ROOT / "native/worker.cpp"}" /Fo"{build / "worker.obj"}"
@@ -650,11 +666,16 @@ exit /b 0
             creationflags=HIDDEN,
         )
     if result.returncode:
+        diagnostic = diagnose_build_failure(
+            result.returncode, read_build_log_tail(build / "build.log")
+        )
         if result.returncode == 4:
             raise RuntimeError(
-                f"MSVC/Windows SDK environment preflight failed; inspect {build / 'build.log'} (SDK discovery or registry access may be blocked)"
+                f"MSVC/Windows SDK environment preflight failed; inspect {build / 'build.log'} (SDK discovery or registry access may be blocked)\n{diagnostic}"
             )
-        raise RuntimeError(f"Native build failed ({result.returncode}); see {build / 'build.log'}")
+        raise RuntimeError(
+            f"Native build failed ({result.returncode}); see {build / 'build.log'}\n{diagnostic}"
+        )
     stamp.write_text(fingerprint)
     record_callback()
     constants = subprocess.run(

@@ -11,6 +11,25 @@
 
 当前布局与迁移目标分别记录在 `docs/development/ARCHITECTURE.md`。首批只建立规范；Python 包化、C++ 上下文提取及独立编译由 DEV-002～DEV-004 分批推进，每批同时核对入口、路径、安装和打包。
 
+根模块职责（迁移期间按此理解入口，不要在未登记条目时改写）：
+
+- `server.py`：MCP stdio 入口与工具注册；业务逻辑不写在该文件。
+- `bridge.py`：Toolkit 调度与执行器子进程生命周期；Toolkit 通道锁的唯一持有者。
+- `generic_bridge.py`：执行器子进程的 stdin/stdout 桥接；不解析业务语义。
+- `capabilities.py`：工具清单及启用/禁用来源；新增或停用工具必须在此登记。
+- `schema.py`、`profile_checks.py`、`airfoil.py`、`seeds.py`：根目录兼容模块，只转发导出；新逻辑进 `src/creo_mechdog/`。
+- `version.py`：服务与源码版本的唯一来源，合入 `main` 时同步更新。
+
+## 请求流与运行时架构
+
+一次建模请求的实际路径：MCP 客户端（stdio）→ `server.py`（注册 82 个工具）→ `bridge.py`（revision 校验、保护策略、子进程与终态登记）→ `generic_bridge.py` → 由 `native/*.cpp` 编译出的 Creo Toolkit 执行器（单一通道串行）→ Creo Parametric 进程。客户端只看到任务 `job_id` 与 `model_id`；几何计算全部在原生执行器内完成，Python 侧不模拟 Creo 行为。
+
+两条并存的 Python 轨道：`src/creo_mechdog/` 是标准可编辑包（安装声明见 `pyproject.toml`），新业务模块放包内；根目录同名的 `schema.py`、`airfoil.py`、`profile_checks.py` 及 `server.py`、`bridge.py`、`version.py` 保留兼容包装。包内实现与根包装同时进入源码身份清单，二者对同一类型必须共享定义，不能出现两套模型。
+
+只读分发资源（`seed_library/`、`examples/`、`docs/`、`native/`）与本机生成内容（`.venv/`、`build/`、`jobs/`、`models/`、`native/constants.inc`、`config.json`、`client-config.json`）严格分开；生成物不得进入源码包或发布附件。
+
+关键边界：服务标准输出只承载 MCP 协议消息；Toolkit 通道忙碌时立即拒绝新提交（`isError=true` 且 `status="busy"`，携带 `blocking_*` 与重试指引），不排队、不自动重试；任务在锁内收尾，释放通道后才发布持久化终态，因此其他客户端可能在旧任务返回后取得通道。并发能力现状归 BUG-009，未新增队列时不要假设 FIFO 或容量保证。
+
 ## 开发准入与台账
 
 - 以 `docs/DEVELOPMENT.md` 为开发入口、`docs/BACKLOG.md` 为唯一工作台账；每项功能、缺陷或工程整理在实现前登记固定 ID、目标、范围、验收方式和环境。小修复可精简，复杂条目使用 `docs/templates/WORK_ITEM.md`。
@@ -19,7 +38,7 @@
 
 ## 构建、测试与开发命令
 
-在仓库根目录使用 PowerShell 执行以下命令。安装需要 Windows x64、Python 3.12+、Creo 10 或 Creo 12、匹配的 Toolkit SDK、可用许可及 MSVC x64 构建工具。
+在仓库根目录使用 PowerShell 执行以下命令。安装需要 Windows x64、Python 3.12+、Creo 9、10 或 12、匹配的 Toolkit SDK、可用许可及 MSVC x64 构建工具。Creo 9 与 Toolkit 9 已纳入支持/要求范围（支持范围见 `docs/COMPATIBILITY.md`）：[BUG-033](docs/work-items/BUG-033.md) 编译探测修复已实现；本机无 Creo 9 SDK，Creo 9 实机编译与建模运行时均未验收，其他环境按反馈补录。
 
 - `.\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 10.0.0.0'`：创建虚拟环境、安装锁定版本的依赖、生成配置和常量表，并编译执行器。请替换为实际安装路径。
 - `.\.venv\Scripts\python.exe bridge.py build`：编译变更后的原生源码，或复用已有执行器。
@@ -30,6 +49,9 @@
 - `.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt`：安装锁定的运行与开发依赖；纯单元/语言检查无需 Creo SDK。
 - `.\.venv\Scripts\python.exe tools\dev_check.py`：检查新增语言问题并运行全部 Windows 单元测试，生成 `build/development_check.json`。
 - `.\.venv\Scripts\python.exe tools\dev_check.py --strict --skip-unit`：暴露全部存量语言问题；不是原生建模验收。
+- `.\.venv\Scripts\python.exe -m pip install --no-deps -e .`：拉取源码更新后同步包内模块；`setup.ps1` 已包含该步骤，开发环境手动执行一次即可。
+
+服务名称与客户端注册键统一为 `MCP_CREO_MechDog`；`client-config.json` 是该配置的 `mcpServers` 格式样例，其 command/args 必须与安装实际路径一致。
 
 ## 代码风格与命名约定
 
@@ -38,6 +60,8 @@ Python 使用四个空格缩进，函数和模块采用 `snake_case`，类采用
 历史问题记录在 `docs/development/style-baseline.json`，默认检查拒绝新增诊断和变更后仍未格式化的文件。工具/配置错误与单测失败不能加入基线；基线新增容许项必须关联条目、说明原因并单独审查，禁止在正常开发或 CI 中自动重建。
 
 长度使用毫米，角度使用度。特征标签以小写字母开头，仅包含小写字母、数字和下划线，最多 28 个字符。服务标准输出仅用于 MCP 协议消息。
+
+Toolkit 调用共用单一通道：提交时通道忙碌立即返回 `status="busy"`（`isError=true` 并给出 `blocking_job_id`/`blocking_model_id`/`blocking_operation`），不重试、不排队。新增并发或调度原语前先核对 BUG-009 记录的边界，不要假设已存在队列或公平调度；已接受的任务只轮询 `creo_get_job`，不重新提交。
 
 ## 测试要求
 
@@ -49,10 +73,11 @@ Python 使用四个空格缩进，函数和模块采用 `snake_case`，类采用
 - 验收以工具实际返回及 Creo 中的实际结果为准，记录工具调用、输入、job_id/model_id、终态、几何/参数、保存重载、revision、回滚和原始错误；只有真实实施了并发调用，才能报告并发测试通过。
 - 只能靠源码或本地脚本验证的内部机制（例如文件占用注入、重试次数/预算、临时文件清理）不纳入 WorkBuddy 结论。无法由 MCP 观察的项目明确记为“未验证”，不得推测通过。
 - 下面的开发者测试要求继续用于实现与回归阶段；本地测试证据和 WorkBuddy 最终 MCP 验收分别记录，不互相替代。用户明确要求改变 WorkBuddy 范围时，以当次要求为准。
+- 运行在 WorkBuddy 或其他客户端会话内的 Agent 不得用本文件的开发者要求替代该约定：不执行 `tools/test_*.py`、`tools/dev_check.py`、单元测试或源码探针，也不读取本机配置与仓库状态来补齐报告。该限制只约束 WorkBuddy 黑盒验收，实现与回归阶段仍按下一段执行。
 
 单元测试使用 `unittest`，新增文件命名为 `tests/unit/test_*.py`，测试方法命名为 `test_*`；现有 `discover -s tests` 递归发现入口继续覆盖两种布局。修改输入校验或保护逻辑时补充回归用例。项目未设置数值化覆盖率门槛。修改原生建模代码后，运行对应的 `tools/test_*.py`，检查任务成功、几何断言通过，以及 `saved_file_reloaded_and_verified` 为 `true`。明确记录本次验证范围，不能用历史证据代替当前验证。
 
-Windows CI 仅承担语言与单元检查；当前开发与发布的原生验收使用本机 Windows x64 / Creo 12.4.0.0 / 匹配 SDK 和许可，按实际改动范围取得证据。2026-10-15 用户取消全项目 Creo 10 独立复测、双版本验收及正式基线门槛，不因缺少 Creo 10 结果阻塞完成、合入或发布。朋友反馈具体问题后再登记或沿用条目跟进；历史版本、环境和未测事实保留，不把本机通过外推为其他环境通过，范围见 `docs/COMPATIBILITY.md`。新证据记录条目、源码提交与 dirty 状态、受测源码指纹、命令、环境和未测范围。
+Windows CI 仅承担语言与单元检查；当前开发与发布的原生验收使用本机 Windows x64 / Creo 12.4.0.0 / 匹配 SDK 和许可，按实际改动范围取得证据。2026-10-15 用户取消全项目 Creo 10 独立复测、双版本验收及正式基线门槛，不因缺少 Creo 10 结果阻塞完成、合入或发布。朋友反馈具体问题后再登记或沿用条目跟进；历史版本、环境和未测事实保留，不把本机通过外推为其他环境通过。Creo 9 与 Toolkit 9 的编译探测修复已实现，本机无 Creo 9 SDK，实机编译及建模运行时均未验收，范围见 `docs/COMPATIBILITY.md`。新证据记录条目、源码提交与 dirty 状态、受测源码指纹、命令、环境和未测范围。
 
 ## 提交与合并请求要求
 
@@ -70,3 +95,5 @@ Windows CI 仅承担语言与单元检查；当前开发与发布的原生验收
 ## 配置与许可
 
 本机路径写入已被 Git 忽略的 `config.json` 和 `client-config.json`。不要提交生成的常量表、二进制文件、日志或测试模型。保留第三方许可声明，不要提交 PTC SDK 文件或许可数据。
+
+`native/constants.inc` 由 `tools/generate_constants.py` 依据本机 Creo SDK 生成，属于本机生成物：不提交、不从其他机器或构建缓存复制、不进入发布附件；更换 Creo 或 SDK 版本后必须重新生成。

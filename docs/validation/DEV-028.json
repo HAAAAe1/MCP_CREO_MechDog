@@ -1,0 +1,275 @@
+{
+  "work_item": "DEV-028",
+  "items": [
+    "BUG-033",
+    "DEV-019",
+    "DEV-020",
+    "DEV-021",
+    "DEV-022"
+  ],
+  "recorded_at": "2026-10-16T09:46:26.275798+00:00",
+  "timezone": "Asia/Shanghai",
+  "version": "0.3.1",
+  "branch": "codex/dev-028-creo9-compile-install",
+  "source": {
+    "commit": "b6c7daff61bc9f2ef288b5984f823a9945ab8710",
+    "dirty": true,
+    "checked_source_sha256": "f36da98d8c3800c4fd62e67ee2232b779aaa927ae65279e301f8544b50b82844"
+  },
+  "source_fingerprints_lf_normalized": {
+    "bridge.py": "820aad1fdc502ba29de5c365814931344b24d74b9be0a76ed666d83d035b9677",
+    "server.py": "8217e6290bcf3b82d37f4e010c64bb78119b136c04bc761a4655089a23bd7859",
+    "setup.ps1": "f08b568e58a7d1bb4b5fa8b770d4714653016210d0b7fa42f84d150db479185d",
+    "config.example.json": "af83795eb63428a6a84e76229a4e3d92c14218396c29335e750805192be9bcb4",
+    "pyproject.toml": "3aa0f617e2ebf60ac44679139251876b2553eaf5b341dd9b8c54815e8f71f25d",
+    "tools/generate_constants.py": "8ec0565e25059dcc1f3fc170ed87f550fe3a9a37610c75e2e09752010ef68f7d",
+    "tools/test_general.py": "a66dea33506619a4a5399d6998a0a1457ff09358dc89c554efcbff240a4ffdfc",
+    "src/creo_mechdog/build_support.py": "e34aba50b7e9b51eec894f1907efcd66c7df4ceefc3db2af858f8cc1ad5bc6bf",
+    "native/geometry.cpp": "378850a51240a3e577991b5577d32e6881f1554ba10bd26442dcf3fae1a309bb",
+    "native/generic.cpp": "162a96aa35909a55f08384d2b2ba5f4623921ea08096d7613f9a0d2e7b012e57",
+    "native/worker.cpp": "128306b8f392cf13590383f8a08ba1869b1bd21c8a10fbbd186d7fe7b034c7ad",
+    "tests/unit/test_generate_constants.py": "0b9048dd52dfe3c5454b8532710eafe8d59b19fb78b6c41ba361fcd0c95be41d",
+    "tests/unit/test_build_diagnostics.py": "c5253504f3cf787ba8fae0e82c9accde3c606625ff99a0a21c923f553d7e8b7d",
+    "tests/unit/test_install_config.py": "1b17da279bcfe87a88c5e01ad8749c21dbe5d9e8a59b489e4379cc8cd8d666e2"
+  },
+  "environment": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14",
+    "creo": "12.4.0.0",
+    "toolkit_release_numeric": 44,
+    "msvc": "19.44.35213 (VS 2022)",
+    "sdk": "matching locally installed Creo 12.4 SDK"
+  },
+  "development_check": {
+    "work_item": "DEV-028",
+    "version": "0.3.1",
+    "timestamp_utc": "2026-10-16T09:43:26.380765+00:00",
+    "environment": {
+      "os": "Windows",
+      "python": "3.12.14"
+    },
+    "source": {
+      "commit": "b6c7daff61bc9f2ef288b5984f823a9945ab8710",
+      "dirty": true,
+      "checked_source_sha256": "f36da98d8c3800c4fd62e67ee2232b779aaa927ae65279e301f8544b50b82844"
+    },
+    "native_validation": "not_run",
+    "unit_tests": "passed",
+    "success": true,
+    "style_summary": {
+      "lint_findings": 36,
+      "unformatted_files": 26,
+      "cpp_files_checked": 16,
+      "python_files_checked": 97
+    },
+    "tools": {
+      "ruff": "0.17.0",
+      "clang-format": "23.1.3"
+    },
+    "configuration": {
+      "pyproject.toml": "3aa0f617e2ebf60ac44679139251876b2553eaf5b341dd9b8c54815e8f71f25d",
+      ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+      "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc"
+    }
+  },
+  "unit_report": {
+    "version": "0.3.1",
+    "timestamp": 1792143861.1932554,
+    "tests_run": 260,
+    "success": true,
+    "failures": 0,
+    "errors": 0
+  },
+  "native_build": {
+    "command": ".venv/Scripts/python.exe bridge.py build",
+    "success": true,
+    "source_fingerprint": "ce8453d40af82b56a91aec923fbae4a07b2f5ca6bf0d1f2371944860465f0f9f",
+    "worker_sha256": "a7d23fdb74725e4204087562601680a0a932256303250983a7cf44b3e67cfddf",
+    "callback_sha256": "72d1d80067efe0a4246d9addc471f595ab6d594c3585155225bb4a4877798c3e",
+    "generated_constants_sha256": "e1e0d44b50640124eb6ededb0c0123fd5a7952b7ab5724407529d1af28813936",
+    "generated_probes": [
+      "#define MECHDOG_HAS_PRO_E_HLE_ADD_PARAMETERS 1",
+      "#define MECHDOG_HAS_PRO_HOLE_NO_PARAMETERS_FLAG 1"
+    ]
+  },
+  "explicit_compiler_env_smoke": {
+    "success": true,
+    "returncode": 0,
+    "uses_vcvars_in_compile_script": false,
+    "scope": "Captured expanded INCLUDE/LIB/PATH from the existing reviewed local wrapper, then a separate script directly set the three values, ran compiler_preflight, compiled/linked stdio.h + windows.h x64 C++ smoke and ran it. Local config and global environment were unchanged; this is not a restricted-machine reinstall."
+  },
+  "native_regression": {
+    "command": ".venv/Scripts/python.exe tools/test_general.py",
+    "launcher": "existing Explorer desktop ShellExecute, hidden Python wrapper calling the unchanged test_general.main and redirecting output; ordinary Codex-hosted worker cannot connect in this session",
+    "success": true,
+    "tool_count": 82,
+    "protocol_version": "2026-07-28",
+    "started_at_epoch": 1792143874.6100235,
+    "jobs": [
+      {
+        "tool": "creo_new_part",
+        "job_id": "e177edbe0fc94c7fa1bd18ccfaee6f4b",
+        "model_id": "affd6372aeb845f0a2694c0261e853d2",
+        "revision": 1,
+        "status": "succeeded",
+        "saved_file_reloaded_and_verified": true,
+        "volume_mm3": null,
+        "verified_feature_counts": null,
+        "disconnect_code": 0,
+        "sha256": "df466576314350f67941fa65ca2443e6adc2a0846992bd736d3d63376454e633",
+        "assertions": null
+      },
+      {
+        "tool": "creo_create_sketch",
+        "job_id": "b35248733414408c9f0f2dc3c55b282e",
+        "model_id": "affd6372aeb845f0a2694c0261e853d2",
+        "revision": 2,
+        "status": "succeeded",
+        "saved_file_reloaded_and_verified": true,
+        "volume_mm3": null,
+        "verified_feature_counts": null,
+        "disconnect_code": 0,
+        "sha256": "9f900dfc0cd95d4c52b6730b562c00a6a12bc0f307a1acb6f3bfbc2e6a6cddb6",
+        "assertions": null
+      },
+      {
+        "tool": "creo_extrude",
+        "job_id": "2984d076242b44d3b8a6ef07a731c259",
+        "model_id": "affd6372aeb845f0a2694c0261e853d2",
+        "revision": 3,
+        "status": "succeeded",
+        "saved_file_reloaded_and_verified": true,
+        "volume_mm3": 2010.6192982974674,
+        "verified_feature_counts": null,
+        "disconnect_code": 0,
+        "sha256": "f0d6d00d0151056c2e9e83ed10e932c245dea883a02aa856bea764c35502bb01",
+        "assertions": null
+      },
+      {
+        "tool": "creo_set_sketch_dimensions",
+        "job_id": "6b589330f73343d39b111ce9252047dd",
+        "model_id": "affd6372aeb845f0a2694c0261e853d2",
+        "revision": 4,
+        "status": "succeeded",
+        "saved_file_reloaded_and_verified": true,
+        "volume_mm3": 3141.5926535897925,
+        "verified_feature_counts": null,
+        "disconnect_code": 0,
+        "sha256": "74f0983de61b4a65044abdc805f21722d168d704aecaa892b82fc00534a87358",
+        "assertions": null
+      },
+      {
+        "tool": "creo_execute_plan",
+        "job_id": "817c093f11824f65837f1e7bad7ef479",
+        "model_id": "9e5379c51ad543fa90163218c2dd49a5",
+        "revision": 1,
+        "status": "succeeded",
+        "saved_file_reloaded_and_verified": true,
+        "volume_mm3": 10600.0,
+        "verified_feature_counts": null,
+        "disconnect_code": 0,
+        "sha256": "60233aef6a059a328d18dcc991724e36fdef2b803c31c658f64c14ff068d924d",
+        "assertions": {
+          "volume_mm3": 10600,
+          "require_solid": true
+        }
+      },
+      {
+        "tool": "creo_execute_plan",
+        "job_id": "b32a09e9b0aa46fca08cf4f0807b9513",
+        "model_id": "a4a451a5be48437da635cf5065f5ac7c",
+        "revision": 1,
+        "status": "succeeded",
+        "saved_file_reloaded_and_verified": true,
+        "volume_mm3": 6324.026011676252,
+        "verified_feature_counts": null,
+        "disconnect_code": 0,
+        "sha256": "34560cf8761cd516bc08bc494cfb73ea9c25ce6fb3dba2e8d5c9b45293bfe505",
+        "assertions": {
+          "volume_mm3": 6324.026011676254,
+          "require_solid": true
+        }
+      },
+      {
+        "tool": "creo_create_plate",
+        "job_id": "4e84a4b26e3c464aae6a4d05faf9a848",
+        "model_id": null,
+        "revision": null,
+        "status": "succeeded",
+        "saved_file_reloaded_and_verified": true,
+        "volume_mm3": 7030.353996706152,
+        "verified_feature_counts": {
+          "extrude": 1,
+          "hole": 1,
+          "round": 0
+        },
+        "disconnect_code": 0,
+        "sha256": "3165bda9ea566018473458df2f75366eb9da4ade61454c44e48f864d254c7dd1",
+        "assertions": null
+      }
+    ],
+    "report_sha256": "ec2c004953aa6bcd95f5b9d163a8b13f4f086bba037ed0753bd5fcfc3dd71624",
+    "geometry_checks": [
+      "disk extrusion and diameter edit: 640*pi -> 1000*pi mm3",
+      "bracket: 10600 mm3, bbox [-20,-15,0]..[20,15,25]",
+      "generic through diameter 6 and blind diameter 2 / depth 5 holes, revolved groove: 2013*pi mm3",
+      "plate 40x30x6 with diameter 6 through hole: 7200-54*pi mm3, one native hole"
+    ],
+    "all_mutations_saved_reloaded": true
+  },
+  "earlier_attempts": [
+    {
+      "scope": "ordinary host startup",
+      "result": "Toolkit code -4 / waiting_for_connection / timeout; no modeling request submitted; Windows helper GetCursorPos denied 0x80070005; user restored Creo; desktop-launched worker subsequently code 0. No Creo process was closed."
+    },
+    {
+      "scope": "first desktop native run",
+      "result": "All seven native jobs succeeded and saved/reloaded. Added harness assertion incorrectly read plate inspection.hole_count; corrected to inspection.verified_feature_counts.hole. Legacy plate returns a job/part file without model_id; final harness records plate_job_id."
+    },
+    {
+      "scope": "second desktop native run during full units",
+      "result": "Four successful saved/reloaded jobs, then no-job admission rejection because a unit failure fixture wrote shared toolkit_health=false. Final units and native run were serialized; no accepted mutation was resubmitted."
+    }
+  ],
+  "style_review": {
+    "archive_exclusion": "docs/validation in pyproject.toml; archived external report bytes stay unchanged",
+    "baseline_change": "only configuration.pyproject.toml SHA256 updated after review; no lint/unformatted debt entries added, removed or regenerated"
+  },
+  "not_verified": [
+    "Creo 9 SDK compilation on an actual Creo 9 machine",
+    "Creo 9 runtime modeling",
+    "independent Creo 10 regression",
+    "fresh or policy-restricted-machine complete installation",
+    "real Microsoft Store alias interaction",
+    "new WorkBuddy final acceptance"
+  ],
+  "delivery": {
+    "single_local_commit_required": true,
+    "push": false,
+    "tag": false,
+    "release": false,
+    "version_changed": false,
+    "user_untracked_directories_preserved": [
+      ".codebuddy",
+      ".workbuddy"
+    ],
+    "local_plan_left_untracked": true
+  },
+  "document_check": {
+    "success": true,
+    "errors": [],
+    "links_checked": 251,
+    "tables_checked": 20,
+    "current_id_count": 101,
+    "archive_files_verified_byte_for_byte": 56,
+    "existing_archive_checkout_newline_differences": [
+      {
+        "path": "docs/validation/FEEDBACK-0.3.2.md",
+        "reason": "Existing checkout CRLF versus Git LF; git diff reports no change; file was not rewritten",
+        "worktree_sha256": "4db957e81a44b32000ba1898fec92eba9107e724b7be75e775affc3bf5a7663e"
+      }
+    ],
+    "archive_manifest_sha256": "ce5f67d797552670dd9976e8e6b06a82f25a9376824591693d11c5548277ac7a",
+    "baseline_debt_entries_unchanged": true
+  }
+}
