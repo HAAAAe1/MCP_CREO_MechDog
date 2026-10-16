@@ -1,4 +1,4 @@
-# MCP_CREO_MechDog 0.3.1
+# MCP_CREO_MechDog 0.3.3
 
 开发维护从 [开发入口](docs/DEVELOPMENT.md) 和 [统一功能台账](docs/BACKLOG.md) 开始。每项工作先定义验收；语言与单元检查、Creo 实机验收分别记录。项目采用渐进布局整理，当前支持环境见 [兼容矩阵](docs/COMPATIBILITY.md)。
 
@@ -6,7 +6,7 @@
 
 **本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 本版对客户端公开 **82 个可用工具**（0.2.6 为 81 个）；`creo_loft` 已通过直接创建和已有零件追加验收并开放。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
 
-当前服务/源码版本为 **0.3.1**，合入放样初始化及引用兼容、尺寸与关系诊断、原生孔/筋、真实检查结果及分页修复。变更与调用迁移见 [0.3.1说明](docs/RELEASE_NOTES_0.3.1.md)，当前检查及原生证据复用范围见 [主干准备记录](docs/validation/RELEASE-0.3.1.md)。历史 [0.3.0](docs/RELEASE_NOTES_0.3.0.md)、[0.2.6](docs/RELEASE_NOTES_0.2.6.md) 与 [0.2.5](docs/RELEASE_NOTES_0.2.5.md) 的发布说明和验证保持原日期。
+当前服务/源码版本为 **0.3.3**，新增 SDK 孔常量编译探测、原生构建失败摘要、显式编译环境及安装诊断。变更见 [0.3.3 说明](docs/RELEASE_NOTES_0.3.3.md)，本次发布验收见 [记录](docs/validation/RELEASE-0.3.3.md)。历史 [0.3.2](docs/RELEASE_NOTES_0.3.2.md)、[0.3.1](docs/RELEASE_NOTES_0.3.1.md)、[0.3.0](docs/RELEASE_NOTES_0.3.0.md) 记录保持原身份和日期。
 
 本版包含 [FEAT-019 自动启动](docs/work-items/FEAT-019.md)：后台检测、启动协调和建模就绪保护已实现；用户于 2026-10-13 接受 WorkBuddy / Creo 12.4 的自动启动、Toolkit 就绪及建模/保存重载验收，并于 2026-10-14 确认补充 Creo 12 已验证可用的说明。该专项未取得 Creo 10 实测结果；Codex 冷启动连接复测失败另列 [BUG-005](docs/work-items/BUG-005.md)。见 [原验收证据](docs/validation/FEAT-019.md)。
 
