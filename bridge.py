@@ -205,6 +205,27 @@ def config() -> dict:
     return value
 
 
+def plate_output_root() -> Path:
+    """Where one-shot plate jobs write their Creo part.
+
+    Mirrors ``generic_bridge.models_root`` so quick plate jobs land in the same
+    project directory as owned models. Falls back to the install tree.
+    """
+    try:
+        raw = str(config().get("model_root") or "").strip()
+    except Exception:
+        return JOBS
+    if not raw:
+        return JOBS
+    try:
+        root = Path(raw).expanduser()
+    except (OSError, ValueError):
+        return JOBS
+    if not root.is_absolute():
+        root = ROOT / root
+    return root
+
+
 def job_path(job_id: str) -> Path:
     if not JOB_ID.fullmatch(job_id):
         raise ValueError(
@@ -788,8 +809,8 @@ def create_job(spec: dict) -> dict:
         job_id = uuid.uuid4().hex
         directory = job_path(job_id)
         directory.mkdir()
-        output = directory / "output"
-        output.mkdir()
+        output = plate_output_root() / job_id / "output"
+        output.mkdir(parents=True, exist_ok=True)
         if len(str(output)) >= 230:
             raise ValueError("Project path is too long for this Creo Toolkit build")
         spec = dict(spec)
@@ -898,7 +919,7 @@ def run_job(job_id: str) -> None:
                 ):
                     part = Path(result["part_file"])
                     if (
-                        part.parent.resolve() != (directory / "output").resolve()
+                        part.parent.resolve() != Path(manifest["output_directory"]).resolve()
                         or not part.is_file()
                     ):
                         raise RuntimeError(
@@ -906,7 +927,7 @@ def run_job(job_id: str) -> None:
                         )
                     result["sha256"] = hashlib.sha256(part.read_bytes()).hexdigest()
                     result["preview_file"] = (
-                        str(directory / "output/preview.jpg")
+                        str(Path(manifest["output_directory"]) / "preview.jpg")
                         if result["preview_code"] == 0
                         else None
                     )

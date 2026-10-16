@@ -615,8 +615,7 @@ static void execute_drawing_operation(const J &op) {
     } else if (kind == "export") {
         ProPath output;
         std::string format = op["format"];
-        path(output,
-             generic_job + L"\\output\\" + model_name + (format == "pdf" ? L".pdf" : L".jpg"));
+        path(output, folder + L"\\" + model_name + (format == "pdf" ? L".pdf" : L".jpg"));
         if (format == "pdf") {
             ProPDFOptions opts;
             CK(ProPDFoptionsAlloc(&opts));

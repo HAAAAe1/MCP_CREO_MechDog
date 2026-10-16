@@ -1711,7 +1711,7 @@ static void execute_operation(const J &op) {
                                                        : format == "iges" ? ".igs"
                                                                           : ".jpg";
         ProPath output;
-        path(output, generic_job + L"\\output\\" + model_name + wide(extension));
+        path(output, folder + L"\\" + model_name + wide(extension));
         if (format == "jpeg") {
             CK(ProMdlDisplay(board));
             CK(ProMdlWindowGet(board, &win));
@@ -1816,29 +1816,49 @@ static void verify_saved(const J &before, const J &after) {
     }
 }
 static std::wstring latest_model_file() {
-    std::wstring extension = assembly_model() ? L".asm." : L".prt.",
+    // Creo writes "<name>.prt.N" when save_file_iterations is enabled, but a bare
+    // "<name>.prt" when it is disabled (config.pro: save_file_iterations no). Support
+    // both, otherwise the save->reload verification fails on such configurations.
+    std::wstring extension = assembly_model() ? L".asm." : L".prt.";
+    std::wstring leaf = model_name + extension.substr(0, extension.size() - 1),
+                 stem = folder + L"\\" + leaf,
                  mask = folder + L"\\" + model_name + extension + L"*";
     WIN32_FIND_DATAW info;
     HANDLE search = FindFirstFileW(mask.c_str(), &info);
-    if (search == INVALID_HANDLE_VALUE)
-        throw std::runtime_error("Saved model not found");
     int best = -1;
     std::wstring found;
-    do {
-        std::wstring name = info.cFileName;
-        auto pos = name.rfind(extension);
-        if (pos == std::wstring::npos)
-            continue;
-        try {
-            int version = std::stoi(name.substr(pos + extension.size()));
-            if (version > best) {
-                best = version;
-                found = folder + L"\\" + name;
+    if (search != INVALID_HANDLE_VALUE) {
+        do {
+            std::wstring name = info.cFileName;
+            if (_wcsicmp(name.c_str(), leaf.c_str()) == 0) {
+                // Unversioned file. The ".prt.*" mask also matches it on Windows,
+                // so it must be handled before the version parse below.
+                if (best < 0) {
+                    best = 0;
+                    found = stem;
+                }
+                continue;
             }
-        } catch (...) {
-        }
-    } while (FindNextFileW(search, &info));
-    FindClose(search);
+            auto pos = name.rfind(extension);
+            if (pos == std::wstring::npos)
+                continue;
+            try {
+                int version = std::stoi(name.substr(pos + extension.size()));
+                if (version > best) {
+                    best = version;
+                    found = folder + L"\\" + name;
+                }
+            } catch (...) {
+            }
+        } while (FindNextFileW(search, &info));
+        FindClose(search);
+    }
+    if (found.empty()) {
+        // Last resort: the mask may not enumerate the unversioned file at all.
+        DWORD attr = GetFileAttributesW(stem.c_str());
+        if (attr != INVALID_FILE_ATTRIBUTES && !(attr & FILE_ATTRIBUTE_DIRECTORY))
+            found = stem;
+    }
     if (found.empty())
         throw std::runtime_error("Saved native model version not found");
     return found;

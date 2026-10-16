@@ -15,13 +15,43 @@ from capabilities import require_available
 from creo_mechdog.model_queries import inspect_page, list_page, model_summary
 from creo_mechdog.schema import Assertions, LoftOp, validate_operations
 
-MODELS = bridge.ROOT / "models"
+# Explicit override for tests and callers; None means "resolve from config.json".
+MODELS: Path | None = None
+
+
+def default_models_root() -> Path:
+    """Where owned models are written.
+
+    ``config.json`` may set ``model_root`` to a project directory so that Creo
+    files land outside the install tree. Relative values are resolved against
+    the installation root; a missing or blank value keeps the legacy layout.
+    """
+    fallback = bridge.ROOT / "models"
+    try:
+        raw = str(bridge.config().get("model_root") or "").strip()
+    except Exception:
+        return fallback
+    if not raw:
+        return fallback
+    try:
+        root = Path(raw).expanduser()
+    except (OSError, ValueError):
+        return fallback
+    if not root.is_absolute():
+        root = bridge.ROOT / root
+    if root.is_symlink() or root.is_junction():
+        raise ValueError("Config model_root cannot be a link")
+    return root
+
+
+def models_root() -> Path:
+    return MODELS if MODELS is not None else default_models_root()
 
 
 def model_path(model_id: str) -> Path:
     if not bridge.JOB_ID.fullmatch(model_id):
         raise ValueError("Invalid model_id")
-    path = MODELS / model_id
+    path = models_root() / model_id
     if path.is_symlink() or path.is_junction():
         raise ValueError("Model directories cannot be links")
     return path
@@ -37,7 +67,7 @@ def model_info(model_id: str) -> dict:
 def list_models(limit: int = 10, detail: str = "compact", cursor: str | None = None) -> dict:
     if not 1 <= limit <= 50:
         raise ValueError("limit must be 1–50")
-    paths = sorted(MODELS.glob("*/model.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+    paths = sorted(models_root().glob("*/model.json"), key=lambda p: p.stat().st_mtime, reverse=True)
     models = [model_summary(bridge.read_json(p)) for p in paths]
     return list_page(models, model_info, detail, limit, cursor)
 
