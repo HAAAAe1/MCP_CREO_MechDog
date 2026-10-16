@@ -1,0 +1,611 @@
+{
+  "work_item": "DEV-029",
+  "version": "0.3.3",
+  "recorded_at": "2026-10-16T10:47:43.213638+00:00",
+  "timezone": "Asia/Shanghai",
+  "status": "candidate_acceptance_passed; main/tag/Release/assets verification will be recorded on the merge PR",
+  "scope": "DEV-028 BUG-033 + DEV-019/020/021/022 and DEV-026 feedback/documentation; preserve main 0.3.2 DEV-025 fixes. Independent FEAT-029 implementation is excluded.",
+  "source": {
+    "commit": "d2c0280b6069381a90fd20beeb42f898922f3f6f",
+    "dirty": false,
+    "checked_source_sha256": "47f68f3ba722372b8de784cbd761d723a086598d2da3fcaabee644b42c022687"
+  },
+  "branch": "codex/dev-029-release033",
+  "base_main": "6a55119f5dc2c9b95fb3365c8073c354f83c7325",
+  "integration_commit": "1d35370",
+  "runtime_fingerprints_at_startup": {
+    "server.py": "8217e6290bcf3b82d37f4e010c64bb78119b136c04bc761a4655089a23bd7859",
+    "bridge.py": "820aad1fdc502ba29de5c365814931344b24d74b9be0a76ed666d83d035b9677",
+    "creo_startup.py": "7d803ee8c679da483080c9e3cda31b6cf276178383542a9b5e3fac82885c2a22",
+    "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
+    "src/creo_mechdog/paths.py": "389dca158e3a7d02337ca3a099a1872bf858e38cc8108d78172cff235256dff5",
+    "src/creo_mechdog/references.py": "584a6c6ae235e798d3a97e26c6af3c3509a518db2e7495d6cecd496dcfa1c640",
+    "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+    "src/creo_mechdog/blend_callback.py": "5d7cd97d46d52dd08080ccd117ef14748b0fd16600477e9467d5a6450c1d2e5f",
+    "src/creo_mechdog/build_support.py": "e34aba50b7e9b51eec894f1907efcd66c7df4ceefc3db2af858f8cc1ad5bc6bf",
+    "src/creo_mechdog/recovery.py": "f64bc43164e7e75a51b7be1f29e152a5ad588a71c4f055f7cf549f92a4180e4f",
+    "src/creo_mechdog/startup_state.py": "5b482745c0dfd93fc2ec699a1071b6c6cac1bca17944e854941bef197cda9e4c",
+    "src/creo_mechdog/windows_boot.py": "4b3d521e3387eed0668317501e1ee6db7a81d32358c9fbd898c24957455bc6da",
+    "src/creo_mechdog/schema.py": "9cbd671d85d738ff9cc9dae4ebb2926034457aea71950e6d802cf7d825c2998d",
+    "src/creo_mechdog/profile_checks.py": "c160c3b2d800eb84b7aca2f7ddc4e7ce3e46e10498ce2cc799fafd7cfa83df24",
+    "src/creo_mechdog/airfoil.py": "5adbf9d2205239f02d4b974c7fee405c47c81b3cf6201e18966109ad1595d176",
+    "version.py": "69f8fec9b869504ae469272495f058d8f99847eaf3662483a39252c46dd1f4f2",
+    "generic_bridge.py": "f3d4cc91ce54099b761ca76d430574ba1f7ae54f9ae57ffbbae01f7ea97b4f51",
+    "schema.py": "dfb81ba2a123612ac98fbe21993f24a85b778afb9b6d0b1ebcfece7acba97cdd",
+    "profile_checks.py": "6a06b4b215952e13adb182b2adb07539c28dabcaedd857b39381b0b1b57e5731",
+    "airfoil.py": "8897c9b792e0ef67b9ee3aaab03d4f473014ce2ae3894b74ddac5d7e83c250d6",
+    "native/worker.cpp": "128306b8f392cf13590383f8a08ba1869b1bd21c8a10fbbd186d7fe7b034c7ad",
+    "native/geometry.cpp": "378850a51240a3e577991b5577d32e6881f1554ba10bd26442dcf3fae1a309bb",
+    "tools/generate_constants.py": "8ec0565e25059dcc1f3fc170ed87f550fe3a9a37610c75e2e09752010ef68f7d",
+    "native/generic.cpp": "162a96aa35909a55f08384d2b2ba5f4623921ea08096d7613f9a0d2e7b012e57",
+    "native/drawing.cpp": "d280916202fcb20c39cb30afa7b0fdf53460447596429dc1e5f9a005e4fbf3d3",
+    "native/result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220"
+  },
+  "environment": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14",
+    "creo": "12.4.0.0",
+    "toolkit_release_numeric": 44,
+    "msvc": "19.44.35213 (VS 2022)",
+    "launch_context": "existing interactive Explorer desktop, hidden Python test runner; no Creo process was terminated"
+  },
+  "development_check": {
+    "work_item": "DEV-029",
+    "version": "0.3.3",
+    "timestamp_utc": "2026-10-16T10:37:06.431762+00:00",
+    "environment": {
+      "os": "Windows",
+      "python": "3.12.14"
+    },
+    "source": {
+      "commit": "d2c0280b6069381a90fd20beeb42f898922f3f6f",
+      "dirty": false,
+      "checked_source_sha256": "47f68f3ba722372b8de784cbd761d723a086598d2da3fcaabee644b42c022687"
+    },
+    "native_validation": "not_run",
+    "unit_tests": "passed",
+    "success": true,
+    "style_summary": {
+      "lint_findings": 36,
+      "unformatted_files": 26,
+      "cpp_files_checked": 16,
+      "python_files_checked": 97
+    },
+    "tools": {
+      "ruff": "0.17.0",
+      "clang-format": "23.1.3"
+    },
+    "configuration": {
+      "pyproject.toml": "e447f3352a09d8674cba3893dd4b654d185be120a22202c61e9a6e489eb93c75",
+      ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+      "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc"
+    }
+  },
+  "unit_report": {
+    "version": "0.3.3",
+    "timestamp": 1792147070.3322682,
+    "tests_run": 261,
+    "success": true,
+    "failures": 0,
+    "errors": 0
+  },
+  "native_build": {
+    "success": true,
+    "command": "python bridge.py build",
+    "worker_sha256": "13021ae8d32c7dd30032d400db8ab66129c46a926874859f64eac57447bbdc0b",
+    "generated_constants_sha256": "e1e0d44b50640124eb6ededb0c0123fd5a7952b7ab5724407529d1af28813936",
+    "probes": [
+      "#define MECHDOG_HAS_PRO_E_HLE_ADD_PARAMETERS 1",
+      "#define MECHDOG_HAS_PRO_HOLE_NO_PARAMETERS_FLAG 1"
+    ]
+  },
+  "native_general": {
+    "command": "python tools/test_general.py",
+    "success": true,
+    "jobs": [
+      {
+        "job_id": "b16f1d2e69054220bf4d36b42b17bc8d",
+        "model_id": "6da2dc8ecfb3469cada7d78671da75f7",
+        "revision": 1,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": null,
+        "rollback_succeeded": false,
+        "part_sha256": "a1894acb215a185ffe2eda6405399989adf4ca648354e87ae0d214e77c602a0a"
+      },
+      {
+        "job_id": "06768d7e2ce94c26b947475c2d0129c4",
+        "model_id": "6da2dc8ecfb3469cada7d78671da75f7",
+        "revision": 2,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": null,
+        "rollback_succeeded": false,
+        "part_sha256": "b3689432268a3f033494cb0e9f59d4b396ebc5b2f188d432a1d1024f56f16f53"
+      },
+      {
+        "job_id": "73d9ed47ada14e2590f04b37bd657d3b",
+        "model_id": "6da2dc8ecfb3469cada7d78671da75f7",
+        "revision": 3,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": 2010.6192982974674,
+        "rollback_succeeded": false,
+        "part_sha256": "b9b800b993833e7f0f4b42b5666ec6b80dfe6e0fa6365b7800bc3bf103edeee3"
+      },
+      {
+        "job_id": "03a52e77dd9a4f6cb38e176b515dce96",
+        "model_id": "6da2dc8ecfb3469cada7d78671da75f7",
+        "revision": 4,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": 3141.5926535897925,
+        "rollback_succeeded": false,
+        "part_sha256": "0c90a7c266c7dc5ce48934489816d331b01804b5faa2a2a06d0038c4c5e3ac7d"
+      },
+      {
+        "job_id": "f9bc5aee0cdd45edb4c8046d09f002bc",
+        "model_id": "baeb3585ca9945eeacd49f45597043c7",
+        "revision": 1,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": 10600.0,
+        "rollback_succeeded": false,
+        "part_sha256": "3a4ffc5992c51473d46c8a75e571c6a2b16daf2c00fb9e3852620cb65ea68bcd"
+      },
+      {
+        "job_id": "a00c68bb08ef44fca558c5d7271b6ad8",
+        "model_id": "1f51b2662de942ccbacb002910cdd459",
+        "revision": 1,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": 6324.026011676252,
+        "rollback_succeeded": false,
+        "part_sha256": "2f41248cd56fceffc429e1b7c0c423bbc1a322e43cef515c940fa0f38e0c58cc"
+      },
+      {
+        "job_id": "491d3e4cb6d44765aaad98e2cdadf768",
+        "model_id": null,
+        "revision": null,
+        "status": "succeeded",
+        "message": "Native PRT saved, reloaded and verified; sketch/extrude/round/hole features are editable",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": 7030.353996706152,
+        "rollback_succeeded": null,
+        "part_sha256": "033927fb556896db88443daa1dbc3073ad143830b1b1ba89e91b59938b0325ea"
+      }
+    ],
+    "raw_report_sha256": "60a0fc7b5caaac62b45d2d9d1e4376a6ac220bc10746708258ec7b9689a48add"
+  },
+  "native_recovery_regression": {
+    "command": "python -m tools.test_toolkit_recovery --native --output build/dev029-release/native-recovery.json",
+    "success": true,
+    "jobs": [
+      {
+        "job_id": "4bef40973d26449fab6ab0f5a7db1458",
+        "model_id": "5814675f66734cfa8c7fe38280c3d98f",
+        "revision": 1,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": null,
+        "rollback_succeeded": false,
+        "part_sha256": "6d76781495e08cb84d64cad8adb47080dcddac951672ccd46a584cb6ed458137"
+      },
+      {
+        "job_id": "c560e09d2b3449b28b354834d17e821c",
+        "model_id": "5814675f66734cfa8c7fe38280c3d98f",
+        "revision": 2,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": 600.0,
+        "rollback_succeeded": false,
+        "part_sha256": "023c42a003fe3f5d77aa517cc13fa2b6a395934a23c961e80a686a5d0babae54"
+      },
+      {
+        "job_id": "5ca76ded8b03433f9d6a692e40cb5d45",
+        "model_id": "5814675f66734cfa8c7fe38280c3d98f",
+        "revision": 3,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": 600.0,
+        "rollback_succeeded": false,
+        "part_sha256": "6a6dbaa86af4fb2401db1effeed5f8559d73a757c33dd21c558f3c7de8dc86fc"
+      },
+      {
+        "job_id": "7597183653004e1aae0fc04e25ca7d3a",
+        "model_id": "5814675f66734cfa8c7fe38280c3d98f",
+        "revision": null,
+        "status": "failed",
+        "message": "Unknown feature label: missing_profile",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": false,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": 600.0,
+        "rollback_succeeded": true,
+        "part_sha256": null
+      },
+      {
+        "job_id": "656263d90740455c89bb0cf5a508d932",
+        "model_id": "362c9b9b439b459d984983706fac2b8c",
+        "revision": 1,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": null,
+        "rollback_succeeded": false,
+        "part_sha256": "30029add391fb57b19455bda29005829764b1206eb6d88e5b24c8814c4eb7c8b"
+      },
+      {
+        "job_id": "559401c5e0de4f1eaefe6970d08bd831",
+        "model_id": "362c9b9b439b459d984983706fac2b8c",
+        "revision": 2,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": 120.0,
+        "rollback_succeeded": false,
+        "part_sha256": "be61fdfe40b6c2937db3a181c8afa22c17f116c43df1928a65953cd861ad73c8"
+      },
+      {
+        "job_id": "da718fd43e244548b7b084ca305af741",
+        "model_id": null,
+        "revision": null,
+        "status": "succeeded",
+        "message": "Native PRT saved, reloaded and verified; sketch/extrude/round/hole features are editable",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": 600.0,
+        "rollback_succeeded": null,
+        "part_sha256": "a60fd90563533a7a43830f9f1cd27b53eded97293ba4b4a0eb18104b361e5599"
+      },
+      {
+        "job_id": "a53e4a0efdf245d399ab6e3655f5457c",
+        "model_id": "ef97eb4eec1b4b969a537614a35ed804",
+        "revision": 1,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": null,
+        "rollback_succeeded": false,
+        "part_sha256": "d4015ea206f86737ce9033d2d97929ae941781ec8481badf14c41ff8bd21739c"
+      },
+      {
+        "job_id": "4c59dda4571541cfa9c40465805786c2",
+        "model_id": "5814675f66734cfa8c7fe38280c3d98f",
+        "revision": 3,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": true,
+        "saved_file_reloaded_and_verified": false,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": 600.0,
+        "rollback_succeeded": false,
+        "part_sha256": "6a6dbaa86af4fb2401db1effeed5f8559d73a757c33dd21c558f3c7de8dc86fc"
+      }
+    ],
+    "expected_failure_rollback": true,
+    "parameter_edit_and_checkpoint_verified": true,
+    "overlapping_retry_requests": [
+      {
+        "state": "checking",
+        "connected": false,
+        "message": "Checking Creo startup and connection",
+        "retry_allowed": false,
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.3.3",
+          "latest_version": "0.3.2",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.2",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.2/MCP_CREO_MechDog-0.3.2-source.zip",
+          "checked_at": "2026-10-16T10:40:53.908947+00:00",
+          "last_success_at": "2026-10-16T10:40:53.908947+00:00",
+          "message": "当前版本高于最高公开版本，无需降级。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      },
+      {
+        "state": "checking",
+        "connected": false,
+        "message": "Checking Creo startup and connection",
+        "retry_allowed": false,
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.3.3",
+          "latest_version": "0.3.2",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.2",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.2/MCP_CREO_MechDog-0.3.2-source.zip",
+          "checked_at": "2026-10-16T10:40:55.374313+00:00",
+          "last_success_at": "2026-10-16T10:40:55.374313+00:00",
+          "message": "当前版本高于最高公开版本，无需降级。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      }
+    ],
+    "original_saved_checkpoint": {
+      "path": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\models\\5814675f66734cfa8c7fe38280c3d98f\\output\\bug008_1792147263.prt.4",
+      "sha256": "6a6dbaa86af4fb2401db1effeed5f8559d73a757c33dd21c558f3c7de8dc86fc",
+      "unchanged": true
+    },
+    "raw_report_sha256": "b00b41fc1b96ad8a5090972d81025b067e18fde3c1367a6b8becd9a93aac914e",
+    "historical_unknown_query": "Read-only byte-identical copy of the existing historical job manifest was supplied to the isolated test directory because the existing helper queries its fixed ID. Original manifest hash stayed unchanged; this is not new unknown-outcome recovery evidence."
+  },
+  "public_metadata": {
+    "version": "0.3.3",
+    "enabled_tool_count": 82,
+    "seed_available_count": 9,
+    "source_changed_since_startup": false,
+    "connected": true
+  },
+  "source_distribution": {
+    "candidate": {
+      "source_zip_sha256": "eea35bae52070e2d0367d876a01ab38299fa313d4b579a649fcf4e7a8c5a761a",
+      "file_count": 370,
+      "CRC": true,
+      "allowlist_and_generated_exclusions": true,
+      "new_raw_report_and_cpp_fixture_present": true,
+      "raw_report_bytes_equal": true,
+      "extracted_root": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\.tmp\\d033\\MCP_CREO_MechDog"
+    },
+    "installation_commands": [
+      "python -m venv .venv",
+      "python -m pip install -r requirements-dev.txt",
+      "python -m pip install --no-deps -e . (in extracted root)",
+      "python tools/dev_check.py --work-item DEV-029",
+      "setup.ps1 -Python .venv/Scripts/python.exe -CheckOnly",
+      "python bridge.py build",
+      "python tools/test_general.py"
+    ],
+    "development_check": {
+      "work_item": "DEV-029",
+      "version": "0.3.3",
+      "timestamp_utc": "2026-10-16T10:41:15.868369+00:00",
+      "environment": {
+        "os": "Windows",
+        "python": "3.12.14"
+      },
+      "source": {
+        "commit": null,
+        "dirty": null,
+        "checked_source_sha256": "47f68f3ba722372b8de784cbd761d723a086598d2da3fcaabee644b42c022687"
+      },
+      "native_validation": "not_run",
+      "unit_tests": "passed",
+      "success": true,
+      "style_summary": {
+        "lint_findings": 36,
+        "unformatted_files": 26,
+        "cpp_files_checked": 16,
+        "python_files_checked": 97
+      },
+      "tools": {
+        "ruff": "0.17.0",
+        "clang-format": "23.1.3"
+      },
+      "configuration": {
+        "pyproject.toml": "e447f3352a09d8674cba3893dd4b654d185be120a22202c61e9a6e489eb93c75",
+        ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+        "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc"
+      }
+    },
+    "unit_report": {
+      "version": "0.3.3",
+      "timestamp": 1792147325.3031557,
+      "tests_run": 261,
+      "success": true,
+      "failures": 0,
+      "errors": 0
+    },
+    "native_jobs": [
+      {
+        "job_id": "009d483aedae49fab6cbe711f4d12ed1",
+        "model_id": "6efce8236ddd4ebdbe8400f4a917c416",
+        "revision": 1,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": null,
+        "rollback_succeeded": false,
+        "part_sha256": "18d673fd58f771b9f2379b9f72d75b624353337fe5bb76e8c6b034827716cb85"
+      },
+      {
+        "job_id": "f1ce39c5050b46cf87b4b7014bc85cf5",
+        "model_id": "6efce8236ddd4ebdbe8400f4a917c416",
+        "revision": 2,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": null,
+        "rollback_succeeded": false,
+        "part_sha256": "6de75a8ac71e72d804a09611c9fa5b6a94bceb3bb5512b273be4be56d6e93192"
+      },
+      {
+        "job_id": "02201d9686f0419a89155c042ba8069d",
+        "model_id": "6efce8236ddd4ebdbe8400f4a917c416",
+        "revision": 3,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": 2010.6192982974674,
+        "rollback_succeeded": false,
+        "part_sha256": "7add49e4d3eb943c14b0d41b2f91d94605249988fc2a51eb80c4cbea7877638b"
+      },
+      {
+        "job_id": "2c430f931ece420d925fa8195175f843",
+        "model_id": "6efce8236ddd4ebdbe8400f4a917c416",
+        "revision": 4,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": 3141.5926535897925,
+        "rollback_succeeded": false,
+        "part_sha256": "6344ac90db3b44e327908416c570b6f2e522278a16eec4e2a23157c23b6f9c4b"
+      },
+      {
+        "job_id": "b34cc45225ff4406bf3bd987667b4e07",
+        "model_id": "731c8c4346704775ae64365f7252756c",
+        "revision": 1,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": 10600.0,
+        "rollback_succeeded": false,
+        "part_sha256": "f08e830e02cac35592d02a6c11606ac20386f7170302a8e75fe6afba382425cb"
+      },
+      {
+        "job_id": "ed37cdde5c9c4f4e977a1654f47a1a2a",
+        "model_id": "422bbf53200c419b8f9c4f096da4e7cc",
+        "revision": 1,
+        "status": "succeeded",
+        "message": "General feature plan completed",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": 6324.026011676252,
+        "rollback_succeeded": false,
+        "part_sha256": "29c3cb4779e722712a9344b9a650eb2e0746fd5f6f60665b81cc9eb8b8d3d699"
+      },
+      {
+        "job_id": "84e1182cf17d4777988f968a92db2059",
+        "model_id": null,
+        "revision": null,
+        "status": "succeeded",
+        "message": "Native PRT saved, reloaded and verified; sketch/extrude/round/hole features are editable",
+        "readonly": false,
+        "saved_file_reloaded_and_verified": true,
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "volume_mm3": 7030.353996706152,
+        "rollback_succeeded": null,
+        "part_sha256": "c15713ee6e2218f8ee4d271c569620670e513736168026e03402f633903fa875"
+      }
+    ],
+    "public_metadata": {
+      "version": "0.3.3",
+      "tool_count": 82,
+      "available_seeds": 9,
+      "source_changed_since_startup": false,
+      "runtime_fingerprints_match_candidate": true
+    },
+    "seed_zip_install": {
+      "success": true,
+      "available_count": 9,
+      "directory": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\build\\dev029-release\\seed-install-isolated\\seed_library",
+      "archive": "MCP_CREO_MechDog-0.3.3-seed-library.zip",
+      "scope": "Developer real seed ZIP installation and registration in an isolated directory; original library unchanged"
+    },
+    "seed_zip_sha256": "ddcc4faacab5d1e9b5052f9fff724b406386d10a89683dc59e141264583e7cce",
+    "seed_prt_count": 9,
+    "seed_prt_digests_unchanged": true
+  },
+  "totals": {
+    "successful_native_jobs": 22,
+    "successful_write_jobs": 21,
+    "successful_readonly_jobs": 1,
+    "expected_failed_jobs": 1,
+    "all_successful_writes_saved_reloaded": true
+  },
+  "integration_decisions": [
+    "Preserve main RegistryJobs ROOT isolation and its regression test",
+    "Preserve main tools/test_result_delivery.cpp source-package allowlist entry",
+    "Use main narrow formatter exclusions for the two immutable external Markdown reports; no baseline debt entries changed",
+    "Add only the exact DEV-028 raw TXT report to packaging, because its review links to the verbatim original",
+    "Preserve all DEV-026 feedback mappings and external-report evidence boundaries; restore DEV-015 and DEV-025 archive rows from main"
+  ],
+  "not_verified": [
+    "Creo 9 actual SDK compilation and runtime modeling",
+    "independent Creo 10 or other maintenance-version validation",
+    "all modeling families and parameter combinations",
+    "new WorkBuddy full acceptance or dedicated plate shortcut acceptance",
+    "restricted-machine full setup and actual Store-alias interaction",
+    "system cold-start/reboot corruption injection or original full transform/save/-38 chain"
+  ],
+  "delivery_requirements": {
+    "merge_method": "regular merge preserving submitted history",
+    "prerelease": true,
+    "tag": "v0.3.3",
+    "final_assets": "Generate source/seed ZIP and each SHA256 from the actual merged main commit, publish non-draft Release, then download and verify all four assets. Record final commit/tag/Release/checksums on the PR to avoid an unpublished follow-up main commit."
+  },
+  "documentation_validation": {
+    "success": true,
+    "links_and_anchors": 248,
+    "tables": 17,
+    "unique_current_ids": 103,
+    "verbatim_report_sha256_verified": true,
+    "runtime_source_unchanged_from_candidate": true,
+    "baseline_debt_entries_unchanged_from_main": true
+  }
+}
