@@ -23,8 +23,6 @@ line-length = 100
 force-exclude = true
 extend-exclude = [
     ".tmp", "build", "jobs", "models", "native/third_party",
-    # Archived external evidence must retain its original bytes, including code fences.
-    "docs/validation",
 ]
 
 [tool.ruff.lint]
@@ -40,3 +38,8 @@ select = ["E4", "E9", "F", "I"]
 quote-style = "double"
 indent-style = "space"
 line-ending = "lf"
+# DEV-025: preserve immutable external reports, including their Python code blocks.
+exclude = [
+    "docs/validation/2026-10-15_CREO_0.3.0_旧版ToolkitSDK原生编译失败.md",
+    "docs/validation/feedback-2026-10-16/2026-10-16常驻回调注册负担与版本发现缺口.md",
+]

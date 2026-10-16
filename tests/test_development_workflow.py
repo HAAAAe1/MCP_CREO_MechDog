@@ -180,6 +180,8 @@ class DevelopmentWorkflow(unittest.TestCase):
             ".gitattributes",
             "requirements-dev.txt",
             "tools/dev_check.py",
+            "tools/test_result_delivery.cpp",
+            "native/result_delivery.h",
             "docs/BACKLOG.md",
             "docs/development/style-baseline.json",
             ".github/workflows/checks.yml",

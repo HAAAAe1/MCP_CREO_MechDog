@@ -42,6 +42,7 @@ def source_files():
         "pyproject.toml",
         ".clang-format",
         ".editorconfig",
+        "tools/test_result_delivery.cpp",
     )
     files = [ROOT / name for name in names]
     for directory, extensions in {
