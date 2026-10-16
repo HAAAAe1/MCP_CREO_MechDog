@@ -1,0 +1,88 @@
+{
+  "work_item": "DEV-017",
+  "date": "2026-10-15",
+  "status": "passed",
+  "scope": "Documentation reconciliation only; no new MCP, unit, SDK or Creo tests",
+  "base_commit": "142fc9e40a5d80751fa12c71fa18c3cb1d48a3cf",
+  "verification_head_commit": "fee6ce2ebc91004f32d8458319b0c750586f7a85",
+  "branch": "codex/dev002-helpers",
+  "dirty": true,
+  "environment": {
+    "platform": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14"
+  },
+  "verification": {
+    "command": ".\\.venv\\Scripts\\python.exe build\\backlog-dev017\\verify.py",
+    "checked_markdown_files": 18,
+    "checked_local_links": 146,
+    "before_primary_ids": 63,
+    "current_primary_ids": 72,
+    "new_ids": [
+      "BUG-029",
+      "BUG-030",
+      "BUG-031",
+      "BUG-032",
+      "DEV-017",
+      "FEAT-025",
+      "FEAT-026",
+      "FEAT-027",
+      "FEAT-028"
+    ],
+    "source_issue_ids": [
+      "P0-1",
+      "P1-2",
+      "P1-3",
+      "P1-4",
+      "P1-5",
+      "P2-6",
+      "P2-7",
+      "P2-8",
+      "P2-9",
+      "P2-10",
+      "P2-11",
+      "P2-12",
+      "P3-13",
+      "P3-14",
+      "P3-15",
+      "P3-16",
+      "P3-17"
+    ],
+    "archive_identical": true,
+    "existing_priority_status_target_preserved": true,
+    "git_diff_check_exit_code": 0,
+    "errors": [],
+    "out_of_scope_warnings": [
+      "Broken local link: docs/BACKLOG.md: validation/DEV-002-batch2.md (concurrent DEV-002 edit; outside DEV-017 scope, left unchanged)"
+    ]
+  },
+  "report_sha256": "d3bae967c6b58978a5eb1e862a178e5aeccb8f82cca02ec14a444747db001ee1",
+  "document_file_sha256": {
+    "docs/BACKLOG.md": "0bfff4aff005d93e96dcb5c1d8c0423ed603f7fd1305568ac056611bb43e9cb2",
+    "docs/BACKLOG_COMPLETED.md": "2a529ae4e90c431348ea5a96de2978ca13f0e92fe76663047be00c583cae57c8",
+    "docs/validation/WORKBUDDY-0.3.1.md": "57c52c5c3f5b82e16846cffd4d8f53fcd912bd49bc3cd6dcefe11e16af81b282",
+    "docs/validation/FEAT-020.md": "6950a5c7318a668692133fc07438069723bbbbe317ecb7b59fff5b808d20ff9b",
+    "docs/work-items/DEV-017.md": "014e80b6c5ca4afd62d2d8cefb29c44166e07cea80bf83e265deb4c563221d79",
+    "docs/work-items/BUG-009.md": "6e795ffe5c59733b25aed1d1f5027d6482880619ab0ec573f637fc10749cec3e",
+    "docs/work-items/BUG-013.md": "a7c22a724d038eb707c5e78d0ac109132ee9120f9cb0b2387a67941af1548251",
+    "docs/work-items/BUG-014.md": "d144e001773281c9aa42a5b1eeb5a88d480fb9ffc76fd320ffce09f358dedc73",
+    "docs/work-items/BUG-017.md": "d4290254503635e1060e04595a8a514c1302df353f0f11e8a3559a9c79abad86",
+    "docs/work-items/BUG-021.md": "c13d4490e3ebea4f81f7e905e528828ad85f146170a6e4b499d519878f901003",
+    "docs/work-items/BUG-022.md": "ffdb7aa68c2dede7939d1233e5348fd56afc49a8c05dac7ab8a4f39b1e5fa3b9",
+    "docs/work-items/BUG-028.md": "271ae9fd602944a3b8b0b4973821d9cf58777e06db29e11198fda3ffe2d2d763",
+    "docs/work-items/BUG-029.md": "f82c30da0adb1fd945f27eb69f596f1d39ac8b44f871b8670fb8c2c59aee31ac",
+    "docs/work-items/BUG-030.md": "e60669a333c46859d6c5c511f790d466beebfdc47b5f1d881373803625a69d65",
+    "docs/work-items/BUG-031.md": "dfcecee5b9a3fb71a406a2ff7eaaa74305c2332487c7e4658ed87fca0309eb00",
+    "docs/work-items/BUG-032.md": "a6a9213b0c41fefbdbad072865fb2440566f14fab5a5749d6a6220c3ab95f256",
+    "docs/work-items/FEAT-020.md": "23a76018da342d41b865abf3bd2192b9a6ef41beda318a067e3e6c6ca83760ce",
+    "docs/work-items/P1-MODELING-REPAIR.md": "d833c55c3a65efb475527a2f89ca0e64622762206b4999dd3e09a243b871de5f"
+  },
+  "fingerprint_note": "Local document bytes only; not the tested C-drive runtime source identity. Evidence JSON excludes its own hash.",
+  "not_verified": [
+    "Independent reproduction or fixes of reported defects",
+    "Root causes from source/API/log or lock-release speculation",
+    "Complete raw per-tool inputs/outputs and concurrent call timeline",
+    "Creo 10 and all parameter branches",
+    "Direct loft success with initialized callback in the reported C-drive session",
+    "UDF/valid element-tree/seed-directory/seed-archive/JPEG/drawing-PDF positive paths"
+  ]
+}
