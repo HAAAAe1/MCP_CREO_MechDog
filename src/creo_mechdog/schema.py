@@ -18,6 +18,9 @@ class StrictModel(BaseModel):
 Point2 = Annotated[list[float], Field(min_length=2, max_length=2)]
 Point3 = Annotated[list[float], Field(min_length=3, max_length=3)]
 Label = Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]{0,27}$")]
+
+# ProSweep.h pro_frame_normal: PRO_FRAME_PIVOT_DIR = 1<<9 ("normal to projection")
+PRO_FRAME_PIVOT_DIR_VALUE = 1 << 9
 Positive = Annotated[float, Field(gt=0, le=100000)]
 
 
@@ -532,7 +535,35 @@ class MirrorOp(StrictModel):
         return self
 
 
-class SweepOp(StrictModel):
+class SweepFrameOptions(StrictModel):
+    """Section frame controls (ProSweep.h PRO_E_FRAME_SETUP).
+
+    frame_normal: "origin" (normal to trajectory) | "pivot" (normal to projection,
+    requires frame_pivot_direction) | "constant_z" | int. frame_orient: "auto" |
+    "constant" (required with "pivot") | "norm_surf" | int. Direction references use
+    resolve() specs, e.g. {"kind": "datum_plane", "axis": "z"}.
+    """
+
+    frame_normal: int | str | None = None
+    frame_orient: int | str | None = None
+    frame_user_x: int | str | None = None
+    frame_pivot_direction: dict[str, Any] | None = None
+    frame_z_direction: dict[str, Any] | None = None
+    frame_start_x_direction: dict[str, Any] | None = None
+
+    @model_validator(mode="after")
+    def pivot_needs_direction(self):
+        normal = self.frame_normal
+        if (normal == "pivot" or normal == PRO_FRAME_PIVOT_DIR_VALUE) and (
+            self.frame_pivot_direction is None or self.frame_orient not in ("constant", 3)
+        ):
+            raise ValueError(
+                'frame_normal="pivot" requires frame_pivot_direction and frame_orient="constant"'
+            )
+        return self
+
+
+class SweepOp(SweepFrameOptions):
     op: Literal["sweep"]
     label: Label
     trajectory: str | int | list[dict[str, Any]]
@@ -555,6 +586,51 @@ class SweepOp(StrictModel):
         )
         if isinstance(self.trajectory, list) and not self.trajectory:
             raise ValueError("Sweep trajectory cannot be empty")
+        return self
+
+
+class EquationCurveOp(StrictModel):
+    op: Literal["datum_curve_equation"]
+    label: Label
+    equations: Annotated[str, Field(min_length=1, max_length=4000)]
+    system: Literal["cylindrical", "cartesian", "spherical"] = "cylindrical"
+    param_min: float = 0.0
+    param_max: float = 1.0
+    reference_csys: dict[str, Any] | None = None
+
+    @model_validator(mode="after")
+    def parameter_span(self):
+        if not self.param_max > self.param_min:
+            raise ValueError("param_max must exceed param_min")
+        return self
+
+
+class HelicalSweepOp(SweepFrameOptions):
+    op: Literal["helical_sweep"]
+    label: Label
+    radius: Positive
+    pitch: Positive
+    length: Positive
+    start_z: float = 0.0
+    hand: Literal["right", "left"] = "right"
+    mode: Literal["add", "cut"] = "cut"
+    profile: Annotated[list[Entity], Field(min_length=1, max_length=500)]
+    dimensions: list[SketchDimension] = []
+    constraints: list[SketchConstraint] = []
+    thin: float | None = Field(default=None, gt=0)
+    system: Literal["cylindrical", "cartesian"] = "cylindrical"
+    equations: Annotated[str, Field(min_length=1, max_length=4000)] | None = None
+    reference_csys: dict[str, Any] | None = None
+
+    @model_validator(mode="after")
+    def profile_valid(self):
+        SketchOp(
+            label=self.label,
+            op="sketch",
+            entities=self.profile,
+            dimensions=self.dimensions,
+            constraints=self.constraints,
+        )
         return self
 
 
@@ -1019,6 +1095,8 @@ Operation = Annotated[
         PatternOp,
         MirrorOp,
         SweepOp,
+        EquationCurveOp,
+        HelicalSweepOp,
         LoftOp,
         DraftOp,
         SheetmetalWallOp,

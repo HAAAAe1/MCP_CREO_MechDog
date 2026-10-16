@@ -74,6 +74,8 @@ _SOURCE_NAMES = (
     "native/geometry.cpp",
     "tools/generate_constants.py",
     "native/generic.cpp",
+    "native/advanced.cpp",
+    "native/helical.cpp",
     "native/drawing.cpp",
     "native/result_delivery.h",
 )
@@ -1025,11 +1027,21 @@ async def creo_sweep(
     thin: float | None = None,
     new_body: bool = False,
     capped: bool = False,
+    frame_normal: int | str | None = None,
+    frame_orient: int | str | None = None,
+    frame_user_x: int | str | None = None,
+    frame_pivot_direction: dict[str, Any] | None = None,
+    frame_z_direction: dict[str, Any] | None = None,
+    frame_start_x_direction: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Create a native constant-section sweep along sketch curves or selected curve/edge references.
 
     Profile coordinates are local (u,v) in Creo's generated section frame at the path start.
     Named profile dimensions can be edited using creo_set_sketch_dimensions with this label.
+    Section frame controls match creo_helical_sweep (frame_normal / frame_orient /
+    frame_user_x / frame_pivot_direction / frame_z_direction / frame_start_x_direction);
+    use frame_normal="pivot" + frame_orient="constant" for screw-motion sweeps such as
+    threads, where the automatic rotation-minimizing frame would twist the profile.
     """
     op = {
         "op": "sweep",
@@ -1044,6 +1056,128 @@ async def creo_sweep(
     }
     if thin is not None:
         op["thin"] = thin
+    for key, value in (
+        ("frame_normal", frame_normal),
+        ("frame_orient", frame_orient),
+        ("frame_user_x", frame_user_x),
+        ("frame_pivot_direction", frame_pivot_direction),
+        ("frame_z_direction", frame_z_direction),
+        ("frame_start_x_direction", frame_start_x_direction),
+    ):
+        if value is not None:
+            op[key] = value
+    return await invoke(general.submit, [op], model_id, None, expected_revision)
+
+
+@mcp.tool(annotations=CREATE)
+async def creo_equation_curve(
+    model_id: str,
+    expected_revision: int,
+    label: str,
+    equations: str,
+    system: Literal["cylindrical", "cartesian", "spherical"] = "cylindrical",
+    param_min: float = 0.0,
+    param_max: float = 1.0,
+    reference_csys: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Create a native datum curve from an equation about a reference coordinate system.
+
+    Cylindrical equations use r, theta, z with theta in degrees; cartesian uses x, y, z;
+    spherical uses rho, theta, phi. The parameter t runs from param_min to param_max.
+    reference_csys defaults to the model's default coordinate system. The curve is one
+    feature and can be used as a sweep trajectory by label.
+    """
+    op: dict[str, Any] = {
+        "op": "datum_curve_equation",
+        "label": label,
+        "equations": equations,
+        "system": system,
+        "param_min": param_min,
+        "param_max": param_max,
+    }
+    if reference_csys is not None:
+        op["reference_csys"] = reference_csys
+    return await invoke(general.submit, [op], model_id, None, expected_revision)
+
+
+@mcp.tool(annotations=CREATE)
+async def creo_helical_sweep(
+    model_id: str,
+    expected_revision: int,
+    label: str,
+    radius: float,
+    pitch: float,
+    length: float,
+    profile: list[Entity],
+    start_z: float = 0.0,
+    hand: Literal["right", "left"] = "right",
+    mode: Literal["add", "cut"] = "cut",
+    dimensions: list[SketchDimension] | None = None,
+    constraints: list[SketchConstraint] | None = None,
+    thin: float | None = None,
+    system: Literal["cylindrical", "cartesian"] = "cylindrical",
+    equations: str | None = None,
+    reference_csys: dict[str, Any] | None = None,
+    frame_normal: int | str | None = None,
+    frame_orient: int | str | None = None,
+    frame_user_x: int | str | None = None,
+    frame_pivot_direction: dict[str, Any] | None = None,
+    frame_z_direction: dict[str, Any] | None = None,
+    frame_start_x_direction: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Create a helical sweep (thread or coil) as a helix curve plus a swept section.
+
+    Builds a helix datum curve from equation about reference_csys (the model default
+    when omitted) and sweeps profile along it. The helix has the given radius, pitch
+    and length, starting at start_z and winding right or left hand.
+
+    profile coordinates are local (u,v) in the section frame at the helix start, not
+    global model axes. Frame control matters when the section orientation must stay
+    fixed relative to the helix axis (threads):
+      frame_normal           "origin" (default; normal to trajectory), "pivot"
+                             (normal to projection: section plane rotates about the
+                             given axis, the true helical-sweep motion), "constant_z"
+                             or the raw int (0 / 512 / 67108864)
+      frame_orient           "auto" (default), "constant" (required with "pivot"),
+                             "norm_surf" or raw int (1 / 3 / 2)
+      frame_user_x           "default_x" / "user" or raw int (0 / 134217728)
+      frame_pivot_direction  axis reference for "pivot", e.g.
+                             {"kind": "datum_plane", "axis": "z"} or
+                             {"kind": "datum_axis_feature", "label": "..."}
+      frame_z_direction      axis reference for "constant_z"
+      frame_start_x_direction axis reference when frame_user_x is "user"
+
+    The automatic frame is rotation-minimizing: it twists against the radial
+    direction (Frenet torsion x arc length, ~57 deg over two turns of a 2 mm
+    radius 1 mm pitch helix), so thread profiles need frame_normal="pivot".
+    """
+    op: dict[str, Any] = {
+        "op": "helical_sweep",
+        "label": label,
+        "radius": radius,
+        "pitch": pitch,
+        "length": length,
+        "start_z": start_z,
+        "hand": hand,
+        "mode": mode,
+        "profile": [e.model_dump() for e in profile],
+        "dimensions": [d.model_dump() for d in dimensions or []],
+        "constraints": [c.model_dump() for c in constraints or []],
+        "system": system,
+    }
+    for key, value in (
+        ("thin", thin),
+        ("equations", equations),
+        ("reference_csys", reference_csys),
+        ("frame_normal", frame_normal),
+        ("frame_orient", frame_orient),
+        ("frame_user_x", frame_user_x),
+        ("frame_pivot_direction", frame_pivot_direction),
+        ("frame_z_direction", frame_z_direction),
+        ("frame_start_x_direction", frame_start_x_direction),
+    ):
+        if value is not None:
+            op[key] = value
     return await invoke(general.submit, [op], model_id, None, expected_revision)
 
 

@@ -1547,6 +1547,7 @@ static J populate_profile(ProSection section, const J &op) {
     return {{"entity_ids", ids}, {"dimension_ids", dims}, {"solver", solver_info}};
 }
 #include "advanced.cpp"
+#include "helical.cpp"
 #include "surfaces.cpp"
 #include "udf.cpp"
 #include "loft_mode.cpp"
@@ -1589,6 +1590,10 @@ static void execute_operation(const J &op) {
         generic_draft(op);
     else if (kind == "sweep")
         generic_sweep(op);
+    else if (kind == "datum_curve_equation")
+        generic_equation_curve(op);
+    else if (kind == "helical_sweep")
+        generic_helical_sweep(op);
     else if (kind == "loft")
         generic_loft(op);
     else if (kind == "udf_inspect" || kind == "udf_create")
