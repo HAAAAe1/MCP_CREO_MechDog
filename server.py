@@ -57,6 +57,8 @@ _SOURCE_NAMES = (
     "src/creo_mechdog/update_check.py",
     "src/creo_mechdog/blend_callback.py",
     "src/creo_mechdog/build_support.py",
+    "src/creo_mechdog/seed_distribution.py",
+    "seeds.py",
     "src/creo_mechdog/recovery.py",
     "src/creo_mechdog/startup_state.py",
     "src/creo_mechdog/windows_boot.py",
