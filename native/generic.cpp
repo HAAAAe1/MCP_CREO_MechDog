@@ -34,7 +34,6 @@
 #include <ProAsmcomppath.h>
 #include <ProSheetmetal.h>
 #include <ProSmtDrvSurf.h>
-#include "constants.inc"
 using J = nlohmann::json;
 using V = std::array<double, 3>;
 static J aliases = J::object(), gfeatures = J::array(), gsurfaces = J::array(), gedges = J::array();
@@ -1105,7 +1104,10 @@ static J generic_hole(const J &op) {
     integer(com, PRO_E_HLE_CRDIR_FLIP,
             op.value("flip", false) ? PRO_HLE_CR_IN_SIDE_TWO : PRO_HLE_CR_IN_SIDE_ONE);
     integer(com, PRO_E_HLE_TOP_CLEARANCE, PRO_HOLE_GEN_CLRNCE);
+#if defined(MECHDOG_HAS_PRO_E_HLE_ADD_PARAMETERS) &&                                               \
+    defined(MECHDOG_HAS_PRO_HOLE_NO_PARAMETERS_FLAG)
     integer(com, PRO_E_HLE_ADD_PARAMETERS, PRO_HOLE_NO_PARAMETERS_FLAG);
+#endif
     integer(com, PRO_E_HLE_ADD_NOTE, PRO_HOLE_NO_NOTE_FLAG);
     ProElement placement = node(root, PRO_E_HLE_PLACEMENT);
     ProSelection face = nullptr, r1 = nullptr, r2 = nullptr;

@@ -6,6 +6,7 @@
 
 ## 当前进展
 
+- 2026-10-16 [DEV-028：Creo 9 编译与安装闭环](work-items/DEV-028.md) 已完成，BUG-033 与 DEV-019～022 统一移入[完成归档](BACKLOG_COMPLETED.md)：14 项新增定向回归、260 项完整单元/语言守卫、本机 SDK 构建、显式环境真实编译及桌面环境 Creo 12.4 七个原生作业通过，逐任务保存重载 true，见[本次证据](validation/DEV-028.md)。Creo 9 实机编译/运行时仍未验证；普通 Codex 宿主连接 -4 的限制单独记录。一个本地提交，不推送、不发布、不升版。
 - 2026-10-16 用户指定执行顺序：BUG-008 现已按本机已验证范围完成验收收尾，随后优先处理 [FEAT-029：常驻回调升级注册](work-items/FEAT-029.md)。FEAT-029 从 P2 提升为 P1，列为其余工作之前的首项；用户已确认以兼容升级尽量免重复注册为主目标，配套 FEAT-008 回调就绪预检和升级提示。完整任务卡已补齐，实际生命周期与实现方案仍待核实、选型，未开始功能实现或实机验收。
 - [P1 联合修复](work-items/P1-MODELING-REPAIR.md)：本环境已测分支已有 WorkBuddy 通过记录；查询预算、放样计划入口引用及恢复失败等功能边界按各项继续验收。BUG-022 已完成并归档，原环境反馈保留来源。
 - 0.3.1 版本同步和合入准备已完成，实际主干集成待核对。更新提醒仍有未测场景，Python 包迁移继续分批推进。
@@ -14,7 +15,7 @@
 - [2026-10-16 四份反馈补录](validation/FEEDBACK-2026-10-16.md)：41 个编号问题及构建绕过线索已去重映射；新增 BUG-034～BUG-047（14 项待核实）和 FEAT-029～FEAT-030（2 项待规划）。保留 Creo 9/10 与具体版本未明的不同来源；回调升级负担、拓扑/API 根因和 Release 状态按证据边界继续核实，本次仅同步文档。
 - [2026-10-16 三份 0.3.2 反馈补录](validation/FEEDBACK-0.3.2.md)：A/B/C 三份报告已归档并去重映射。按用户决定把 BUG-038、BUG-042、BUG-043、BUG-044 转已完成并移入[归档](BACKLOG_COMPLETED.md)，标注"采信外部报告、本仓库无对应提交可核实、本机复现失败须重开"；新增 [DEV-027](work-items/DEV-027.md)（回调 DLL 非确定性构建）、[BUG-048](work-items/BUG-048.md)（含镜像特征抽壳失败）、[FEAT-031](work-items/FEAT-031.md)（装配交付打包导出）。Creo 9 与 Toolkit 9 纳入[兼容说明](COMPATIBILITY.md)等文档的支持/要求范围，建模运行时未在本机验收；本次仅同步文档，见 [DEV-026](work-items/DEV-026.md)。
 - 2026-10-15 按用户要求取消整个项目的 Creo 10 独立验收门槛，见 [DEV-018](work-items/DEV-018.md)。DEV-002 第二批本机开发与 WorkBuddy 已测场景通过，本批完成；整体迁移继续推进。
-- 2026-10-15 收到第三方用户 Creo 9 SDK（Toolkit 9）编译失败反馈，[报告已归档](validation/2026-10-15_CREO_0.3.0_旧版ToolkitSDK原生编译失败.md)。登记 [BUG-033](work-items/BUG-033.md)（探测宏修复，P1，暂不声明 Creo 9 支持）及 DEV-019～DEV-022（构建诊断与安装链改进）；兼容范围按反馈补录策略，收到更多 Creo 9 反馈后再定。
+- 2026-10-15 收到第三方用户 Creo 9 SDK（Toolkit 9）编译失败反馈，[报告已归档](validation/2026-10-15_CREO_0.3.0_旧版ToolkitSDK原生编译失败.md)，当时登记 BUG-033 与 DEV-019～022。2026-10-16 DEV-026 调整支持文档，DEV-028 现已完成编译探测和安装链实现；本机未验证 Creo 9 实机编译/运行时，后续反馈继续按来源补录。
 
 ## 使用规则
 
@@ -37,7 +38,6 @@
 | [BUG-021](work-items/BUG-021.md) | P1 | 待核实 | 未排期 | 本环境简单/含放样件编辑链路已通过；0.3.1 补自由尺寸/草绘尺寸、参数关系及关系控制拒绝定位正例。原报告失败未在本机复现、根因未确认；保留来源，收到朋友新反馈后再核实，不安排原环境独立复测。 |
 | [FEAT-020](work-items/FEAT-020.md) | P2 | 验收中 | 0.3.0 | 0.3.1 高于公开0.3.0时无需降级符合比较契约；新增本地领先/local_dev 文案与公开来源区分建议，缺 Release 归 DEV-015，不认定永久收不到未来更新。断网/限流、高版本提醒、客户端去重及网络失败期间建模仍待验收，见[证据](validation/FEAT-020.md)。0.3.2 报告确认 current=latest 判"已是最高可比较的公开版本"且 check_update 能发现 v0.3.2。 |
 | [DEV-002](work-items/DEV-002.md) | P2 | 开发中 | 未排期 | 第一、二批完成；第二批独立安装、199 项完整开发检查、82 工具真实协议和 Creo 12 的 24 个作业补验通过，见[开发证据](validation/DEV-002-batch2.md)；E 盘 [WorkBuddy 已测场景](validation/DEV-002-batch2-WorkBuddy-acceptance-20261015.md)通过。下一批处理 seeds/capabilities 等依赖；BUG-005/009 独立跟踪，未部署 C 盘。 |
-| [BUG-033](work-items/BUG-033.md) | P1 | 待开发 | 未排期 | 原生代码硬引用 Creo 10 新增常量（PRO_E_HLE_ADD_PARAMETERS 等），Creo 9 SDK 编译报 C2065。方案已定：generate_constants.py 输出 MECHDOG_HAS_* 探测宏 + 两处调用点 #ifdef；验收用夹具单测模拟常量缺失 + 本机 Creo 12 回归，Creo 9 运行时标未验证。2026-10-16 用户决定把 Creo 9/Toolkit 9 纳入文档支持范围，本项修复为该口径的编译前置且仍待开发，见[工作卡](work-items/BUG-033.md)。 |
 
 ## 待核实缺陷
 
@@ -119,10 +119,6 @@
 | DEV-007 | P2 | 待规划 | 未排期 | 建立历史实机回归清单并在发布候选执行，和 DEV-006 合并证据入口，避免重复维护 |
 | DEV-008 | P3 | 待核实 | 未排期 | 核对旧缺口清单 5/6/7/9 的来源与去向，建立历史映射；来源：NEXT_STEPS_025“完善建议 5” |
 | DEV-009 | P2 | 待规划 | 未排期 | 独立整理格式并逐批回归，不自动新增基线容许项；2026-10-14 历史计数为 67 条 Ruff、36 个 Python/14 个 C++ 文件，见[当时证据](validation/BUG-006.json)。 |
-| [DEV-019](work-items/DEV-019.md) | P2 | 待开发 | 未排期 | 构建失败诊断：build.log 命中 C2065+PRO_ 常量名时提示 SDK 版本方向，并无条件附加末尾 error 行摘要；不建常量→版本数据库，仅影响 setup/bridge 阶段输出。来源同 BUG-033，为 PROBES 白名单漏网兜底。 |
-| DEV-020 | P2 | 待开发 | 未排期 | INSTALL.md 与故障排查表补充 VS Build Tools 需 `--includeRecommended` 的官方命令及"静默假成功、无编译器"症状说明（实测 VCTools 的编译器与 Windows11SDK 组件均为 Recommended 而非 Required）。 |
-| DEV-021 | P2 | 待开发 | 未排期 | config.json 支持显式 `vcvars64_env`（INCLUDE/LIB/PATH），build.cmd 直接 set 后编译，绕开 vcvars64.bat 对 reg.exe 的注册表探测；不做受限环境自动探测/自动生成包装脚本。来源同 BUG-033 次要问题 2。 |
-| DEV-022 | P2 | 待开发 | 未排期 | setup.ps1 Python 探测命中 WindowsApps 商店占位 python.exe 时，报错信息提示其为占位程序并指引用 -Python 指定真实路径。 |
 | [DEV-027](work-items/DEV-027.md) | P2 | 待核实 | 未排期 | 回调 DLL 非确定性构建与注册路径解耦：源码逐字节不变但同机两次编译产物哈希不同，prepare_callback 以 sha256 建不可变副本并被 protk.dat 引用，重编译即使 Creo 既有注册指向失效路径（报告方 3 小时内累积 3 个 sha 目录）。先核实构建与登记逻辑再选型（固定注册目录+清单、过期目录清理、登记过期告警、/Brepro）；不改安全策略、不自动加载 DLL，关联 FEAT-029。 |
 
 ## 2026-10-16 四份反馈问题映射

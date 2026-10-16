@@ -2,9 +2,9 @@
 
 ## 需要的环境
 
-可使用 Creo 9、10 或 Creo 12。当前开发与发布按本机 Creo 12.4.0.0 的改动范围验收，Creo 10 独立复测不作为项目门槛；Creo 9 与匹配 Toolkit 9 已纳入支持/要求范围，仅声明编译可用性（当前源码在 Creo 9 SDK 上编译需 [BUG-033](work-items/BUG-033.md) 探测宏修复，仍待开发），其建模运行时未在本机验收。其他环境收到具体测试反馈后再跟进；具体已测范围与未测项见 [兼容矩阵](COMPATIBILITY.md)。仅做 Python 单元和语言检查的开发环境见 [开发入口](DEVELOPMENT.md)，不必先运行完整 Creo 安装流程。
+可使用 Creo 9、10 或 Creo 12。当前开发与发布按本机 Creo 12.4.0.0 的改动范围验收，Creo 10 独立复测不作为项目门槛；Creo 9 与匹配 Toolkit 9 已纳入支持/要求范围，[BUG-033](work-items/BUG-033.md) 编译探测修复已实现。本机无 Creo 9 SDK，Creo 9 实机编译与建模运行时均未验收，支持声明不代表本机测试通过。其他环境收到具体测试反馈后再跟进；具体已测范围与未测项见 [兼容矩阵](COMPATIBILITY.md)。仅做 Python 单元和语言检查的开发环境见 [开发入口](DEVELOPMENT.md)，不必先运行完整 Creo 安装流程。
 
-- Windows x64；Creo Parametric 9、10 或 12，使用与目标安装匹配的 SDK。Creo 12.4 已有自动启动、建模、参数编辑和保存重载的成功实机记录；0.2.6 发布时另一次冷启动复测失败，保留原结果见 [发布验收](validation/RELEASE-0.2.6.md)。Creo 9 编译需先完成 BUG-033，运行时未在本机验收。
+- Windows x64；Creo Parametric 9、10 或 12，使用与目标安装匹配的 SDK。Creo 12.4 已有自动启动、建模、参数编辑和保存重载的成功实机记录；0.2.6 发布时另一次冷启动复测失败，保留原结果见 [发布验收](validation/RELEASE-0.2.6.md)。Creo 9 编译探测已支持，实机编译及运行时未在本机验收。
 - Python 3.12+ x64；本版安装实测使用 Python 3.12。
 - 与 Creo 安装匹配的 C/C++ Toolkit SDK，包括头文件和 x64 链接库。
 - Creo 公制模板 `Common Files/templates/mmns_part_solid_abs.prt` 和 `mmns_asm_design_abs.asm`。安装器与环境检查都要求这两份文件，即使首次只建零件，也需安装公制装配模板。
@@ -13,6 +13,15 @@
 - 能运行本地 stdio MCP 服务的 AI 客户端。
 
 本项目不提供 Creo、SDK、许可证或已解锁的二进制。项目 MIT 许可证及第三方条件见 [LICENSE](../LICENSE) 和 [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md)。
+
+安装 VS 2022 Build Tools 时，在管理员 PowerShell 中使用已下载的官方安装器，包含推荐组件：
+
+```powershell
+.\vs_buildtools.exe --quiet --wait --norestart `
+  --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended
+```
+
+仅指定工作负载默认只安装 Required 组件；推荐组件包含 C++ 编译工具和 Windows SDK，具体随安装器版本变化。遗漏 `--includeRecommended` 时，可能出现安装器退出码为 0，但找不到 `cl.exe`、`vcvars64.bat` 或缺少 `stdio.h` / `kernel32.lib` 的“静默假成功”。检查实际组件并补装；退出码本身不能证明编译环境完整。参数及组件来源：[微软安装参数](https://learn.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022)、[Build Tools 组件清单](https://learn.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?view=vs-2022)。
 
 ## 安装步骤
 
@@ -30,7 +39,7 @@ Creo 12.4 的安装示例：
 .\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 12.4.0.0'
 ```
 
-Creo 9 的安装示例（使用匹配的 Toolkit 9 SDK；编译需先完成 BUG-033）：
+Creo 9 的安装示例（使用匹配的 Toolkit 9 SDK；本机未验收该环境）：
 
 ```powershell
 .\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 9.0.0.0'
@@ -48,6 +57,17 @@ Creo 9 的安装示例（使用匹配的 Toolkit 9 SDK；编译需先完成 BUG-
 ```
 
 `C:\Path\To\python.exe` 必须替换为已安装的 Python。仅检查前置文件与 Python 架构而不执行安装时，在命令末尾加 `-CheckOnly`；这项检查不会连接 Creo，也不验证许可。
+
+若 `vcvars64.bat` 的 SDK 注册表探测受到限制，可提供完整的本机编译环境。先在可正常编译的 x64 开发者 PowerShell 中取得 INCLUDE、LIB、PATH，然后传入：
+
+```powershell
+$compilerEnv = @{ INCLUDE = $env:INCLUDE; LIB = $env:LIB; PATH = $env:PATH }
+.\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 12.4.0.0' -VcVars64Env $compilerEnv
+```
+
+也可在本机 `config.json` 中添加 `"vcvars64_env": {"INCLUDE": "完整头文件目录列表", "LIB": "完整库目录列表", "PATH": "完整工具目录列表"}`，目录间用分号分隔，JSON 路径中的反斜杠写成 `\\`。三个键必须大写、完整、非空，值不能包含引号、百分号、换行或 NUL；使用展开后的绝对路径，不写 `%PATH%`。默认 `null` 使用 vcvars64。显式环境分支不调用或要求 vcvars64 文件，仍运行 compiler_preflight 检查 cl/link、UCRT 与 Windows SDK，`-CheckOnly` 只核对配置和前置文件，不执行编译自检。
+
+`-VcVars64Env` 优先于同次提供的 `-VcVars64`；只显式提供 `-VcVars64` 时切回批处理分支并清除持久化环境，`-VcVars64Env $null` 也可恢复自动发现。未提供这两个参数时沿用本机配置。安装会回写选定环境并保留已有额外属性，`-CheckOnly` 不写配置。完整 PATH 必须包含 MSVC、Windows SDK 及必要系统工具；本机受限环境仍需管理员核实，不修改全局策略。
 
 如果 Windows PowerShell 的脚本执行策略阻止运行，可在查看源码后，仅对这次安装进程指定策略：
 
@@ -114,12 +134,14 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C
 
 | 现象 | 处理 |
 | --- | --- |
-| 找不到 Python 或运行的是商店占位程序 | 安装 Python 3.12+ x64，使用 `-Python` 指定实际 `python.exe` |
+| 找不到 Python 或提示 WindowsApps / Microsoft Store placeholder | 命中 WindowsApps 路径时，安装器在执行前拒绝商店占位程序；安装 Python 3.12+ x64，使用 `-Python` 指定真实 `python.exe` |
 | 缺少 Toolkit 头文件或库 | 给对应 Creo 安装补装匹配的 Toolkit SDK |
 | 找不到 `vcvars64.bat` | 安装 C++ Build Tools 及 Windows SDK，使用 `-VcVars64` 指定位置 |
+| Build Tools 安装退出码 0，但没有编译器或 SDK | 安装命令补 `--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended`，核对实际组件，不以退出码代替编译自检 |
 | 依赖下载失败 | 检查访问 PyPI 的网络，再运行安装脚本 |
 | 原生编译失败 | 查看 `build/generate_constants.log` 和 `build/build.log`；编译前检查 `cl.exe`、`link.exe`、UCRT 的 `stdio.h`、Windows SDK 的 `windows.h` 及 x64 库 |
-| `vcvars64` 成功但缺少 `stdio.h` / SDK 库 | Windows SDK 可能未安装，或注册表 / `reg.exe` 探测被客户端策略拦截。由管理员修复安装或允许必要探测；也可将经审核的本机编译环境包装脚本传给 `-VcVars64`。安装器不会修改全局安全策略 |
+| `vcvars64` 成功但缺少 `stdio.h` / SDK 库 | 核对推荐组件、Windows SDK 与注册表 / `reg.exe` 探测；由管理员修复环境，或用 `vcvars64_env` / `-VcVars64Env` 提供完整环境，仍须通过编译前置自检 |
+| 原生构建 `error C2065`，名称为 `PRO_*` | 检查失败消息中的 SDK 版本方向提示和末尾最多 15 条 error 摘要；提示只表示可能使用了较新 SDK 常量，不能直接断言所需版本。完整错误保留在 `build/build.log` |
 | 文件检查通过但 Toolkit 连接失败 | 确认只打开一个 Creo 会话，处理模态对话框，再核查当前 PTC 许可；检查 `license_diagnostics`，路径拼写错误可能导致许可文件不存在 |
 | 客户端发现工具但调用报缺少 `config.json` | 在同一源码目录完成 `setup.ps1`，核查客户端 command/args |
 | 参数变化后版本不匹配 | 查询最新模型 revision；修改现有零件时提供 `expected_revision` |

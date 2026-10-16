@@ -8,6 +8,12 @@
 
 | ID | 优先级 | 状态 | 目标版本 | 完成摘要与证据 |
 | --- | --- | --- | --- | --- |
+| [DEV-028](work-items/DEV-028.md) | P1 | 已完成 | 未排期 | 2026-10-16 Creo 9 编译与安装闭环：统一 BUG-033、DEV-019～022；14 项新增定向回归、260 项完整单元/语言守卫、本机 Creo 12.4 SDK 构建、显式环境真实 x64 编译运行及七个原生作业全部保存重载通过。[本批证据](validation/DEV-028.md)明确桌面启动环境、普通宿主 -4、此前失败与未测范围；Creo 9 实机编译/运行时未验收，版本 0.3.1，一个本地提交，不推送/发布。 |
+| [BUG-033](work-items/BUG-033.md) | P1 | 已完成 | 未排期 | 本机 SDK 生成 MECHDOG_HAS 探针，geometry/generic 两孔调用在两探针均存在时走原路径；常量表包含位置前移。缺失/部分/完整 SDK 夹具及 Creo 12.4 通用孔/底板孔的几何与保存重载通过，见 DEV-028；本机无 Creo 9 SDK，不外推实际旧版编译或运行时。 |
+| [DEV-019](work-items/DEV-019.md) | P2 | 已完成 | 未排期 | 构建失败只读日志尾部 128 KiB、最多 15 条 error 摘要；仅实际 C2065 的 PRO_ 标识符提示 SDK 版本方向。纯函数与 bridge 失败路径夹具通过，不改变 MCP stdout，见 DEV-028。 |
+| [DEV-020](work-items/DEV-020.md) | P2 | 已完成 | 未排期 | INSTALL 补微软官方 --includeRecommended 命令、静默缺组件症状及与显式环境/Python 占位一致的排错表；官方来源和文档检查通过，未运行 VS 安装器，见 DEV-028。 |
+| [DEV-021](work-items/DEV-021.md) | P2 | 已完成 | 未排期 | config.json + setup.ps1 -VcVars64Env 两层完整 INCLUDE/LIB/PATH，校验/回写/环境检查/前置自检与默认路径兼容；PowerShell/cmd 夹具及真实 x64 编译运行通过，受限机器完整安装未验证，见 DEV-028。 |
+| [DEV-022](work-items/DEV-022.md) | P2 | 已完成 | 未排期 | WindowsApps Python 在执行前提示 Microsoft Store placeholder 和 -Python；自动发现/显式路径夹具及真实 Python -CheckOnly 通过，真实商店交互未验证，见 DEV-028。 |
 | [BUG-008](work-items/BUG-008.md) | P0 | 已完成 | 未排期 | 2026-10-16 按本机 Creo 12.4 已验证范围关闭：246 项单元，断开/探针有界保护，同实现真实冷态自动归档/重建/单次启动，以及新 [WorkBuddy](validation/BUG-008-WorkBuddy-reboot-retest-result-2026-10-16.md) 单次/重叠 retry、120 mm³ 建模/保存重载和 unknown 保护通过；见[关闭复核](validation/BUG-008-closure-2026-10-16.md)。WorkBuddy 冷态/异常环境和历史完整故障链仍未验证；未知任务不解锁，BUG-001/005/011 保留，未推送或发布。 |
 | [BUG-009](work-items/BUG-009.md) | P0 | 已完成 | 未排期 | 模型锁内收尾、释放后发布终态；busy 保留协议错误并补占用/重试诊断。210 项开发检查及本机 Creo 12.4 [WorkBuddy 验收](validation/BUG-009-WorkBuddy-acceptance-20261015.md)已测范围通过；报告 33 个作业只读核对一致，协议疑点及即时性边界已[复核](validation/BUG-009.md#2026-10-15-验收复核与关闭)。真实挂死/失联恢复及其他宿主范围不外推，服务仍 0.3.1，未另发布。 |
 | [BUG-002](work-items/BUG-002.md) | P1 | 已完成 | 0.2.6 | Windows 共享读取、单步原子替换、有界重试及自有临时文件清理；90 项单元、4,000 次压力写入与 Creo 12.4 并发/MCP 验收通过；原外部复测安排已随 DEV-018 取消。[本次证据](validation/BUG-002.md) |

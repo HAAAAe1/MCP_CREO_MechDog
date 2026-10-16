@@ -23,6 +23,8 @@ line-length = 100
 force-exclude = true
 extend-exclude = [
     ".tmp", "build", "jobs", "models", "native/third_party",
+    # Archived external evidence must retain its original bytes, including code fences.
+    "docs/validation",
 ]
 
 [tool.ruff.lint]

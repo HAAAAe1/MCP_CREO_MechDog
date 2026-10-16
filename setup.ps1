@@ -2,6 +2,7 @@ param(
     [string]$Python,
     [string]$CreoRoot,
     [string]$VcVars64,
+    [hashtable]$VcVars64Env,
     [switch]$CheckOnly
 )
 $ErrorActionPreference = 'Stop'
@@ -13,8 +14,27 @@ $settingsPath = Join-Path $PSScriptRoot 'config.json'
 $settingsSource = if (Test-Path -LiteralPath $settingsPath) { $settingsPath } else { Join-Path $PSScriptRoot 'config.example.json' }
 $settings = Get-Content -LiteralPath $settingsSource -Raw -Encoding UTF8 | ConvertFrom-Json
 if (-not $CreoRoot) { $CreoRoot = $settings.creo_root }
-if (-not $VcVars64 -and (Test-Path -LiteralPath $settings.vcvars64 -PathType Leaf)) { $VcVars64 = $settings.vcvars64 }
-if (-not $VcVars64) {
+if (-not $PSBoundParameters.ContainsKey('VcVars64Env') -and -not $PSBoundParameters.ContainsKey('VcVars64')) {
+    if ($null -ne $settings.vcvars64_env) {
+        $VcVars64Env = @{}
+        foreach ($property in $settings.vcvars64_env.PSObject.Properties) { $VcVars64Env[$property.Name] = $property.Value }
+    }
+}
+if ($null -ne $VcVars64Env) {
+    $envKeys = @('INCLUDE', 'LIB', 'PATH')
+    if ($VcVars64Env.Count -ne 3 -or @($envKeys | Where-Object { -not $VcVars64Env.ContainsKey($_) }).Count) {
+        throw 'vcvars64_env must contain exactly INCLUDE, LIB and PATH.'
+    }
+    # Match bridge validation, including key case (PowerShell hashtables ignore case).
+    foreach ($key in $VcVars64Env.Keys) {
+        $value = $VcVars64Env[$key]
+        if ($key -cnotin $envKeys -or $value -isnot [string] -or [string]::IsNullOrWhiteSpace($value) -or $value -match '[\x00\r\n"%]') {
+            throw 'Invalid vcvars64_env: use nonempty INCLUDE/LIB/PATH strings without quotes, percent signs or newlines.'
+        }
+    }
+}
+if ($null -eq $VcVars64Env -and -not $VcVars64 -and $settings.vcvars64 -and (Test-Path -LiteralPath $settings.vcvars64 -PathType Leaf)) { $VcVars64 = $settings.vcvars64 }
+if ($null -eq $VcVars64Env -and -not $VcVars64) {
     $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
     if (Test-Path -LiteralPath $vswhere -PathType Leaf) {
         $vsInstallation = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
@@ -23,19 +43,22 @@ if (-not $VcVars64) {
         }
     }
 }
-if (-not $VcVars64) { throw 'MSVC x64 tools not found. Install Visual Studio C++ Build Tools, or pass -VcVars64.' }
+if ($null -eq $VcVars64Env -and -not $VcVars64) { throw 'MSVC x64 tools not found. Install Visual Studio C++ Build Tools, or pass -VcVars64 or -VcVars64Env.' }
 foreach ($localPath in @($CreoRoot, $VcVars64, $PSScriptRoot)) {
-    if ($localPath -match '[\r\n"%]') { throw 'Installation paths cannot contain quotes, percent signs or newlines.' }
+    if ($localPath -match '[\x00\r\n"%]') { throw 'Installation paths cannot contain quotes, percent signs or newlines.' }
 }
-if (-not (Test-Path -LiteralPath $CreoRoot -PathType Container)) { throw 'Creo installation not found. Pass -CreoRoot with your Creo 10 installation directory.' }
+if (-not (Test-Path -LiteralPath $CreoRoot -PathType Container)) { throw 'Creo installation not found. Pass -CreoRoot with your Creo 9, 10 or 12 installation directory.' }
 $CreoRoot = (Resolve-Path -LiteralPath $CreoRoot).ProviderPath
-if (-not (Test-Path -LiteralPath $VcVars64 -PathType Leaf)) { throw 'vcvars64.bat not found. Pass -VcVars64 with the installed compiler setup file.' }
-$VcVars64 = (Resolve-Path -LiteralPath $VcVars64).ProviderPath
+if ($null -eq $VcVars64Env) {
+    if (-not (Test-Path -LiteralPath $VcVars64 -PathType Leaf)) { throw 'vcvars64.bat not found. Pass -VcVars64 with the installed compiler setup file, or use -VcVars64Env.' }
+    $VcVars64 = (Resolve-Path -LiteralPath $VcVars64).ProviderPath
+}
 $required = @(
     'Parametric\bin\parametric.exe',
     'Common Files\protoolkit\includes\ProToolkit.h',
     'Common Files\protoolkit\x86e_win64\obj\ptasyncmd.lib',
     'Common Files\protoolkit\x86e_win64\obj\protkmd_NU.lib',
+    'Common Files\protoolkit\x86e_win64\obj\protk_dllmd_NU.lib',
     'Common Files\protoolkit\x86e_win64\obj\ucore.lib',
     'Common Files\protoolkit\x86e_win64\obj\udata.lib',
     'Common Files\x86e_win64\obj\pro_comm_msg.exe',
@@ -61,6 +84,10 @@ if (-not $Python) { throw 'Python not found. Install Python 3.12+ x64, or pass -
 $pythonCommand = Get-Command $Python -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
 if (-not $pythonCommand) { throw 'Python executable not found. Pass -Python with its full path.' }
 $Python = $pythonCommand.Source
+if ($Python -match '(?i)(^|[\\/])WindowsApps([\\/]|$)') {
+    throw 'WindowsApps Python is a Microsoft Store placeholder. Install Python 3.12+ x64 and pass -Python with the real python.exe path.'
+}
+if ($Python -match '[\x00\r\n"%]') { throw 'Python path cannot contain quotes, percent signs or newlines.' }
 $pythonInfoText = & $Python @pythonPrefix -c 'import json,struct,sys; print(json.dumps(dict(version=list(sys.version_info[:3]),bits=struct.calcsize(chr(80))*8)))'
 if ($LASTEXITCODE -ne 0) { throw 'Cannot run Python. Pass -Python with a working Python 3.12+ x64 executable.' }
 $pythonInfo = $pythonInfoText | ConvertFrom-Json
@@ -75,6 +102,7 @@ $localSettings = [ordered]@{}
 foreach ($property in $settings.PSObject.Properties) { $localSettings[$property.Name] = $property.Value }
 $localSettings['creo_root'] = $CreoRoot
 $localSettings['vcvars64'] = $VcVars64
+$localSettings['vcvars64_env'] = $VcVars64Env
 $projectPython = Join-Path $PSScriptRoot '.venv\Scripts\python.exe'
 $stage = 'local configuration'
 $completed = @()
