@@ -56,6 +56,9 @@ _SOURCE_NAMES = (
     "src/creo_mechdog/references.py",
     "src/creo_mechdog/update_check.py",
     "src/creo_mechdog/blend_callback.py",
+    "src/creo_mechdog/recovery.py",
+    "src/creo_mechdog/startup_state.py",
+    "src/creo_mechdog/windows_boot.py",
     "src/creo_mechdog/schema.py",
     "src/creo_mechdog/profile_checks.py",
     "src/creo_mechdog/airfoil.py",
@@ -65,6 +68,9 @@ _SOURCE_NAMES = (
     "profile_checks.py",
     "airfoil.py",
     "native/worker.cpp",
+    "native/generic.cpp",
+    "native/drawing.cpp",
+    "native/result_delivery.h",
 )
 
 
@@ -155,14 +161,14 @@ async def creo_check_environment() -> dict[str, Any]:
 
 @mcp.tool(annotations=READ)
 async def creo_session_status() -> dict[str, Any]:
-    """Check the configured/unique Creo session through Toolkit. During background startup, return its current state promptly; connected=true requires a verified connection. Ambiguous or stale selections never fall back to a random session."""
+    """Check the configured/unique Creo session through Toolkit (9 second probe budget, no rebuild). Busy returns its occupying job; probe_timeout returns recovery guidance. During startup return its snapshot promptly. connected=true requires verification; ambiguous/stale session selections never fall back to a random session."""
     return await invoke(startup.session_status)
 
 
 @mcp.tool(annotations=CREATE)
 async def creo_startup_status(retry: bool = False) -> dict[str, Any]:
-    """Read background Creo startup state without waiting for initialization. retry=true rechecks process/session state and may launch the configured Creo if auto-start is enabled and no existing/pending startup exists. Does not close any Creo session. Poll until state=ready before modeling; inspect message on timeout, disabled or selection_required."""
-    result = startup.start(retry=True) if retry else startup.status()
+    """Read a background snapshot with verified_at, verification_age_seconds and stale. retry=true rechecks the channel within 180s preparation plus configured startup budget; overlapping retries share coordination. Unreadable startup history can be archived/rebuilt only when it predates a verified Windows reboot, both recovery locks are held and no Creo session exists; startup_recovery identifies the backup. Same-boot/unverified history requires manual reconciliation. waiting_for_channel includes busy details. Never closes Creo, clears unknown job/model reservations or replays jobs. Poll until ready; inspect recovery guidance otherwise."""
+    result = await invoke(startup.start, retry=True) if retry else await invoke(startup.status)
     return {**result, "update": updates.snapshot()}
 
 
@@ -287,6 +293,8 @@ async def creo_capabilities() -> dict[str, Any]:
             "retry_interval_is_completion_estimate": False,
             "terminal_contract": "Model finalized under channel lock; job terminal published after release. Another caller may then occupy the channel.",
             "runner_channel_wait_seconds": 120,
+            "unknown_outcome": "Reservation retained; inspect job.recovery. Explicit startup retry only rechecks the channel and never commits/replays an unknown job.",
+            "disconnect_watchdog_seconds": 20,
             "queue_guarantees": "No public FIFO, capacity or admission-wait guarantee",
             "non_native_queries": [
                 "creo_get_job",
@@ -304,6 +312,8 @@ async def creo_capabilities() -> dict[str, Any]:
             "readiness": "Toolkit connection verified before modeling admission",
             "config": ["auto_start_creo", "creo_startup_timeout_seconds", "creo_startup_psf"],
             "existing_sessions": "Reuse selected/unique session; never close Creo automatically",
+            "unreadable_history": "Archive/rebuild only verified previous-boot startup history, with no existing session and under startup/Toolkit locks; preserve unknown job/model reservations",
+            "boot_verification_budget_seconds": 5,
         },
         "unavailable_tools": ["creo_" + name for name in UNAVAILABLE_OPERATIONS],
         "modeling": "Composable native Creo features; geometry is not restricted to a plate recipe",

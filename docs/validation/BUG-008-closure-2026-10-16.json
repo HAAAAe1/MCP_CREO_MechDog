@@ -1,0 +1,227 @@
+{
+  "work_item": "BUG-008",
+  "date": "2026-10-16",
+  "timezone": "Asia/Shanghai",
+  "reviewed_at": "2026-10-16T02:21:38.387112+00:00",
+  "decision": "closed_with_scoped_acceptance",
+  "accepted_scope": "Local Windows x64 / Creo 12.4.0.0 bounded recovery, result/unknown protection, verified previous-boot startup-history recovery and subsequent modeling",
+  "source_commit": "001a4b8088344249c0a04eca0dbe6dc923435950",
+  "branch": "codex/bug-008-channel-recovery",
+  "dirty": true,
+  "version": "0.3.1",
+  "source_fingerprints_lf_normalized": {
+    "bridge.py": "84eb1e0ec34fd208b28f403816f7bb876f0b67ea982b750b5d5f1eefdc677a85",
+    "generic_bridge.py": "f3d4cc91ce54099b761ca76d430574ba1f7ae54f9ae57ffbbae01f7ea97b4f51",
+    "creo_startup.py": "7d803ee8c679da483080c9e3cda31b6cf276178383542a9b5e3fac82885c2a22",
+    "server.py": "a2389f8c97d36d1d687e7d508cf3fc3c545cb6574e8b7651267f74d29f6f0e60",
+    "src/creo_mechdog/startup_state.py": "5b482745c0dfd93fc2ec699a1071b6c6cac1bca17944e854941bef197cda9e4c",
+    "src/creo_mechdog/windows_boot.py": "4b3d521e3387eed0668317501e1ee6db7a81d32358c9fbd898c24957455bc6da",
+    "src/creo_mechdog/recovery.py": "f64bc43164e7e75a51b7be1f29e152a5ad588a71c4f055f7cf549f92a4180e4f",
+    "native/result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220",
+    "tests/unit/test_startup_reboot.py": "24b9b8298f65c0b5ac9535e4a96d0a7e384179e5a2389f2322a728437ad3f081",
+    "tests/unit/test_startup_retry.py": "a4166ea23fb0f8e4e0dee1ee09240f592a980b31330f51ebaa933ac6b04ccda3",
+    "tools/test_startup_retry.py": "2eba4f15bb953f7d1492206f4f2a57c587dae01a9866ceca353845cc9db68960"
+  },
+  "source_unchanged_since_native_and_unit_tests": true,
+  "environment": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14",
+    "creo": "12.4.0.0",
+    "toolkit_release_numeric": 44
+  },
+  "native_worker": {
+    "bytes": 12270592,
+    "sha256": "4bb3c984d9c083f271bb7760f48b968bd5ede6b9e83e9031b328d2d9754f786b"
+  },
+  "workbuddy_report": {
+    "path": "docs/validation/BUG-008-WorkBuddy-reboot-retest-result-2026-10-16.md",
+    "bytes": 15500,
+    "sha256": "1ca9f2fa7bb9b3cf962fa2915e23287122ea64a581aa08a14413992e5d82abcb",
+    "passed_steps": [
+      1,
+      3,
+      4,
+      5
+    ],
+    "unverified_steps": [
+      2,
+      6
+    ],
+    "classification": "existing-session reconnection and modeling; not corrupt-history cold recovery",
+    "fingerprints_match": true,
+    "report_modified": false
+  },
+  "developer_cold_recovery": {
+    "evidence": {
+      "bytes": 46887,
+      "sha256": "1158078f27211de8cc80e365c249015bc2fd1870c9f1a32aa08c285c1719c351"
+    },
+    "raw_integrity_mismatches": [],
+    "success": true,
+    "cold_automatic_startup": true,
+    "cold_explicit_retry": false,
+    "archive": {
+      "status": "reconciled_previous_boot",
+      "basis": "creation_and_modification_before_verified_boot",
+      "boot_started_at": "2026-10-16T00:50:38.500000+00:00",
+      "boot_source": "Win32_OperatingSystem.LastBootUpTime cross-checked with GetTickCount64",
+      "archive_file": "C:\\Users\\Administrator\\AppData\\Local\\MCP_CREO_MechDog\\startup\\6235eee86323f49c8d99f96a\\history\\state-unreadable-276a59a26e204f018708b117e45b8a4a.bin",
+      "original_sha256": "08c3e5bbea4fba57201a69d4bf70a0d255df921fdef4924c22da087f9338c2bc",
+      "original_bytes": 380,
+      "job_model_reservations_preserved": true
+    },
+    "post_client_reconnect_success": true,
+    "not_reclassified_as_workbuddy": true
+  },
+  "controlled_evidence_reused": {
+    "raw_files": {
+      "build/bug008/controlled-complete.json": {
+        "bytes": 9409,
+        "sha256": "e49c90dcf2a2ab3714534127bc486f5e868289a3f4c2e6b94200a38fa0480da1"
+      },
+      "build/bug008/controlled.json": {
+        "bytes": 4403,
+        "sha256": "240d570a43c52edfa4b59b0226a973f2644dd5508760b97c857f68e785785ac8"
+      }
+    },
+    "unchanged_native_sources": {
+      "native/worker.cpp": "128306b8f392cf13590383f8a08ba1869b1bd21c8a10fbbd186d7fe7b034c7ad",
+      "native/generic.cpp": "e35ce3967b6c70486bed8d25581dee6fbd15fe8cfab4ed586f2fad31ceb27c3a",
+      "native/drawing.cpp": "d280916202fcb20c39cb30afa7b0fdf53460447596429dc1e5f9a005e4fbf3d3",
+      "native/result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220"
+    }
+  },
+  "complete_units_reused": {
+    "version": "0.3.1",
+    "timestamp": 1792114394.821021,
+    "tests_run": 246,
+    "success": true,
+    "failures": 0,
+    "errors": 0
+  },
+  "tests_rerun_in_this_review": false,
+  "checks_this_review": {
+    "standard_style_success": false,
+    "standard_style_regressions": [
+      "docs/validation/2026-10-15_CREO_0.3.0_旧版ToolkitSDK原生编译失败.md: new or changed file must pass its formatter",
+      "docs/validation/feedback-2026-10-16/2026-10-16常驻回调注册负担与版本发现缺口.md: new or changed file must pass its formatter"
+    ],
+    "supplemental_style_success": true,
+    "excluded_raw_reports": {
+      "docs/validation/2026-10-15_CREO_0.3.0_旧版ToolkitSDK原生编译失败.md": "06bee49ffbf1922395a76a705a449b9a65c7a09c8af96ca9ee5704bb072f52f9",
+      "docs/validation/feedback-2026-10-16/2026-10-16常驻回调注册负担与版本发现缺口.md": "00ccd9c774372494ee5aea4cccaed3c709b04436ae66f3426e5c0ca9b49d7792"
+    },
+    "style_baseline_unchanged": true
+  },
+  "workbuddy_jobs_audited": [
+    {
+      "job_id": "8a2e633fe8b34bb3b254725ef79622f7",
+      "model_id": "398b553136a641c1951daf5733bd64bf",
+      "revision": 1,
+      "status": "succeeded",
+      "manifest": {
+        "bytes": 5138,
+        "sha256": "369818c7a4856702ac0f757fb7365da8481b934e9fd8fdacb65b008aebb8899f"
+      },
+      "saved_file_reloaded_and_verified": true,
+      "delivery_complete": true,
+      "disconnect_code": 0,
+      "volume_mm3": null,
+      "reboot_verified": null
+    },
+    {
+      "job_id": "4614241688fd4659bc0c93ee56627be9",
+      "model_id": "398b553136a641c1951daf5733bd64bf",
+      "revision": 2,
+      "status": "succeeded",
+      "manifest": {
+        "bytes": 21162,
+        "sha256": "700f31a25da1b26d4ff40a66d84b31ff0da20ec47dbcff8e560863604c73c074"
+      },
+      "saved_file_reloaded_and_verified": true,
+      "delivery_complete": true,
+      "disconnect_code": 0,
+      "volume_mm3": 120.0,
+      "reboot_verified": {
+        "type": 52,
+        "value": 1
+      }
+    }
+  ],
+  "workbuddy_model_audited": {
+    "model_id": "398b553136a641c1951daf5733bd64bf",
+    "status": "ready",
+    "revision": 2,
+    "pending_job": null,
+    "manifest": {
+      "bytes": 17211,
+      "sha256": "9977ef8ce0cc253835971fbc4687850099560f48a4a95577f720d52ee707a160"
+    },
+    "saved_file": {
+      "bytes": 102921,
+      "sha256": "dead826b12d7e7bf301a5971aaf4f9d509bcc693501f373f488cf9fc80a4f16a"
+    }
+  },
+  "historical_unknown_preserved": {
+    "model_id": "27143ef77ce641938543e0ca44cc3c03",
+    "job_id": "272513b7238040c68dce4b923725d870",
+    "revision": 9,
+    "manifest": {
+      "bytes": 16563,
+      "sha256": "03a4d13a90d4f34295525945790d72e53e8acd0fc2827004258efb15ad6536ae"
+    },
+    "saved_file": {
+      "bytes": 105302,
+      "sha256": "324dd24ebd4d7b682fa9bbb41fbe02bc06b8158b5f43e75dec4b10f0f2323c6e"
+    },
+    "outcome_resolved": false,
+    "reservation_cleared": false,
+    "replayed": false
+  },
+  "unverified_boundaries": [
+    "WorkBuddy corrupt-history cold recovery and exceptional environments",
+    "historical transform/save hang/-38 causal chain and original SDK root cause",
+    "source/cause of startup file corruption",
+    "unattended recovery of every possible damaged Creo",
+    "other environments"
+  ],
+  "retained_items": [
+    "BUG-001 unknown-job reconciliation",
+    "BUG-005 host/session differences",
+    "BUG-011 broader status diagnostics"
+  ],
+  "reopen_condition": "Original model/full inputs or a new reproducible failure in this recovery path; use BUG-008 again",
+  "delivery": {
+    "committed": false,
+    "pushed": false,
+    "merged_main": false,
+    "deployed_c_root": false,
+    "released": false
+  },
+  "raw_review_outputs": {
+    "build/bug008-close/build-evidence.py": {
+      "bytes": 7359,
+      "sha256": "c585e05a04798ed2b0ed9c189a1c9dc9246068a5e63bc781adebbe98df3ff277"
+    },
+    "build/bug008-close/check-scoped.py": {
+      "bytes": 1305,
+      "sha256": "d831a8d878c94e14a32dc631bfe5182c05f2ff702ea1c58e11701cee4d072caa"
+    },
+    "build/bug008-close/development-check.json": {
+      "bytes": 1362,
+      "sha256": "f9b56cea827d732b826922713bddf7bb99db49a55ab546b64e78d167d6f5857a"
+    },
+    "build/bug008-close/development-check.log": {
+      "bytes": 1388,
+      "sha256": "67cd6a2fee293a0e502af39b0353de6bf826c7a8a7e7e4443560f68f06ca251e"
+    },
+    "build/bug008-close/scoped-style.json": {
+      "bytes": 13061,
+      "sha256": "97345484010cef5773259a3d6c10815cf6ca71af74a7a2b91da068937cf99248"
+    },
+    "build/bug008-close/scoped-style.log": {
+      "bytes": 38,
+      "sha256": "229e21536e0c26f2d9af866f5ffeabed13f57d8e4ae8c5a900f5dcee32af70ca"
+    }
+  }
+}

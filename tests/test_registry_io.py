@@ -434,7 +434,10 @@ class RegistryJobs(RegistryFixture, unittest.TestCase):
                     after["revision"],
                     before["revision"] + int(success and not readonly and not missing),
                 )
-                self.assertIsNone(after["pending_job"])
+                self.assertEqual(
+                    after["pending_job"],
+                    queued["job_id"] if expected_status == "unknown_outcome" else None,
+                )
                 self.assertEqual(after["last_job"], queued["job_id"])
                 self.assertEqual(bridge.get_job(queued["job_id"])["status"], expected_status)
 

@@ -1,5 +1,6 @@
 #define NOMINMAX
 #include "geometry.cpp"
+#include "result_delivery.h"
 
 static std::string utf8(const std::wstring &s) {
     int n = WideCharToMultiByte(CP_UTF8, 0, s.data(), (int)s.size(), nullptr, 0, nullptr, nullptr);
@@ -414,8 +415,6 @@ int wmain(int argc, wchar_t *argv[]) {
             result = PRO_TK_GENERAL_ERROR;
             log("BUILD_FAILED=unexpected\n");
         }
-        disconnect_code = ProEngineerDisconnect(&process, 15);
-        log("DISCONNECT=%d\n", disconnect_code);
     }
     std::ostringstream out;
     out.precision(15);
@@ -426,7 +425,6 @@ int wmain(int argc, wchar_t *argv[]) {
         << ",\"round_count\":" << counts[1] << ",\"hole_count\":" << counts[2]
         << ",\"preview_code\":" << preview_code << ",\"disconnect_code\":" << disconnect_code
         << ",\"saved_file_reloaded_and_verified\":" << (result ? "false" : "true") << "}";
-    std::ofstream report(job + L"\\native_result.json", std::ios::binary);
     J plate_result = J::parse(out.str());
     // Plate verification currently records feature-type counts, not a complete
     // geometry snapshot. Keep the verified volume; unqueried counts stay null.
@@ -445,9 +443,14 @@ int wmain(int argc, wchar_t *argv[]) {
         {"verified_feature_counts",
          result ? J(nullptr)
                 : J{{"extrude", counts[0]}, {"round", counts[1]}, {"hole", counts[2]}}}};
-    report << plate_result.dump(2);
-    report.close();
+    log("PHASE=disconnect\n");
+    int delivered = deliver_native_result(job, plate_result, connected, [&]() {
+        int code = ProEngineerDisconnect(&process, 15);
+        log("DISCONNECT=%d\n", code);
+        return code;
+    });
+    log("PHASE=result_delivery_complete\n");
     if (board_log)
         fclose(board_log);
-    return result ? 30 : 0;
+    return delivered;
 }

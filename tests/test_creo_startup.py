@@ -63,6 +63,7 @@ class CreoStartupTests(unittest.TestCase):
         self.startup._stop = self.clock
         stack = self.enterContext(contextlib.ExitStack())
         stack.enter_context(patch.object(bridge, "config", side_effect=lambda: dict(self.config)))
+        stack.enter_context(patch.object(bridge, "channel_health", return_value={}))
         stack.enter_context(
             patch.object(
                 bridge, "toolkit_lock", side_effect=lambda **kwargs: contextlib.nullcontext()
@@ -90,7 +91,9 @@ class CreoStartupTests(unittest.TestCase):
         )
 
     def drive(self, retry=False):
-        self.startup._drive(creo_startup.Settings.load(), retry, 10)
+        self.startup._phase_deadline = None
+        self.startup._expired = False
+        self.startup._drive(creo_startup.Settings.load(), retry, self.clock.elapsed + 10)
         return self.startup.status()
 
     def existing(self):

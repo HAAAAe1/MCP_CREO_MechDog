@@ -779,11 +779,14 @@ static int run_drawing(const std::wstring &job) {
             report["rollback_message"] = "Drawing checkpoint could not be restored and verified";
         }
     }
-    if (connected)
-        report["disconnect_code"] = ProEngineerDisconnect(&process, 15);
-    std::ofstream output(job + L"\\native_result.json", std::ios::binary);
-    output << report.dump(2);
+    log("PHASE=disconnect\n");
+    int delivered = deliver_native_result(job, report, connected, [&]() {
+        int code = ProEngineerDisconnect(&process, 15);
+        log("DISCONNECT=%d\n", code);
+        return code;
+    });
+    log("PHASE=result_delivery_complete\n");
     fclose(board_log);
     board_log = nullptr;
-    return report["success"].get<bool>() ? 0 : 30;
+    return delivered;
 }

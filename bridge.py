@@ -23,6 +23,7 @@ from typing import TextIO
 
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS
 from creo_mechdog.blend_callback import prepare_callback
+from creo_mechdog.recovery import job_evidence, process_identity
 
 ROOT = Path(__file__).resolve().parent
 JOBS = ROOT / "jobs"
@@ -161,7 +162,7 @@ def _replace_json(temp: Path, path: Path) -> None:
             delay = min(delay * 2, 0.05)
 
 
-def write_json(path: Path, value: dict) -> None:
+def write_json(path: Path, value: dict, *, durable: bool = False) -> None:
     content = json.dumps(value, ensure_ascii=False, indent=2)
     temp = path.with_suffix(path.suffix + f".{uuid.uuid4().hex}.tmp")
     owned = False
@@ -169,6 +170,9 @@ def write_json(path: Path, value: dict) -> None:
         with temp.open("x", encoding="utf-8") as stream:
             owned = True
             stream.write(content)
+            if durable:
+                stream.flush()
+                os.fsync(stream.fileno())
         _replace_json(temp, path)
     except BaseException as exc:
         if owned:
@@ -665,7 +669,38 @@ exit /b 0
     return exe
 
 
-def session_status(connect_timeout_seconds: int = 30) -> dict:
+def channel_health() -> dict:
+    try:
+        return read_json(ROOT / "build/toolkit_health.json")
+    except (OSError, ValueError):
+        return {}
+
+
+def record_channel_health(connected: bool, **fields) -> dict:
+    value = {"connected": connected, "checked_at": now(), **fields}
+    (ROOT / "build").mkdir(exist_ok=True)
+    write_json(ROOT / "build/toolkit_health.json", value)
+    return value
+
+
+def note_native_outcome(manifest: dict) -> None:
+    result = manifest.get("result", {})
+    if (
+        manifest["status"] == "unknown_outcome"
+        or result.get("connected") is False
+        or result.get("toolkit_code") == -38
+        or result.get("disconnect_code") not in (None, 0)
+    ):
+        record_channel_health(
+            False,
+            job_id=manifest["job_id"],
+            model_id=manifest.get("model_id"),
+            connection_state="recheck_required",
+            message=manifest.get("message"),
+        )
+
+
+def session_status(connect_timeout_seconds: int = 30, *, build_worker: bool = True) -> dict:
     if (
         isinstance(connect_timeout_seconds, bool)
         or not isinstance(connect_timeout_seconds, int)
@@ -673,22 +708,56 @@ def session_status(connect_timeout_seconds: int = 30) -> dict:
     ):
         raise ValueError("connect_timeout_seconds must be 1–30")
     with toolkit_lock(operation="session_status"):
-        exe = build_native()
-        result = subprocess.run(
-            [str(exe), "status", str(connect_timeout_seconds)],
-            cwd=ROOT / "build",
-            env=native_environment(),
-            capture_output=True,
-            timeout=connect_timeout_seconds + min(connect_timeout_seconds, 15) + 5,
-            creationflags=HIDDEN,
-        )
+        exe = build_native() if build_worker else ROOT / "build/creo_worker.exe"
+        if not build_worker and not exe.is_file():
+            return {
+                "connected": False,
+                "connection_state": "worker_unavailable",
+                "message": "Native worker is unavailable; request creo_startup_status(retry=true)",
+            }
+        budget = connect_timeout_seconds + min(connect_timeout_seconds, 15) + 5
+        try:
+            result = subprocess.run(
+                [str(exe), "status", str(connect_timeout_seconds)],
+                cwd=ROOT / "build",
+                env=native_environment(),
+                capture_output=True,
+                timeout=budget,
+                creationflags=HIDDEN,
+            )
+        except subprocess.TimeoutExpired:
+            return record_channel_health(
+                False,
+                connection_state="probe_timeout",
+                toolkit_code=None,
+                probe_budget_seconds=budget,
+                message="Toolkit connection probe timed out; only this probe helper was stopped. "
+                "Inspect Creo dialogs and occupying jobs; preserve unknown jobs/models, then "
+                "request creo_startup_status(retry=true). No Creo process was closed.",
+            )
+        return _record_probe_result(result)
+
+
+def _record_probe_result(result: subprocess.CompletedProcess) -> dict:
     try:
         value = json.loads(result.stdout.decode("utf-8"))
+        if not isinstance(value, dict) or not isinstance(value.get("connected"), bool):
+            raise ValueError("Invalid status object")
     except (ValueError, UnicodeDecodeError):
-        raise RuntimeError(
-            f"Toolkit worker failed without a result (exit {result.returncode}); check the Creo session and runtime libraries"
-        ) from None
+        return record_channel_health(
+            False,
+            connection_state="invalid_probe_result",
+            worker_exit_code=result.returncode,
+            message="Toolkit worker returned no valid status result; inspect the Creo session and runtime libraries, then request explicit startup retry",
+        )
     value["worker_exit_code"] = result.returncode
+    if result.returncode != 0 and value.get("connected"):
+        value.update(connected=False, connection_state="probe_worker_failed")
+    if value.get("disconnect_code") not in (None, 0):
+        value.update(connected=False, connection_state="disconnect_failed")
+    record_channel_health(
+        bool(value.get("connected")), **{k: v for k, v in value.items() if k != "connected"}
+    )
     return value
 
 
@@ -735,11 +804,14 @@ def create_job(spec: dict) -> dict:
 def run_job(job_id: str) -> None:
     directory = job_path(job_id)
     manifest = read_json(directory / "job.json")
+    manifest.update(runner_identity=process_identity(os.getpid()), stage="waiting_for_channel")
+    write_json(directory / "job.json", manifest)
     if manifest.get("kind") == "generic":
         from generic_bridge import run_generic_job
 
         run_generic_job(job_id, manifest)
         return
+    worker_started = False
     try:
         with toolkit_lock(wait_seconds=120, operation="create_plate", job_id=job_id):
             manifest.update(
@@ -771,6 +843,7 @@ def run_job(job_id: str) -> None:
             manifest.update(stage="creating_native_features")
             write_json(directory / "job.json", manifest)
             with (directory / "worker.log").open("wb") as log:
+                worker_started = True
                 proc = subprocess.run(
                     [str(exe), "create", str(directory)],
                     cwd=directory,
@@ -790,6 +863,14 @@ def run_job(job_id: str) -> None:
                 result = read_json(result_path)
                 manifest["result"] = result
                 if (
+                    result.get("disconnect_code") not in (None, 0)
+                    or result.get("delivery_complete") is False
+                ):
+                    manifest.update(
+                        status="unknown_outcome",
+                        message="Native finalization was not confirmed; preserve saved files and inspect the checkpoint",
+                    )
+                elif (
                     proc.returncode == 0
                     and result.get("success")
                     and result.get("saved_file_reloaded_and_verified")
@@ -820,11 +901,14 @@ def run_job(job_id: str) -> None:
                     )
     except subprocess.TimeoutExpired:
         manifest.update(
-            status="unknown_outcome",
-            message="Native helper timed out and was stopped; Creo may contain a partial/new model. Inspect Creo before retrying.",
+            status="unknown_outcome" if worker_started else "failed",
+            message="Native helper timed out and was stopped; inspect native checkpoint and Creo before retrying."
+            if worker_started
+            else "Native build exceeded its subprocess budget; inspect build logs. No native modeling worker started.",
         )
     except Exception as exc:
-        manifest.update(status="failed", message=str(exc))
+        manifest.update(status="unknown_outcome" if worker_started else "failed", message=str(exc))
+    note_native_outcome(manifest)
     manifest["finished_at"] = now()
     write_json(directory / "job.json", manifest)
 
@@ -853,11 +937,27 @@ def get_job(job_id: str, detail: str = "full") -> dict:
             if manifest.get("kind") == "generic"
             else config()["native_timeout_seconds"]
         )
-        if age > 120 + 120 + timeout + 30:
+        if age > 120 + 180 + timeout + 30:
             manifest.update(
                 status="unknown_outcome",
                 message="Job exceeded its expected lifetime; inspect runner.log and Creo before retrying",
             )
+    if manifest["status"] == "unknown_outcome" or manifest.get("recovery_required"):
+        model = None
+        if manifest.get("model_id"):
+            from generic_bridge import model_info
+
+            try:
+                model = model_info(manifest["model_id"])
+            except (OSError, ValueError) as exc:
+                manifest["model_evidence_error"] = (
+                    f"Model registry could not be read ({type(exc).__name__}); preserve it for operator reconciliation"
+                )
+        manifest["recovery"] = job_evidence(directory, manifest, model)
+        manifest.setdefault(
+            "recovery_required",
+            ("Outcome is unconfirmed; preserve reservation and inspect recovery evidence"),
+        )
     if detail == "compact":
         manifest = compact_job(manifest)
     return manifest
@@ -880,6 +980,9 @@ def compact_job(manifest: dict) -> dict:
         "construction",
         "busy",
         "recovery_required",
+        "recovery",
+        "runner_identity",
+        "model_evidence_error",
     )
     summary = {key: manifest[key] for key in keys if key in manifest}
     summary["detail"] = "compact"
