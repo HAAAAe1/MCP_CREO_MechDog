@@ -8,7 +8,7 @@
 
 | ID | 优先级 | 状态 | 目标版本 | 完成摘要与证据 |
 | --- | --- | --- | --- | --- |
-| [DEV-029](work-items/DEV-029.md) | P1 | 已完成（候选集成与验收） | 0.3.3 | DEV-028 与 main 0.3.2 集成，两个目录各 263 项检查、SDK 构建、22 成功（21 写/1 只读）和 1 预期失败回滚、82 工具/9 种子及分发/安装通过；实际 main、CI、标签、公开 Release 和最终附件 SHA256 以本次合并 PR 回填为准，见[发布验收](validation/RELEASE-0.3.3.md)。Creo 9 和 WorkBuddy 底板快捷入口等未测边界保留。 |
+| [DEV-029](work-items/DEV-029.md) | P1 | 已完成 | 0.3.3 | main@9ee923c、v0.3.3 与公开 [Pre-release](https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.3)一致；两目录各263项、原生回归和主干CI通过，四份主干附件已回下载核对SHA256；最终交付见 [PR #8](https://github.com/wudahua/MCP_CREO_MechDog/pull/8)，[候选验收](validation/RELEASE-0.3.3.md)及未测范围保留。 |
 | [DEV-015](work-items/DEV-015.md) | P1 | 已完成（历史主干准备与集成） | 0.3.1 | 已核实 main@515d50b；未存在的 0.3.1 Release 不补造，累计公开交付由 DEV-025 / 0.3.2 承接。 |
 | [DEV-025](work-items/DEV-025.md) | P1 | 已完成（发布候选验收） | 0.3.2 | 三批代码及完成文档集成，新目录独立安装、247 项单元、匹配 SDK 构建、8 成功/1 预期回滚作业、82 工具/9 种子和种子 ZIP 实际安装通过。见[本次证据](validation/RELEASE-0.3.2.md)；实际 main/标签/公开附件交付在 [PR #6](https://github.com/wudahua/MCP_CREO_MechDog/pull/6) 回填。 |
 | [DEV-028](work-items/DEV-028.md) | P1 | 已完成 | 未排期 | 2026-10-16 Creo 9 编译与安装闭环：统一 BUG-033、DEV-019～022；14 项新增定向回归、260 项完整单元/语言守卫、本机 Creo 12.4 SDK 构建、显式环境真实 x64 编译运行及七个原生作业全部保存重载通过。[本批证据](validation/DEV-028.md)明确桌面启动环境、普通宿主 -4、此前失败与未测范围；Creo 9 实机编译/运行时未验收，版本 0.3.1，一个本地提交，不推送/发布。 后续 [WorkBuddy](validation/DEV-028-WorkBuddy-review-20261016.md) 的部署/通用单孔/通孔+盲孔已测范围通过，底板专用入口参数受阻仍未覆盖；本次仅补录，不改公共接口。 |

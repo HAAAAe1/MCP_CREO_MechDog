@@ -16,6 +16,7 @@
 - `server.py`：MCP stdio 入口与工具注册；业务逻辑不写在该文件。
 - `bridge.py`：Toolkit 调度与执行器子进程生命周期；Toolkit 通道锁的唯一持有者。
 - `generic_bridge.py`：执行器子进程的 stdin/stdout 桥接；不解析业务语义。
+- `creo_startup.py`：受限的后台 Creo 启动与跨本地 MCP 进程协调（根目录 `toolkit.lock`）；实现模块，非转发包装。
 - `capabilities.py`：工具清单及启用/禁用来源；新增或停用工具必须在此登记。
 - `schema.py`、`profile_checks.py`、`airfoil.py`、`seeds.py`：根目录兼容模块，只转发导出；新逻辑进 `src/creo_mechdog/`。
 - `version.py`：服务与源码版本的唯一来源，合入 `main` 时同步更新。
@@ -26,7 +27,7 @@
 
 两条并存的 Python 轨道：`src/creo_mechdog/` 是标准可编辑包（安装声明见 `pyproject.toml`），新业务模块放包内；根目录同名的 `schema.py`、`airfoil.py`、`profile_checks.py` 及 `server.py`、`bridge.py`、`version.py` 保留兼容包装。包内实现与根包装同时进入源码身份清单，二者对同一类型必须共享定义，不能出现两套模型。
 
-只读分发资源（`seed_library/`、`examples/`、`docs/`、`native/`）与本机生成内容（`.venv/`、`build/`、`jobs/`、`models/`、`native/constants.inc`、`config.json`、`client-config.json`）严格分开；生成物不得进入源码包或发布附件。
+只读分发资源（`seed_library/`、`examples/`、`docs/`、`native/`）与本机生成内容（`.venv/`、`build/`、`jobs/`、`models/`、`native/constants.inc`、`config.json`、`client-config.json`、根目录 `seed_registry.json` 与 `toolkit.lock`）严格分开；生成物不得进入源码包或发布附件。
 
 关键边界：服务标准输出只承载 MCP 协议消息；Toolkit 通道忙碌时立即拒绝新提交（`isError=true` 且 `status="busy"`，携带 `blocking_*` 与重试指引），不排队、不自动重试；任务在锁内收尾，释放通道后才发布持久化终态，因此其他客户端可能在旧任务返回后取得通道。并发能力现状归 BUG-009，未新增队列时不要假设 FIFO 或容量保证。
 
@@ -57,7 +58,7 @@
 
 Python 使用四个空格缩进，函数和模块采用 `snake_case`，类采用 `PascalCase`；Ruff 配置位于 `pyproject.toml`。C++ 保持 C++17 和 Toolkit 命名，格式配置位于 `.clang-format`，保留 include 顺序。具体错误处理、类型标注、资源管理规范见 `docs/development/CODING_STANDARD.md`。格式清理按模块独立提交，排除第三方、SDK 和生成文件。
 
-历史问题记录在 `docs/development/style-baseline.json`，默认检查拒绝新增诊断和变更后仍未格式化的文件。工具/配置错误与单测失败不能加入基线；基线新增容许项必须关联条目、说明原因并单独审查，禁止在正常开发或 CI 中自动重建。
+历史问题记录在 `docs/development/style-baseline.json`，默认检查拒绝新增诊断和变更后仍未格式化的文件。工具/配置错误与单测失败不能加入基线；基线新增容许项必须关联条目、说明原因并单独审查，禁止在正常开发或 CI 中自动重建。`docs/validation/` 下的历史反馈原件必须逐字节保持一致，该目录已在 `pyproject.toml` 的 Ruff 配置中排除；不要对其重排或格式化。
 
 长度使用毫米，角度使用度。特征标签以小写字母开头，仅包含小写字母、数字和下划线，最多 28 个字符。服务标准输出仅用于 MCP 协议消息。
 

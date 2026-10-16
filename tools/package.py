@@ -44,6 +44,7 @@ def source_files():
         ".editorconfig",
         "tools/test_result_delivery.cpp",
         "docs/validation/DEV-028-WorkBuddy-report-20261016.txt",
+        "docs/validation/track-feedback-2026-10-16/track-modeling-rev2.txt",
     )
     files = [ROOT / name for name in names]
     for directory, extensions in {

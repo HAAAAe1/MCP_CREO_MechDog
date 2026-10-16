@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-16",
+  "work_item": "DEV-030",
+  "kind": "external_source_archive",
+  "records": [
+    {
+      "original_name": "履带(节距86mm，63 节，总长213.3)_跨软件三维建模自然语言说明_rev2.txt",
+      "source_path": "C:\\Users\\Administrator\\Downloads\\履带(节距86mm，63 节，总长213.3)_跨软件三维建模自然语言说明_rev2.txt",
+      "archived_path": "docs/validation/track-feedback-2026-10-16/track-modeling-rev2.txt",
+      "bytes": 41143,
+      "lines": 341,
+      "sha256": "1ec3872b0cd8cb92dd7c266c60d0839a3baa1f14371df53262c06706e610f9f9",
+      "byte_identical": true
+    },
+    {
+      "original_name": "2026-10-16CREO10.0.0.0-0.3.2剖面轮廓重叠致切除创建失败.md",
+      "source_path": "C:\\Users\\Administrator\\Downloads\\2026-10-16CREO10.0.0.0-0.3.2剖面轮廓重叠致切除创建失败.md",
+      "archived_path": "docs/validation/track-feedback-2026-10-16/creo10-0.3.2-track-feedback.md",
+      "bytes": 48998,
+      "lines": 695,
+      "sha256": "0c402c57dc9ab37c37c6d30ed890e9321f3d184559d5d382cac393dbe1704a9d",
+      "byte_identical": true
+    }
+  ],
+  "evidence_boundary": "Original external claims only; this documentation task did not run CAD, MCP modeling, source probes, recovery or registration steps from these documents."
+}
