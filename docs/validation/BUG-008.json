@@ -1,0 +1,2225 @@
+{
+  "work_item": "BUG-008",
+  "date": "2026-10-15",
+  "timezone": "Asia/Shanghai",
+  "version": "0.3.1",
+  "status": "developer_scope_passed_pending_workbuddy_and_historical_fault_chain",
+  "source": {
+    "commit": "001a4b8088344249c0a04eca0dbe6dc923435950",
+    "dirty": true,
+    "branch": "codex/bug-008-channel-recovery",
+    "normalized_sha256": {
+      "bridge.py": "61013e3377c2d6848ca3c6db1898ea4c8819262e729e16805f70b1861a0178bf",
+      "generic_bridge.py": "f3d4cc91ce54099b761ca76d430574ba1f7ae54f9ae57ffbbae01f7ea97b4f51",
+      "creo_startup.py": "a778149e301d652f97ecbbebd55b4476bfc870c493a27e3237d2bbd92b2565d3",
+      "server.py": "717bb57bee7fe212ecd4cf19187af9106db383b3881d846311f1573cb1ba0d74",
+      "src/creo_mechdog/recovery.py": "f64bc43164e7e75a51b7be1f29e152a5ad588a71c4f055f7cf549f92a4180e4f",
+      "native/worker.cpp": "128306b8f392cf13590383f8a08ba1869b1bd21c8a10fbbd186d7fe7b034c7ad",
+      "native/generic.cpp": "e35ce3967b6c70486bed8d25581dee6fbd15fe8cfab4ed586f2fad31ceb27c3a",
+      "native/drawing.cpp": "d280916202fcb20c39cb30afa7b0fdf53460447596429dc1e5f9a005e4fbf3d3",
+      "native/result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220",
+      "tests/test_creo_startup.py": "27d2ad9cef4bf46fb48fbef9063793c745aac6becb66335f038e0737cb802dfc",
+      "tests/test_registry_io.py": "695f4c77cc5aa0d4411597f55bf3b7c82a11e340c6cb897775d2ef7eff1a5a50",
+      "tests/unit/test_toolkit_channel.py": "8b4a74279d5be4c6cb1b1943c68b6453e66d57181739193f91cc21cca2f0a310",
+      "tests/unit/test_toolkit_recovery.py": "3aafb081808037aa29a2f9e10d62c066fc151c16c8243888438b084b15401a6d",
+      "tools/test_toolkit_recovery.py": "66f34ff3db529ea2c7153e0a98f3bd140a5efef4f000114973bb0ae828210dd6",
+      "tools/test_result_delivery.cpp": "dfac4971fa14b7017ac7cd562a20e8c0a8b9644f4def3f8436fc65317910491f"
+    },
+    "native_runtime_fingerprints_match_current": true,
+    "retry_runtime_fingerprints_match_current": true
+  },
+  "environment": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+    "creo_root": "C:\\Program Files\\PTC\\Creo 12.4.0.0",
+    "sdk": "Creo 12.4.0.0 matching protoolkit includes and x86e_win64 libraries",
+    "msvc_file_version": "19.44.35213.0",
+    "msvc_tools_directory": "14.44.35207",
+    "windows_sdk": "10.0.26100.0",
+    "native_launch": "Existing Explorer desktop -> hidden developer runner -> two real stdio MCP servers; BUG-005 ordinary host path not fixed",
+    "creo_xtop": {
+      "pid": 13876,
+      "started_local": "2026-10-15 17:19:11",
+      "same_process_preserved": true
+    }
+  },
+  "native_worker": {
+    "sha256": "4bb3c984d9c083f271bb7760f48b968bd5ede6b9e83e9031b328d2d9754f786b",
+    "matches_native_report": true,
+    "build_command": ".venv/Scripts/python.exe bridge.py build",
+    "exit_code": 0
+  },
+  "unit": {
+    "version": "0.3.1",
+    "timestamp": 1792066820.07585,
+    "tests_run": 222,
+    "success": true,
+    "failures": 0,
+    "errors": 0,
+    "command": ".venv/Scripts/python.exe tools/test_unit.py",
+    "new_recovery_tests": 12
+  },
+  "language": {
+    "scoped_success": true,
+    "scope": "Full language/style checks except the newly imported, unchanged third-party raw report Markdown formatting",
+    "excluded_file": "docs/validation/2026-10-15_CREO_0.3.0_旧版ToolkitSDK原生编译失败.md",
+    "excluded_sha256": "06bee49ffbf1922395a76a705a449b9a65c7a09c8af96ca9ee5704bb072f52f9",
+    "regressions": [],
+    "baseline_unchanged": true,
+    "standard_dev_check": "failed before unit execution: newly imported unrelated raw report Markdown code formatting; not reported as passed",
+    "standard_log": "build/bug008/development-check-delivery.log"
+  },
+  "controlled": {
+    "source_fingerprints_at_run": {
+      "bridge.py": "61013e3377c2d6848ca3c6db1898ea4c8819262e729e16805f70b1861a0178bf",
+      "generic_bridge.py": "f3d4cc91ce54099b761ca76d430574ba1f7ae54f9ae57ffbbae01f7ea97b4f51",
+      "creo_startup.py": "4c5354fd20b8188789e06612d582d5adc348c130813b42410c5072981569177c",
+      "server.py": "717bb57bee7fe212ecd4cf19187af9106db383b3881d846311f1573cb1ba0d74",
+      "src/creo_mechdog/recovery.py": "f64bc43164e7e75a51b7be1f29e152a5ad588a71c4f055f7cf549f92a4180e4f",
+      "native/worker.cpp": "128306b8f392cf13590383f8a08ba1869b1bd21c8a10fbbd186d7fe7b034c7ad",
+      "native/generic.cpp": "e35ce3967b6c70486bed8d25581dee6fbd15fe8cfab4ed586f2fad31ceb27c3a",
+      "native/drawing.cpp": "d280916202fcb20c39cb30afa7b0fdf53460447596429dc1e5f9a005e4fbf3d3",
+      "native/result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220",
+      "tools/test_result_delivery.cpp": "dfac4971fa14b7017ac7cd562a20e8c0a8b9644f4def3f8436fc65317910491f",
+      "tools/test_toolkit_recovery.py": "5590c54746fd179a1fd3bb2baa34ab0686dcf5efda4aecf0cd3a2b69b238281a"
+    },
+    "scope": "Actual helper implementation with fake disconnect; real sleeping probe process; no Creo fault injection",
+    "cases": {
+      "mode": "controlled C++ helper; no Creo calls or real PRT",
+      "cases": [
+        {
+          "scenario": "normal",
+          "exit_code": 0,
+          "elapsed_seconds": 0.375,
+          "checkpoint": {
+            "completion_stage": "before_disconnect",
+            "delivery_complete": false,
+            "disconnect_budget_seconds": 0.2,
+            "disconnect_code": null,
+            "fixture_only": true,
+            "native_pid": 23896,
+            "saved_file_reloaded_and_verified": true,
+            "success": true
+          },
+          "result": {
+            "completion_stage": "result_delivery",
+            "delivery_complete": true,
+            "disconnect_budget_seconds": 0.2,
+            "disconnect_code": 0,
+            "fixture_only": true,
+            "native_pid": 23896,
+            "saved_file_reloaded_and_verified": true,
+            "success": true
+          }
+        },
+        {
+          "scenario": "hang",
+          "exit_code": 31,
+          "elapsed_seconds": 0.39099999999598367,
+          "checkpoint": {
+            "completion_stage": "disconnect_timeout",
+            "delivery_complete": false,
+            "disconnect_budget_seconds": 0.2,
+            "disconnect_code": null,
+            "fixture_only": true,
+            "native_pid": 5780,
+            "saved_file_reloaded_and_verified": true,
+            "success": true
+          },
+          "result": null
+        },
+        {
+          "scenario": "hang_default",
+          "exit_code": 31,
+          "elapsed_seconds": 20.06300000000192,
+          "checkpoint": {
+            "completion_stage": "disconnect_timeout",
+            "delivery_complete": false,
+            "disconnect_budget_seconds": 20.0,
+            "disconnect_code": null,
+            "fixture_only": true,
+            "native_pid": 14824,
+            "saved_file_reloaded_and_verified": true,
+            "success": true
+          },
+          "result": null
+        },
+        {
+          "scenario": "disconnect_failure",
+          "exit_code": 0,
+          "elapsed_seconds": 0.046000000002095476,
+          "checkpoint": {
+            "completion_stage": "before_disconnect",
+            "delivery_complete": false,
+            "disconnect_budget_seconds": 0.2,
+            "disconnect_code": null,
+            "fixture_only": true,
+            "native_pid": 9860,
+            "saved_file_reloaded_and_verified": true,
+            "success": true
+          },
+          "result": {
+            "completion_stage": "result_delivery",
+            "delivery_complete": true,
+            "disconnect_budget_seconds": 0.2,
+            "disconnect_code": -38,
+            "fixture_only": true,
+            "native_pid": 9860,
+            "saved_file_reloaded_and_verified": true,
+            "success": true
+          }
+        },
+        {
+          "scenario": "write_failure",
+          "exit_code": 32,
+          "elapsed_seconds": 0.0319999999992433,
+          "checkpoint": {
+            "completion_stage": "before_disconnect",
+            "delivery_complete": false,
+            "disconnect_budget_seconds": 0.2,
+            "disconnect_code": null,
+            "fixture_only": true,
+            "native_pid": 19080,
+            "saved_file_reloaded_and_verified": true,
+            "success": true
+          },
+          "result": null
+        }
+      ],
+      "unknown_protection": {
+        "job": {
+          "job_id": "81dde6a43c4442dda3a515e03a5176d2",
+          "kind": "generic",
+          "model_id": "cca15c346fb84f6e93478fb7ddab782e",
+          "status": "unknown_outcome",
+          "stage": "executing_feature_plan",
+          "readonly": false,
+          "created_at": "2026-10-15T12:07:02.050781+00:00",
+          "started_at": "2026-10-15T12:07:02.061602+00:00",
+          "finished_at": "2026-10-15T12:07:02.319010+00:00",
+          "message": "Native worker exited 31 without a result; inspect Creo before retrying",
+          "recovery_required": "Outcome is unconfirmed; preserve reservation and inspect recovery evidence",
+          "recovery": {
+            "job_id": "81dde6a43c4442dda3a515e03a5176d2",
+            "model_id": "cca15c346fb84f6e93478fb7ddab782e",
+            "automatic_replay_allowed": false,
+            "native_result_present": false,
+            "next_steps": "Do not resubmit or clear pending_job. Inspect this job's native result/checkpoint, runner identity and saved file in Creo; preserve the original model/checkpoint. Use creo_session_status and explicit startup retry to recheck the channel. A connected channel does not resolve this job or commit its revision. If the result cannot be verified, operator reconciliation is required.",
+            "runner": {
+              "recorded": {
+                "pid": 22072,
+                "created": 134365395917140728,
+                "alive": true
+              },
+              "observed": {
+                "pid": 22072,
+                "created": 134365395917140728,
+                "alive": true
+              },
+              "same_process": true
+            },
+            "native_checkpoint": {
+              "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\bug008\\delivery-fixture\\registry_1792066022039037700\\jobs\\81dde6a43c4442dda3a515e03a5176d2\\native_checkpoint.json",
+              "exists": true,
+              "sha256": "3d990932892531e87751aba19b3389f5cbfa3aec347375df36c0e6e8b66c9703",
+              "native_pid": 24832,
+              "completion_stage": "disconnect_timeout",
+              "delivery_complete": false,
+              "success": true,
+              "saved_file_reloaded_and_verified": true,
+              "disconnect_code": null,
+              "disconnect_budget_seconds": 0.2,
+              "authoritative_job_success": false
+            },
+            "model": {
+              "status": "unknown_outcome",
+              "revision": 0,
+              "pending_job": "81dde6a43c4442dda3a515e03a5176d2",
+              "last_job": "81dde6a43c4442dda3a515e03a5176d2"
+            }
+          },
+          "runner_identity": {
+            "pid": 22072,
+            "created": 134365395917140728,
+            "alive": true
+          },
+          "detail": "compact",
+          "operation_count": 0,
+          "full_result_available": false
+        },
+        "revision": 0,
+        "rejection": {
+          "status": "busy",
+          "code": "toolkit_busy",
+          "accepted": false,
+          "blocking_job_id": "81dde6a43c4442dda3a515e03a5176d2",
+          "blocking_model_id": "cca15c346fb84f6e93478fb7ddab782e",
+          "blocking_operation": "pending_job",
+          "owner_snapshot": {
+            "job_id": "81dde6a43c4442dda3a515e03a5176d2",
+            "model_id": "cca15c346fb84f6e93478fb7ddab782e",
+            "operation": "pending_job"
+          },
+          "owner_determined": true,
+          "retry_after_seconds": 1,
+          "retry_guidance": "Poll creo_get_job(job_id='81dde6a43c4442dda3a515e03a5176d2', detail='compact') until terminal; inspect unknown_outcome before retrying. This request was not accepted. Retry this request after 1 second only when the occupying operation has finished; re-read the model revision before writing. Do not resubmit an already accepted job.",
+          "message": "Model has a pending job"
+        }
+      },
+      "probe_timeout": {
+        "result": {
+          "connected": false,
+          "checked_at": "2026-10-15T12:07:11.334043+00:00",
+          "connection_state": "probe_timeout",
+          "toolkit_code": null,
+          "probe_budget_seconds": 9,
+          "message": "Toolkit connection probe timed out; only this probe helper was stopped. Inspect Creo dialogs and occupying jobs; preserve unknown jobs/models, then request creo_startup_status(retry=true). No Creo process was closed."
+        },
+        "elapsed_seconds": 9.014999999999418,
+        "helper_after": {
+          "pid": 7516,
+          "alive": false,
+          "windows_error": 87
+        }
+      },
+      "success": true
+    },
+    "command": ".venv/Scripts/python.exe tools/test_toolkit_recovery.py --controlled --output build/bug008/controlled-complete.json"
+  },
+  "native": {
+    "command": ".venv/Scripts/python.exe tools/test_toolkit_recovery.py --native --output build/bug008/native-final.json",
+    "started_at": "2026-10-15T12:22:41.615482+00:00",
+    "finished_at": "2026-10-15T12:24:06.792483+00:00",
+    "success": true,
+    "call_count": 356,
+    "succeeded": 8,
+    "expected_failed": 1,
+    "successful_writes_saved_verified": 7,
+    "jobs": [
+      {
+        "job_id": "fcc39052859e4246ac5c84dcd7a4e1e1",
+        "model_id": "203a552f3e1046f19e5ef673e378d12c",
+        "status": "succeeded",
+        "revision": 1,
+        "readonly": false,
+        "started_at": "2026-10-15T12:22:53.898688+00:00",
+        "finished_at": "2026-10-15T12:23:00.463930+00:00",
+        "message": "General feature plan completed",
+        "runner_identity": {
+          "pid": 5388,
+          "created": 134365405736013509,
+          "alive": true
+        },
+        "result": {
+          "success": true,
+          "connected": true,
+          "toolkit_code": 0,
+          "part_file": "E:\\Projects\\MCP_CREO_MechDog\\models\\203a552f3e1046f19e5ef673e378d12c\\output\\bug008_1792066973.prt.2",
+          "sha256": "0be9550a5a39b5dea3c5ca39e6167d93458c98620378c4ac6913eebcda6e8df5",
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "disconnect_code": 0,
+          "delivery_complete": true,
+          "completion_stage": "result_delivery",
+          "native_pid": 10404
+        },
+        "inspection_summary": {
+          "volume_mm3": null,
+          "bbox": null,
+          "counts": null,
+          "inspection_source": "saved_reloaded",
+          "test_parameters": {}
+        }
+      },
+      {
+        "job_id": "fc9d96dfc02748f2ba9187894fea5e7b",
+        "model_id": "203a552f3e1046f19e5ef673e378d12c",
+        "status": "succeeded",
+        "revision": 2,
+        "readonly": false,
+        "started_at": "2026-10-15T12:23:00.879630+00:00",
+        "finished_at": "2026-10-15T12:23:07.638556+00:00",
+        "message": "General feature plan completed",
+        "runner_identity": {
+          "pid": 7592,
+          "created": 134365405805849264,
+          "alive": true
+        },
+        "result": {
+          "success": true,
+          "connected": true,
+          "toolkit_code": 0,
+          "part_file": "E:\\Projects\\MCP_CREO_MechDog\\models\\203a552f3e1046f19e5ef673e378d12c\\output\\bug008_1792066973.prt.3",
+          "sha256": "93d11aa407ba1f317bd876084e0447f846a4dde62097f8d51348107057a9c50e",
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "disconnect_code": 0,
+          "delivery_complete": true,
+          "completion_stage": "result_delivery",
+          "native_pid": 20596
+        },
+        "inspection_summary": {
+          "volume_mm3": 600.0,
+          "bbox": null,
+          "counts": null,
+          "inspection_source": "saved_reloaded",
+          "test_parameters": {}
+        }
+      },
+      {
+        "job_id": "c5b923f943ea45b1a1dff3d480c554df",
+        "model_id": "203a552f3e1046f19e5ef673e378d12c",
+        "status": "succeeded",
+        "revision": 3,
+        "readonly": false,
+        "started_at": "2026-10-15T12:23:08.233967+00:00",
+        "finished_at": "2026-10-15T12:23:14.437326+00:00",
+        "message": "General feature plan completed",
+        "runner_identity": {
+          "pid": 23224,
+          "created": 134365405878848541,
+          "alive": true
+        },
+        "result": {
+          "success": true,
+          "connected": true,
+          "toolkit_code": 0,
+          "part_file": "E:\\Projects\\MCP_CREO_MechDog\\models\\203a552f3e1046f19e5ef673e378d12c\\output\\bug008_1792066973.prt.4",
+          "sha256": "8d71601ba15832b7db1422db5610f44bc07f68c84c7c3217f40029a3c0713196",
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "disconnect_code": 0,
+          "delivery_complete": true,
+          "completion_stage": "result_delivery",
+          "native_pid": 22512
+        },
+        "inspection_summary": {
+          "volume_mm3": 600.0,
+          "bbox": null,
+          "counts": null,
+          "inspection_source": "saved_reloaded",
+          "test_parameters": {
+            "BUG008_MARKER": {
+              "type": 52,
+              "value": 8
+            }
+          }
+        }
+      },
+      {
+        "job_id": "ad6cd49d8da548d99eabdadeb30cf474",
+        "model_id": "203a552f3e1046f19e5ef673e378d12c",
+        "status": "failed",
+        "readonly": false,
+        "started_at": "2026-10-15T12:23:14.800613+00:00",
+        "finished_at": "2026-10-15T12:23:20.487294+00:00",
+        "message": "Unknown feature label: missing_profile",
+        "runner_identity": {
+          "pid": 13300,
+          "created": 134365405945174167,
+          "alive": true
+        },
+        "result": {
+          "success": false,
+          "connected": true,
+          "toolkit_code": -1,
+          "message": "Unknown feature label: missing_profile",
+          "failed_stage": "execute_extrude",
+          "failed_toolkit_call": null,
+          "failed_operation_index": 1,
+          "saved_file_reloaded_and_verified": false,
+          "rollback_succeeded": true,
+          "disconnect_code": 0,
+          "delivery_complete": true,
+          "completion_stage": "result_delivery",
+          "native_pid": 22800
+        },
+        "inspection_summary": {
+          "volume_mm3": 600.0,
+          "bbox": null,
+          "counts": null,
+          "inspection_source": "rollback_verified",
+          "test_parameters": {
+            "BUG008_MARKER": {
+              "type": 52,
+              "value": 8
+            }
+          }
+        }
+      },
+      {
+        "job_id": "6078d2e83d824c9ba886bcc1540eaccb",
+        "model_id": "9d2296ffbd814b8097ad56f3082c76fd",
+        "status": "succeeded",
+        "revision": 1,
+        "readonly": false,
+        "started_at": "2026-10-15T12:23:31.603367+00:00",
+        "finished_at": "2026-10-15T12:23:38.199666+00:00",
+        "message": "General feature plan completed",
+        "runner_identity": {
+          "pid": 15804,
+          "created": 134365406113054477,
+          "alive": true
+        },
+        "result": {
+          "success": true,
+          "connected": true,
+          "toolkit_code": 0,
+          "part_file": "E:\\Projects\\MCP_CREO_MechDog\\models\\9d2296ffbd814b8097ad56f3082c76fd\\output\\bug008_after_1792067011.prt.2",
+          "sha256": "c64d3717ebbfcf1d43ab687793b8bac5ec903966b2710d050e462ccedbdca275",
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "disconnect_code": 0,
+          "delivery_complete": true,
+          "completion_stage": "result_delivery",
+          "native_pid": 21540
+        },
+        "inspection_summary": {
+          "volume_mm3": null,
+          "bbox": null,
+          "counts": null,
+          "inspection_source": "saved_reloaded",
+          "test_parameters": {}
+        }
+      },
+      {
+        "job_id": "f01eb978ecbc4a57be2378cdbe605604",
+        "model_id": "9d2296ffbd814b8097ad56f3082c76fd",
+        "status": "succeeded",
+        "revision": 2,
+        "readonly": false,
+        "started_at": "2026-10-15T12:23:38.622145+00:00",
+        "finished_at": "2026-10-15T12:23:45.545787+00:00",
+        "message": "General feature plan completed",
+        "runner_identity": {
+          "pid": 4068,
+          "created": 134365406183391164,
+          "alive": true
+        },
+        "result": {
+          "success": true,
+          "connected": true,
+          "toolkit_code": 0,
+          "part_file": "E:\\Projects\\MCP_CREO_MechDog\\models\\9d2296ffbd814b8097ad56f3082c76fd\\output\\bug008_after_1792067011.prt.3",
+          "sha256": "b592750a19ee826c7198eca103bc039f27e23dcd379f9bd85b31659d21de1dd9",
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "disconnect_code": 0,
+          "delivery_complete": true,
+          "completion_stage": "result_delivery",
+          "native_pid": 25152
+        },
+        "inspection_summary": {
+          "volume_mm3": 120.0,
+          "bbox": null,
+          "counts": null,
+          "inspection_source": "saved_reloaded",
+          "test_parameters": {
+            "RECOVERED": {
+              "type": 52,
+              "value": 1
+            }
+          }
+        }
+      },
+      {
+        "job_id": "247424fc26834b2dbabf632c5d1ec202",
+        "status": "succeeded",
+        "started_at": "2026-10-15T12:23:45.887572+00:00",
+        "finished_at": "2026-10-15T12:23:53.540305+00:00",
+        "message": "Native PRT saved, reloaded and verified; sketch/extrude/round/hole features are editable",
+        "runner_identity": {
+          "pid": 24972,
+          "created": 134365406257390263,
+          "alive": true
+        },
+        "result": {
+          "success": true,
+          "connected": true,
+          "toolkit_code": 0,
+          "part_file": "E:\\Projects\\MCP_CREO_MechDog\\jobs\\247424fc26834b2dbabf632c5d1ec202\\output\\bug008_plate_1792067025.prt.2",
+          "sha256": "0c706c79bbf95f397aa1e770ac0a131449904d2cce60043ac1be354aade492ab",
+          "saved_file_reloaded_and_verified": true,
+          "disconnect_code": 0,
+          "delivery_complete": true,
+          "completion_stage": "result_delivery",
+          "native_pid": 10888,
+          "volume_mm3": 600
+        },
+        "inspection_summary": {
+          "volume_mm3": 600.0,
+          "bbox": null,
+          "counts": {
+            "bodies": 1,
+            "components": null,
+            "edges": null,
+            "features": null,
+            "surfaces": null
+          },
+          "inspection_source": "saved_reloaded",
+          "test_parameters": {}
+        }
+      },
+      {
+        "job_id": "6ef1772dfb734c8a9b65a6c17cffc04e",
+        "model_id": "81e6b411670941029f2f7b5c5693d44f",
+        "status": "succeeded",
+        "revision": 1,
+        "readonly": false,
+        "started_at": "2026-10-15T12:23:54.028736+00:00",
+        "finished_at": "2026-10-15T12:24:00.271410+00:00",
+        "message": "General feature plan completed",
+        "runner_identity": {
+          "pid": 15624,
+          "created": 134365406337266803,
+          "alive": true
+        },
+        "result": {
+          "success": true,
+          "toolkit_code": 0,
+          "part_file": "E:\\Projects\\MCP_CREO_MechDog\\models\\81e6b411670941029f2f7b5c5693d44f\\output\\bug008_drw_1792067033.drw.1",
+          "sha256": "0507ca06d2ec5a9ec33708274aba86ba8988d972901bd614eb916925c4c25e73",
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "disconnect_code": 0,
+          "delivery_complete": true,
+          "completion_stage": "result_delivery",
+          "native_pid": 22064
+        },
+        "inspection_summary": {
+          "volume_mm3": null,
+          "bbox": null,
+          "counts": null,
+          "inspection_source": null,
+          "test_parameters": {}
+        }
+      },
+      {
+        "job_id": "49246a8bc2894b95bc0e2994129e6aeb",
+        "model_id": "203a552f3e1046f19e5ef673e378d12c",
+        "status": "succeeded",
+        "revision": 3,
+        "readonly": true,
+        "started_at": "2026-10-15T12:24:00.746333+00:00",
+        "finished_at": "2026-10-15T12:24:06.258237+00:00",
+        "message": "General feature plan completed",
+        "runner_identity": {
+          "pid": 5308,
+          "created": 134365406404500317,
+          "alive": true
+        },
+        "result": {
+          "success": true,
+          "connected": true,
+          "toolkit_code": 0,
+          "part_file": "E:\\Projects\\MCP_CREO_MechDog\\models\\203a552f3e1046f19e5ef673e378d12c\\output\\bug008_1792066973.prt.4",
+          "sha256": "8d71601ba15832b7db1422db5610f44bc07f68c84c7c3217f40029a3c0713196",
+          "saved_file_reloaded_and_verified": false,
+          "rollback_succeeded": false,
+          "disconnect_code": 0,
+          "delivery_complete": true,
+          "completion_stage": "result_delivery",
+          "native_pid": 11704
+        },
+        "inspection_summary": {
+          "volume_mm3": 600.0,
+          "bbox": null,
+          "counts": null,
+          "inspection_source": "live_query",
+          "test_parameters": {
+            "BUG008_MARKER": {
+              "type": 52,
+              "value": 8
+            }
+          }
+        }
+      }
+    ],
+    "session_before": {
+      "connected": true,
+      "connection_state": "connected",
+      "toolkit_code": 0,
+      "current_model": "▩BUG008_17920666650001",
+      "current_model_code": 0,
+      "model_type": 2,
+      "release_numeric": 44,
+      "disconnect_code": 0,
+      "feature_creation_license": "requires_actual_modeling_test",
+      "worker_exit_code": 0,
+      "startup": {
+        "launch_reserved": false,
+        "launch_attempt": 12,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "state": "ready",
+        "connected": true,
+        "message": "Toolkit connection verified",
+        "retry_allowed": false,
+        "updated_at": "2026-10-15T12:22:53.548252+00:00",
+        "coordinator_pid": 3412,
+        "native": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0,
+          "current_model": "▩BUG008_17920666650001",
+          "current_model_code": 0,
+          "model_type": 2,
+          "release_numeric": 44,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 0
+        },
+        "verified_at": "2026-10-15T12:22:53.548252+00:00",
+        "snapshot": true,
+        "verification_age_seconds": 0,
+        "stale": false,
+        "coordinator_running": false
+      }
+    },
+    "session_after": {
+      "connected": true,
+      "connection_state": "connected",
+      "toolkit_code": 0,
+      "current_model": "",
+      "current_model_code": -8,
+      "model_type": -1,
+      "release_numeric": 44,
+      "disconnect_code": 0,
+      "feature_creation_license": "requires_actual_modeling_test",
+      "worker_exit_code": 0,
+      "startup": {
+        "launch_reserved": false,
+        "launch_attempt": 12,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "state": "ready",
+        "connected": true,
+        "message": "Toolkit connection verified",
+        "retry_allowed": false,
+        "updated_at": "2026-10-15T12:23:31.246790+00:00",
+        "coordinator_pid": 10352,
+        "native": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 44,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 0
+        },
+        "verified_at": "2026-10-15T12:23:31.246790+00:00",
+        "snapshot": true,
+        "verification_age_seconds": 0,
+        "stale": false,
+        "coordinator_running": false
+      }
+    },
+    "state_timeline": [
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:44.464843+00:00",
+        "finished_at": "2026-10-15T12:22:44.469967+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 298.51600000000326,
+          "phase_remaining_budget_seconds": 118.78100000000268
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:44.465848+00:00",
+        "finished_at": "2026-10-15T12:22:44.494365+00:00",
+        "elapsed_seconds": 0.031000000002677552,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 299.8130000000019,
+          "phase_remaining_budget_seconds": 178.53100000000268
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:44.665013+00:00",
+        "finished_at": "2026-10-15T12:22:44.667563+00:00",
+        "elapsed_seconds": 0.014999999999417923,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 298.3130000000019,
+          "phase_remaining_budget_seconds": 118.57800000000134
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:44.710802+00:00",
+        "finished_at": "2026-10-15T12:22:44.712991+00:00",
+        "elapsed_seconds": 0.014999999999417923,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 299.57800000000134,
+          "phase_remaining_budget_seconds": 178.2960000000021
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:44.882015+00:00",
+        "finished_at": "2026-10-15T12:22:44.884010+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 298.1100000000006,
+          "phase_remaining_budget_seconds": 118.375
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:44.913975+00:00",
+        "finished_at": "2026-10-15T12:22:44.916106+00:00",
+        "elapsed_seconds": 0.014999999999417923,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 299.375,
+          "phase_remaining_budget_seconds": 178.09300000000076
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:45.101175+00:00",
+        "finished_at": "2026-10-15T12:22:45.106163+00:00",
+        "elapsed_seconds": 0.01600000000325963,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 297.89100000000326,
+          "phase_remaining_budget_seconds": 118.15600000000268
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:45.105164+00:00",
+        "finished_at": "2026-10-15T12:22:45.112145+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 299.17199999999866,
+          "phase_remaining_budget_seconds": 177.88999999999942
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:45.320400+00:00",
+        "finished_at": "2026-10-15T12:22:45.325389+00:00",
+        "elapsed_seconds": 0.01600000000325963,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 297.6560000000027,
+          "phase_remaining_budget_seconds": 117.9210000000021
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:45.321398+00:00",
+        "finished_at": "2026-10-15T12:22:45.332444+00:00",
+        "elapsed_seconds": 0.01600000000325963,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 298.95300000000134,
+          "phase_remaining_budget_seconds": 177.6710000000021
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:45.524150+00:00",
+        "finished_at": "2026-10-15T12:22:45.528929+00:00",
+        "elapsed_seconds": 0.01600000000325963,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 297.45300000000134,
+          "phase_remaining_budget_seconds": 117.71800000000076
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:45.525148+00:00",
+        "finished_at": "2026-10-15T12:22:45.532429+00:00",
+        "elapsed_seconds": 0.01600000000325963,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 298.75,
+          "phase_remaining_budget_seconds": 177.46800000000076
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:45.744806+00:00",
+        "finished_at": "2026-10-15T12:22:45.749980+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 297.2350000000006,
+          "phase_remaining_budget_seconds": 117.5
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:45.744806+00:00",
+        "finished_at": "2026-10-15T12:22:45.754902+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 298.53199999999924,
+          "phase_remaining_budget_seconds": 177.25
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:45.963489+00:00",
+        "finished_at": "2026-10-15T12:22:45.967479+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 297.01600000000326,
+          "phase_remaining_budget_seconds": 117.28100000000268
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:45.964487+00:00",
+        "finished_at": "2026-10-15T12:22:45.969473+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 298.3130000000019,
+          "phase_remaining_budget_seconds": 177.03100000000268
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:46.181383+00:00",
+        "finished_at": "2026-10-15T12:22:46.186258+00:00",
+        "elapsed_seconds": 0.01599999999598367,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 296.79700000000594,
+          "phase_remaining_budget_seconds": 117.06200000000536
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:46.181383+00:00",
+        "finished_at": "2026-10-15T12:22:46.191333+00:00",
+        "elapsed_seconds": 0.01599999999598367,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 298.0940000000046,
+          "phase_remaining_budget_seconds": 176.81200000000536
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:46.401012+00:00",
+        "finished_at": "2026-10-15T12:22:46.410461+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 296.57800000000134,
+          "phase_remaining_budget_seconds": 116.84300000000076
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:46.401012+00:00",
+        "finished_at": "2026-10-15T12:22:46.420284+00:00",
+        "elapsed_seconds": 0.014999999999417923,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 297.875,
+          "phase_remaining_budget_seconds": 176.59300000000076
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:46.630248+00:00",
+        "finished_at": "2026-10-15T12:22:46.651166+00:00",
+        "elapsed_seconds": 0.0319999999992433,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 296.3600000000006,
+          "phase_remaining_budget_seconds": 116.625
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:46.630248+00:00",
+        "finished_at": "2026-10-15T12:22:46.640856+00:00",
+        "elapsed_seconds": 0.01599999999598367,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 297.65699999999924,
+          "phase_remaining_budget_seconds": 176.375
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:46.851515+00:00",
+        "finished_at": "2026-10-15T12:22:46.864641+00:00",
+        "elapsed_seconds": 0.01600000000325963,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 296.125,
+          "phase_remaining_budget_seconds": 116.38999999999942
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:47.070756+00:00",
+        "finished_at": "2026-10-15T12:22:47.072875+00:00",
+        "elapsed_seconds": 0.01600000000325963,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 297.2190000000046,
+          "phase_remaining_budget_seconds": 175.93700000000536
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:47.070756+00:00",
+        "finished_at": "2026-10-15T12:22:47.074937+00:00",
+        "elapsed_seconds": 0.01600000000325963,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 295.92200000000594,
+          "phase_remaining_budget_seconds": 116.18700000000536
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:47.288858+00:00",
+        "finished_at": "2026-10-15T12:22:47.291823+00:00",
+        "elapsed_seconds": 0.014999999999417923,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 297.0,
+          "phase_remaining_budget_seconds": 175.71800000000076
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:47.288858+00:00",
+        "finished_at": "2026-10-15T12:22:47.293817+00:00",
+        "elapsed_seconds": 0.014999999999417923,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 295.70300000000134,
+          "phase_remaining_budget_seconds": 115.96800000000076
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:47.508383+00:00",
+        "finished_at": "2026-10-15T12:22:47.513894+00:00",
+        "elapsed_seconds": 0.01599999999598367,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 296.78199999999924,
+          "phase_remaining_budget_seconds": 175.5
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:47.508383+00:00",
+        "finished_at": "2026-10-15T12:22:47.510526+00:00",
+        "elapsed_seconds": 0.01599999999598367,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 295.4850000000006,
+          "phase_remaining_budget_seconds": 115.75
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:47.726227+00:00",
+        "finished_at": "2026-10-15T12:22:47.728406+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 296.5630000000019,
+          "phase_remaining_budget_seconds": 175.28100000000268
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:47.944714+00:00",
+        "finished_at": "2026-10-15T12:22:47.951098+00:00",
+        "elapsed_seconds": 0.01600000000325963,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 295.04700000000594,
+          "phase_remaining_budget_seconds": 115.31200000000536
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:48.162283+00:00",
+        "finished_at": "2026-10-15T12:22:48.164460+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 296.125,
+          "phase_remaining_budget_seconds": 174.84300000000076
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:48.162283+00:00",
+        "finished_at": "2026-10-15T12:22:48.167951+00:00",
+        "elapsed_seconds": 0.014999999999417923,
+        "response": {
+          "state": "ready",
+          "connected": true,
+          "verified_at": "2026-10-15T12:22:48.124104+00:00",
+          "stale": false,
+          "coordinator_pid": 3412
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:48.381135+00:00",
+        "finished_at": "2026-10-15T12:22:48.384383+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 3412,
+          "remaining_budget_seconds": 295.90699999999924,
+          "phase_remaining_budget_seconds": 174.625
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:48.600887+00:00",
+        "finished_at": "2026-10-15T12:22:48.608952+00:00",
+        "elapsed_seconds": 0.01600000000325963,
+        "response": {
+          "state": "ready",
+          "connected": true,
+          "verified_at": "2026-10-15T12:22:48.124104+00:00",
+          "stale": false,
+          "coordinated": true,
+          "coordinator_pid": 3412
+        }
+      },
+      {
+        "tool": "creo_session_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:22:48.623692+00:00",
+        "finished_at": "2026-10-15T12:22:53.550731+00:00",
+        "elapsed_seconds": 4.921999999998661,
+        "response": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {
+          "retry": true
+        },
+        "started_at": "2026-10-15T12:23:20.653457+00:00",
+        "finished_at": "2026-10-15T12:23:20.655504+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "checking",
+          "connected": false
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:20.696635+00:00",
+        "finished_at": "2026-10-15T12:23:20.719061+00:00",
+        "elapsed_seconds": 0.031000000002677552,
+        "response": {
+          "state": "checking",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "remaining_budget_seconds": 299.95300000000134
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:20.696635+00:00",
+        "finished_at": "2026-10-15T12:23:20.699725+00:00",
+        "elapsed_seconds": 0.01600000000325963,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 299.95300000000134,
+          "phase_remaining_budget_seconds": 179.96800000000076
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:20.929803+00:00",
+        "finished_at": "2026-10-15T12:23:20.956918+00:00",
+        "elapsed_seconds": 0.0319999999992433,
+        "response": {
+          "state": "checking",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "remaining_budget_seconds": 299.7190000000046
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:21.149513+00:00",
+        "finished_at": "2026-10-15T12:23:21.155354+00:00",
+        "elapsed_seconds": 0.01600000000325963,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 299.5,
+          "phase_remaining_budget_seconds": 119.7809999999954
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:21.196365+00:00",
+        "finished_at": "2026-10-15T12:23:21.198337+00:00",
+        "elapsed_seconds": 0.01600000000325963,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 299.45300000000134,
+          "phase_remaining_budget_seconds": 179.46800000000076
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:21.383725+00:00",
+        "finished_at": "2026-10-15T12:23:21.386202+00:00",
+        "elapsed_seconds": 0.01599999999598367,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 299.26600000000326,
+          "phase_remaining_budget_seconds": 119.54699999999866
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:21.429833+00:00",
+        "finished_at": "2026-10-15T12:23:21.432828+00:00",
+        "elapsed_seconds": 0.01599999999598367,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 299.2350000000006,
+          "phase_remaining_budget_seconds": 179.25
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:21.619645+00:00",
+        "finished_at": "2026-10-15T12:23:21.623224+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 299.03199999999924,
+          "phase_remaining_budget_seconds": 119.31299999999464
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:21.666582+00:00",
+        "finished_at": "2026-10-15T12:23:21.669094+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 298.9850000000006,
+          "phase_remaining_budget_seconds": 179.0
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:21.858653+00:00",
+        "finished_at": "2026-10-15T12:23:21.862644+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 298.79699999999866,
+          "phase_remaining_budget_seconds": 119.07799999999406
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:21.947419+00:00",
+        "finished_at": "2026-10-15T12:23:21.951409+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 298.70300000000134,
+          "phase_remaining_budget_seconds": 178.71800000000076
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:22.173966+00:00",
+        "finished_at": "2026-10-15T12:23:22.179951+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 298.4850000000006,
+          "phase_remaining_budget_seconds": 118.76599999999598
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:22.292321+00:00",
+        "finished_at": "2026-10-15T12:23:22.296310+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 298.3600000000006,
+          "phase_remaining_budget_seconds": 178.375
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:22.517969+00:00",
+        "finished_at": "2026-10-15T12:23:22.520692+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 298.14100000000326,
+          "phase_remaining_budget_seconds": 118.42199999999866
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:22.517969+00:00",
+        "finished_at": "2026-10-15T12:23:22.545407+00:00",
+        "elapsed_seconds": 0.031000000002677552,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 298.14100000000326,
+          "phase_remaining_budget_seconds": 178.15600000000268
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:22.752996+00:00",
+        "finished_at": "2026-10-15T12:23:22.755459+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 297.90699999999924,
+          "phase_remaining_budget_seconds": 118.18799999999464
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:22.782374+00:00",
+        "finished_at": "2026-10-15T12:23:22.786603+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 297.875,
+          "phase_remaining_budget_seconds": 177.88999999999942
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:22.986888+00:00",
+        "finished_at": "2026-10-15T12:23:22.989954+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 297.67199999999866,
+          "phase_remaining_budget_seconds": 117.95299999999406
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:23.015945+00:00",
+        "finished_at": "2026-10-15T12:23:23.019353+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 297.64100000000326,
+          "phase_remaining_budget_seconds": 177.65600000000268
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:23.222267+00:00",
+        "finished_at": "2026-10-15T12:23:23.226259+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 297.4380000000019,
+          "phase_remaining_budget_seconds": 117.71899999999732
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:23.251925+00:00",
+        "finished_at": "2026-10-15T12:23:23.254354+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 297.40699999999924,
+          "phase_remaining_budget_seconds": 177.42199999999866
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:23.457475+00:00",
+        "finished_at": "2026-10-15T12:23:23.460677+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 297.20300000000134,
+          "phase_remaining_budget_seconds": 117.48399999999674
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:23.482487+00:00",
+        "finished_at": "2026-10-15T12:23:23.484481+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 297.17199999999866,
+          "phase_remaining_budget_seconds": 177.18699999999808
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:23.693016+00:00",
+        "finished_at": "2026-10-15T12:23:23.695202+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 296.9690000000046,
+          "phase_remaining_budget_seconds": 117.25
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:23.693016+00:00",
+        "finished_at": "2026-10-15T12:23:23.717363+00:00",
+        "elapsed_seconds": 0.031000000002677552,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 296.9690000000046,
+          "phase_remaining_budget_seconds": 176.98400000000402
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:23.928519+00:00",
+        "finished_at": "2026-10-15T12:23:23.930514+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 296.7350000000006,
+          "phase_remaining_budget_seconds": 117.01599999999598
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:23.928519+00:00",
+        "finished_at": "2026-10-15T12:23:23.953375+00:00",
+        "elapsed_seconds": 0.0319999999992433,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 296.7350000000006,
+          "phase_remaining_budget_seconds": 176.75
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:24.180368+00:00",
+        "finished_at": "2026-10-15T12:23:24.231534+00:00",
+        "elapsed_seconds": 0.06300000000192085,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 296.4850000000006,
+          "phase_remaining_budget_seconds": 116.76599999999598
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:24.180368+00:00",
+        "finished_at": "2026-10-15T12:23:24.184358+00:00",
+        "elapsed_seconds": 0.01599999999598367,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 296.4690000000046,
+          "phase_remaining_budget_seconds": 176.48400000000402
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:24.495168+00:00",
+        "finished_at": "2026-10-15T12:23:24.499313+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 296.15699999999924,
+          "phase_remaining_budget_seconds": 116.43799999999464
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:24.681358+00:00",
+        "finished_at": "2026-10-15T12:23:24.683966+00:00",
+        "elapsed_seconds": 0.01599999999598367,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 295.9690000000046,
+          "phase_remaining_budget_seconds": 175.98400000000402
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:24.728822+00:00",
+        "finished_at": "2026-10-15T12:23:24.731029+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 295.92199999999866,
+          "phase_remaining_budget_seconds": 116.20299999999406
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:24.916953+00:00",
+        "finished_at": "2026-10-15T12:23:24.924970+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 295.7350000000006,
+          "phase_remaining_budget_seconds": 175.75
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:25.014028+00:00",
+        "finished_at": "2026-10-15T12:23:25.019014+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 295.64100000000326,
+          "phase_remaining_budget_seconds": 115.92199999999866
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:25.229356+00:00",
+        "finished_at": "2026-10-15T12:23:25.297434+00:00",
+        "elapsed_seconds": 0.06199999999807915,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 295.42199999999866,
+          "phase_remaining_budget_seconds": 175.43699999999808
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:25.229356+00:00",
+        "finished_at": "2026-10-15T12:23:25.237908+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 295.42199999999866,
+          "phase_remaining_budget_seconds": 115.70299999999406
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:25.513314+00:00",
+        "finished_at": "2026-10-15T12:23:25.569297+00:00",
+        "elapsed_seconds": 0.046999999998661224,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 295.14100000000326,
+          "phase_remaining_budget_seconds": 175.15600000000268
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:25.761537+00:00",
+        "finished_at": "2026-10-15T12:23:25.764993+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 294.89100000000326,
+          "phase_remaining_budget_seconds": 115.17199999999866
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:25.808691+00:00",
+        "finished_at": "2026-10-15T12:23:25.811164+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 294.8440000000046,
+          "phase_remaining_budget_seconds": 174.85900000000402
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:25.980963+00:00",
+        "finished_at": "2026-10-15T12:23:25.987424+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "ready",
+          "connected": true,
+          "verified_at": "2026-10-15T12:23:25.779462+00:00",
+          "stale": false,
+          "coordinator_pid": 10352
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:26.049542+00:00",
+        "finished_at": "2026-10-15T12:23:26.051702+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "building_worker",
+          "connected": false,
+          "stale": true,
+          "coordinated": true,
+          "coordinator_pid": 10352,
+          "remaining_budget_seconds": 294.6100000000006,
+          "phase_remaining_budget_seconds": 174.625
+        }
+      },
+      {
+        "tool": "creo_startup_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:26.292639+00:00",
+        "finished_at": "2026-10-15T12:23:26.298265+00:00",
+        "elapsed_seconds": 0.0,
+        "response": {
+          "state": "ready",
+          "connected": true,
+          "verified_at": "2026-10-15T12:23:25.779462+00:00",
+          "stale": false,
+          "coordinated": true,
+          "coordinator_pid": 10352
+        }
+      },
+      {
+        "tool": "creo_session_status",
+        "arguments": {},
+        "started_at": "2026-10-15T12:23:26.329090+00:00",
+        "finished_at": "2026-10-15T12:23:31.249165+00:00",
+        "elapsed_seconds": 4.9210000000020955,
+        "response": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0
+        }
+      }
+    ],
+    "original_saved_checkpoint": {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\models\\203a552f3e1046f19e5ef673e378d12c\\output\\bug008_1792066973.prt.4",
+      "sha256": "8d71601ba15832b7db1422db5610f44bc07f68c84c7c3217f40029a3c0713196",
+      "unchanged": true
+    },
+    "final_model_id": "203a552f3e1046f19e5ef673e378d12c",
+    "final_revision": 3
+  },
+  "retry_overlap": {
+    "scope": "Developer real MCP; high-resolution retry overlap, no modeling",
+    "success": true,
+    "rpc_overlap_seconds": 0.004172100001596846,
+    "ready_states": [
+      {
+        "launch_reserved": false,
+        "launch_attempt": 12,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "state": "ready",
+        "connected": true,
+        "message": "Toolkit connection verified; modeling is available",
+        "retry_allowed": false,
+        "updated_at": "2026-10-15T12:20:14.912896+00:00",
+        "coordinator_pid": 15528,
+        "native": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0,
+          "current_model": "▩BUG008_17920666650001",
+          "current_model_code": 0,
+          "model_type": 2,
+          "release_numeric": 44,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 0
+        },
+        "verified_at": "2026-10-15T12:20:14.912896+00:00",
+        "launched_by_coordinator": false,
+        "coordinated": true,
+        "snapshot": true,
+        "verification_age_seconds": 0.468924,
+        "stale": false,
+        "coordinator_running": false,
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.3.1",
+          "latest_version": "0.3.0",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-source.zip",
+          "checked_at": "2026-10-15T12:20:04.892646+00:00",
+          "last_success_at": "2026-10-15T12:20:04.892646+00:00",
+          "message": "当前版本高于最高公开版本，无需降级。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      },
+      {
+        "launch_reserved": false,
+        "launch_attempt": 12,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "state": "ready",
+        "connected": true,
+        "message": "Toolkit connection verified; modeling is available",
+        "retry_allowed": false,
+        "updated_at": "2026-10-15T12:20:14.912896+00:00",
+        "coordinator_pid": 15528,
+        "native": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0,
+          "current_model": "▩BUG008_17920666650001",
+          "current_model_code": 0,
+          "model_type": 2,
+          "release_numeric": 44,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 0
+        },
+        "verified_at": "2026-10-15T12:20:14.912896+00:00",
+        "launched_by_coordinator": false,
+        "snapshot": true,
+        "verification_age_seconds": 0.066412,
+        "stale": false,
+        "coordinator_running": false,
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.3.1",
+          "latest_version": "0.3.0",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-source.zip",
+          "checked_at": "2026-10-15T12:20:06.335064+00:00",
+          "last_success_at": "2026-10-15T12:20:06.335064+00:00",
+          "message": "当前版本高于最高公开版本，无需降级。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      }
+    ],
+    "raw_report": "build/bug008/retry-overlap.json",
+    "low_resolution_native_report_does_not_prove_positive_rpc_overlap": true
+  },
+  "historical_unknown_job": {
+    "job_id": "272513b7238040c68dce4b923725d870",
+    "kind": "generic",
+    "model_id": "27143ef77ce641938543e0ca44cc3c03",
+    "status": "unknown_outcome",
+    "readonly": true,
+    "created_at": "2026-10-15T08:58:36.576982+00:00",
+    "message": "Job exceeded its expected lifetime; inspect runner.log and Creo before retrying",
+    "recovery_required": "Outcome is unconfirmed; preserve reservation and inspect recovery evidence",
+    "recovery": {
+      "job_id": "272513b7238040c68dce4b923725d870",
+      "model_id": "27143ef77ce641938543e0ca44cc3c03",
+      "automatic_replay_allowed": false,
+      "native_result_present": false,
+      "next_steps": "Do not resubmit or clear pending_job. Inspect this job's native result/checkpoint, runner identity and saved file in Creo; preserve the original model/checkpoint. Use creo_session_status and explicit startup retry to recheck the channel. A connected channel does not resolve this job or commit its revision. If the result cannot be verified, operator reconciliation is required.",
+      "runner": {
+        "observed": null,
+        "reason": "No recorded process creation identity"
+      },
+      "model": {
+        "status": "ready",
+        "revision": 9,
+        "pending_job": "272513b7238040c68dce4b923725d870",
+        "last_job": "0eef840c5efc4cd092aa03a631fd4443"
+      },
+      "saved_baseline": {
+        "path": "E:\\Projects\\MCP_CREO_MechDog\\models\\27143ef77ce641938543e0ca44cc3c03\\output\\bug009_1792054655.prt.10",
+        "exists": true,
+        "sha256": "324dd24ebd4d7b682fa9bbb41fbe02bc06b8158b5f43e75dec4b10f0f2323c6e"
+      }
+    },
+    "detail": "compact",
+    "operation_count": 1,
+    "full_result_available": false
+  },
+  "limitations": [
+    "Historical transform/new_part hang/-38 full chain not reproduced; original input/model missing",
+    "Actual damaged Creo automatic recovery not verified",
+    "WorkBuddy final MCP-only acceptance not executed",
+    "Controlled helper success is synthetic and never counted as real modeling",
+    "Other Creo/SDK/host installations not tested",
+    "Standard dev_check remains blocked by an unrelated imported raw-report formatting issue"
+  ],
+  "attempts": [
+    {
+      "report": "build/bug008/native-first-attempt.json",
+      "result": "failed after real retry exposed pre-request ready race; all four accepted jobs terminal"
+    },
+    {
+      "report": "build/bug008/native-second-attempt.json",
+      "result": "all nine accepted jobs terminal; test incorrectly required saved/reloaded on readonly refresh"
+    },
+    {
+      "report": "build/bug008/native-third-attempt.json",
+      "result": "passed before additional phase-deadline enforcement"
+    },
+    {
+      "report": "build/bug008/native-fourth-attempt.json",
+      "result": "passed before completed-attempt deadline cleanup"
+    },
+    {
+      "report": "build/bug008/native-before-independent-solid.json",
+      "result": "passed current production code; after-retry independent geometry assertion then strengthened in the test script"
+    },
+    {
+      "report": "build/bug008/native-final.json",
+      "result": "passed current production fingerprints"
+    }
+  ],
+  "operational_incident": {
+    "action": "Baseline reused old BUG-009 launcher and overwrote ignored raw report/launcher logs",
+    "affected": "build/bug009-mcp-complete.json and launcher output",
+    "preserved": "Tracked BUG-009 validation JSON/Markdown and WorkBuddy reports unchanged; new run saved separately as BUG-008 baseline",
+    "historical_raw_old_hash_no_longer_verifiable_at_original_path": true
+  },
+  "raw_reports": {
+    "build/bug008/baseline-exit.json": {
+      "sha256": "4a14b3c23d7ba952f69c01996b9c0920cc353889654f56013f1016b70ccb3477",
+      "bytes": 48
+    },
+    "build/bug008/baseline-mcp.json": {
+      "sha256": "0af4698a640c4d8d9a62055dedf6b54d4304e772734882cfe02e58845bba7f5d",
+      "bytes": 1155626
+    },
+    "build/bug008/controlled-complete.json": {
+      "sha256": "e49c90dcf2a2ab3714534127bc486f5e868289a3f4c2e6b94200a38fa0480da1",
+      "bytes": 9409
+    },
+    "build/bug008/controlled-final.json": {
+      "sha256": "d7c4a2859464d2b3147e9c7e25efc589bb3f7f0c3df9ca4c04343f40490ba37d",
+      "bytes": 4913
+    },
+    "build/bug008/controlled.json": {
+      "sha256": "240d570a43c52edfa4b59b0226a973f2644dd5508760b97c857f68e785785ac8",
+      "bytes": 4403
+    },
+    "build/bug008/development-check-original-failure.json": {
+      "sha256": "57fd2d3b6d62fb1edabda524f23b3673709a14a8fdb4115ae252e23cc7d4bb22",
+      "bytes": 1214
+    },
+    "build/bug008/native-before-independent-solid-exit.json": {
+      "sha256": "4deb8e42f4fa4ab5f92044f58e3c8b7f3d5983656b5e7d9ae3069d4a80cfd98a",
+      "bytes": 48
+    },
+    "build/bug008/native-before-independent-solid.json": {
+      "sha256": "a9a849413c2dd7c3149bc15be644d07495888f352d48297493e8102eb46ca928",
+      "bytes": 1505968
+    },
+    "build/bug008/native-exit.json": {
+      "sha256": "2fd61a9cba9aa18a7a12b1a9138187c58e9547c72f83ccea0791a4403a5573e6",
+      "bytes": 48
+    },
+    "build/bug008/native-final-exit.json": {
+      "sha256": "9e3a3c3b0445ecc8fc54a3cc427f6b20ffee1f0e8551901bd1b5e51df0a0fc07",
+      "bytes": 48
+    },
+    "build/bug008/native-final.json": {
+      "sha256": "846a97b930888f58407ea92bdd36ef055b62d280634817319d73d18d35c9f649",
+      "bytes": 1611623
+    },
+    "build/bug008/native-first-attempt-exit.json": {
+      "sha256": "2fd61a9cba9aa18a7a12b1a9138187c58e9547c72f83ccea0791a4403a5573e6",
+      "bytes": 48
+    },
+    "build/bug008/native-first-attempt.json": {
+      "sha256": "eae2753be0bb28e478d5e966c26770cdfd3c493a14bb9c72f10b257d89103e3d",
+      "bytes": 827973
+    },
+    "build/bug008/native-fourth-attempt-exit.json": {
+      "sha256": "764edfd17c0750b4ff075fd0ea1577a6a6bd5f7f9c125270cdbd98e89e628b3b",
+      "bytes": 48
+    },
+    "build/bug008/native-fourth-attempt.json": {
+      "sha256": "d9574a801536d06da9246a192388b34207384135c440ce4dd5f7b49393ed3658",
+      "bytes": 1501266
+    },
+    "build/bug008/native-second-attempt-exit.json": {
+      "sha256": "bab536fac874600ebe5381a9f6171082a528511e8a9c910bd9763a5bdb8ef4c2",
+      "bytes": 48
+    },
+    "build/bug008/native-second-attempt.json": {
+      "sha256": "c40fc970ab267d44f357e05d1ab293248f2c459fe174444e0f2d91f07bbc1d34",
+      "bytes": 1393354
+    },
+    "build/bug008/native-third-attempt-exit.json": {
+      "sha256": "0832cdecbf5ca24cd2ba41b820278c449fc8d56d30bcc0d3a7eb24206af5fc38",
+      "bytes": 48
+    },
+    "build/bug008/native-third-attempt.json": {
+      "sha256": "0dd8ec658560fffcec3375c36719cffa4fa88c2933015c00aa7c109c2fd328c3",
+      "bytes": 1517246
+    },
+    "build/bug008/native.json": {
+      "sha256": "eae2753be0bb28e478d5e966c26770cdfd3c493a14bb9c72f10b257d89103e3d",
+      "bytes": 827973
+    },
+    "build/bug008/retry-overlap-before-cleanup.json": {
+      "sha256": "5ba8be7aedda88b04f8d2343f615336ef8f91ecd5b718062f9771f04b3871d8c",
+      "bytes": 358995
+    },
+    "build/bug008/retry-overlap.json": {
+      "sha256": "030c604b1306cb7859c1f4e09e6bb425fcf0961d8d6db913425241beb36b96f8",
+      "bytes": 375689
+    },
+    "build/bug008/scoped-style.json": {
+      "sha256": "1769bce5ca919fbbd898a741579e8a858e22dbaaa457906ce875df226ca1664a",
+      "bytes": 12915
+    },
+    "build/bug008/unit-test-report.json": {
+      "sha256": "5805c536ab8e4e3f3a36ab9c6695d196ee0e52b8cd883d975bd376de0cbc1244",
+      "bytes": 135
+    }
+  }
+}

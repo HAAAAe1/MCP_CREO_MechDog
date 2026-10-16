@@ -13,6 +13,7 @@ import time
 from contextlib import contextmanager
 from ctypes import wintypes
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterator
 
@@ -23,9 +24,19 @@ import win32process
 import win32security
 
 import bridge
+from creo_mechdog.startup_state import StartupStateError, archive_preboot_state, read_startup_state
+from creo_mechdog.windows_boot import BOOT_QUERY_BUDGET_SECONDS, boot_info
 
 LOG = logging.getLogger(__name__)
-ACTIVE = {"checking", "building_worker", "starting", "waiting_for_connection"}
+ACTIVE = {
+    "checking",
+    "waiting_for_channel",
+    "building_worker",
+    "starting",
+    "waiting_for_connection",
+}
+PREPARATION_BUDGET = 180
+READY_FRESHNESS_SECONDS = 30
 
 
 @dataclass(frozen=True)
@@ -289,6 +300,11 @@ class CreoStartup:
         self._retry_for_attempt: int | None = None
         self._stop = threading.Event()
         self._directory: Path | None = None
+        self._attempt_deadline: float | None = None
+        self._attempt_started: float | None = None
+        self._phase_deadline: float | None = None
+        self._requested_at = bridge.now()
+        self._expired = False
         self._state = {
             "state": "checking",
             "connected": False,
@@ -298,6 +314,15 @@ class CreoStartup:
 
     def _publish(self, state: str, message: str, *, shared: bool = True, **fields) -> dict:
         with self._mutex:
+            if any(
+                time.monotonic() >= limit
+                for limit in (self._attempt_deadline, self._phase_deadline)
+                if limit is not None
+            ):
+                self._expired = True
+            if self._expired and (state in ACTIVE or state == "ready"):
+                state = "timeout"
+                message = "Startup total budget expired; inspect the in-flight phase and occupying job before retrying. Existing Creo and reservations were preserved."
             retained = {
                 key: self._state[key]
                 for key in (
@@ -305,9 +330,21 @@ class CreoStartup:
                     "launch_attempt",
                     "auto_start_enabled",
                     "selected_session_configured",
+                    "coordination_error",
+                    "launch_state_known",
+                    "automatic_launch_allowed",
+                    "startup_recovery",
                 )
                 if key in self._state
             }
+            if state == "timeout":
+                retained.update(
+                    {
+                        key: self._state[key]
+                        for key in ("busy", "native", "in_flight_phase")
+                        if key in self._state
+                    }
+                )
             value = {
                 **retained,
                 "state": state,
@@ -315,11 +352,13 @@ class CreoStartup:
                 "message": message,
                 "retry_allowed": state not in ACTIVE and state != "ready",
                 "updated_at": bridge.now(),
+                "coordinator_pid": os.getpid(),
+                "phase_deadline_monotonic": self._phase_deadline,
                 **fields,
             }
             self._state = value
         if shared and self._directory:
-            bridge.write_json(self._directory / "state.json", value)
+            bridge.write_json(self._directory / "state.json", value, durable=True)
             with (self._directory / "startup.log").open("a", encoding="utf-8") as log:
                 log.write(
                     f"{value['updated_at']} state={state} connected={value['connected']} message={message}\n"
@@ -328,7 +367,65 @@ class CreoStartup:
 
     def status(self) -> dict:
         with self._mutex:
-            return dict(self._state)
+            value = dict(self._state)
+            running = bool(self._thread and self._thread.is_alive())
+            if running and self._attempt_deadline is not None:
+                phase_deadline = self._phase_deadline or value.get("phase_deadline_monotonic")
+                effective_deadline = (
+                    min(self._attempt_deadline, phase_deadline)
+                    if phase_deadline is not None
+                    else self._attempt_deadline
+                )
+                value["remaining_budget_seconds"] = max(
+                    0, self._attempt_deadline - time.monotonic()
+                )
+                if phase_deadline is not None:
+                    value["phase_remaining_budget_seconds"] = max(
+                        0, phase_deadline - time.monotonic()
+                    )
+                if time.monotonic() >= effective_deadline:
+                    self._expired = True
+                    value.update(
+                        state="timeout",
+                        connected=False,
+                        retry_allowed=False,
+                        in_flight_phase=self._state.get(
+                            "in_flight_phase", self._state.get("state")
+                        ),
+                        message="Startup phase/total budget expired while the coordinator call is still in flight. No second coordinator or Creo will be started; inspect its phase, occupying job and build logs. Retry after that call returns. If it never returns, preserve jobs/models and restart the MCP connector; do not delete reservations or terminate Creo as automatic recovery.",
+                    )
+                    self._state = dict(value)
+            health = bridge.channel_health()
+            verified_at = value.get("verified_at")
+            if (
+                value.get("connected")
+                and health.get("connected") is False
+                and health.get("checked_at", "") >= (verified_at or "")
+            ):
+                value.update(
+                    state="timeout",
+                    connected=False,
+                    retry_allowed=not running,
+                    message="Toolkit verification was invalidated by a subsequent failure; inspect channel_health and request explicit retry",
+                    channel_health=health,
+                )
+                self._state = dict(value)
+            age = None
+            if verified_at:
+                age = max(
+                    0,
+                    (
+                        datetime.now(timezone.utc) - datetime.fromisoformat(verified_at)
+                    ).total_seconds(),
+                )
+            value.update(
+                snapshot=True,
+                verification_age_seconds=age,
+                stale=not value.get("connected") or age is None or age > READY_FRESHNESS_SECONDS,
+                coordinator_running=running,
+            )
+            value.pop("phase_deadline_monotonic", None)
+            return value
 
     def start(self, retry: bool = False) -> dict:
         with self._mutex:
@@ -340,18 +437,29 @@ class CreoStartup:
                     except (ValueError, OSError):
                         directory = None
                 state_path = directory / "state.json" if directory else None
-                prior = (
-                    bridge.read_json(state_path)
-                    if state_path and state_path.is_file()
-                    else self._state
-                )
-                self._retry_for_attempt = prior.get("launch_attempt", 0)
+                try:
+                    prior = (
+                        read_startup_state(state_path, bridge.read_json)
+                        if state_path
+                        else self._state
+                    )
+                    self._retry_for_attempt = prior.get("launch_attempt", 0)
+                except StartupStateError:
+                    # Start a bounded, non-launching recheck instead of throwing
+                    # synchronously from the public retry tool. Never authorize
+                    # replacing an unknown launch reservation with attempt zero.
+                    self._retry_for_attempt = None
             if self._thread and self._thread.is_alive():
                 # A client may request retry while startup is still checking a
                 # previous reservation. Keep the request instead of dropping it.
                 self._retry_requested |= retry
-                return dict(self._state)
+                return self.status()
             self._retry_requested = retry
+            self._expired = False
+            self._attempt_started = time.monotonic()
+            self._requested_at = bridge.now()
+            self._attempt_deadline = None
+            self._phase_deadline = None
             self._stop.clear()
             self._state = {
                 "state": "checking",
@@ -382,10 +490,30 @@ class CreoStartup:
         if running:
             state = self.status()
             return {**state.get("native", {}), **state, "startup": state}
-        native = bridge.session_status(connect_timeout_seconds=2)
+        try:
+            native = bridge.session_status(connect_timeout_seconds=2, build_worker=False)
+        except bridge.ToolkitBusy as exc:
+            return {
+                "connected": False,
+                "connection_state": "busy",
+                **exc.payload,
+                "startup": self.status(),
+            }
+        except (RuntimeError, OSError) as exc:
+            native = {
+                "connected": False,
+                "connection_state": "probe_failed",
+                "message": f"Toolkit probe failed ({type(exc).__name__}); inspect the session and worker, then request explicit retry",
+            }
         if native.get("connected"):
-            self._publish("ready", "Toolkit connection verified", shared=False, native=native)
-        elif self.status()["state"] == "ready":
+            self._publish(
+                "ready",
+                "Toolkit connection verified",
+                shared=False,
+                native=native,
+                verified_at=bridge.now(),
+            )
+        else:
             self._publish(
                 "timeout",
                 "Toolkit connection is no longer available; inspect Creo and request creo_startup_status(retry=true)",
@@ -400,18 +528,75 @@ class CreoStartup:
         try:
             settings = Settings.load()
             self._directory = self._target_directory(settings)
-            deadline = time.monotonic() + settings.timeout + 180
+            deadline = (
+                (self._attempt_started if self._attempt_started is not None else time.monotonic())
+                + settings.timeout
+                + PREPARATION_BUDGET
+            )
+            self._attempt_deadline = deadline
             while not self._stop.is_set():
                 try:
                     with coordination_lock(self._directory):
+                        state_path = self._directory / "state.json"
+                        try:
+                            shared = read_startup_state(state_path, bridge.read_json)
+                        except StartupStateError as exc:
+                            if not self._restore_preboot_history(settings, exc, deadline):
+                                self._recheck_untrusted_state(settings, exc)
+                                return
+                            shared = read_startup_state(state_path, bridge.read_json)
+                        if (
+                            shared.get("state") not in ACTIVE
+                            and shared.get("updated_at", "") >= self._requested_at
+                        ):
+                            with self._mutex:
+                                self._state = {**shared, "coordinated": True}
+                            return
                         self._drive(settings, retry, deadline)
                     return
                 except CoordinatorBusy:
                     state_path = self._directory / "state.json"
                     if state_path.is_file():
-                        shared = bridge.read_json(state_path)
+                        try:
+                            shared = read_startup_state(state_path, bridge.read_json)
+                        except StartupStateError as exc:
+                            # The active coordinator might be reconciling this
+                            # history. Only its lock holder may back up/replace it.
+                            self._publish(
+                                "checking",
+                                "Waiting for the shared coordinator before reconciling unreadable startup history",
+                                shared=False,
+                                coordination_error=exc.payload,
+                            )
+                            if time.monotonic() >= deadline:
+                                self._publish(
+                                    "timeout",
+                                    "Shared startup coordinator remained busy; preserve history and retry after it finishes",
+                                    shared=False,
+                                )
+                                return
+                            self._stop.wait(0.5)
+                            continue
                         with self._mutex:
-                            self._state = {**shared, "coordinated": True}
+                            # A pre-retry ready snapshot cannot satisfy a new check.
+                            # Otherwise polling can see ready, then regress to building.
+                            if (
+                                shared.get("state") in ACTIVE
+                                or shared.get("updated_at", "") >= self._requested_at
+                            ):
+                                self._state = {**shared, "coordinated": True}
+                            else:
+                                self._state.update(
+                                    state="checking",
+                                    connected=False,
+                                    message="Waiting for the shared coordinator; previous ready has not verified this retry",
+                                    coordinated=True,
+                                )
+                        if (
+                            shared.get("state") not in ACTIVE
+                            and shared.get("updated_at", "") >= self._requested_at
+                        ):
+                            return
                     if time.monotonic() >= deadline:
                         self._publish(
                             "timeout",
@@ -420,6 +605,15 @@ class CreoStartup:
                         )
                         return
                     self._stop.wait(0.5)
+        except StartupStateError as exc:
+            self._recheck_untrusted_state(settings, exc)
+        except subprocess.TimeoutExpired as exc:
+            self._publish(
+                "timeout",
+                "Native build/preparation subprocess exceeded its budget; inspect build logs and retry after preparation has returned. No Creo process was closed.",
+                subprocess_budget_seconds=exc.timeout,
+                shared=False,
+            )
         except Exception as exc:
             # Exceptions may carry local paths; never echo raw launch environment,
             # configured session IDs, process command lines or PSF/license text.
@@ -430,6 +624,14 @@ class CreoStartup:
                 else f"Startup preparation failed ({type(exc).__name__}); check installation/configuration and build logs"
             )
             self._publish("configuration_error", message, shared=False)
+        finally:
+            # Deadlines bound this attempt, not a later explicit live probe.
+            with self._mutex:
+                self._attempt_deadline = None
+                self._phase_deadline = None
+                self._state.pop("phase_deadline_monotonic", None)
+                if self._state.get("state") not in ACTIVE and self._state.get("state") != "ready":
+                    self._state["retry_allowed"] = True
 
     def _target_directory(self, settings: Settings) -> Path:
         if self._directory_override:
@@ -444,9 +646,171 @@ class CreoStartup:
             / hashlib.sha256(target.encode()).hexdigest()[:24]
         )
 
+    def _recheck_untrusted_state(self, settings: Settings, error: StartupStateError) -> None:
+        """Only inspect/reconnect; unreadable history cannot authorize a new launch."""
+        details = {
+            "coordination_error": error.payload,
+            "launch_state_known": False,
+            "automatic_launch_allowed": False,
+            "launch_reserved": True,
+        }
+        try:
+            current = inventory(settings)
+        except (OSError, RuntimeError) as exc:
+            self._publish(
+                "selection_required",
+                f"Existing-session inventory failed ({type(exc).__name__}); preserve startup history and inspect Creo manually",
+                shared=False,
+                **details,
+            )
+            return
+        if (
+            current["uncertain"]
+            or any(not p["matches"] for p in current["processes"])
+            or (not current["processes"] and not settings.selected)
+        ):
+            self._publish(
+                "selection_required", error.payload["recovery_required"], shared=False, **details
+            )
+            return
+        self._publish(
+            "waiting_for_connection",
+            "Checking the existing session without replacing unknown startup history",
+            shared=False,
+            **details,
+        )
+        deadline = min(self._attempt_deadline or float("inf"), time.monotonic() + settings.timeout)
+        self._phase_deadline = deadline
+        native = None
+        try:
+            while not self._stop.is_set() and time.monotonic() < deadline:
+                try:
+                    native = bridge.session_status(connect_timeout_seconds=2, build_worker=False)
+                    break
+                except bridge.ToolkitBusy as exc:
+                    self._publish(
+                        "waiting_for_connection",
+                        "Waiting for the occupying Toolkit operation before checking the existing session; unknown startup history is preserved",
+                        shared=False,
+                        busy=exc.payload,
+                        **details,
+                    )
+                    self._stop.wait(0.25)
+        except (RuntimeError, OSError) as exc:
+            self._publish(
+                "selection_required",
+                f"Existing-session probe failed ({type(exc).__name__}); preserve startup history and inspect Creo before retrying",
+                shared=False,
+                **details,
+            )
+            return
+        if native is None:
+            if not self._stop.is_set():
+                self._publish(
+                    "timeout",
+                    "Existing-session recheck exceeded its connection budget; inspect the occupying operation and preserve unknown startup history",
+                    shared=False,
+                    **details,
+                )
+            return
+        if native.get("connected"):
+            self._publish(
+                "ready",
+                "Existing Toolkit connection verified; startup history remains untrusted and automatic replacement is disabled",
+                shared=False,
+                native=native,
+                verified_at=bridge.now(),
+                **details,
+            )
+        else:
+            self._publish(
+                "selection_required",
+                error.payload["recovery_required"],
+                shared=False,
+                native=native,
+                **details,
+            )
+
+    def _restore_preboot_history(
+        self, settings: Settings, error: StartupStateError, deadline: float
+    ) -> bool:
+        """Reconcile only a dead previous boot's launch history, under its lock."""
+
+        def blocked(reason: str) -> bool:
+            error.payload["automatic_recovery"] = {
+                "status": "blocked",
+                "reason": reason,
+                "boot_query_budget_seconds": BOOT_QUERY_BUDGET_SECONDS,
+            }
+            return False
+
+        if not settings.auto_start or settings.selected:
+            return blocked("Automatic startup is disabled or an explicit session is selected")
+        current = inventory(settings)
+        if current["uncertain"] or current["processes"]:
+            return blocked(
+                "An existing or uncertain session must be verified without replacing history"
+            )
+        self._publish(
+            "checking",
+            "Verifying whether unreadable startup history predates this Windows boot",
+            shared=False,
+            coordination_error=error.payload,
+        )
+        # This phase shares the original preparation/total budget; no reset.
+        recovery_deadline = min(deadline, time.monotonic() + PREPARATION_BUDGET)
+        self._phase_deadline = recovery_deadline
+        boot = boot_info()
+        if boot is None:
+            return blocked("OS boot time could not be independently verified")
+        evidence = None
+        while not self._stop.is_set() and time.monotonic() < recovery_deadline:
+            try:
+                with bridge.toolkit_lock(operation="startup_history_recovery"):
+                    current = inventory(settings)
+                    if current["uncertain"] or current["processes"]:
+                        return blocked("A session appeared while acquiring the recovery locks")
+                    evidence = archive_preboot_state(self._directory / "state.json", boot)
+                    # Archive and replacement are durable before any GUI launch.
+                    # Only startup bookkeeping is reset; jobs/models are untouched.
+                    self._publish(
+                        "checking",
+                        "Previous-boot startup history was archived; checking configured Creo startup",
+                        launch_reserved=False,
+                        launch_attempt=0,
+                        launch_state_known=True,
+                        automatic_launch_allowed=True,
+                        coordination_error=None,
+                        startup_recovery=evidence,
+                    )
+                    return True
+            except bridge.ToolkitBusy as exc:
+                self._publish(
+                    "waiting_for_channel",
+                    "Waiting for the Toolkit owner before reconciling previous-boot startup history",
+                    shared=False,
+                    busy=exc.payload,
+                    coordination_error=error.payload,
+                )
+                self._stop.wait(0.25)
+            except (StartupStateError, OSError) as exc:
+                if evidence is not None:
+                    with self._mutex:
+                        self._state["startup_recovery"] = {
+                            **evidence,
+                            "status": "archived_replacement_failed",
+                        }
+                reason = (
+                    str(exc)
+                    if isinstance(exc, StartupStateError)
+                    else (f"Backup or durable startup-state write failed ({type(exc).__name__})")
+                )
+                return blocked(reason)
+        return blocked("Startup-history reconciliation exceeded its budget or was stopped")
+
     def _drive(self, settings: Settings, retry: bool, deadline: float) -> None:
         state_path = self._directory / "state.json"
-        previous = bridge.read_json(state_path) if state_path.is_file() else {}
+        previous = read_startup_state(state_path, bridge.read_json)
         self._publish(
             "checking",
             "Inspecting existing Creo processes",
@@ -454,6 +818,9 @@ class CreoStartup:
             selected_session_configured=settings.selected,
             launch_reserved=previous.get("launch_reserved", False),
             launch_attempt=previous.get("launch_attempt", 0),
+            coordination_error=None,
+            launch_state_known=True,
+            automatic_launch_allowed=settings.auto_start,
         )
         initial = inventory(settings)
         if initial["uncertain"] or any(not p["matches"] for p in initial["processes"]):
@@ -468,22 +835,40 @@ class CreoStartup:
             )
             return
         self._publish(
-            "building_worker",
-            "Preparing the native connection worker",
+            "waiting_for_channel",
+            "Waiting for the single Toolkit channel before native preparation",
             auto_start_enabled=settings.auto_start,
         )
         # Existing build_native has its own bounded subprocess timeouts. This
         # preparation is background work; no MCP handshake is held up by it.
-        preparation_deadline = time.monotonic() + 180
+        preparation_deadline = min(
+            deadline,
+            self._phase_deadline
+            if self._phase_deadline is not None
+            else time.monotonic() + PREPARATION_BUDGET,
+        )
+        self._phase_deadline = preparation_deadline
         while not self._stop.is_set():
+            if time.monotonic() >= preparation_deadline:
+                self._publish(
+                    "timeout",
+                    "Native preparation budget expired; inspect the occupying operation/build logs before retrying",
+                )
+                return
             try:
                 with bridge.toolkit_lock(operation="startup_build"):
+                    self._publish(
+                        "building_worker",
+                        "Building/verifying the native worker",
+                        preparation_budget_seconds=PREPARATION_BUDGET,
+                    )
                     bridge.build_native()
                 break
-            except bridge.ToolkitBusy:
+            except bridge.ToolkitBusy as exc:
                 self._publish(
-                    "building_worker",
+                    "waiting_for_channel",
                     "Toolkit is busy with an existing task; waiting without launching Creo",
+                    busy=exc.payload,
                 )
                 if time.monotonic() >= preparation_deadline:
                     self._publish(
@@ -494,8 +879,15 @@ class CreoStartup:
                 self._stop.wait(0.5)
         if self._stop.is_set():
             return
-        # The configured startup wait budget begins after native preparation.
-        deadline = time.monotonic() + settings.timeout
+        if time.monotonic() >= preparation_deadline:
+            self._publish(
+                "timeout",
+                "Native preparation exceeded its budget; the build returned, but no connection was verified. Inspect build logs and retry.",
+            )
+            return
+        # Connection gets its configured share, never a fresh total retry budget.
+        deadline = min(deadline, time.monotonic() + settings.timeout)
+        self._phase_deadline = deadline
         launched = False
         process = None
         attempt = previous.get("launch_attempt", 0)
@@ -517,7 +909,7 @@ class CreoStartup:
                         "basis": "no Creo process in this Windows session; Toolkit not yet probed",
                     }
                 else:
-                    native = bridge.session_status(connect_timeout_seconds=2)
+                    native = bridge.session_status(connect_timeout_seconds=2, build_worker=False)
             except RuntimeError:
                 self._publish(
                     "waiting_for_connection",
@@ -531,10 +923,14 @@ class CreoStartup:
                     "ready",
                     "Toolkit connection verified; modeling is available",
                     native=native,
+                    verified_at=bridge.now(),
                     launched_by_coordinator=launched,
                     launch_reserved=False,
                     launch_attempt=attempt,
                 )
+                return
+            if native.get("connection_state") in ("probe_timeout", "worker_unavailable"):
+                self._publish("timeout", native["message"], native=native)
                 return
             if native.get("connection_state") == "ambiguous":
                 self._publish(

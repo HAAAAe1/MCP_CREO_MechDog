@@ -1,0 +1,1115 @@
+{
+  "work_item": "BUG-008",
+  "date": "2026-10-16",
+  "timezone": "Asia/Shanghai",
+  "recorded_at": "2026-10-16T01:57:16.830979+00:00",
+  "status": "native_passed_final_workbuddy_pending",
+  "source_commit": "001a4b8088344249c0a04eca0dbe6dc923435950",
+  "branch": "codex/bug-008-channel-recovery",
+  "dirty": true,
+  "version": "0.3.1",
+  "source_fingerprints_lf_normalized": {
+    "bridge.py": "84eb1e0ec34fd208b28f403816f7bb876f0b67ea982b750b5d5f1eefdc677a85",
+    "generic_bridge.py": "f3d4cc91ce54099b761ca76d430574ba1f7ae54f9ae57ffbbae01f7ea97b4f51",
+    "creo_startup.py": "7d803ee8c679da483080c9e3cda31b6cf276178383542a9b5e3fac82885c2a22",
+    "server.py": "a2389f8c97d36d1d687e7d508cf3fc3c545cb6574e8b7651267f74d29f6f0e60",
+    "src/creo_mechdog/startup_state.py": "5b482745c0dfd93fc2ec699a1071b6c6cac1bca17944e854941bef197cda9e4c",
+    "src/creo_mechdog/windows_boot.py": "4b3d521e3387eed0668317501e1ee6db7a81d32358c9fbd898c24957455bc6da",
+    "src/creo_mechdog/recovery.py": "f64bc43164e7e75a51b7be1f29e152a5ad588a71c4f055f7cf549f92a4180e4f",
+    "native/result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220",
+    "tests/unit/test_startup_reboot.py": "24b9b8298f65c0b5ac9535e4a96d0a7e384179e5a2389f2322a728437ad3f081",
+    "tests/unit/test_startup_retry.py": "a4166ea23fb0f8e4e0dee1ee09240f592a980b31330f51ebaa933ac6b04ccda3",
+    "tools/test_startup_retry.py": "2eba4f15bb953f7d1492206f4f2a57c587dae01a9866ceca353845cc9db68960"
+  },
+  "worker_sha256": "4bb3c984d9c083f271bb7760f48b968bd5ede6b9e83e9031b328d2d9754f786b",
+  "native_source_changed_in_this_round": false,
+  "environment": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14",
+    "creo": "12.4.0.0",
+    "toolkit_release_numeric": 44
+  },
+  "triggering_workbuddy_report": {
+    "bytes": 16561,
+    "sha256": "b653c3afc54bd35e61461cee3ec7e5a200366e1de22806b69dd1a16da601610f"
+  },
+  "workbuddy_review": {
+    "passed": [
+      "runtime identity",
+      "single and overlapping retry in an existing session",
+      "real connection",
+      "120 mm3 modeling and saved reload",
+      "unknown protection"
+    ],
+    "still_failed_before_this_round": "cold automatic startup with corrupted launch history",
+    "new_implementation_final_blackbox": "not_run"
+  },
+  "guarded_recovery": {
+    "boot_source": "Win32_OperatingSystem.LastBootUpTime cross-checked with GetTickCount64",
+    "boot_query_budget_seconds": 5,
+    "maximum_clock_disagreement_seconds": 2,
+    "file_boot_margin_seconds": 5,
+    "requires": [
+      "startup coordination lock",
+      "Toolkit channel lock",
+      "no existing or uncertain session",
+      "auto-start enabled and no explicit session selection",
+      "creation and modification both predate verified OS boot",
+      "durable archive before atomic durable replacement"
+    ],
+    "preserves": [
+      "original damaged bytes",
+      "unknown modeling jobs",
+      "pending_job",
+      "model revision",
+      "saved baseline"
+    ],
+    "preparation_budget_seconds": 180,
+    "default_total_budget_seconds": 300
+  },
+  "checks": {
+    "units": {
+      "version": "0.3.1",
+      "timestamp": 1792114394.821021,
+      "tests_run": 246,
+      "success": true,
+      "failures": 0,
+      "errors": 0
+    },
+    "standard_development_check": {
+      "success": false,
+      "command": ".venv/Scripts/python.exe tools/dev_check.py --work-item BUG-008 --skip-unit",
+      "regressions": [
+        "docs/validation/2026-10-15_CREO_0.3.0_旧版ToolkitSDK原生编译失败.md: new or changed file must pass its formatter",
+        "docs/validation/feedback-2026-10-16/2026-10-16常驻回调注册负担与版本发现缺口.md: new or changed file must pass its formatter"
+      ]
+    },
+    "supplemental_style": {
+      "success": true,
+      "command": ".venv/Scripts/python.exe -m build.bug008-reboot-auto.check-scoped-raw-reports",
+      "excluded_files": {
+        "docs/validation/2026-10-15_CREO_0.3.0_旧版ToolkitSDK原生编译失败.md": "06bee49ffbf1922395a76a705a449b9a65c7a09c8af96ca9ee5704bb072f52f9",
+        "docs/validation/feedback-2026-10-16/2026-10-16常驻回调注册负担与版本发现缺口.md": "00ccd9c774372494ee5aea4cccaed3c709b04436ae66f3426e5c0ca9b49d7792"
+      },
+      "baseline_unchanged": true
+    }
+  },
+  "preflight": {
+    "captured_at": "2026-10-16T01:25:14.908172+00:00",
+    "startup_state": {
+      "path": "C:\\Users\\Administrator\\AppData\\Local\\MCP_CREO_MechDog\\startup\\6235eee86323f49c8d99f96a\\state.json",
+      "bytes": 380,
+      "all_nul": true,
+      "sha256": "08c3e5bbea4fba57201a69d4bf70a0d255df921fdef4924c22da087f9338c2bc",
+      "modified_ns": 1792069797120754200,
+      "created_ns": 1792069797120754200
+    },
+    "boot": {
+      "started_at": "2026-10-16T00:50:38.500000+00:00",
+      "time_ns": 1792111838500000000,
+      "source": "Win32_OperatingSystem.LastBootUpTime cross-checked with GetTickCount64",
+      "query_budget_seconds": 5
+    },
+    "inventory": {
+      "processes": [
+        {
+          "pid": 14692,
+          "created": 134365860766238343,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Parametric\\bin\\parametric.exe",
+          "matches": true
+        },
+        {
+          "pid": 12036,
+          "created": 134365860776192073,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+          "matches": true
+        }
+      ],
+      "uncertain": false
+    },
+    "startup_lock_available": true,
+    "session": {
+      "connected": true,
+      "connection_state": "connected",
+      "toolkit_code": 0,
+      "current_model": "▩BUG008_RETRY_179210001",
+      "current_model_code": 0,
+      "model_type": 2,
+      "release_numeric": 44,
+      "disconnect_code": 0,
+      "feature_creation_license": "requires_actual_modeling_test",
+      "worker_exit_code": 0
+    }
+  },
+  "graceful_exit_attempts": {
+    "dotnet_no_main_window": {
+      "started_at": "2026-10-16T01:27:10.363749+00:00",
+      "user_authorized_graceful_exit": true,
+      "exit_requested": true,
+      "before_exit": {
+        "processes": [
+          {
+            "pid": 14692,
+            "created": 134365860766238343,
+            "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Parametric\\bin\\parametric.exe",
+            "matches": true
+          },
+          {
+            "pid": 12036,
+            "created": 134365860776192073,
+            "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+            "matches": true
+          }
+        ],
+        "uncertain": false
+      },
+      "normal_exit_returncode": 0,
+      "normal_exit_result": "False",
+      "after_exit": {
+        "processes": [
+          {
+            "pid": 14692,
+            "created": 134365860766238343,
+            "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Parametric\\bin\\parametric.exe",
+            "matches": true
+          },
+          {
+            "pid": 12036,
+            "created": 134365860776192073,
+            "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+            "matches": true
+          }
+        ],
+        "uncertain": false
+      },
+      "failure": "AssertionError: Creo still exists (possibly an exit/save confirmation); no dismissal or forced termination was attempted",
+      "finished_at": "2026-10-16T01:27:30.686322+00:00"
+    },
+    "normal_window_close": {
+      "started_at": "2026-10-16T01:29:23.306347+00:00",
+      "user_authorized_graceful_exit": true,
+      "exit_requested": true,
+      "before_exit": {
+        "processes": [
+          {
+            "pid": 14692,
+            "created": 134365860766238343,
+            "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Parametric\\bin\\parametric.exe",
+            "matches": true
+          },
+          {
+            "pid": 12036,
+            "created": 134365860776192073,
+            "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+            "matches": true
+          }
+        ],
+        "uncertain": false
+      },
+      "normal_exit_returncode": 0,
+      "normal_exit_result": "False",
+      "normal_wm_close_hwnd": 591604,
+      "after_exit": {
+        "processes": [
+          {
+            "pid": 14692,
+            "created": 134365860766238343,
+            "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Parametric\\bin\\parametric.exe",
+            "matches": true
+          },
+          {
+            "pid": 12036,
+            "created": 134365860776192073,
+            "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+            "matches": true
+          }
+        ],
+        "uncertain": false
+      },
+      "failure": "AssertionError: Creo still exists (possibly an exit/save confirmation); no dismissal or forced termination was attempted",
+      "finished_at": "2026-10-16T01:29:43.590637+00:00"
+    }
+  },
+  "latest_inventory": {
+    "checked_at": "2026-10-16T01:50:35.123883+00:00",
+    "inventory": {
+      "processes": [],
+      "uncertain": false
+    }
+  },
+  "post_client_reconnect": {
+    "started_at": "2026-10-16T01:55:34.377424+00:00",
+    "success": true,
+    "inventory_before": {
+      "processes": [
+        {
+          "pid": 19712,
+          "created": 134365890752695389,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Parametric\\bin\\parametric.exe",
+          "matches": true
+        },
+        {
+          "pid": 7936,
+          "created": 134365890761816923,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+          "matches": true
+        }
+      ],
+      "uncertain": false
+    },
+    "runtime": {
+      "python_executable": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\pythonw.exe",
+      "server_entry": "E:\\Projects\\MCP_CREO_MechDog\\server.py",
+      "code_root": "E:\\Projects\\MCP_CREO_MechDog",
+      "python_package_root": "E:\\Projects\\MCP_CREO_MechDog\\src\\creo_mechdog",
+      "resource_root": "E:\\Projects\\MCP_CREO_MechDog",
+      "data_root": "E:\\Projects\\MCP_CREO_MechDog",
+      "source_fingerprints_at_startup": {
+        "server.py": "a2389f8c97d36d1d687e7d508cf3fc3c545cb6574e8b7651267f74d29f6f0e60",
+        "bridge.py": "84eb1e0ec34fd208b28f403816f7bb876f0b67ea982b750b5d5f1eefdc677a85",
+        "creo_startup.py": "7d803ee8c679da483080c9e3cda31b6cf276178383542a9b5e3fac82885c2a22",
+        "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
+        "src/creo_mechdog/paths.py": "389dca158e3a7d02337ca3a099a1872bf858e38cc8108d78172cff235256dff5",
+        "src/creo_mechdog/references.py": "584a6c6ae235e798d3a97e26c6af3c3509a518db2e7495d6cecd496dcfa1c640",
+        "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+        "src/creo_mechdog/blend_callback.py": "5d7cd97d46d52dd08080ccd117ef14748b0fd16600477e9467d5a6450c1d2e5f",
+        "src/creo_mechdog/recovery.py": "f64bc43164e7e75a51b7be1f29e152a5ad588a71c4f055f7cf549f92a4180e4f",
+        "src/creo_mechdog/startup_state.py": "5b482745c0dfd93fc2ec699a1071b6c6cac1bca17944e854941bef197cda9e4c",
+        "src/creo_mechdog/windows_boot.py": "4b3d521e3387eed0668317501e1ee6db7a81d32358c9fbd898c24957455bc6da",
+        "src/creo_mechdog/schema.py": "9cbd671d85d738ff9cc9dae4ebb2926034457aea71950e6d802cf7d825c2998d",
+        "src/creo_mechdog/profile_checks.py": "c160c3b2d800eb84b7aca2f7ddc4e7ce3e46e10498ce2cc799fafd7cfa83df24",
+        "src/creo_mechdog/airfoil.py": "5adbf9d2205239f02d4b974c7fee405c47c81b3cf6201e18966109ad1595d176",
+        "version.py": "03d9ad0a146f85ae2f6ed7042adea89d8a2996ea818f2614c906c6f7d79baa94",
+        "generic_bridge.py": "f3d4cc91ce54099b761ca76d430574ba1f7ae54f9ae57ffbbae01f7ea97b4f51",
+        "schema.py": "dfb81ba2a123612ac98fbe21993f24a85b778afb9b6d0b1ebcfece7acba97cdd",
+        "profile_checks.py": "6a06b4b215952e13adb182b2adb07539c28dabcaedd857b39381b0b1b57e5731",
+        "airfoil.py": "8897c9b792e0ef67b9ee3aaab03d4f473014ce2ae3894b74ddac5d7e83c250d6",
+        "native/worker.cpp": "128306b8f392cf13590383f8a08ba1869b1bd21c8a10fbbd186d7fe7b034c7ad",
+        "native/generic.cpp": "e35ce3967b6c70486bed8d25581dee6fbd15fe8cfab4ed586f2fad31ceb27c3a",
+        "native/drawing.cpp": "d280916202fcb20c39cb30afa7b0fdf53460447596429dc1e5f9a005e4fbf3d3",
+        "native/result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220"
+      },
+      "source_changed_since_startup": false
+    },
+    "startup": {
+      "launch_reserved": false,
+      "launch_attempt": 1,
+      "auto_start_enabled": true,
+      "selected_session_configured": false,
+      "coordination_error": null,
+      "launch_state_known": true,
+      "automatic_launch_allowed": true,
+      "state": "ready",
+      "connected": true,
+      "message": "Toolkit connection verified; modeling is available",
+      "retry_allowed": false,
+      "updated_at": "2026-10-16T01:55:43.099979+00:00",
+      "coordinator_pid": 1612,
+      "native": {
+        "connected": true,
+        "connection_state": "connected",
+        "toolkit_code": 0,
+        "current_model": "▩BUG008_RETRY_179210001",
+        "current_model_code": 0,
+        "model_type": 2,
+        "release_numeric": 44,
+        "disconnect_code": 0,
+        "feature_creation_license": "requires_actual_modeling_test",
+        "worker_exit_code": 0
+      },
+      "verified_at": "2026-10-16T01:55:43.099979+00:00",
+      "launched_by_coordinator": false,
+      "snapshot": true,
+      "verification_age_seconds": 0.917352,
+      "stale": false,
+      "coordinator_running": false,
+      "update": {
+        "status": "up_to_date",
+        "current_version": "0.3.1",
+        "latest_version": "0.3.0",
+        "is_prerelease": true,
+        "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0",
+        "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-source.zip",
+        "checked_at": "2026-10-16T01:55:38.498245+00:00",
+        "last_success_at": "2026-10-16T01:55:38.498245+00:00",
+        "message": "当前版本高于最高公开版本，无需降级。",
+        "error": null,
+        "from_cache": true,
+        "stale": false
+      }
+    },
+    "session": {
+      "connected": true,
+      "connection_state": "connected",
+      "toolkit_code": 0,
+      "current_model": "▩BUG008_RETRY_179210001",
+      "current_model_code": 0,
+      "model_type": 2,
+      "release_numeric": 44,
+      "disconnect_code": 0,
+      "feature_creation_license": "requires_actual_modeling_test",
+      "worker_exit_code": 0,
+      "startup": {
+        "launch_reserved": false,
+        "launch_attempt": 1,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "coordination_error": null,
+        "launch_state_known": true,
+        "automatic_launch_allowed": true,
+        "state": "ready",
+        "connected": true,
+        "message": "Toolkit connection verified",
+        "retry_allowed": false,
+        "updated_at": "2026-10-16T01:55:48.912809+00:00",
+        "coordinator_pid": 1612,
+        "native": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0,
+          "current_model": "▩BUG008_RETRY_179210001",
+          "current_model_code": 0,
+          "model_type": 2,
+          "release_numeric": 44,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 0
+        },
+        "verified_at": "2026-10-16T01:55:48.912809+00:00",
+        "snapshot": true,
+        "verification_age_seconds": 0,
+        "stale": false,
+        "coordinator_running": false
+      }
+    },
+    "inventory_after": {
+      "processes": [
+        {
+          "pid": 19712,
+          "created": 134365890752695389,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Parametric\\bin\\parametric.exe",
+          "matches": true
+        },
+        {
+          "pid": 7936,
+          "created": 134365890761816923,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+          "matches": true
+        }
+      ],
+      "uncertain": false
+    },
+    "protected_unchanged": true,
+    "finished_at": "2026-10-16T01:55:49.076950+00:00"
+  },
+  "native": {
+    "started_at": "2026-10-16T01:51:11.927045+00:00",
+    "finished_at": "2026-10-16T01:52:06.751495+00:00",
+    "success": true,
+    "failure": null,
+    "runtime": {
+      "python_executable": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+      "server_entry": "E:\\Projects\\MCP_CREO_MechDog\\server.py",
+      "code_root": "E:\\Projects\\MCP_CREO_MechDog",
+      "python_package_root": "E:\\Projects\\MCP_CREO_MechDog\\src\\creo_mechdog",
+      "resource_root": "E:\\Projects\\MCP_CREO_MechDog",
+      "data_root": "E:\\Projects\\MCP_CREO_MechDog",
+      "source_fingerprints_at_startup": {
+        "server.py": "a2389f8c97d36d1d687e7d508cf3fc3c545cb6574e8b7651267f74d29f6f0e60",
+        "bridge.py": "84eb1e0ec34fd208b28f403816f7bb876f0b67ea982b750b5d5f1eefdc677a85",
+        "creo_startup.py": "7d803ee8c679da483080c9e3cda31b6cf276178383542a9b5e3fac82885c2a22",
+        "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
+        "src/creo_mechdog/paths.py": "389dca158e3a7d02337ca3a099a1872bf858e38cc8108d78172cff235256dff5",
+        "src/creo_mechdog/references.py": "584a6c6ae235e798d3a97e26c6af3c3509a518db2e7495d6cecd496dcfa1c640",
+        "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+        "src/creo_mechdog/blend_callback.py": "5d7cd97d46d52dd08080ccd117ef14748b0fd16600477e9467d5a6450c1d2e5f",
+        "src/creo_mechdog/recovery.py": "f64bc43164e7e75a51b7be1f29e152a5ad588a71c4f055f7cf549f92a4180e4f",
+        "src/creo_mechdog/startup_state.py": "5b482745c0dfd93fc2ec699a1071b6c6cac1bca17944e854941bef197cda9e4c",
+        "src/creo_mechdog/windows_boot.py": "4b3d521e3387eed0668317501e1ee6db7a81d32358c9fbd898c24957455bc6da",
+        "src/creo_mechdog/schema.py": "9cbd671d85d738ff9cc9dae4ebb2926034457aea71950e6d802cf7d825c2998d",
+        "src/creo_mechdog/profile_checks.py": "c160c3b2d800eb84b7aca2f7ddc4e7ce3e46e10498ce2cc799fafd7cfa83df24",
+        "src/creo_mechdog/airfoil.py": "5adbf9d2205239f02d4b974c7fee405c47c81b3cf6201e18966109ad1595d176",
+        "version.py": "03d9ad0a146f85ae2f6ed7042adea89d8a2996ea818f2614c906c6f7d79baa94",
+        "generic_bridge.py": "f3d4cc91ce54099b761ca76d430574ba1f7ae54f9ae57ffbbae01f7ea97b4f51",
+        "schema.py": "dfb81ba2a123612ac98fbe21993f24a85b778afb9b6d0b1ebcfece7acba97cdd",
+        "profile_checks.py": "6a06b4b215952e13adb182b2adb07539c28dabcaedd857b39381b0b1b57e5731",
+        "airfoil.py": "8897c9b792e0ef67b9ee3aaab03d4f473014ce2ae3894b74ddac5d7e83c250d6",
+        "native/worker.cpp": "128306b8f392cf13590383f8a08ba1869b1bd21c8a10fbbd186d7fe7b034c7ad",
+        "native/generic.cpp": "e35ce3967b6c70486bed8d25581dee6fbd15fe8cfab4ed586f2fad31ceb27c3a",
+        "native/drawing.cpp": "d280916202fcb20c39cb30afa7b0fdf53460447596429dc1e5f9a005e4fbf3d3",
+        "native/result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220"
+      },
+      "source_changed_since_startup": false
+    },
+    "cold_automatic_startup": true,
+    "cold_explicit_retry": false,
+    "startup_archive": {
+      "status": "reconciled_previous_boot",
+      "basis": "creation_and_modification_before_verified_boot",
+      "boot_started_at": "2026-10-16T00:50:38.500000+00:00",
+      "boot_source": "Win32_OperatingSystem.LastBootUpTime cross-checked with GetTickCount64",
+      "archive_file": "C:\\Users\\Administrator\\AppData\\Local\\MCP_CREO_MechDog\\startup\\6235eee86323f49c8d99f96a\\history\\state-unreadable-276a59a26e204f018708b117e45b8a4a.bin",
+      "original_sha256": "08c3e5bbea4fba57201a69d4bf70a0d255df921fdef4924c22da087f9338c2bc",
+      "original_bytes": 380,
+      "job_model_reservations_preserved": true
+    },
+    "retry_rpc_overlap_seconds": 0.005326200000126846,
+    "initial_states": [
+      {
+        "launch_reserved": false,
+        "launch_attempt": 1,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "coordination_error": null,
+        "launch_state_known": true,
+        "automatic_launch_allowed": true,
+        "startup_recovery": {
+          "status": "reconciled_previous_boot",
+          "basis": "creation_and_modification_before_verified_boot",
+          "boot_started_at": "2026-10-16T00:50:38.500000+00:00",
+          "boot_source": "Win32_OperatingSystem.LastBootUpTime cross-checked with GetTickCount64",
+          "archive_file": "C:\\Users\\Administrator\\AppData\\Local\\MCP_CREO_MechDog\\startup\\6235eee86323f49c8d99f96a\\history\\state-unreadable-276a59a26e204f018708b117e45b8a4a.bin",
+          "original_sha256": "08c3e5bbea4fba57201a69d4bf70a0d255df921fdef4924c22da087f9338c2bc",
+          "original_bytes": 380,
+          "job_model_reservations_preserved": true
+        },
+        "state": "ready",
+        "connected": true,
+        "message": "Toolkit connection verified; modeling is available",
+        "retry_allowed": false,
+        "updated_at": "2026-10-16T01:51:28.384856+00:00",
+        "coordinator_pid": 19244,
+        "native": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 44,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 0
+        },
+        "verified_at": "2026-10-16T01:51:28.384856+00:00",
+        "launched_by_coordinator": true,
+        "snapshot": true,
+        "verification_age_seconds": 0.545108,
+        "stale": false,
+        "coordinator_running": false,
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.3.1",
+          "latest_version": "0.3.0",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-source.zip",
+          "checked_at": "2026-10-16T01:51:15.236908+00:00",
+          "last_success_at": "2026-10-16T01:51:15.236908+00:00",
+          "message": "当前版本高于最高公开版本，无需降级。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      },
+      {
+        "launch_reserved": false,
+        "launch_attempt": 1,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "coordination_error": null,
+        "launch_state_known": true,
+        "automatic_launch_allowed": true,
+        "startup_recovery": {
+          "status": "reconciled_previous_boot",
+          "basis": "creation_and_modification_before_verified_boot",
+          "boot_started_at": "2026-10-16T00:50:38.500000+00:00",
+          "boot_source": "Win32_OperatingSystem.LastBootUpTime cross-checked with GetTickCount64",
+          "archive_file": "C:\\Users\\Administrator\\AppData\\Local\\MCP_CREO_MechDog\\startup\\6235eee86323f49c8d99f96a\\history\\state-unreadable-276a59a26e204f018708b117e45b8a4a.bin",
+          "original_sha256": "08c3e5bbea4fba57201a69d4bf70a0d255df921fdef4924c22da087f9338c2bc",
+          "original_bytes": 380,
+          "job_model_reservations_preserved": true
+        },
+        "state": "ready",
+        "connected": true,
+        "message": "Toolkit connection verified; modeling is available",
+        "retry_allowed": false,
+        "updated_at": "2026-10-16T01:51:28.384856+00:00",
+        "coordinator_pid": 19244,
+        "native": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 44,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 0
+        },
+        "verified_at": "2026-10-16T01:51:28.384856+00:00",
+        "launched_by_coordinator": true,
+        "coordinated": true,
+        "snapshot": true,
+        "verification_age_seconds": 0.547101,
+        "stale": false,
+        "coordinator_running": false,
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.3.1",
+          "latest_version": "0.3.0",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-source.zip",
+          "checked_at": "2026-10-16T01:51:16.559755+00:00",
+          "last_success_at": "2026-10-16T01:51:16.559755+00:00",
+          "message": "当前版本高于最高公开版本，无需降级。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      }
+    ],
+    "ready_states": [
+      {
+        "launch_reserved": false,
+        "launch_attempt": 1,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "coordination_error": null,
+        "launch_state_known": true,
+        "automatic_launch_allowed": true,
+        "state": "ready",
+        "connected": true,
+        "message": "Toolkit connection verified; modeling is available",
+        "retry_allowed": false,
+        "updated_at": "2026-10-16T01:51:34.256158+00:00",
+        "coordinator_pid": 19244,
+        "native": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 44,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 0
+        },
+        "verified_at": "2026-10-16T01:51:34.256158+00:00",
+        "launched_by_coordinator": false,
+        "snapshot": true,
+        "verification_age_seconds": 0.900804,
+        "stale": false,
+        "coordinator_running": false,
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.3.1",
+          "latest_version": "0.3.0",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-source.zip",
+          "checked_at": "2026-10-16T01:51:15.236908+00:00",
+          "last_success_at": "2026-10-16T01:51:15.236908+00:00",
+          "message": "当前版本高于最高公开版本，无需降级。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      },
+      {
+        "launch_reserved": false,
+        "launch_attempt": 1,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "coordination_error": null,
+        "launch_state_known": true,
+        "automatic_launch_allowed": true,
+        "state": "ready",
+        "connected": true,
+        "message": "Toolkit connection verified; modeling is available",
+        "retry_allowed": false,
+        "updated_at": "2026-10-16T01:51:34.256158+00:00",
+        "coordinator_pid": 19244,
+        "native": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 44,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 0
+        },
+        "verified_at": "2026-10-16T01:51:34.256158+00:00",
+        "launched_by_coordinator": false,
+        "coordinated": true,
+        "snapshot": true,
+        "verification_age_seconds": 0.945452,
+        "stale": false,
+        "coordinator_running": false,
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.3.1",
+          "latest_version": "0.3.0",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-source.zip",
+          "checked_at": "2026-10-16T01:51:16.559755+00:00",
+          "last_success_at": "2026-10-16T01:51:16.559755+00:00",
+          "message": "当前版本高于最高公开版本，无需降级。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      }
+    ],
+    "session": {
+      "connected": true,
+      "connection_state": "connected",
+      "toolkit_code": 0,
+      "current_model": "",
+      "current_model_code": -8,
+      "model_type": -1,
+      "release_numeric": 44,
+      "disconnect_code": 0,
+      "feature_creation_license": "requires_actual_modeling_test",
+      "worker_exit_code": 0,
+      "startup": {
+        "launch_reserved": false,
+        "launch_attempt": 1,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "coordination_error": null,
+        "launch_state_known": true,
+        "automatic_launch_allowed": true,
+        "state": "ready",
+        "connected": true,
+        "message": "Toolkit connection verified",
+        "retry_allowed": false,
+        "updated_at": "2026-10-16T01:51:40.027717+00:00",
+        "coordinator_pid": 19244,
+        "native": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 44,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 0
+        },
+        "verified_at": "2026-10-16T01:51:40.027717+00:00",
+        "snapshot": true,
+        "verification_age_seconds": 0,
+        "stale": false,
+        "coordinator_running": false
+      }
+    },
+    "inventory_before": {
+      "processes": [],
+      "uncertain": false
+    },
+    "inventory_after_retry": {
+      "processes": [
+        {
+          "pid": 19712,
+          "created": 134365890752695389,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Parametric\\bin\\parametric.exe",
+          "matches": true
+        },
+        {
+          "pid": 7936,
+          "created": 134365890761816923,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+          "matches": true
+        }
+      ],
+      "uncertain": false
+    },
+    "inventory_after_clients_close": {
+      "processes": [
+        {
+          "pid": 19712,
+          "created": 134365890752695389,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Parametric\\bin\\parametric.exe",
+          "matches": true
+        },
+        {
+          "pid": 7936,
+          "created": 134365890761816923,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+          "matches": true
+        }
+      ],
+      "uncertain": false
+    },
+    "no_duplicate_launch": true,
+    "protected_before": {
+      "E:\\Projects\\MCP_CREO_MechDog\\models\\27143ef77ce641938543e0ca44cc3c03\\model.json": "03a4d13a90d4f34295525945790d72e53e8acd0fc2827004258efb15ad6536ae",
+      "E:\\Projects\\MCP_CREO_MechDog\\models\\27143ef77ce641938543e0ca44cc3c03\\output\\bug009_1792054655.prt.10": "324dd24ebd4d7b682fa9bbb41fbe02bc06b8158b5f43e75dec4b10f0f2323c6e",
+      "E:\\Projects\\MCP_CREO_MechDog\\models\\5f68fea957134ddc8ecc26016dcf58a4\\model.json": "9b2fc083527c2780bd8cb5ebbf2c2547c324361fb65ccfb75aa7793c33d12eb0",
+      "E:\\Projects\\MCP_CREO_MechDog\\models\\5f68fea957134ddc8ecc26016dcf58a4\\output\\bug008_retry_1792113143.prt.3": "cd0d0e9845ebc1f93f269f7c0215ba7cd056a7826363b141b4798769e5e2117d",
+      "E:\\Projects\\MCP_CREO_MechDog\\jobs\\272513b7238040c68dce4b923725d870\\job.json": "d4cc02ef096839e8ca689537c45ce0a54e0cebd37e26d4cba712c3b3202d14a7"
+    },
+    "protected_after": {
+      "E:\\Projects\\MCP_CREO_MechDog\\models\\27143ef77ce641938543e0ca44cc3c03\\model.json": "03a4d13a90d4f34295525945790d72e53e8acd0fc2827004258efb15ad6536ae",
+      "E:\\Projects\\MCP_CREO_MechDog\\models\\27143ef77ce641938543e0ca44cc3c03\\output\\bug009_1792054655.prt.10": "324dd24ebd4d7b682fa9bbb41fbe02bc06b8158b5f43e75dec4b10f0f2323c6e",
+      "E:\\Projects\\MCP_CREO_MechDog\\models\\5f68fea957134ddc8ecc26016dcf58a4\\model.json": "9b2fc083527c2780bd8cb5ebbf2c2547c324361fb65ccfb75aa7793c33d12eb0",
+      "E:\\Projects\\MCP_CREO_MechDog\\models\\5f68fea957134ddc8ecc26016dcf58a4\\output\\bug008_retry_1792113143.prt.3": "cd0d0e9845ebc1f93f269f7c0215ba7cd056a7826363b141b4798769e5e2117d",
+      "E:\\Projects\\MCP_CREO_MechDog\\jobs\\272513b7238040c68dce4b923725d870\\job.json": "d4cc02ef096839e8ca689537c45ce0a54e0cebd37e26d4cba712c3b3202d14a7"
+    },
+    "shared_before": {
+      "read_error": "JSONDecodeError",
+      "message": "Expecting value: line 1 column 1 (char 0)",
+      "bytes": 380,
+      "sha256": "08c3e5bbea4fba57201a69d4bf70a0d255df921fdef4924c22da087f9338c2bc"
+    },
+    "shared_after": {
+      "launch_reserved": false,
+      "launch_attempt": 1,
+      "auto_start_enabled": true,
+      "selected_session_configured": false,
+      "coordination_error": null,
+      "launch_state_known": true,
+      "automatic_launch_allowed": true,
+      "state": "ready",
+      "connected": true,
+      "message": "Toolkit connection verified; modeling is available",
+      "retry_allowed": false,
+      "updated_at": "2026-10-16T01:51:45.183981+00:00",
+      "coordinator_pid": 19244,
+      "phase_deadline_monotonic": 3782.093,
+      "native": {
+        "connected": true,
+        "connection_state": "connected",
+        "toolkit_code": 0,
+        "current_model": "",
+        "current_model_code": -8,
+        "model_type": -1,
+        "release_numeric": 44,
+        "disconnect_code": 0,
+        "feature_creation_license": "requires_actual_modeling_test",
+        "worker_exit_code": 0
+      },
+      "verified_at": "2026-10-16T01:51:45.183981+00:00",
+      "launched_by_coordinator": false
+    },
+    "history_before": [],
+    "history_after": [
+      "state-unreadable-276a59a26e204f018708b117e45b8a4a.bin"
+    ],
+    "historical_unknown": {
+      "job_id": "272513b7238040c68dce4b923725d870",
+      "kind": "generic",
+      "model_id": "27143ef77ce641938543e0ca44cc3c03",
+      "status": "unknown_outcome",
+      "readonly": true,
+      "created_at": "2026-10-15T08:58:36.576982+00:00",
+      "message": "Job exceeded its expected lifetime; inspect runner.log and Creo before retrying",
+      "recovery_required": "Outcome is unconfirmed; preserve reservation and inspect recovery evidence",
+      "recovery": {
+        "job_id": "272513b7238040c68dce4b923725d870",
+        "model_id": "27143ef77ce641938543e0ca44cc3c03",
+        "automatic_replay_allowed": false,
+        "native_result_present": false,
+        "next_steps": "Do not resubmit or clear pending_job. Inspect this job's native result/checkpoint, runner identity and saved file in Creo; preserve the original model/checkpoint. Use creo_session_status and explicit startup retry to recheck the channel. A connected channel does not resolve this job or commit its revision. If the result cannot be verified, operator reconciliation is required.",
+        "runner": {
+          "observed": null,
+          "reason": "No recorded process creation identity"
+        },
+        "model": {
+          "status": "ready",
+          "revision": 9,
+          "pending_job": "272513b7238040c68dce4b923725d870",
+          "last_job": "0eef840c5efc4cd092aa03a631fd4443"
+        },
+        "saved_baseline": {
+          "path": "E:\\Projects\\MCP_CREO_MechDog\\models\\27143ef77ce641938543e0ca44cc3c03\\output\\bug009_1792054655.prt.10",
+          "exists": true,
+          "sha256": "324dd24ebd4d7b682fa9bbb41fbe02bc06b8158b5f43e75dec4b10f0f2323c6e"
+        }
+      },
+      "detail": "compact",
+      "operation_count": 1,
+      "full_result_available": false
+    },
+    "jobs": [
+      {
+        "job_id": "7d67387ed9794346a3967def5eb08b57",
+        "model_id": "4ef160e2a26241bbb527ec0ced6fb944",
+        "status": "succeeded",
+        "revision": 1,
+        "volume_mm3": null,
+        "parameters": {
+          "DESCRIPTION": {
+            "type": 51,
+            "value": ""
+          },
+          "MODELED_BY": {
+            "type": 51,
+            "value": ""
+          },
+          "PTC_MASTER_MATERIAL": {
+            "type": 51,
+            "value": "PTC_SYSTEM_MTRL_PROPS"
+          },
+          "PTC_MATERIAL_NAME": {
+            "type": 51,
+            "value": ""
+          },
+          "PTC_REPORTED_MATERIAL": {
+            "type": 51,
+            "value": ""
+          },
+          "PTC_UNITS_FORCE": {
+            "type": 51,
+            "value": "N"
+          },
+          "PTC_UNITS_LENGTH": {
+            "type": 51,
+            "value": "mm"
+          },
+          "PTC_UNITS_MASS": {
+            "type": 51,
+            "value": "tonne"
+          },
+          "PTC_UNITS_SYSTEM_TYPE": {
+            "type": 51,
+            "value": "Force length time (FLT)"
+          },
+          "PTC_UNITS_TEMPERATURE": {
+            "type": 51,
+            "value": "C"
+          },
+          "PTC_UNITS_TIME": {
+            "type": 51,
+            "value": "sec"
+          }
+        },
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "saved_file_reloaded_and_verified": true
+      },
+      {
+        "job_id": "24339719a7a54fd68af22f43c590ae52",
+        "model_id": "4ef160e2a26241bbb527ec0ced6fb944",
+        "status": "succeeded",
+        "revision": 2,
+        "volume_mm3": 120.0,
+        "parameters": {
+          "DESCRIPTION": {
+            "type": 51,
+            "value": ""
+          },
+          "MODELED_BY": {
+            "type": 51,
+            "value": ""
+          },
+          "PTC_MASTER_MATERIAL": {
+            "type": 51,
+            "value": "PTC_SYSTEM_MTRL_PROPS"
+          },
+          "PTC_MATERIAL_NAME": {
+            "type": 51,
+            "value": ""
+          },
+          "PTC_REPORTED_MATERIAL": {
+            "type": 51,
+            "value": ""
+          },
+          "PTC_UNITS_FORCE": {
+            "type": 51,
+            "value": "N"
+          },
+          "PTC_UNITS_LENGTH": {
+            "type": 51,
+            "value": "mm"
+          },
+          "PTC_UNITS_MASS": {
+            "type": 51,
+            "value": "tonne"
+          },
+          "PTC_UNITS_SYSTEM_TYPE": {
+            "type": 51,
+            "value": "Force length time (FLT)"
+          },
+          "PTC_UNITS_TEMPERATURE": {
+            "type": 51,
+            "value": "C"
+          },
+          "PTC_UNITS_TIME": {
+            "type": 51,
+            "value": "sec"
+          },
+          "RETRY_VERIFIED": {
+            "type": 52,
+            "value": 1
+          }
+        },
+        "delivery_complete": true,
+        "disconnect_code": 0,
+        "saved_file_reloaded_and_verified": true
+      }
+    ]
+  },
+  "unverified": [
+    "final WorkBuddy acceptance of the new implementation",
+    "historical transform/save hang/-38 chain",
+    "source/cause of startup file corruption",
+    "unattended recovery of deliberately damaged real Creo",
+    "other environments"
+  ],
+  "raw_outputs": {
+    "build/bug008-reboot-auto/build-evidence.py": {
+      "bytes": 6112,
+      "sha256": "762f5167f6d978fe3005fc80a2fc7a644445aba45c5427994d89f36234b30a12"
+    },
+    "build/bug008-reboot-auto/check-scoped-raw-reports.py": {
+      "bytes": 1315,
+      "sha256": "b559b08605cbefb0fb6932ee19e681159721c38d42d8b0dcdb92e06fcc73f6e0"
+    },
+    "build/bug008-reboot-auto/check-scoped.py": {
+      "bytes": 1209,
+      "sha256": "9f541f3e914d5314ccc1f022036915ae5d8038c78b5aa5910c2393ad0686aad4"
+    },
+    "build/bug008-reboot-auto/check-windows.py": {
+      "bytes": 570,
+      "sha256": "94fe80d8af5bce48fb4b0bff98aaa9a5f4db2916fd0abead1f619db008867e7b"
+    },
+    "build/bug008-reboot-auto/cold-launch-mainwindow-unavailable.json": {
+      "bytes": 1348,
+      "sha256": "35f8914f080d251bf6ea0d9444fdf83c02c10f068f5040a2f78994638e86b366"
+    },
+    "build/bug008-reboot-auto/cold-launch.json": {
+      "bytes": 1383,
+      "sha256": "ee0886cad0f5567699a48b796e4cf92cfa639febc9c0b7b1cf9d749f3f424e68"
+    },
+    "build/bug008-reboot-auto/current-inventory.json": {
+      "bytes": 102,
+      "sha256": "809dbce2a5848f7b053c96f56fb71673de2f81b1b3abe53e9803b331a0a98ba9"
+    },
+    "build/bug008-reboot-auto/development-check-final.json": {
+      "bytes": 1362,
+      "sha256": "16c186cbc21fab8c0fc48c99ed8e5d43ec8bd53cd58fbf815b43b7ea2ca1aef9"
+    },
+    "build/bug008-reboot-auto/development-check-final.log": {
+      "bytes": 1388,
+      "sha256": "25f14400bba32a1d2a8eb8fb02eca640b5a16724831a2431da547a71c98bcc4a"
+    },
+    "build/bug008-reboot-auto/development-check.json": {
+      "bytes": 1362,
+      "sha256": "38f786672930fc82ad787d84f9d9d56603ea31c57d6210e3ce64f008ae5d64fa"
+    },
+    "build/bug008-reboot-auto/development-check.log": {
+      "bytes": 1388,
+      "sha256": "6b43427f7ca931477a2e6d28ae8cc42b35367b04041ff887f16c06f4c46a6afe"
+    },
+    "build/bug008-reboot-auto/native-exit.json": {
+      "bytes": 47,
+      "sha256": "67d133400c110fbf2dbaaf19f1757a0586d02e9bc6783ee64bfcb7b0f4d42ec2"
+    },
+    "build/bug008-reboot-auto/native.json": {
+      "bytes": 607557,
+      "sha256": "0a1ca98585f385f7228c0d673c6cff8c558134605aa94510a9bae660265c4561"
+    },
+    "build/bug008-reboot-auto/native.log": {
+      "bytes": 49,
+      "sha256": "4be1960401eefa39ce4b572e02a95ab44398c4279c1c98caa09d810c072ce908"
+    },
+    "build/bug008-reboot-auto/post-client-reconnect.json": {
+      "bytes": 7134,
+      "sha256": "0798a53872ec5c1783588630431a5b81623ef829b1ac3934009338c436b8282c"
+    },
+    "build/bug008-reboot-auto/preflight-state.bin": {
+      "bytes": 380,
+      "sha256": "08c3e5bbea4fba57201a69d4bf70a0d255df921fdef4924c22da087f9338c2bc"
+    },
+    "build/bug008-reboot-auto/preflight.json": {
+      "bytes": 1517,
+      "sha256": "0fe916bd1b11795d9acb0006e379da72025a25eca4f9c8d86f2fcf3898ca9e28"
+    },
+    "build/bug008-reboot-auto/preflight.py": {
+      "bytes": 1187,
+      "sha256": "4b1ca119fff22595fe11a777840dd8029cc42212b7deb3ea8c314bd0ec4fe59e"
+    },
+    "build/bug008-reboot-auto/ruff-check.log": {
+      "bytes": 20,
+      "sha256": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0"
+    },
+    "build/bug008-reboot-auto/ruff-format.log": {
+      "bytes": 27,
+      "sha256": "3fa62c94b1301255f0c64c429c668a4fabc4cb9d3848edb2790b607266d16092"
+    },
+    "build/bug008-reboot-auto/run-cold-native.py": {
+      "bytes": 3995,
+      "sha256": "fef5544baa4b434b8061112ba2a7aa25048cad3d7c6065090b9341ccbc27edd6"
+    },
+    "build/bug008-reboot-auto/run-native.py": {
+      "bytes": 610,
+      "sha256": "7ddebd7fc9875ca47723950d403b3e8139e2e97a5fa60c14570319ffd5377615"
+    },
+    "build/bug008-reboot-auto/scoped-raw-reports.json": {
+      "bytes": 13061,
+      "sha256": "97345484010cef5773259a3d6c10815cf6ca71af74a7a2b91da068937cf99248"
+    },
+    "build/bug008-reboot-auto/scoped-raw-reports.log": {
+      "bytes": 38,
+      "sha256": "229e21536e0c26f2d9af866f5ffeabed13f57d8e4ae8c5a900f5dcee32af70ca"
+    },
+    "build/bug008-reboot-auto/scoped-style.json": {
+      "bytes": 13240,
+      "sha256": "862b02f152ad08b262a60746a59fd57e604048c0ee3466d4655af7afbd62c532"
+    },
+    "build/bug008-reboot-auto/scoped-style.log": {
+      "bytes": 225,
+      "sha256": "099219954bbeabf642fdfdecef3549e9e96b87d32df290b104e79cb55df7f410"
+    },
+    "build/bug008-reboot-auto/shared-before.bin": {
+      "bytes": 380,
+      "sha256": "08c3e5bbea4fba57201a69d4bf70a0d255df921fdef4924c22da087f9338c2bc"
+    },
+    "build/bug008-reboot-auto/unit-acceptance.json": {
+      "bytes": 136,
+      "sha256": "37fa9ad15f4c96cb9740267137964168e7b48803e28dd5e41b6d9a8fe333e369"
+    },
+    "build/bug008-reboot-auto/unit-acceptance.log": {
+      "bytes": 40616,
+      "sha256": "16b7b0b0293719015e87e14cfaba0dc261ef4e7bec53723b89deca92a1bbc8ad"
+    },
+    "build/bug008-reboot-auto/unit-final.json": {
+      "bytes": 137,
+      "sha256": "77a4a8a8b1820d5c2579d056a7568dd77e7f71b81406dc4a601db30a949f1960"
+    },
+    "build/bug008-reboot-auto/unit-final.log": {
+      "bytes": 40457,
+      "sha256": "c84be104a91ed22e2b2fc5cd4e8425902d63ab30aa63de41b8d5dfbbe20d70ff"
+    },
+    "build/bug008-reboot-auto/unit-report.json": {
+      "bytes": 136,
+      "sha256": "acc601d861e66146f46b9877606736986f824f713168bca4e5dd2ca71f519690"
+    },
+    "build/bug008-reboot-auto/unit.log": {
+      "bytes": 40457,
+      "sha256": "b953db47cda172b8641a0db12197e78e1105ea23d512edf6a1b4cfb1c7ae6c42"
+    },
+    "build/bug008-reboot-auto/verify-after.py": {
+      "bytes": 2187,
+      "sha256": "e02bee8347ad9b7c50e7715391d22dd85818a8361bb91539336bf85674ecf760"
+    },
+    "build/bug008-reboot-auto/verify-cold.py": {
+      "bytes": 352,
+      "sha256": "cbee3c6ce62fb21420b9a889896928dcebb87dd20f6145a65461e8099b60a182"
+    },
+    "build/bug008-reboot-auto/windows.json": {
+      "bytes": 2405,
+      "sha256": "401d0685b0aa735228c6f17cb9ed67bdfba8b53e669ea825a311da84ed11dd3f"
+    }
+  }
+}

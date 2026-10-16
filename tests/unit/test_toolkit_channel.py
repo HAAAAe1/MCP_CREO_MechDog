@@ -242,8 +242,8 @@ server.mcp.run()
             self.assertEqual(bridge.get_job(task["job_id"])["status"], status)
             model = general.model_info(mid)
             self.assertEqual(model["revision"], 1)
-            self.assertIsNone(model["pending_job"])
-        with self.assertRaisesRegex(ValueError, "not ready"):
+            self.assertEqual(model["pending_job"], task["job_id"] if outcome == "timeout" else None)
+        with self.assertRaises(bridge.ToolkitBusy):
             self.submit(model_id=mid, expected_revision=1)
 
     def test_channel_wait_timeout_does_not_overwrite_reserved_model(self):

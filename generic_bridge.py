@@ -398,7 +398,16 @@ def run_generic_job(job_id: str, manifest: dict):
                 else:
                     result = bridge.read_json(result_file)
                     manifest["result"] = result
-                    if proc.returncode == 0 and result.get("success"):
+                    if (
+                        result.get("disconnect_code") not in (None, 0)
+                        or result.get("delivery_complete") is False
+                    ):
+                        manifest.update(
+                            status="unknown_outcome",
+                            message="Native finalization was not confirmed; preserve saved files and inspect the checkpoint",
+                        )
+                        model["status"] = "unknown_outcome"
+                    elif proc.returncode == 0 and result.get("success"):
                         if not request["readonly"] and not result.get(
                             "saved_file_reloaded_and_verified"
                         ):
@@ -447,10 +456,16 @@ def run_generic_job(job_id: str, manifest: dict):
                         )
             except subprocess.TimeoutExpired:
                 manifest.update(
-                    status="unknown_outcome",
-                    message="Native worker timed out; inspect Creo and the model before retrying",
+                    status="unknown_outcome" if worker_started else "failed",
+                    message="Native worker timed out; inspect Creo and the native checkpoint before retrying"
+                    if worker_started
+                    else "Native build exceeded its subprocess budget; inspect build logs. No native modeling worker started.",
                 )
-                model["status"] = "unknown_outcome"
+                model["status"] = (
+                    "unknown_outcome"
+                    if worker_started
+                    else ("ready" if model.get("part_file") else "failed")
+                )
             except Exception as exc:
                 manifest.update(
                     status="unknown_outcome" if worker_started else "failed", message=str(exc)
@@ -460,8 +475,10 @@ def run_generic_job(job_id: str, manifest: dict):
                     if worker_started
                     else ("ready" if model.get("part_file") else "failed")
                 )
-            model["pending_job"] = None
+            # A killed helper or a saved checkpoint is not a confirmed operation outcome.
+            model["pending_job"] = job_id if manifest["status"] == "unknown_outcome" else None
             model["last_job"] = job_id
+            bridge.note_native_outcome(manifest)
             bridge.write_json(path / "model.json", model)
     except bridge.ToolkitBusy as exc:
         # No worker ran. Never rewrite a model while another owner holds the channel.

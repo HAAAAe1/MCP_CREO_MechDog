@@ -1,0 +1,161 @@
+{
+  "work_item": "BUG-008",
+  "date": "2026-10-16",
+  "timezone": "Asia/Shanghai",
+  "classification": "User-requested assisted startup, not MCP retry automatic recovery",
+  "source_commit": "001a4b8088344249c0a04eca0dbe6dc923435950",
+  "dirty": true,
+  "environment": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14",
+    "creo": "12.4.0.0",
+    "toolkit_release_numeric": 44
+  },
+  "source_fingerprints_lf_normalized": {
+    "server.py": "8c9db166d313793842b69d59f9f65f59a4c35b3998dde5709843f34cee37ba62",
+    "creo_startup.py": "957108354ec952d5d6864f976f8144d9a21eea9643829210d3c415097fbef85c",
+    "bridge.py": "61013e3377c2d6848ca3c6db1898ea4c8819262e729e16805f70b1861a0178bf",
+    "src/creo_mechdog/startup_state.py": "48a54c888a5532d4feba2c35735695e7fb6d175c801e1f52de1113902ebdb4fb"
+  },
+  "worker_sha256": "4bb3c984d9c083f271bb7760f48b968bd5ede6b9e83e9031b328d2d9754f786b",
+  "command": ".venv/Scripts/pythonw.exe build/bug008-reboot-20261016/restore-session.py (via existing Explorer desktop)",
+  "implementation_change": false,
+  "guards": [
+    "verified configured installation, Explorer user/session, no existing Creo and no concurrent startup coordinator",
+    "startup coordination and Toolkit lock acquired before one explicit launch",
+    "no startup-state replacement, unknown-job replay, model revision change or process termination"
+  ],
+  "actual": {
+    "mode": "User-requested assisted startup after reported reboot; not MCP retry automatic recovery",
+    "started_at": "2026-10-16T01:01:16.550566+00:00",
+    "success": true,
+    "launch_requested": true,
+    "probes": [
+      {
+        "time": "2026-10-16T01:01:18.149711+00:00",
+        "result": {
+          "connected": false,
+          "connection_state": "not_found_or_unreadable",
+          "toolkit_code": -4,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 0,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 20
+        }
+      },
+      {
+        "time": "2026-10-16T01:01:20.412668+00:00",
+        "result": {
+          "connected": false,
+          "connection_state": "not_found_or_unreadable",
+          "toolkit_code": -4,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 0,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 20
+        }
+      },
+      {
+        "time": "2026-10-16T01:01:22.803612+00:00",
+        "result": {
+          "connected": false,
+          "connection_state": "not_found_or_unreadable",
+          "toolkit_code": -4,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 0,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 20
+        }
+      },
+      {
+        "time": "2026-10-16T01:01:33.120971+00:00",
+        "result": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 44,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 0
+        }
+      }
+    ],
+    "shared_before": {
+      "path": "C:\\Users\\Administrator\\AppData\\Local\\MCP_CREO_MechDog\\startup\\6235eee86323f49c8d99f96a\\state.json",
+      "bytes": 380,
+      "all_nul": true,
+      "sha256": "08c3e5bbea4fba57201a69d4bf70a0d255df921fdef4924c22da087f9338c2bc"
+    },
+    "protected_before": {
+      "E:\\Projects\\MCP_CREO_MechDog\\models\\27143ef77ce641938543e0ca44cc3c03\\model.json": "03a4d13a90d4f34295525945790d72e53e8acd0fc2827004258efb15ad6536ae",
+      "E:\\Projects\\MCP_CREO_MechDog\\jobs\\272513b7238040c68dce4b923725d870\\job.json": "d4cc02ef096839e8ca689537c45ce0a54e0cebd37e26d4cba712c3b3202d14a7",
+      "E:\\Projects\\MCP_CREO_MechDog\\models\\27143ef77ce641938543e0ca44cc3c03\\output\\bug009_1792054655.prt.10": "324dd24ebd4d7b682fa9bbb41fbe02bc06b8158b5f43e75dec4b10f0f2323c6e"
+    },
+    "before": {
+      "processes": [],
+      "uncertain": false
+    },
+    "after": {
+      "processes": [
+        {
+          "pid": 14692,
+          "created": 134365860766238343,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Parametric\\bin\\parametric.exe",
+          "matches": true
+        },
+        {
+          "pid": 12036,
+          "created": 134365860776192073,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+          "matches": true
+        }
+      ],
+      "uncertain": false
+    },
+    "protected_after": {
+      "E:\\Projects\\MCP_CREO_MechDog\\models\\27143ef77ce641938543e0ca44cc3c03\\model.json": "03a4d13a90d4f34295525945790d72e53e8acd0fc2827004258efb15ad6536ae",
+      "E:\\Projects\\MCP_CREO_MechDog\\jobs\\272513b7238040c68dce4b923725d870\\job.json": "d4cc02ef096839e8ca689537c45ce0a54e0cebd37e26d4cba712c3b3202d14a7",
+      "E:\\Projects\\MCP_CREO_MechDog\\models\\27143ef77ce641938543e0ca44cc3c03\\output\\bug009_1792054655.prt.10": "324dd24ebd4d7b682fa9bbb41fbe02bc06b8158b5f43e75dec4b10f0f2323c6e"
+    },
+    "shared_after_sha256": "08c3e5bbea4fba57201a69d4bf70a0d255df921fdef4924c22da087f9338c2bc",
+    "protected_unchanged": true,
+    "startup_state_unchanged": true,
+    "finished_at": "2026-10-16T01:01:33.129561+00:00"
+  },
+  "raw_evidence": {
+    "build/bug008-reboot-20261016/archive-evidence.py": {
+      "sha256": "6ed2640b8df5f2b1797c461d96f75fe1e85fb492feef860aa6ae566c635d5a76",
+      "bytes": 2534
+    },
+    "build/bug008-reboot-20261016/assisted-start.json": {
+      "sha256": "767059c01578a2d03ccd1014f82b83cd8c6a0c786d1b2bc978469323d3450d2b",
+      "bytes": 4163
+    },
+    "build/bug008-reboot-20261016/restore-session.py": {
+      "sha256": "900a8124a953ca0acfe0ec9e80c1db1bcc552e75d11aac6b1cf2a08d7e05404d",
+      "bytes": 4643
+    },
+    "build/bug008-reboot-20261016/startup-state-before.bin": {
+      "sha256": "08c3e5bbea4fba57201a69d4bf70a0d255df921fdef4924c22da087f9338c2bc",
+      "bytes": 380
+    }
+  },
+  "unverified": [
+    "MCP retry automatic startup with damaged launch history",
+    "full WorkBuddy retest after this assisted startup",
+    "historical transform/save hang/-38 causal chain",
+    "cause or writer of startup-state corruption"
+  ]
+}
