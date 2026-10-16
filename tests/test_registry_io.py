@@ -298,6 +298,8 @@ class RegistryJobs(RegistryFixture, unittest.TestCase):
         templates.mkdir(parents=True)
         (templates / "mmns_part_solid_abs.prt").write_bytes(b"template")
         stack = self.enterContext(contextlib.ExitStack())
+        self.checkout = bridge.ROOT
+        stack.enter_context(patch.object(bridge, "ROOT", self.root))
         stack.enter_context(patch.object(bridge, "JOBS", self.jobs))
         stack.enter_context(patch.object(generic_bridge, "MODELS", self.models))
         stack.enter_context(
@@ -320,6 +322,19 @@ class RegistryJobs(RegistryFixture, unittest.TestCase):
 
     def submit(self, **kwargs):
         return generic_bridge.submit([{"op": "set_parameters", "values": {"SIZE": 18}}], **kwargs)
+
+    def test_simulated_native_failure_keeps_checkout_channel_health_unchanged(self):
+        health = self.checkout / "build/toolkit_health.json"
+        before = health.read_bytes() if health.exists() else None
+        created = self.submit()
+        with patch.object(
+            bridge.subprocess, "run", side_effect=self.worker(created, success=False, missing=True)
+        ):
+            bridge.run_job(created["job_id"])
+        recorded = bridge.read_json(self.root / "build/toolkit_health.json")
+        self.assertFalse(recorded["connected"])
+        self.assertEqual(recorded["job_id"], created["job_id"])
+        self.assertEqual(health.read_bytes() if health.exists() else None, before)
 
     def worker(self, created, success=True, rollback=False, readonly=False, missing=False):
         def run(*args, **kwargs):
