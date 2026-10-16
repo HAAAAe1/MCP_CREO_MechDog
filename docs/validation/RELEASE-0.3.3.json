@@ -1,20 +1,20 @@
 {
   "work_item": "DEV-029",
   "version": "0.3.3",
-  "recorded_at": "2026-10-16T10:47:43.213638+00:00",
+  "recorded_at": "2026-10-16T11:08:13.497594+00:00",
   "timezone": "Asia/Shanghai",
   "status": "candidate_acceptance_passed; main/tag/Release/assets verification will be recorded on the merge PR",
   "scope": "DEV-028 BUG-033 + DEV-019/020/021/022 and DEV-026 feedback/documentation; preserve main 0.3.2 DEV-025 fixes. Independent FEAT-029 implementation is excluded.",
   "source": {
-    "commit": "d2c0280b6069381a90fd20beeb42f898922f3f6f",
+    "commit": "e9c134b77e5807cc45c3f81c1446f2a3e6eede49",
     "dirty": false,
-    "checked_source_sha256": "47f68f3ba722372b8de784cbd761d723a086598d2da3fcaabee644b42c022687"
+    "checked_source_sha256": "bde27688aa73fc52cb5bf1cc41b30881a3b2bdbd44dd54cb24d790918bf5069c"
   },
   "branch": "codex/dev-029-release033",
   "base_main": "6a55119f5dc2c9b95fb3365c8073c354f83c7325",
   "integration_commit": "1d35370",
   "runtime_fingerprints_at_startup": {
-    "server.py": "8217e6290bcf3b82d37f4e010c64bb78119b136c04bc761a4655089a23bd7859",
+    "server.py": "bafef7c43e1aaf4b8ee26575155030e3b7bce44fcce016c667a71cdc96dd7cfb",
     "bridge.py": "820aad1fdc502ba29de5c365814931344b24d74b9be0a76ed666d83d035b9677",
     "creo_startup.py": "7d803ee8c679da483080c9e3cda31b6cf276178383542a9b5e3fac82885c2a22",
     "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
@@ -23,6 +23,8 @@
     "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
     "src/creo_mechdog/blend_callback.py": "5d7cd97d46d52dd08080ccd117ef14748b0fd16600477e9467d5a6450c1d2e5f",
     "src/creo_mechdog/build_support.py": "e34aba50b7e9b51eec894f1907efcd66c7df4ceefc3db2af858f8cc1ad5bc6bf",
+    "src/creo_mechdog/seed_distribution.py": "98e0aa0cda12f76e32d978623e1e44f2dc3605f808acb55ba4ddd6216789e83f",
+    "seeds.py": "c534d194d609a0a8b4ed858d8de1f4ae6798aa475c1d1cd90ab5e2ea0cf75a66",
     "src/creo_mechdog/recovery.py": "f64bc43164e7e75a51b7be1f29e152a5ad588a71c4f055f7cf549f92a4180e4f",
     "src/creo_mechdog/startup_state.py": "5b482745c0dfd93fc2ec699a1071b6c6cac1bca17944e854941bef197cda9e4c",
     "src/creo_mechdog/windows_boot.py": "4b3d521e3387eed0668317501e1ee6db7a81d32358c9fbd898c24957455bc6da",
@@ -52,24 +54,24 @@
   "development_check": {
     "work_item": "DEV-029",
     "version": "0.3.3",
-    "timestamp_utc": "2026-10-16T10:37:06.431762+00:00",
+    "timestamp_utc": "2026-10-16T10:59:26.922837+00:00",
     "environment": {
       "os": "Windows",
       "python": "3.12.14"
     },
     "source": {
-      "commit": "d2c0280b6069381a90fd20beeb42f898922f3f6f",
+      "commit": "e9c134b77e5807cc45c3f81c1446f2a3e6eede49",
       "dirty": false,
-      "checked_source_sha256": "47f68f3ba722372b8de784cbd761d723a086598d2da3fcaabee644b42c022687"
+      "checked_source_sha256": "bde27688aa73fc52cb5bf1cc41b30881a3b2bdbd44dd54cb24d790918bf5069c"
     },
     "native_validation": "not_run",
     "unit_tests": "passed",
     "success": true,
     "style_summary": {
-      "lint_findings": 36,
-      "unformatted_files": 26,
+      "lint_findings": 35,
+      "unformatted_files": 25,
       "cpp_files_checked": 16,
-      "python_files_checked": 97
+      "python_files_checked": 99
     },
     "tools": {
       "ruff": "0.17.0",
@@ -83,8 +85,8 @@
   },
   "unit_report": {
     "version": "0.3.3",
-    "timestamp": 1792147070.3322682,
-    "tests_run": 261,
+    "timestamp": 1792148408.6210856,
+    "tests_run": 263,
     "success": true,
     "failures": 0,
     "errors": 0
@@ -104,8 +106,8 @@
     "success": true,
     "jobs": [
       {
-        "job_id": "b16f1d2e69054220bf4d36b42b17bc8d",
-        "model_id": "6da2dc8ecfb3469cada7d78671da75f7",
+        "job_id": "c60a327ddfff4f0cba6c824aa2d4839e",
+        "model_id": "59a9f3eb3c2a4b92b5782f16963b9a8c",
         "revision": 1,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -115,11 +117,11 @@
         "disconnect_code": 0,
         "volume_mm3": null,
         "rollback_succeeded": false,
-        "part_sha256": "a1894acb215a185ffe2eda6405399989adf4ca648354e87ae0d214e77c602a0a"
+        "part_sha256": "bb30b51b7c3b73f992c2f03b3a8f615acd633f78578e0b43486267029f1bfb9c"
       },
       {
-        "job_id": "06768d7e2ce94c26b947475c2d0129c4",
-        "model_id": "6da2dc8ecfb3469cada7d78671da75f7",
+        "job_id": "4657463c6f954dabbc6318e58c9297b4",
+        "model_id": "59a9f3eb3c2a4b92b5782f16963b9a8c",
         "revision": 2,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -129,11 +131,11 @@
         "disconnect_code": 0,
         "volume_mm3": null,
         "rollback_succeeded": false,
-        "part_sha256": "b3689432268a3f033494cb0e9f59d4b396ebc5b2f188d432a1d1024f56f16f53"
+        "part_sha256": "414d9de39b084c3f01d4041b265171b3900d16c63c03cf64601a9b6e5f28a156"
       },
       {
-        "job_id": "73d9ed47ada14e2590f04b37bd657d3b",
-        "model_id": "6da2dc8ecfb3469cada7d78671da75f7",
+        "job_id": "4054bae99c0945af9bba55dcad8ad9f9",
+        "model_id": "59a9f3eb3c2a4b92b5782f16963b9a8c",
         "revision": 3,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -143,11 +145,11 @@
         "disconnect_code": 0,
         "volume_mm3": 2010.6192982974674,
         "rollback_succeeded": false,
-        "part_sha256": "b9b800b993833e7f0f4b42b5666ec6b80dfe6e0fa6365b7800bc3bf103edeee3"
+        "part_sha256": "db52321f48ed8dbc73881bffbb5d7f6e5d1d65c644bc0127cf6ee6dcce0c062f"
       },
       {
-        "job_id": "03a52e77dd9a4f6cb38e176b515dce96",
-        "model_id": "6da2dc8ecfb3469cada7d78671da75f7",
+        "job_id": "95e3ffc7b5e74e0d9497e73957b673b2",
+        "model_id": "59a9f3eb3c2a4b92b5782f16963b9a8c",
         "revision": 4,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -157,11 +159,11 @@
         "disconnect_code": 0,
         "volume_mm3": 3141.5926535897925,
         "rollback_succeeded": false,
-        "part_sha256": "0c90a7c266c7dc5ce48934489816d331b01804b5faa2a2a06d0038c4c5e3ac7d"
+        "part_sha256": "243d214499b679a560dfefa0334712b799dbd0631b7d75e1c145510632299b7d"
       },
       {
-        "job_id": "f9bc5aee0cdd45edb4c8046d09f002bc",
-        "model_id": "baeb3585ca9945eeacd49f45597043c7",
+        "job_id": "4471f601e2804911aee528d5861ec7c2",
+        "model_id": "636964645a26435d915d196f6a1369af",
         "revision": 1,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -171,11 +173,11 @@
         "disconnect_code": 0,
         "volume_mm3": 10600.0,
         "rollback_succeeded": false,
-        "part_sha256": "3a4ffc5992c51473d46c8a75e571c6a2b16daf2c00fb9e3852620cb65ea68bcd"
+        "part_sha256": "c61267c6ae875b8b3d096a1d0c985b256fec3a3d940372f8c723b5f7e651c069"
       },
       {
-        "job_id": "a00c68bb08ef44fca558c5d7271b6ad8",
-        "model_id": "1f51b2662de942ccbacb002910cdd459",
+        "job_id": "5b2866849a9b473dbc597469b6f0d023",
+        "model_id": "5ca3e07859544b528ba17f7030ba80aa",
         "revision": 1,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -185,10 +187,10 @@
         "disconnect_code": 0,
         "volume_mm3": 6324.026011676252,
         "rollback_succeeded": false,
-        "part_sha256": "2f41248cd56fceffc429e1b7c0c423bbc1a322e43cef515c940fa0f38e0c58cc"
+        "part_sha256": "7979bb9739c05c572ed288c2047fa4a1634fe7f79ec8f5d0e408c83f0a41b7a4"
       },
       {
-        "job_id": "491d3e4cb6d44765aaad98e2cdadf768",
+        "job_id": "ddecc59e69bf47ccafaa72a3598d7495",
         "model_id": null,
         "revision": null,
         "status": "succeeded",
@@ -199,18 +201,18 @@
         "disconnect_code": 0,
         "volume_mm3": 7030.353996706152,
         "rollback_succeeded": null,
-        "part_sha256": "033927fb556896db88443daa1dbc3073ad143830b1b1ba89e91b59938b0325ea"
+        "part_sha256": "6f1207760f863bc5f536f12f6aaedab3f3cd0e2a09986cebca62770ed9361d26"
       }
     ],
-    "raw_report_sha256": "60a0fc7b5caaac62b45d2d9d1e4376a6ac220bc10746708258ec7b9689a48add"
+    "raw_report_sha256": "50f9bbed20b5bde0075c47bf479ddc13e44940b82b63b29a3fa7216ece55036b"
   },
   "native_recovery_regression": {
-    "command": "python -m tools.test_toolkit_recovery --native --output build/dev029-release/native-recovery.json",
+    "command": "python -m tools.test_toolkit_recovery --native --output build/dev029-release/round2/native-recovery.json (desktop wrapper invokes the same run entry)",
     "success": true,
     "jobs": [
       {
-        "job_id": "4bef40973d26449fab6ab0f5a7db1458",
-        "model_id": "5814675f66734cfa8c7fe38280c3d98f",
+        "job_id": "0aa90d59f0b742ffb66817604f98af52",
+        "model_id": "dbf7b60092714d19b38f56221895bb9f",
         "revision": 1,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -220,11 +222,11 @@
         "disconnect_code": 0,
         "volume_mm3": null,
         "rollback_succeeded": false,
-        "part_sha256": "6d76781495e08cb84d64cad8adb47080dcddac951672ccd46a584cb6ed458137"
+        "part_sha256": "a73371fa47fe7d40229553ff14bc4a78dee934a955de9dc7bbc2076c2a891f01"
       },
       {
-        "job_id": "c560e09d2b3449b28b354834d17e821c",
-        "model_id": "5814675f66734cfa8c7fe38280c3d98f",
+        "job_id": "d03b0ae7af7f46c08a70e1701c8d33af",
+        "model_id": "dbf7b60092714d19b38f56221895bb9f",
         "revision": 2,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -234,11 +236,11 @@
         "disconnect_code": 0,
         "volume_mm3": 600.0,
         "rollback_succeeded": false,
-        "part_sha256": "023c42a003fe3f5d77aa517cc13fa2b6a395934a23c961e80a686a5d0babae54"
+        "part_sha256": "bb7b274724f0a185b36643cfe64ba9a487f60e611559d56c77e742959b540b61"
       },
       {
-        "job_id": "5ca76ded8b03433f9d6a692e40cb5d45",
-        "model_id": "5814675f66734cfa8c7fe38280c3d98f",
+        "job_id": "acf58545fee0491f8f81851ec6d3cc9d",
+        "model_id": "dbf7b60092714d19b38f56221895bb9f",
         "revision": 3,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -248,11 +250,11 @@
         "disconnect_code": 0,
         "volume_mm3": 600.0,
         "rollback_succeeded": false,
-        "part_sha256": "6a6dbaa86af4fb2401db1effeed5f8559d73a757c33dd21c558f3c7de8dc86fc"
+        "part_sha256": "b932e5cac079e38a1236433a18aafc586da287832d91e18feae3d35ed8acbf95"
       },
       {
-        "job_id": "7597183653004e1aae0fc04e25ca7d3a",
-        "model_id": "5814675f66734cfa8c7fe38280c3d98f",
+        "job_id": "c138191eed9544048a0c114066c4b370",
+        "model_id": "dbf7b60092714d19b38f56221895bb9f",
         "revision": null,
         "status": "failed",
         "message": "Unknown feature label: missing_profile",
@@ -265,8 +267,8 @@
         "part_sha256": null
       },
       {
-        "job_id": "656263d90740455c89bb0cf5a508d932",
-        "model_id": "362c9b9b439b459d984983706fac2b8c",
+        "job_id": "d9385f92176f472c94829c324c5056e5",
+        "model_id": "19799316ff0445449ef79a22ee9bfbfe",
         "revision": 1,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -276,11 +278,11 @@
         "disconnect_code": 0,
         "volume_mm3": null,
         "rollback_succeeded": false,
-        "part_sha256": "30029add391fb57b19455bda29005829764b1206eb6d88e5b24c8814c4eb7c8b"
+        "part_sha256": "32c90842f26bf165ce41fd34562b8bc71c128c5f07a30147116492d72483abb1"
       },
       {
-        "job_id": "559401c5e0de4f1eaefe6970d08bd831",
-        "model_id": "362c9b9b439b459d984983706fac2b8c",
+        "job_id": "26f3e0c4135b475eb9cf1a341346bf4f",
+        "model_id": "19799316ff0445449ef79a22ee9bfbfe",
         "revision": 2,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -290,10 +292,10 @@
         "disconnect_code": 0,
         "volume_mm3": 120.0,
         "rollback_succeeded": false,
-        "part_sha256": "be61fdfe40b6c2937db3a181c8afa22c17f116c43df1928a65953cd861ad73c8"
+        "part_sha256": "25596e66de23e011043e6f7fcbc87b3c862343b11f78a47805ec897066b15874"
       },
       {
-        "job_id": "da718fd43e244548b7b084ca305af741",
+        "job_id": "66bcaab1962344b5b6c32edaca117c4f",
         "model_id": null,
         "revision": null,
         "status": "succeeded",
@@ -304,11 +306,11 @@
         "disconnect_code": 0,
         "volume_mm3": 600.0,
         "rollback_succeeded": null,
-        "part_sha256": "a60fd90563533a7a43830f9f1cd27b53eded97293ba4b4a0eb18104b361e5599"
+        "part_sha256": "f5348577af07ab7a54c6499a3e40b8935ab83c27527e25343f3c48796831280f"
       },
       {
-        "job_id": "a53e4a0efdf245d399ab6e3655f5457c",
-        "model_id": "ef97eb4eec1b4b969a537614a35ed804",
+        "job_id": "0ffe5be7277046819cdc5c7c02528cee",
+        "model_id": "cc673eed10fd4a92b2c914b5e0c3abdf",
         "revision": 1,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -318,11 +320,11 @@
         "disconnect_code": 0,
         "volume_mm3": null,
         "rollback_succeeded": false,
-        "part_sha256": "d4015ea206f86737ce9033d2d97929ae941781ec8481badf14c41ff8bd21739c"
+        "part_sha256": "0050086110327a8409cf71c719c36750215c6ea0c4bea1c76299a012435c3dc8"
       },
       {
-        "job_id": "4c59dda4571541cfa9c40465805786c2",
-        "model_id": "5814675f66734cfa8c7fe38280c3d98f",
+        "job_id": "bcaed59b339a45589ef609ee66056606",
+        "model_id": "dbf7b60092714d19b38f56221895bb9f",
         "revision": 3,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -332,7 +334,7 @@
         "disconnect_code": 0,
         "volume_mm3": 600.0,
         "rollback_succeeded": false,
-        "part_sha256": "6a6dbaa86af4fb2401db1effeed5f8559d73a757c33dd21c558f3c7de8dc86fc"
+        "part_sha256": "b932e5cac079e38a1236433a18aafc586da287832d91e18feae3d35ed8acbf95"
       }
     ],
     "expected_failure_rollback": true,
@@ -350,8 +352,8 @@
           "is_prerelease": true,
           "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.2",
           "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.2/MCP_CREO_MechDog-0.3.2-source.zip",
-          "checked_at": "2026-10-16T10:40:53.908947+00:00",
-          "last_success_at": "2026-10-16T10:40:53.908947+00:00",
+          "checked_at": "2026-10-16T11:02:31.298365+00:00",
+          "last_success_at": "2026-10-16T11:02:31.298365+00:00",
           "message": "当前版本高于最高公开版本，无需降级。",
           "error": null,
           "from_cache": true,
@@ -370,8 +372,8 @@
           "is_prerelease": true,
           "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.2",
           "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.2/MCP_CREO_MechDog-0.3.2-source.zip",
-          "checked_at": "2026-10-16T10:40:55.374313+00:00",
-          "last_success_at": "2026-10-16T10:40:55.374313+00:00",
+          "checked_at": "2026-10-16T11:02:32.657562+00:00",
+          "last_success_at": "2026-10-16T11:02:32.657562+00:00",
           "message": "当前版本高于最高公开版本，无需降级。",
           "error": null,
           "from_cache": true,
@@ -380,11 +382,11 @@
       }
     ],
     "original_saved_checkpoint": {
-      "path": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\models\\5814675f66734cfa8c7fe38280c3d98f\\output\\bug008_1792147263.prt.4",
-      "sha256": "6a6dbaa86af4fb2401db1effeed5f8559d73a757c33dd21c558f3c7de8dc86fc",
+      "path": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\models\\dbf7b60092714d19b38f56221895bb9f\\output\\bug008_1792148561.prt.4",
+      "sha256": "b932e5cac079e38a1236433a18aafc586da287832d91e18feae3d35ed8acbf95",
       "unchanged": true
     },
-    "raw_report_sha256": "b00b41fc1b96ad8a5090972d81025b067e18fde3c1367a6b8becd9a93aac914e",
+    "raw_report_sha256": "ab23f2bf63c2cf0abd9ef583088d4f8115473d68593beb3d4a5de4f7507e6f0b",
     "historical_unknown_query": "Read-only byte-identical copy of the existing historical job manifest was supplied to the isolated test directory because the existing helper queries its fixed ID. Original manifest hash stayed unchanged; this is not new unknown-outcome recovery evidence."
   },
   "public_metadata": {
@@ -396,13 +398,13 @@
   },
   "source_distribution": {
     "candidate": {
-      "source_zip_sha256": "eea35bae52070e2d0367d876a01ab38299fa313d4b579a649fcf4e7a8c5a761a",
-      "file_count": 370,
+      "source_zip_sha256": "dff7517bcf81bae3858ec51e57fbfcf761516587db968f30143bfc298c82ac54",
+      "file_count": 373,
       "CRC": true,
       "allowlist_and_generated_exclusions": true,
       "new_raw_report_and_cpp_fixture_present": true,
       "raw_report_bytes_equal": true,
-      "extracted_root": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\.tmp\\d033\\MCP_CREO_MechDog"
+      "extracted_root": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\.tmp\\d033b\\MCP_CREO_MechDog"
     },
     "installation_commands": [
       "python -m venv .venv",
@@ -416,7 +418,7 @@
     "development_check": {
       "work_item": "DEV-029",
       "version": "0.3.3",
-      "timestamp_utc": "2026-10-16T10:41:15.868369+00:00",
+      "timestamp_utc": "2026-10-16T11:00:53.759509+00:00",
       "environment": {
         "os": "Windows",
         "python": "3.12.14"
@@ -424,16 +426,16 @@
       "source": {
         "commit": null,
         "dirty": null,
-        "checked_source_sha256": "47f68f3ba722372b8de784cbd761d723a086598d2da3fcaabee644b42c022687"
+        "checked_source_sha256": "bde27688aa73fc52cb5bf1cc41b30881a3b2bdbd44dd54cb24d790918bf5069c"
       },
       "native_validation": "not_run",
       "unit_tests": "passed",
       "success": true,
       "style_summary": {
-        "lint_findings": 36,
-        "unformatted_files": 26,
+        "lint_findings": 35,
+        "unformatted_files": 25,
         "cpp_files_checked": 16,
-        "python_files_checked": 97
+        "python_files_checked": 99
       },
       "tools": {
         "ruff": "0.17.0",
@@ -447,16 +449,16 @@
     },
     "unit_report": {
       "version": "0.3.3",
-      "timestamp": 1792147325.3031557,
-      "tests_run": 261,
+      "timestamp": 1792148499.993643,
+      "tests_run": 263,
       "success": true,
       "failures": 0,
       "errors": 0
     },
     "native_jobs": [
       {
-        "job_id": "009d483aedae49fab6cbe711f4d12ed1",
-        "model_id": "6efce8236ddd4ebdbe8400f4a917c416",
+        "job_id": "f3250948f6184727a0c584f7f0900643",
+        "model_id": "e57c988e85494e6c95d2bba9811d1ecf",
         "revision": 1,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -466,11 +468,11 @@
         "disconnect_code": 0,
         "volume_mm3": null,
         "rollback_succeeded": false,
-        "part_sha256": "18d673fd58f771b9f2379b9f72d75b624353337fe5bb76e8c6b034827716cb85"
+        "part_sha256": "afe3fb88f339e56e4374948fc0437e6e1bbd956b2b35da1cef1183979fd0db1f"
       },
       {
-        "job_id": "f1ce39c5050b46cf87b4b7014bc85cf5",
-        "model_id": "6efce8236ddd4ebdbe8400f4a917c416",
+        "job_id": "d2324dc057fa4373be13c8200149ff69",
+        "model_id": "e57c988e85494e6c95d2bba9811d1ecf",
         "revision": 2,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -480,11 +482,11 @@
         "disconnect_code": 0,
         "volume_mm3": null,
         "rollback_succeeded": false,
-        "part_sha256": "6de75a8ac71e72d804a09611c9fa5b6a94bceb3bb5512b273be4be56d6e93192"
+        "part_sha256": "a146621ba661145e5368d8fe5afdb1b1970cfa33bf17d1212ca7d1e7cd94a27e"
       },
       {
-        "job_id": "02201d9686f0419a89155c042ba8069d",
-        "model_id": "6efce8236ddd4ebdbe8400f4a917c416",
+        "job_id": "ecf7d7a4ba4545c4b5f4975c910b8077",
+        "model_id": "e57c988e85494e6c95d2bba9811d1ecf",
         "revision": 3,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -494,11 +496,11 @@
         "disconnect_code": 0,
         "volume_mm3": 2010.6192982974674,
         "rollback_succeeded": false,
-        "part_sha256": "7add49e4d3eb943c14b0d41b2f91d94605249988fc2a51eb80c4cbea7877638b"
+        "part_sha256": "132ae84278c94f57b9057029e3cdd81fb5e49944734b44878cd34972ecb955a5"
       },
       {
-        "job_id": "2c430f931ece420d925fa8195175f843",
-        "model_id": "6efce8236ddd4ebdbe8400f4a917c416",
+        "job_id": "3cacc205711a4c8cad4804ca1d1fdfc7",
+        "model_id": "e57c988e85494e6c95d2bba9811d1ecf",
         "revision": 4,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -508,11 +510,11 @@
         "disconnect_code": 0,
         "volume_mm3": 3141.5926535897925,
         "rollback_succeeded": false,
-        "part_sha256": "6344ac90db3b44e327908416c570b6f2e522278a16eec4e2a23157c23b6f9c4b"
+        "part_sha256": "0b927c1d6ccfdb4d7df975c4e9a460497cb06024128d4c0fe7ed89ae480da968"
       },
       {
-        "job_id": "b34cc45225ff4406bf3bd987667b4e07",
-        "model_id": "731c8c4346704775ae64365f7252756c",
+        "job_id": "2f5538c8209045eca475b1b92ec05f26",
+        "model_id": "562fd0bfdf8a4a37b857b6ef1d8badcc",
         "revision": 1,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -522,11 +524,11 @@
         "disconnect_code": 0,
         "volume_mm3": 10600.0,
         "rollback_succeeded": false,
-        "part_sha256": "f08e830e02cac35592d02a6c11606ac20386f7170302a8e75fe6afba382425cb"
+        "part_sha256": "f0ff254eceac1721e7240486c9be483f2508ed6845f07b3d09c7dcf49f7d71fa"
       },
       {
-        "job_id": "ed37cdde5c9c4f4e977a1654f47a1a2a",
-        "model_id": "422bbf53200c419b8f9c4f096da4e7cc",
+        "job_id": "fbd2d670dc31491da33ae36799c49ca2",
+        "model_id": "0bb439c8e21d4fea9ca4a57586ab8a8f",
         "revision": 1,
         "status": "succeeded",
         "message": "General feature plan completed",
@@ -536,10 +538,10 @@
         "disconnect_code": 0,
         "volume_mm3": 6324.026011676252,
         "rollback_succeeded": false,
-        "part_sha256": "29c3cb4779e722712a9344b9a650eb2e0746fd5f6f60665b81cc9eb8b8d3d699"
+        "part_sha256": "c6aa960f81e48b69eaca2249c7a0a1012ef13589ce2678b95fa608fef210c4ad"
       },
       {
-        "job_id": "84e1182cf17d4777988f968a92db2059",
+        "job_id": "1653d7ea06b847118545786d365f7c02",
         "model_id": null,
         "revision": null,
         "status": "succeeded",
@@ -550,7 +552,7 @@
         "disconnect_code": 0,
         "volume_mm3": 7030.353996706152,
         "rollback_succeeded": null,
-        "part_sha256": "c15713ee6e2218f8ee4d271c569620670e513736168026e03402f633903fa875"
+        "part_sha256": "ca8d1697ac77bab876ac638bd72b208c0a2051f884e4e3e62c75298d89746c69"
       }
     ],
     "public_metadata": {
@@ -563,11 +565,10 @@
     "seed_zip_install": {
       "success": true,
       "available_count": 9,
-      "directory": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\build\\dev029-release\\seed-install-isolated\\seed_library",
-      "archive": "MCP_CREO_MechDog-0.3.3-seed-library.zip",
-      "scope": "Developer real seed ZIP installation and registration in an isolated directory; original library unchanged"
+      "directory": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\build\\dev029-release\\round2\\seed-install-isolated\\seed_library",
+      "scope": "Actual canonical ZIP installation with working-tree license newline compatibility; nine PRT hashes verified"
     },
-    "seed_zip_sha256": "ddcc4faacab5d1e9b5052f9fff724b406386d10a89683dc59e141264583e7cce",
+    "seed_zip_sha256": "7e1332dd87ec0a90dd20600594e88580721df50eaff66f4e588a7ad771e79e70",
     "seed_prt_count": 9,
     "seed_prt_digests_unchanged": true
   },
@@ -578,6 +579,14 @@
     "expected_failed_jobs": 1,
     "all_successful_writes_saved_reloaded": true
   },
+  "canonical_seed_packaging": {
+    "success": true,
+    "worktree_and_git_export_seed_zip_bytes_identical": true,
+    "sha256": "7e1332dd87ec0a90dd20600594e88580721df50eaff66f4e588a7ad771e79e70",
+    "candidate_commit": "e9c134b",
+    "native_prt_digests_unchanged": true
+  },
+  "prior_final_export_precheck": "First main export detected CRLF/LF dependent seed ZIP bytes before any 0.3.3 tag or Release was published. Corrected within the same unpublished 0.3.3 delivery; all final candidate checks rerun.",
   "integration_decisions": [
     "Preserve main RegistryJobs ROOT isolation and its regression test",
     "Preserve main tools/test_result_delivery.cpp source-package allowlist entry",
@@ -598,14 +607,5 @@
     "prerelease": true,
     "tag": "v0.3.3",
     "final_assets": "Generate source/seed ZIP and each SHA256 from the actual merged main commit, publish non-draft Release, then download and verify all four assets. Record final commit/tag/Release/checksums on the PR to avoid an unpublished follow-up main commit."
-  },
-  "documentation_validation": {
-    "success": true,
-    "links_and_anchors": 248,
-    "tables": 17,
-    "unique_current_ids": 103,
-    "verbatim_report_sha256_verified": true,
-    "runtime_source_unchanged_from_candidate": true,
-    "baseline_debt_entries_unchanged_from_main": true
   }
 }

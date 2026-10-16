@@ -9,6 +9,7 @@
 - DEV-020：补充 VS Build Tools --includeRecommended 官方命令及退出码成功但组件缺失的诊断。
 - DEV-021：config.json 的 vcvars64_env 和 setup.ps1 的 -VcVars64Env 支持完整 INCLUDE/LIB/PATH；显式环境不要求 vcvars64 文件存在，保留 compiler_preflight。缺省 null 沿用原入口；参数优先级、非法字符校验和回写见[安装说明](INSTALL.md)。
 - DEV-022：Python 路径命中 WindowsApps 时在执行前说明商店占位程序，并指引 -Python 指定真实解释器。
+- 种子分发文本统一按 LF 入包，消除 Windows 工作区与 Git 导出的 ZIP 摘要差异；PRT 二进制保持原样，安装许可只容许 CRLF/LF 差异，内容篡改仍拒绝。
 - 保留 0.3.2 发布时的测试夹具 ROOT 隔离、原始反馈格式精确排除及 C++ 验证夹具分发；补齐本次 WorkBuddy 原件的源码包白名单。
 
 ## 验证与边界
