@@ -1,0 +1,2496 @@
+{
+  "work_item": "DEV-002",
+  "batch": 2,
+  "status": "creo12_developer_acceptance_passed_workbuddy_and_creo10_pending",
+  "timestamp_utc": "2026-10-15T07:07:58.130425+00:00",
+  "version": "0.3.1",
+  "source": {
+    "branch": "codex/dev002-helpers",
+    "starting_commit": "515d50b8201829fd2a7e899a5295008305d30263",
+    "tested_commit": "fee6ce2ebc91004f32d8458319b0c750586f7a85",
+    "dirty": true,
+    "initial_status": [
+      " M docs/BACKLOG.md",
+      " M docs/validation/BUG-006.md",
+      " M docs/validation/FEAT-020.md",
+      " M docs/work-items/BUG-006.md",
+      " M docs/work-items/DEV-002.md",
+      " M docs/work-items/FEAT-020.md",
+      "?? .workbuddy/memory/2026-10-14.md",
+      "?? .workbuddy/memory/2026-10-15.md",
+      "?? docs/BACKLOG_COMPLETED.md",
+      "?? docs/validation/DEV-014.json",
+      "?? \"docs/validation/MCP_CREO_MechDog_0.3.0_\\345\\205\\250\\351\\207\\217\\345\\256\\236\\346\\265\\213\\351\\227\\256\\351\\242\\230\\346\\212\\245\\345\\221\\212.md\"",
+      "?? docs/validation/WORKBUDDY-0.3.0.md",
+      "?? docs/work-items/BUG-008.md",
+      "?? docs/work-items/BUG-009.md",
+      "?? docs/work-items/DEV-014.md",
+      "?? docs/work-items/DEV-016.md"
+    ],
+    "checked_source_sha256": "fb3c328272e477ed35fb73ef3ec5cfb2308b7faa8d72b0666a3f451e1214a5f0",
+    "changed_source_fingerprints": {
+      "airfoil.py": "8897c9b792e0ef67b9ee3aaab03d4f473014ce2ae3894b74ddac5d7e83c250d6",
+      "docs/development/style-baseline.json": "7dd32c61e6b02b139c299ceb6b38890ba1f597cacc2604a8062eac7a1928b7d4",
+      "generic_bridge.py": "f19f5fc02c1f12d02ba27134f451940b24407836d22d70481bd15fa4f205a55e",
+      "profile_checks.py": "6a06b4b215952e13adb182b2adb07539c28dabcaedd857b39381b0b1b57e5731",
+      "pyproject.toml": "d83bf3730dded01b03e0176a418275405c47e87ee1543629aa02b0d47f719372",
+      "schema.py": "dfb81ba2a123612ac98fbe21993f24a85b778afb9b6d0b1ebcfece7acba97cdd",
+      "server.py": "c7dead0457b3c6470ef90f364a409563c795a87bc9b13410ff69c21337dd81fa",
+      "src/creo_mechdog/airfoil.py": "5adbf9d2205239f02d4b974c7fee405c47c81b3cf6201e18966109ad1595d176",
+      "src/creo_mechdog/profile_checks.py": "c160c3b2d800eb84b7aca2f7ddc4e7ce3e46e10498ce2cc799fafd7cfa83df24",
+      "src/creo_mechdog/schema.py": "9cbd671d85d738ff9cc9dae4ebb2926034457aea71950e6d802cf7d825c2998d",
+      "tests/test_development_validation.py": "fa1f650985b25c16486a062cdad4dc8a22fd3689bb0fab4f7c1b77f1527a9f4c",
+      "tests/test_installation_validation.py": "f0db82bd04322c69190741515bb93037e53d7ff64d1484a2a5ed5afa65bdae7b",
+      "tests/test_portable_modeling.py": "182e2e02e2b533708f9e8a708fb63f7eb17097bc80fa7402ee75807c5687b3b6",
+      "tests/test_sketch_stability.py": "fa081a58b84250a0e195fd0f5a76951e67a9be878ba9082bce81afecebb00d3a",
+      "tests/test_v021_validation.py": "868078fddc724f7cd48ca80a2fa2679c5c0635f6d673ac53f0de5cab2b427c84",
+      "tests/unit/test_development_validation.py": "7bc917ccb6767580cea458b0e23118fec222a907b1d05956413459f524aefe92",
+      "tests/unit/test_general_validation.py": "b51b7af68d8d304414f981a214a34c92912b38c6282b29cae2fc1e3bd28c58ac",
+      "tests/unit/test_helper_layout.py": "bb25cd8281b631a435be0f5ae45be4808860aaca8804e9e7fb67f5eb3e4e3486",
+      "tests/unit/test_loft_section_ids.py": "6218f7f5b9d02c7c18f566e3ae92186de77e356dc831ddf16a35c7ab7bb67373",
+      "tests/unit/test_portable_modeling.py": "fdd6db4dda0ce80436c317e97db16f8590b1b46d21e896357b294e91c1e2ec8b",
+      "tests/unit/test_profile_checks.py": "7f0ebe57865b4826a1b7e939119ee1b766db317e1db2c5163f256fbeafb64c03",
+      "tests/unit/test_reference_contract.py": "5a57137dcf70e3e7b95414b4f30c1e99d87951a92cc9b38308ec71521ab6a921",
+      "tests/unit/test_sketch_stability.py": "2f145ffb12d47a3b6dd46d925bc4bbed4ee6154403109f2a2f20690381e2c4f9",
+      "tests/unit/test_v021_validation.py": "9e662c22a53167b9b038e7d673aa074c43a3d42dd9a332d375fc3f6a915d31b4",
+      "tools/summarize_portable_modeling.py": "e5e6242dde8f4dd51f448124c0acdea7b32189c8935edc704b243ecb4e7619d4",
+      "tools/test_portable_modeling.py": "2ec31d02991e05307e3296619e57fd886888351710bd4d47300208a3e07fb535",
+      "tools/test_reference_contract.py": "33accf301f09a6c636c7d38dc62ea8e7c4e15bec6612f5f274ffc68671b075d9"
+    },
+    "runtime_fingerprints": {
+      "server.py": "c7dead0457b3c6470ef90f364a409563c795a87bc9b13410ff69c21337dd81fa",
+      "bridge.py": "29431be0182b5c6d59dd8cd2c5dd078499ac1233b2befca1016adba0a52324a8",
+      "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+      "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
+      "src/creo_mechdog/paths.py": "389dca158e3a7d02337ca3a099a1872bf858e38cc8108d78172cff235256dff5",
+      "src/creo_mechdog/references.py": "584a6c6ae235e798d3a97e26c6af3c3509a518db2e7495d6cecd496dcfa1c640",
+      "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+      "src/creo_mechdog/blend_callback.py": "5d7cd97d46d52dd08080ccd117ef14748b0fd16600477e9467d5a6450c1d2e5f",
+      "src/creo_mechdog/schema.py": "9cbd671d85d738ff9cc9dae4ebb2926034457aea71950e6d802cf7d825c2998d",
+      "src/creo_mechdog/profile_checks.py": "c160c3b2d800eb84b7aca2f7ddc4e7ce3e46e10498ce2cc799fafd7cfa83df24",
+      "src/creo_mechdog/airfoil.py": "5adbf9d2205239f02d4b974c7fee405c47c81b3cf6201e18966109ad1595d176",
+      "version.py": "03d9ad0a146f85ae2f6ed7042adea89d8a2996ea818f2614c906c6f7d79baa94",
+      "generic_bridge.py": "f19f5fc02c1f12d02ba27134f451940b24407836d22d70481bd15fa4f205a55e",
+      "schema.py": "dfb81ba2a123612ac98fbe21993f24a85b778afb9b6d0b1ebcfece7acba97cdd",
+      "profile_checks.py": "6a06b4b215952e13adb182b2adb07539c28dabcaedd857b39381b0b1b57e5731",
+      "airfoil.py": "8897c9b792e0ef67b9ee3aaab03d4f473014ce2ae3894b74ddac5d7e83c250d6",
+      "native/worker.cpp": "19b4f46da5a7555abcd131c3d79592e7857f68e65ce99b22ebc1a6282fa57b50"
+    }
+  },
+  "environment": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14",
+    "executable": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+    "temporary_root": "E:\\Projects\\MCP_CREO_MechDog\\.tmp",
+    "creo_sdk_compiler": "not invoked; native acceptance deferred",
+    "tools": {
+      "ruff": "0.17.0",
+      "clang-format": "23.1.3"
+    }
+  },
+  "commits": [
+    "142fc9e40a5d80751fa12c71fa18c3cb1d48a3cf DEV-002 规范辅助模块及相关回归格式",
+    "1f2495129ad0e4cf91fb0eee3b950daba4c0d9cc DEV-002 迁移校验翼型与轮廓实现至包内",
+    "19a61893e2b8d0662c2dd9f133b865fdd0eb5daa DEV-002 审查兼容模块安装配置指纹",
+    "fee6ce2ebc91004f32d8458319b0c750586f7a85 DEV-002 拆分纯校验回归并补迁移分发检查"
+  ],
+  "contracts": {
+    "tools_unchanged": 82,
+    "operations_schema_unchanged": true,
+    "airfoil_outputs_unchanged": true,
+    "tool_definitions_sha256": "43dbd10da284398f960174ccb78bc930862dd509312d8c542ac33e972b5348cb",
+    "operations_schema_sha256": "7c969ce54c61d38227d4be5ca88e062855c6e39570152ff19ce7f357be2cc796",
+    "legacy_public_exports": 106,
+    "implementation_equivalence": {
+      "schema": "identical to formatting commit except airfoil import path",
+      "profile_checks": "identical to formatting commit except airfoil import path",
+      "airfoil": "identical to formatting commit except airfoil import path",
+      "existing_test_method_bodies_preserved": 36
+    }
+  },
+  "test_discovery": {
+    "before": 191,
+    "after": 199,
+    "moved_pure_tests": 26,
+    "added_tests": 8,
+    "missing": [],
+    "duplicates": []
+  },
+  "offline": {
+    "tests_run": 167,
+    "success": true,
+    "deferred_tests": [
+      "test_creo_startup.CreoStartupTests.test_background_configuration_failure_is_terminal_and_fast",
+      "test_creo_startup.CreoStartupTests.test_capabilities_detects_source_change_without_relabeling_loaded_code",
+      "test_creo_startup.CreoStartupTests.test_capabilities_identifies_running_source",
+      "test_creo_startup.CreoStartupTests.test_cold_start_creates_working_directory_in_a_clean_checkout",
+      "test_creo_startup.CreoStartupTests.test_cold_start_uses_argument_list_psf_and_single_reservation",
+      "test_creo_startup.CreoStartupTests.test_connection_failure_and_missing_launch_files_do_not_claim_ready",
+      "test_creo_startup.CreoStartupTests.test_defaults_and_strict_configuration",
+      "test_creo_startup.CreoStartupTests.test_disabled_then_manually_opened_session_can_be_reused",
+      "test_creo_startup.CreoStartupTests.test_existing_session_is_verified_and_reused",
+      "test_creo_startup.CreoStartupTests.test_launcher_nonzero_exit_is_bounded_and_reported",
+      "test_creo_startup.CreoStartupTests.test_multiple_sessions_and_stale_selected_id_are_rejected",
+      "test_creo_startup.CreoStartupTests.test_new_launch_waits_then_times_out_once_and_retains_reservation",
+      "test_creo_startup.CreoStartupTests.test_process_appearing_before_launch_prevents_launch",
+      "test_creo_startup.CreoStartupTests.test_readiness_gate_leaves_inspection_and_protocol_available",
+      "test_creo_startup.CreoStartupTests.test_reservation_is_durable_before_launch_and_preserved_on_build_failure",
+      "test_creo_startup.CreoStartupTests.test_retry_requested_during_initial_check_is_not_dropped",
+      "test_creo_startup.CreoStartupTests.test_retry_with_existing_process_only_waits_without_relaunch",
+      "test_creo_startup.CreoStartupTests.test_running_or_manual_confirmation_timeout_never_duplicates_launch",
+      "test_creo_startup.CreoStartupTests.test_session_status_detects_manual_open_and_loss_without_implicit_restart",
+      "test_creo_startup.CreoStartupTests.test_session_status_keeps_native_fields_while_ready_thread_is_finishing",
+      "test_creo_startup.CreoStartupTests.test_uncertain_or_other_installation_does_not_probe_or_launch",
+      "test_creo_startup.CreoStartupTests.test_waiter_retry_for_older_attempt_cannot_repeat_newer_failed_launch",
+      "test_creo_startup.WindowsCoordinationTests.test_desktop_launcher_checks_owner_and_sends_psf_as_one_argument",
+      "test_creo_startup.WindowsCoordinationTests.test_desktop_launcher_failure_uninitializes_without_launching",
+      "test_creo_startup.WindowsCoordinationTests.test_desktop_launcher_rejects_a_different_owner_and_closes_process_handle",
+      "test_creo_startup.WindowsCoordinationTests.test_empty_toolkit_lock_excludes_another_process",
+      "test_creo_startup.WindowsCoordinationTests.test_inherited_session_id_cannot_select_an_unconfigured_target",
+      "test_creo_startup.WindowsCoordinationTests.test_parent_token_is_closed_after_sid_query",
+      "test_creo_startup.WindowsCoordinationTests.test_real_process_inventory_and_identity_are_read_only",
+      "test_creo_startup.WindowsCoordinationTests.test_two_processes_coordinate_one_controlled_launch",
+      "test_creo_startup.WindowsCoordinationTests.test_windows_prerequisites_restore_only_allowed_defaults_and_preserve_host",
+      "unit.test_update_check.UpdateCacheTests.test_total_deadline_and_lifespan_shutdown"
+    ],
+    "selection": "discover -s tests, excluding test_creo_startup and test_total_deadline_and_lifespan_shutdown; real session_status, launch_creo and CreoStartup.start guarded with AssertionError",
+    "commands": [
+      ".venv/Scripts/python.exe tools/dev_check.py --work-item DEV-002 --skip-unit",
+      ".venv/Scripts/python.exe build/dev002-batch2/run_offline.py"
+    ],
+    "style_summary": {
+      "lint_findings": 40,
+      "unformatted_files": 29,
+      "cpp_files_checked": 15,
+      "python_files_checked": 83
+    },
+    "combined_unfiltered_dev_check": "not run; startup/lifespan deferred"
+  },
+  "source_distribution": {
+    "command": ".venv/Scripts/python.exe tools/package.py --output build/DEV-002-batch2-source.zip",
+    "file_count": 277,
+    "archive_sha256": "3be2cfc5e7d095cf5ea06156aecefbcd9cc7f8b158e99a7cd3ce1fd3a19da820",
+    "excluded_local_artifacts": true,
+    "extract_root": "E:\\Projects\\MCP_CREO_MechDog\\.tmp\\dev002-batch2-distribution\\MCP_CREO_MechDog",
+    "fresh_venv": "E:\\Projects\\MCP_CREO_MechDog\\.tmp\\dev002-batch2-distribution\\venv",
+    "install_command": "../venv/Scripts/python.exe -m pip install -r requirements-dev.txt (cwd=extract_root)",
+    "outside_cwd_imports": {
+      "schema": {
+        "wrapper": "E:\\Projects\\MCP_CREO_MechDog\\.tmp\\dev002-batch2-distribution\\MCP_CREO_MechDog\\schema.py",
+        "implementation": "E:\\Projects\\MCP_CREO_MechDog\\.tmp\\dev002-batch2-distribution\\MCP_CREO_MechDog\\src\\creo_mechdog\\schema.py"
+      },
+      "profile_checks": {
+        "wrapper": "E:\\Projects\\MCP_CREO_MechDog\\.tmp\\dev002-batch2-distribution\\MCP_CREO_MechDog\\profile_checks.py",
+        "implementation": "E:\\Projects\\MCP_CREO_MechDog\\.tmp\\dev002-batch2-distribution\\MCP_CREO_MechDog\\src\\creo_mechdog\\profile_checks.py"
+      },
+      "airfoil": {
+        "wrapper": "E:\\Projects\\MCP_CREO_MechDog\\.tmp\\dev002-batch2-distribution\\MCP_CREO_MechDog\\airfoil.py",
+        "implementation": "E:\\Projects\\MCP_CREO_MechDog\\.tmp\\dev002-batch2-distribution\\MCP_CREO_MechDog\\src\\creo_mechdog\\airfoil.py"
+      },
+      "data_root": "E:\\Projects\\MCP_CREO_MechDog\\.tmp\\dev002-batch2-distribution\\MCP_CREO_MechDog",
+      "version_file": "E:\\Projects\\MCP_CREO_MechDog\\.tmp\\dev002-batch2-distribution\\MCP_CREO_MechDog\\version.py"
+    },
+    "tests_run": 167,
+    "success": true,
+    "checked_source_sha256": "fb3c328272e477ed35fb73ef3ec5cfb2308b7faa8d72b0666a3f451e1214a5f0",
+    "git_state": {
+      "commit": null,
+      "dirty": null,
+      "checked_source_sha256": "fb3c328272e477ed35fb73ef3ec5cfb2308b7faa8d72b0666a3f451e1214a5f0"
+    },
+    "runtime_fingerprints_equal": true,
+    "snapshot_note": "Archive captures source code and documents before this acceptance summary and status sync; all tested code matches the final branch."
+  },
+  "deferred": [
+    "WorkBuddy MCP black-box acceptance against E: developer copy",
+    "Independent Creo 10 acceptance",
+    "Ordinary Codex host connection discrepancy BUG-005; startup TimeoutExpired root cause unresolved"
+  ],
+  "isolation": {
+    "production_C_deployment_modified": false,
+    "native_source_modified": false,
+    "production_config_or_data_modified": false,
+    "real_creo_session_accessed": false,
+    "temporary_root_for_tests_and_verified_installs": "E:\\Projects\\MCP_CREO_MechDog\\.tmp",
+    "initial_editable_install_temp_note": "First developer editable install used system Temp; rerun used E: temporary root. No C: production deployment was touched."
+  },
+  "initial_deferred": [
+    "32 startup coordinator/lifespan unit cases",
+    "real stdio MCP transport including actual lifespan, stdout and entry identity",
+    "Creo 12 sketch stability and portable modeling geometry, save/reload, revision and rollback acceptance",
+    "Creo 10 independent acceptance",
+    "WorkBuddy black-box acceptance"
+  ],
+  "post_acceptance": {
+    "timestamp_utc": "2026-10-15T07:50:23.416195+00:00",
+    "user_confirmation": "User confirmed C: WorkBuddy testing had ended before this acceptance",
+    "source": {
+      "commit": "d6c193ee0813b4b3f1f70addce9cd02f0c56745e",
+      "dirty": true,
+      "checked_source_sha256": "fb3c328272e477ed35fb73ef3ec5cfb2308b7faa8d72b0666a3f451e1214a5f0"
+    },
+    "full_development_check": {
+      "command": ".venv/Scripts/python.exe tools/dev_check.py --work-item DEV-002",
+      "success": true,
+      "unit_tests": 199,
+      "style_summary": {
+        "lint_findings": 40,
+        "unformatted_files": 29,
+        "cpp_files_checked": 15,
+        "python_files_checked": 83
+      }
+    },
+    "real_stdio": {
+      "protocol_verified": true,
+      "tools": 82,
+      "all_tool_definitions_equal_pre_migration_baseline": true,
+      "source_identity_verified": true,
+      "runtime": {
+        "python_executable": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+        "server_entry": "E:\\Projects\\MCP_CREO_MechDog\\server.py",
+        "code_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "python_package_root": "E:\\Projects\\MCP_CREO_MechDog\\src\\creo_mechdog",
+        "resource_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "data_root": "E:\\Projects\\MCP_CREO_MechDog",
+        "source_fingerprints_at_startup": {
+          "server.py": "c7dead0457b3c6470ef90f364a409563c795a87bc9b13410ff69c21337dd81fa",
+          "bridge.py": "29431be0182b5c6d59dd8cd2c5dd078499ac1233b2befca1016adba0a52324a8",
+          "creo_startup.py": "0792f5c3d28969fedcdab8bbfc2dee2b381df77cc63ecb6484a2380bbcf62b7f",
+          "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
+          "src/creo_mechdog/paths.py": "389dca158e3a7d02337ca3a099a1872bf858e38cc8108d78172cff235256dff5",
+          "src/creo_mechdog/references.py": "584a6c6ae235e798d3a97e26c6af3c3509a518db2e7495d6cecd496dcfa1c640",
+          "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+          "src/creo_mechdog/blend_callback.py": "5d7cd97d46d52dd08080ccd117ef14748b0fd16600477e9467d5a6450c1d2e5f",
+          "src/creo_mechdog/schema.py": "9cbd671d85d738ff9cc9dae4ebb2926034457aea71950e6d802cf7d825c2998d",
+          "src/creo_mechdog/profile_checks.py": "c160c3b2d800eb84b7aca2f7ddc4e7ce3e46e10498ce2cc799fafd7cfa83df24",
+          "src/creo_mechdog/airfoil.py": "5adbf9d2205239f02d4b974c7fee405c47c81b3cf6201e18966109ad1595d176",
+          "version.py": "03d9ad0a146f85ae2f6ed7042adea89d8a2996ea818f2614c906c6f7d79baa94",
+          "generic_bridge.py": "f19f5fc02c1f12d02ba27134f451940b24407836d22d70481bd15fa4f205a55e",
+          "schema.py": "dfb81ba2a123612ac98fbe21993f24a85b778afb9b6d0b1ebcfece7acba97cdd",
+          "profile_checks.py": "6a06b4b215952e13adb182b2adb07539c28dabcaedd857b39381b0b1b57e5731",
+          "airfoil.py": "8897c9b792e0ef67b9ee3aaab03d4f473014ce2ae3894b74ddac5d7e83c250d6",
+          "native/worker.cpp": "19b4f46da5a7555abcd131c3d79592e7857f68e65ce99b22ebc1a6282fa57b50"
+        },
+        "source_changed_since_startup": false
+      },
+      "captured_stdout_frames": 11,
+      "all_captured_stdout_is_json_rpc": true,
+      "captured_stdout_sha256": "78b9a73f12188fc198bbd2d217d494168fc258afd282dccd3b05be1021e21c48",
+      "protocol_report_sha256": "d30d426cbd75c4eb7a20c481cde366c4db308719618439d1876a0175a8dda20c",
+      "host": "verified existing Explorer launches hidden E: Python and stdio service"
+    },
+    "connection_limits": {
+      "ordinary_codex_worker_probe": {
+        "connected": false,
+        "toolkit_code": -38,
+        "worker_exit_code": 20
+      },
+      "unmodified_test_mcp_py": "failed: queries session while startup is still building_worker; not counted as passing",
+      "ordinary_codex_stdio": "82 tool contract and source identity verified, then startup configuration_error TimeoutExpired and session_status tool error",
+      "desktop_stdio": "Startup also reported configuration_error TimeoutExpired; subsequent live session_status returned code=0/connected=true and updated startup=ready. Modeling started only after live connection and public startup checks passed.",
+      "issue": "BUG-005 remains unresolved; desktop launch is an existing developer workaround, not a delivered connector fix"
+    },
+    "native": {
+      "success": true,
+      "creo": "12.4.0.0",
+      "release_numeric": 44,
+      "sdk": "C:/Program Files/PTC/Creo 12.4.0.0/Common Files/protoolkit",
+      "compiler": "MSVC 14.44.35207 (build log include path)",
+      "native_cache_rebuilt": true,
+      "build_preflight": "MSVC/UCRT/Windows SDK headers and libraries found",
+      "build_note": "Cache rebuilt during preflight; native sources unchanged; existing C4244 warnings retained in local build log",
+      "build_source_sha256": "9ed462092aa78895990785f126c357911bbcb5119d1a732124d7268609d3f4ab",
+      "worker_sha256": "f74e01a1f9b992ebbaa346e21bb752eef79bba7760c6fa3b47af2bbf0d637e4e",
+      "callback_sha256": "76900e892535cf62e826165258806c215e28ddfabd65e5c9911cbca7abd6b591",
+      "session_connected": true,
+      "toolkit_code": 0,
+      "job_count": 24,
+      "successful_jobs": 22,
+      "expected_failed_jobs": 2,
+      "successful_mutations": 17,
+      "read_only_jobs": 5,
+      "successful_mutations_saved_reloaded": true,
+      "models_created": 7,
+      "all_success_revision_increments_verified": true,
+      "failed_revision_verified_by_live_refresh": true,
+      "failed_job_revision_field": "not provided by tool; retained as null instead of inferred",
+      "case_results": [
+        {
+          "name": "report19",
+          "passed": true,
+          "initial": {
+            "model_id": "36169cbb4bc8452f8f11888373b129d8",
+            "revision": 1,
+            "sketch_feature_id": 40,
+            "solid_feature_id": 64,
+            "volume_mm3": 25039965833.28,
+            "solver": {
+              "coordinate_geometry": {
+                "max_deviation_mm": 2.2737367544323206e-13,
+                "point_count": 38,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_geometry_after_creation": {
+                "max_deviation_mm": 2.2737367544323206e-13,
+                "point_count": 38,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_scaling": false,
+              "final_units": "mm",
+              "requested": "auto",
+              "used": "coordinates"
+            },
+            "saved_file_reloaded_and_verified": true,
+            "boundary": {
+              "max_deviation_mm": 0.00046473157696917856,
+              "tolerance_mm": 0.15,
+              "boundary_point_count": 19
+            }
+          },
+          "edited": {
+            "model_id": "36169cbb4bc8452f8f11888373b129d8",
+            "revision": 2,
+            "sketch_feature_id": 40,
+            "solid_feature_id": 64,
+            "volume_mm3": 25540765149.9456,
+            "solver": {
+              "coordinate_geometry": {
+                "max_deviation_mm": 2.2737367544323206e-13,
+                "point_count": 38,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_geometry_after_creation": {
+                "max_deviation_mm": 2.2737367544323206e-13,
+                "point_count": 38,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_scaling": false,
+              "final_units": "mm",
+              "requested": "auto",
+              "used": "coordinates"
+            },
+            "saved_file_reloaded_and_verified": true,
+            "boundary": {
+              "max_deviation_mm": 0.0020924999989802018,
+              "tolerance_mm": 0.15,
+              "boundary_point_count": 19
+            }
+          },
+          "geometry_edit": {
+            "model_id": "36169cbb4bc8452f8f11888373b129d8",
+            "revision": 3,
+            "sketch_feature_id": 40,
+            "solid_feature_id": 64,
+            "volume_mm3": 26306988104.443966,
+            "solver": {
+              "coordinate_geometry": {
+                "max_deviation_mm": 1.4551915228366852e-11,
+                "point_count": 38,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_geometry_after_creation": {
+                "max_deviation_mm": 1.4551915228366852e-11,
+                "point_count": 38,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_scaling": false,
+              "final_units": "mm",
+              "requested": "auto",
+              "used": "coordinates"
+            },
+            "saved_file_reloaded_and_verified": true,
+            "boundary": {
+              "max_deviation_mm": 0.000399930919121125,
+              "tolerance_mm": 0.15,
+              "boundary_point_count": 19
+            }
+          },
+          "rollback_succeeded": true,
+          "rollback_live_verified": true
+        },
+        {
+          "name": "polygon12",
+          "passed": true,
+          "initial": {
+            "model_id": "98d66280e3924b0f9b4ac1a24a53eec5",
+            "revision": 1,
+            "sketch_feature_id": 40,
+            "solid_feature_id": 57,
+            "volume_mm3": 479999999999.99994,
+            "solver": {
+              "coordinate_geometry": {
+                "max_deviation_mm": 7.34788079488412e-12,
+                "point_count": 24,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_geometry_after_creation": {
+                "max_deviation_mm": 7.34788079488412e-12,
+                "point_count": 24,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_scaling": false,
+              "final_units": "mm",
+              "requested": "auto",
+              "used": "coordinates"
+            },
+            "saved_file_reloaded_and_verified": true,
+            "boundary": {
+              "max_deviation_mm": 0.00037220513968351813,
+              "tolerance_mm": 0.15,
+              "boundary_point_count": 12
+            }
+          },
+          "edited": {
+            "model_id": "98d66280e3924b0f9b4ac1a24a53eec5",
+            "revision": 2,
+            "sketch_feature_id": 40,
+            "solid_feature_id": 57,
+            "volume_mm3": 489600000000.0,
+            "solver": {
+              "coordinate_geometry": {
+                "max_deviation_mm": 7.34788079488412e-12,
+                "point_count": 24,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_geometry_after_creation": {
+                "max_deviation_mm": 7.34788079488412e-12,
+                "point_count": 24,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_scaling": false,
+              "final_units": "mm",
+              "requested": "auto",
+              "used": "coordinates"
+            },
+            "saved_file_reloaded_and_verified": true,
+            "boundary": {
+              "max_deviation_mm": 0.00037587191877145736,
+              "tolerance_mm": 0.15,
+              "boundary_point_count": 12
+            }
+          }
+        },
+        {
+          "name": "capsule_xy",
+          "passed": true,
+          "initial": {
+            "model_id": "6d244a80c9124f5ab686469ca0870c32",
+            "revision": 1,
+            "sketch_feature_id": 40,
+            "solid_feature_id": 49,
+            "volume_mm3": 27853981795.870728,
+            "solver": {
+              "coordinate_geometry": {
+                "max_deviation_mm": 9.094947017729282e-13,
+                "point_count": 6,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_geometry_after_creation": {
+                "max_deviation_mm": 9.094947017729282e-13,
+                "point_count": 6,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_scaling": false,
+              "final_units": "mm",
+              "requested": "auto",
+              "used": "coordinates"
+            },
+            "saved_file_reloaded_and_verified": true,
+            "boundary": {
+              "max_deviation_mm": 0.0004585290007526055,
+              "tolerance_mm": 0.15,
+              "boundary_point_count": 706
+            }
+          },
+          "edited": {
+            "model_id": "6d244a80c9124f5ab686469ca0870c32",
+            "revision": 2,
+            "sketch_feature_id": 40,
+            "solid_feature_id": 49,
+            "volume_mm3": 28413846829.96773,
+            "solver": {
+              "coordinate_geometry": {
+                "max_deviation_mm": 9.094947017729282e-13,
+                "point_count": 6,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_geometry_after_creation": {
+                "max_deviation_mm": 9.094947017729282e-13,
+                "point_count": 6,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_scaling": false,
+              "final_units": "mm",
+              "requested": "auto",
+              "used": "coordinates"
+            },
+            "saved_file_reloaded_and_verified": true,
+            "boundary": {
+              "max_deviation_mm": 0.00048115460140252253,
+              "tolerance_mm": 0.15,
+              "boundary_point_count": 708
+            }
+          },
+          "geometry_edit": {
+            "model_id": "6d244a80c9124f5ab686469ca0870c32",
+            "revision": 3,
+            "sketch_feature_id": 40,
+            "solid_feature_id": 49,
+            "volume_mm3": 28979282660.423916,
+            "solver": {
+              "coordinate_geometry": {
+                "max_deviation_mm": 2.2648549702353193e-12,
+                "point_count": 6,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_geometry_after_creation": {
+                "max_deviation_mm": 2.2648549702353193e-12,
+                "point_count": 6,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_scaling": false,
+              "final_units": "mm",
+              "requested": "auto",
+              "used": "coordinates"
+            },
+            "saved_file_reloaded_and_verified": true,
+            "boundary": {
+              "max_deviation_mm": 0.00047141385311988415,
+              "tolerance_mm": 0.15,
+              "boundary_point_count": 712
+            }
+          },
+          "rollback_succeeded": true,
+          "rollback_live_verified": true
+        },
+        {
+          "name": "capsule_xz",
+          "passed": true,
+          "initial": {
+            "model_id": "9f5517fe2542494589644dda6cda446b",
+            "revision": 1,
+            "sketch_feature_id": 42,
+            "solid_feature_id": 51,
+            "volume_mm3": 27853981636.96934,
+            "solver": {
+              "coordinate_geometry": {
+                "max_deviation_mm": 7.275957614183426e-12,
+                "point_count": 6,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_geometry_after_creation": {
+                "max_deviation_mm": 7.275957614183426e-12,
+                "point_count": 6,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_scaling": false,
+              "final_units": "mm",
+              "requested": "auto",
+              "used": "coordinates"
+            },
+            "saved_file_reloaded_and_verified": true,
+            "boundary": {
+              "max_deviation_mm": 0.0020532913813440246,
+              "tolerance_mm": 0.15,
+              "boundary_point_count": 706
+            }
+          },
+          "edited": {
+            "model_id": "9f5517fe2542494589644dda6cda446b",
+            "revision": 2,
+            "sketch_feature_id": 42,
+            "solid_feature_id": 51,
+            "volume_mm3": 28413846667.872738,
+            "solver": {
+              "coordinate_geometry": {
+                "max_deviation_mm": 7.275957614183426e-12,
+                "point_count": 6,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_geometry_after_creation": {
+                "max_deviation_mm": 7.275957614183426e-12,
+                "point_count": 6,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_scaling": false,
+              "final_units": "mm",
+              "requested": "auto",
+              "used": "coordinates"
+            },
+            "saved_file_reloaded_and_verified": true,
+            "boundary": {
+              "max_deviation_mm": 0.0019934732281399192,
+              "tolerance_mm": 0.15,
+              "boundary_point_count": 708
+            }
+          }
+        },
+        {
+          "name": "circle_yz",
+          "passed": true,
+          "initial": {
+            "model_id": "441277f1565f463e95edda17e11d5af5",
+            "revision": 1,
+            "sketch_feature_id": 42,
+            "solid_feature_id": 49,
+            "volume_mm3": 7853981633.9745,
+            "solver": {
+              "coordinate_geometry": {
+                "max_deviation_mm": 0.0,
+                "point_count": 1,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_geometry_after_creation": {
+                "max_deviation_mm": 0.0,
+                "point_count": 1,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_scaling": false,
+              "final_units": "mm",
+              "requested": "auto",
+              "used": "coordinates"
+            },
+            "saved_file_reloaded_and_verified": true,
+            "boundary": {
+              "max_deviation_mm": 0.0021063362655695528,
+              "tolerance_mm": 0.15,
+              "boundary_point_count": 704
+            }
+          },
+          "edited": {
+            "model_id": "441277f1565f463e95edda17e11d5af5",
+            "revision": 2,
+            "sketch_feature_id": 42,
+            "solid_feature_id": 49,
+            "volume_mm3": 8011846664.817396,
+            "solver": {
+              "coordinate_geometry": {
+                "max_deviation_mm": 0.0,
+                "point_count": 1,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_geometry_after_creation": {
+                "max_deviation_mm": 0.0,
+                "point_count": 1,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_scaling": false,
+              "final_units": "mm",
+              "requested": "auto",
+              "used": "coordinates"
+            },
+            "saved_file_reloaded_and_verified": true,
+            "boundary": {
+              "max_deviation_mm": 0.001977189011995506,
+              "tolerance_mm": 0.15,
+              "boundary_point_count": 706
+            }
+          }
+        },
+        {
+          "name": "rectangle_coordinates",
+          "passed": true,
+          "initial": {
+            "model_id": "2f2e4113194d4982bc1a34ee0995fa10",
+            "revision": 1,
+            "sketch_feature_id": 40,
+            "solid_feature_id": 49,
+            "volume_mm3": 799999.9999999998,
+            "solver": {
+              "coordinate_geometry": {
+                "max_deviation_mm": 0.0,
+                "point_count": 8,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_geometry_after_creation": {
+                "max_deviation_mm": 0.0,
+                "point_count": 8,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_scaling": false,
+              "final_units": "mm",
+              "requested": "coordinates",
+              "used": "coordinates"
+            },
+            "saved_file_reloaded_and_verified": true,
+            "boundary": {
+              "max_deviation_mm": 0,
+              "tolerance_mm": 0.15,
+              "boundary_point_count": 4
+            }
+          },
+          "edited": {
+            "model_id": "2f2e4113194d4982bc1a34ee0995fa10",
+            "revision": 2,
+            "sketch_feature_id": 40,
+            "solid_feature_id": 49,
+            "volume_mm3": 816000.0,
+            "solver": {
+              "coordinate_geometry": {
+                "max_deviation_mm": 0.0,
+                "point_count": 8,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_geometry_after_creation": {
+                "max_deviation_mm": 0.0,
+                "point_count": 8,
+                "tolerance_mm": 1e-05
+              },
+              "coordinate_scaling": false,
+              "final_units": "mm",
+              "requested": "coordinates",
+              "used": "coordinates"
+            },
+            "saved_file_reloaded_and_verified": true,
+            "boundary": {
+              "max_deviation_mm": 0,
+              "tolerance_mm": 0.15,
+              "boundary_point_count": 4
+            }
+          }
+        }
+      ],
+      "airfoil": {
+        "passed": true,
+        "model_id": "34c51eb3791b40abbc97951eb14434ac",
+        "revision": 3,
+        "section_deviation_mm": 0.04784163593242254,
+        "pivot_fraction": 0.4,
+        "feature_ids_preserved": true
+      },
+      "open_contour_rejected_without_job": true,
+      "job_results": [
+        {
+          "case": "report19_create",
+          "tool": "creo_execute_plan",
+          "input": {
+            "model_name": "d2_report19_265ff",
+            "operations": [
+              {
+                "op": "sketch",
+                "label": "profile",
+                "plane": "XY",
+                "offset": 0,
+                "entities": [
+                  {
+                    "type": "line",
+                    "name": "b0",
+                    "start": [
+                      5200.0,
+                      -1100.0
+                    ],
+                    "end": [
+                      5200.0,
+                      1100.0
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b1",
+                    "start": [
+                      5200.0,
+                      1100.0
+                    ],
+                    "end": [
+                      6200.0,
+                      2100.0
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b2",
+                    "start": [
+                      6200.0,
+                      2100.0
+                    ],
+                    "end": [
+                      28700.0,
+                      2100.0
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b3",
+                    "start": [
+                      28700.0,
+                      2100.0
+                    ],
+                    "end": [
+                      51200.0,
+                      2100.0
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b4",
+                    "start": [
+                      51200.0,
+                      2100.0
+                    ],
+                    "end": [
+                      54864.4,
+                      2036.0
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b5",
+                    "start": [
+                      54864.4,
+                      2036.0
+                    ],
+                    "end": [
+                      58524.4,
+                      1844.2
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b6",
+                    "start": [
+                      58524.4,
+                      1844.2
+                    ],
+                    "end": [
+                      62175.0,
+                      1524.8
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b7",
+                    "start": [
+                      62175.0,
+                      1524.8
+                    ],
+                    "end": [
+                      65813.2,
+                      1078.1
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b8",
+                    "start": [
+                      65813.2,
+                      1078.1
+                    ],
+                    "end": [
+                      69433.0,
+                      504.8
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b9",
+                    "start": [
+                      69433.0,
+                      504.8
+                    ],
+                    "end": [
+                      72094.736,
+                      0.0
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b10",
+                    "start": [
+                      72094.736,
+                      0.0
+                    ],
+                    "end": [
+                      69433.0,
+                      -504.8
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b11",
+                    "start": [
+                      69433.0,
+                      -504.8
+                    ],
+                    "end": [
+                      65813.2,
+                      -1078.1
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b12",
+                    "start": [
+                      65813.2,
+                      -1078.1
+                    ],
+                    "end": [
+                      62175.0,
+                      -1524.8
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b13",
+                    "start": [
+                      62175.0,
+                      -1524.8
+                    ],
+                    "end": [
+                      58524.4,
+                      -1844.2
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b14",
+                    "start": [
+                      58524.4,
+                      -1844.2
+                    ],
+                    "end": [
+                      54864.4,
+                      -2036.0
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b15",
+                    "start": [
+                      54864.4,
+                      -2036.0
+                    ],
+                    "end": [
+                      51200.0,
+                      -2100.0
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b16",
+                    "start": [
+                      51200.0,
+                      -2100.0
+                    ],
+                    "end": [
+                      28700.0,
+                      -2100.0
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b17",
+                    "start": [
+                      28700.0,
+                      -2100.0
+                    ],
+                    "end": [
+                      6200.0,
+                      -2100.0
+                    ],
+                    "construction": false
+                  },
+                  {
+                    "type": "line",
+                    "name": "b18",
+                    "start": [
+                      6200.0,
+                      -2100.0
+                    ],
+                    "end": [
+                      5200.0,
+                      -1100.0
+                    ],
+                    "construction": false
+                  }
+                ],
+                "dimensioning": "auto"
+              },
+              {
+                "op": "extrude",
+                "label": "solid",
+                "sketch": "profile",
+                "depth": 100
+              },
+              {
+                "op": "export",
+                "format": "stl"
+              }
+            ],
+            "assertions": {
+              "require_solid": true,
+              "volume_mm3": 25039965833.28,
+              "volume_tolerance": 250.3996583328
+            }
+          },
+          "job_id": "4fb40503252741fcabbfed3005179b2c",
+          "model_id": "36169cbb4bc8452f8f11888373b129d8",
+          "status": "succeeded",
+          "revision": 1,
+          "previous_revision": 0,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "volume_mm3": 25039965833.28
+        },
+        {
+          "case": "report19_edit",
+          "tool": "creo_execute_plan",
+          "input": {
+            "model_id": "36169cbb4bc8452f8f11888373b129d8",
+            "expected_revision": 1,
+            "operations": [
+              {
+                "op": "set_sketch_dimensions",
+                "sketch": "profile",
+                "values": {
+                  "coord_b0_start_x": 5304.0,
+                  "coord_b10_end_x": 70821.66,
+                  "coord_b10_start_x": 73536.63072,
+                  "coord_b11_end_x": 67129.46399999999,
+                  "coord_b11_start_x": 70821.66,
+                  "coord_b12_end_x": 63418.5,
+                  "coord_b12_start_x": 67129.46399999999,
+                  "coord_b13_end_x": 59694.888,
+                  "coord_b13_start_x": 63418.5,
+                  "coord_b14_end_x": 55961.688,
+                  "coord_b14_start_x": 59694.888,
+                  "coord_b15_end_x": 52224.0,
+                  "coord_b15_start_x": 55961.688,
+                  "coord_b16_end_x": 29274.0,
+                  "coord_b16_start_x": 52224.0,
+                  "coord_b17_end_x": 6324.0,
+                  "coord_b17_start_x": 29274.0,
+                  "coord_b18_end_x": 5304.0,
+                  "coord_b18_start_x": 6324.0,
+                  "coord_b1_end_x": 6324.0,
+                  "coord_b1_start_x": 5304.0,
+                  "coord_b2_end_x": 29274.0,
+                  "coord_b2_start_x": 6324.0,
+                  "coord_b3_end_x": 52224.0,
+                  "coord_b3_start_x": 29274.0,
+                  "coord_b4_end_x": 55961.688,
+                  "coord_b4_start_x": 52224.0,
+                  "coord_b5_end_x": 59694.888,
+                  "coord_b5_start_x": 55961.688,
+                  "coord_b6_end_x": 63418.5,
+                  "coord_b6_start_x": 59694.888,
+                  "coord_b7_end_x": 67129.46399999999,
+                  "coord_b7_start_x": 63418.5,
+                  "coord_b8_end_x": 70821.66,
+                  "coord_b8_start_x": 67129.46399999999,
+                  "coord_b9_end_x": 73536.63072,
+                  "coord_b9_start_x": 70821.66
+                }
+              },
+              {
+                "op": "export",
+                "format": "stl"
+              }
+            ],
+            "assertions": {
+              "require_solid": true,
+              "volume_mm3": 25540765149.9456,
+              "volume_tolerance": 250.3996583328
+            }
+          },
+          "job_id": "76bbeba78f0741b9be4d8a3d4cf116db",
+          "model_id": "36169cbb4bc8452f8f11888373b129d8",
+          "status": "succeeded",
+          "revision": 2,
+          "previous_revision": 1,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "volume_mm3": 25540765149.9456
+        },
+        {
+          "case": "report19_geometry",
+          "tool": "creo_update_sketch_geometry",
+          "input": {
+            "model_id": "36169cbb4bc8452f8f11888373b129d8",
+            "expected_revision": 2,
+            "sketch": "profile",
+            "entities": [
+              {
+                "type": "line",
+                "name": "b0",
+                "start": [
+                  5356.0,
+                  -1122.0
+                ],
+                "end": [
+                  5356.0,
+                  1122.0
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b1",
+                "start": [
+                  5356.0,
+                  1122.0
+                ],
+                "end": [
+                  6386.0,
+                  2142.0
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b2",
+                "start": [
+                  6386.0,
+                  2142.0
+                ],
+                "end": [
+                  29561.0,
+                  2142.0
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b3",
+                "start": [
+                  29561.0,
+                  2142.0
+                ],
+                "end": [
+                  52736.0,
+                  2142.0
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b4",
+                "start": [
+                  52736.0,
+                  2142.0
+                ],
+                "end": [
+                  56510.332,
+                  2076.7200000000003
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b5",
+                "start": [
+                  56510.332,
+                  2076.7200000000003
+                ],
+                "end": [
+                  60280.132000000005,
+                  1881.084
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b6",
+                "start": [
+                  60280.132000000005,
+                  1881.084
+                ],
+                "end": [
+                  64040.25,
+                  1555.296
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b7",
+                "start": [
+                  64040.25,
+                  1555.296
+                ],
+                "end": [
+                  67787.596,
+                  1099.662
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b8",
+                "start": [
+                  67787.596,
+                  1099.662
+                ],
+                "end": [
+                  71515.99,
+                  514.8960000000001
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b9",
+                "start": [
+                  71515.99,
+                  514.8960000000001
+                ],
+                "end": [
+                  74257.57808,
+                  0.0
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b10",
+                "start": [
+                  74257.57808,
+                  0.0
+                ],
+                "end": [
+                  71515.99,
+                  -514.8960000000001
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b11",
+                "start": [
+                  71515.99,
+                  -514.8960000000001
+                ],
+                "end": [
+                  67787.596,
+                  -1099.662
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b12",
+                "start": [
+                  67787.596,
+                  -1099.662
+                ],
+                "end": [
+                  64040.25,
+                  -1555.296
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b13",
+                "start": [
+                  64040.25,
+                  -1555.296
+                ],
+                "end": [
+                  60280.132000000005,
+                  -1881.084
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b14",
+                "start": [
+                  60280.132000000005,
+                  -1881.084
+                ],
+                "end": [
+                  56510.332,
+                  -2076.7200000000003
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b15",
+                "start": [
+                  56510.332,
+                  -2076.7200000000003
+                ],
+                "end": [
+                  52736.0,
+                  -2142.0
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b16",
+                "start": [
+                  52736.0,
+                  -2142.0
+                ],
+                "end": [
+                  29561.0,
+                  -2142.0
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b17",
+                "start": [
+                  29561.0,
+                  -2142.0
+                ],
+                "end": [
+                  6386.0,
+                  -2142.0
+                ],
+                "construction": false
+              },
+              {
+                "type": "line",
+                "name": "b18",
+                "start": [
+                  6386.0,
+                  -2142.0
+                ],
+                "end": [
+                  5356.0,
+                  -1122.0
+                ],
+                "construction": false
+              }
+            ]
+          },
+          "job_id": "23c51a0a5a42432c9f0ed511d028315e",
+          "model_id": "36169cbb4bc8452f8f11888373b129d8",
+          "status": "succeeded",
+          "revision": 3,
+          "previous_revision": 2,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "volume_mm3": 26306988104.443966
+        },
+        {
+          "case": "report19_geometry_export",
+          "tool": "creo_export_model",
+          "input": {
+            "model_id": "36169cbb4bc8452f8f11888373b129d8",
+            "format": "stl"
+          },
+          "job_id": "676ed8bda8c54817b749856ab8b883e7",
+          "model_id": "36169cbb4bc8452f8f11888373b129d8",
+          "status": "succeeded",
+          "revision": 3,
+          "previous_revision": 3,
+          "read_only": true,
+          "saved_file_reloaded_and_verified": false,
+          "rollback_succeeded": false,
+          "volume_mm3": 26306988104.443966
+        },
+        {
+          "case": "report19_rollback",
+          "tool": "creo_execute_plan",
+          "input": {
+            "model_id": "36169cbb4bc8452f8f11888373b129d8",
+            "expected_revision": 3,
+            "operations": [
+              {
+                "op": "set_sketch_dimensions",
+                "sketch": "profile",
+                "values": {
+                  "coord_b0_start_x": 20000
+                }
+              }
+            ],
+            "assertions": {
+              "volume_mm3": 0
+            }
+          },
+          "job_id": "d7a5bd671fb7425aaff8b4059dc88243",
+          "model_id": "36169cbb4bc8452f8f11888373b129d8",
+          "status": "failed",
+          "revision": null,
+          "previous_revision": 3,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": false,
+          "rollback_succeeded": true,
+          "volume_mm3": 26306988104.443966,
+          "raw_message": "Volume assertion failed",
+          "toolkit_code": -1,
+          "revision_verified_by_following_refresh": 3
+        },
+        {
+          "case": "report19_refresh",
+          "tool": "creo_refresh_model",
+          "input": {
+            "model_id": "36169cbb4bc8452f8f11888373b129d8"
+          },
+          "job_id": "b3344c38e22a47bb831830d04ef5879c",
+          "model_id": "36169cbb4bc8452f8f11888373b129d8",
+          "status": "succeeded",
+          "revision": 3,
+          "previous_revision": 3,
+          "read_only": true,
+          "saved_file_reloaded_and_verified": false,
+          "rollback_succeeded": false,
+          "volume_mm3": 26306988104.443966
+        },
+        {
+          "case": "polygon12_create",
+          "tool": "creo_execute_plan",
+          "input": {
+            "model_name": "d2_polygon12_3d8df",
+            "operations": [
+              {
+                "op": "sketch",
+                "label": "profile",
+                "plane": "XY",
+                "offset": 0,
+                "entities": [
+                  {
+                    "type": "line",
+                    "name": "edge_0",
+                    "start": [
+                      40000.0,
+                      0.0
+                    ],
+                    "end": [
+                      34641.016151377546,
+                      19999.999999999996
+                    ]
+                  },
+                  {
+                    "type": "line",
+                    "name": "edge_1",
+                    "start": [
+                      34641.016151377546,
+                      19999.999999999996
+                    ],
+                    "end": [
+                      20000.000000000004,
+                      34641.016151377546
+                    ]
+                  },
+                  {
+                    "type": "line",
+                    "name": "edge_2",
+                    "start": [
+                      20000.000000000004,
+                      34641.016151377546
+                    ],
+                    "end": [
+                      2.4492935982947066e-12,
+                      40000.0
+                    ]
+                  },
+                  {
+                    "type": "line",
+                    "name": "edge_3",
+                    "start": [
+                      2.4492935982947066e-12,
+                      40000.0
+                    ],
+                    "end": [
+                      -19999.999999999993,
+                      34641.016151377546
+                    ]
+                  },
+                  {
+                    "type": "line",
+                    "name": "edge_4",
+                    "start": [
+                      -19999.999999999993,
+                      34641.016151377546
+                    ],
+                    "end": [
+                      -34641.016151377546,
+                      19999.999999999996
+                    ]
+                  },
+                  {
+                    "type": "line",
+                    "name": "edge_5",
+                    "start": [
+                      -34641.016151377546,
+                      19999.999999999996
+                    ],
+                    "end": [
+                      -40000.0,
+                      4.898587196589413e-12
+                    ]
+                  },
+                  {
+                    "type": "line",
+                    "name": "edge_6",
+                    "start": [
+                      -40000.0,
+                      4.898587196589413e-12
+                    ],
+                    "end": [
+                      -34641.01615137755,
+                      -19999.99999999999
+                    ]
+                  },
+                  {
+                    "type": "line",
+                    "name": "edge_7",
+                    "start": [
+                      -34641.01615137755,
+                      -19999.99999999999
+                    ],
+                    "end": [
+                      -20000.00000000002,
+                      -34641.01615137754
+                    ]
+                  },
+                  {
+                    "type": "line",
+                    "name": "edge_8",
+                    "start": [
+                      -20000.00000000002,
+                      -34641.01615137754
+                    ],
+                    "end": [
+                      -7.34788079488412e-12,
+                      -40000.0
+                    ]
+                  },
+                  {
+                    "type": "line",
+                    "name": "edge_9",
+                    "start": [
+                      -7.34788079488412e-12,
+                      -40000.0
+                    ],
+                    "end": [
+                      20000.000000000004,
+                      -34641.016151377546
+                    ]
+                  },
+                  {
+                    "type": "line",
+                    "name": "edge_10",
+                    "start": [
+                      20000.000000000004,
+                      -34641.016151377546
+                    ],
+                    "end": [
+                      34641.01615137754,
+                      -20000.00000000002
+                    ]
+                  },
+                  {
+                    "type": "line",
+                    "name": "edge_11",
+                    "start": [
+                      34641.01615137754,
+                      -20000.00000000002
+                    ],
+                    "end": [
+                      40000.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "dimensioning": "auto"
+              },
+              {
+                "op": "extrude",
+                "label": "solid",
+                "sketch": "profile",
+                "depth": 100
+              },
+              {
+                "op": "export",
+                "format": "stl"
+              }
+            ],
+            "assertions": {
+              "require_solid": true,
+              "volume_mm3": 480000000000.0,
+              "volume_tolerance": 4800.0
+            }
+          },
+          "job_id": "4fef5b438bdc461d81fc30e03f8d8802",
+          "model_id": "98d66280e3924b0f9b4ac1a24a53eec5",
+          "status": "succeeded",
+          "revision": 1,
+          "previous_revision": 0,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "volume_mm3": 479999999999.99994
+        },
+        {
+          "case": "polygon12_edit",
+          "tool": "creo_execute_plan",
+          "input": {
+            "model_id": "98d66280e3924b0f9b4ac1a24a53eec5",
+            "expected_revision": 1,
+            "operations": [
+              {
+                "op": "set_sketch_dimensions",
+                "sketch": "profile",
+                "values": {
+                  "coord_edge_0_end_x": 35333.8364744051,
+                  "coord_edge_0_start_x": 40800.0,
+                  "coord_edge_10_end_x": 35333.83647440509,
+                  "coord_edge_10_start_x": 20400.0,
+                  "coord_edge_11_end_x": 40800.0,
+                  "coord_edge_11_start_x": 35333.83647440509,
+                  "coord_edge_1_end_x": 20400.0,
+                  "coord_edge_1_start_x": 35333.8364744051,
+                  "coord_edge_2_end_x": 0.0,
+                  "coord_edge_2_start_x": 20400.0,
+                  "coord_edge_3_end_x": 20399.999999999993,
+                  "coord_edge_3_start_x": 0.0,
+                  "coord_edge_4_end_x": 35333.8364744051,
+                  "coord_edge_4_start_x": 20399.999999999993,
+                  "coord_edge_5_end_x": 40800.0,
+                  "coord_edge_5_start_x": 35333.8364744051,
+                  "coord_edge_6_end_x": 35333.83647440511,
+                  "coord_edge_6_start_x": 40800.0,
+                  "coord_edge_7_end_x": 20400.0,
+                  "coord_edge_7_start_x": 35333.83647440511,
+                  "coord_edge_8_end_x": 0.0,
+                  "coord_edge_8_start_x": 20400.0,
+                  "coord_edge_9_end_x": 20400.0,
+                  "coord_edge_9_start_x": 0.0
+                }
+              },
+              {
+                "op": "export",
+                "format": "stl"
+              }
+            ],
+            "assertions": {
+              "require_solid": true,
+              "volume_mm3": 489600000000.0,
+              "volume_tolerance": 4800.0
+            }
+          },
+          "job_id": "11a5cc95ece0413f8d2cd171c67035a8",
+          "model_id": "98d66280e3924b0f9b4ac1a24a53eec5",
+          "status": "succeeded",
+          "revision": 2,
+          "previous_revision": 1,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "volume_mm3": 489600000000.0
+        },
+        {
+          "case": "capsule_xy_create",
+          "tool": "creo_execute_plan",
+          "input": {
+            "model_name": "d2_capsule_xy_bd0bc",
+            "operations": [
+              {
+                "op": "sketch",
+                "label": "profile",
+                "plane": "XY",
+                "offset": 0,
+                "entities": [
+                  {
+                    "type": "line",
+                    "name": "top",
+                    "start": [
+                      -10000.0,
+                      5000.0
+                    ],
+                    "end": [
+                      10000.0,
+                      5000.0
+                    ]
+                  },
+                  {
+                    "type": "arc",
+                    "name": "right",
+                    "center": [
+                      10000.0,
+                      0.0
+                    ],
+                    "radius": 5000,
+                    "start_angle": -90,
+                    "end_angle": 90
+                  },
+                  {
+                    "type": "line",
+                    "name": "bottom",
+                    "start": [
+                      10000.0,
+                      -5000.0
+                    ],
+                    "end": [
+                      -10000.0,
+                      -5000.0
+                    ]
+                  },
+                  {
+                    "type": "arc",
+                    "name": "left",
+                    "center": [
+                      -10000.0,
+                      0.0
+                    ],
+                    "radius": 5000,
+                    "start_angle": 90,
+                    "end_angle": 270
+                  }
+                ],
+                "dimensioning": "auto"
+              },
+              {
+                "op": "extrude",
+                "label": "solid",
+                "sketch": "profile",
+                "depth": 100
+              },
+              {
+                "op": "export",
+                "format": "stl"
+              }
+            ],
+            "assertions": {
+              "require_solid": true,
+              "volume_mm3": 27853981633.97448,
+              "volume_tolerance": 278.5398163397448
+            }
+          },
+          "job_id": "c1904dd06d2b41c9af08d0474bfcda44",
+          "model_id": "6d244a80c9124f5ab686469ca0870c32",
+          "status": "succeeded",
+          "revision": 1,
+          "previous_revision": 0,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "volume_mm3": 27853981795.870728
+        },
+        {
+          "case": "capsule_xy_edit",
+          "tool": "creo_execute_plan",
+          "input": {
+            "model_id": "6d244a80c9124f5ab686469ca0870c32",
+            "expected_revision": 1,
+            "operations": [
+              {
+                "op": "set_sketch_dimensions",
+                "sketch": "profile",
+                "values": {
+                  "coord_bottom_end_x": 10100.0,
+                  "coord_bottom_start_x": 10100.0,
+                  "coord_bottom_start_y": 5050.0,
+                  "coord_left_center_x": 10100.0,
+                  "coord_left_center_y": 0.0,
+                  "coord_left_radius": 5050.0,
+                  "coord_right_center_x": 10100.0,
+                  "coord_right_center_y": 0.0,
+                  "coord_right_radius": 5050.0,
+                  "coord_top_end_x": 10100.0,
+                  "coord_top_start_x": 10100.0,
+                  "coord_top_start_y": 5049.999999999999
+                }
+              },
+              {
+                "op": "export",
+                "format": "stl"
+              }
+            ],
+            "assertions": {
+              "require_solid": true,
+              "volume_mm3": 28413846664.817368,
+              "volume_tolerance": 278.5398163397448
+            }
+          },
+          "job_id": "95b655d45fad4557b36d81e011b2286d",
+          "model_id": "6d244a80c9124f5ab686469ca0870c32",
+          "status": "succeeded",
+          "revision": 2,
+          "previous_revision": 1,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "volume_mm3": 28413846829.96773
+        },
+        {
+          "case": "capsule_xy_geometry",
+          "tool": "creo_update_sketch_geometry",
+          "input": {
+            "model_id": "6d244a80c9124f5ab686469ca0870c32",
+            "expected_revision": 2,
+            "sketch": "profile",
+            "entities": [
+              {
+                "type": "line",
+                "name": "top",
+                "start": [
+                  -10200.0,
+                  5100.0
+                ],
+                "end": [
+                  10200.0,
+                  5100.0
+                ]
+              },
+              {
+                "type": "arc",
+                "name": "right",
+                "center": [
+                  10200.0,
+                  0.0
+                ],
+                "radius": 5100.0,
+                "start_angle": -90,
+                "end_angle": 90
+              },
+              {
+                "type": "line",
+                "name": "bottom",
+                "start": [
+                  10200.0,
+                  -5100.0
+                ],
+                "end": [
+                  -10200.0,
+                  -5100.0
+                ]
+              },
+              {
+                "type": "arc",
+                "name": "left",
+                "center": [
+                  -10200.0,
+                  0.0
+                ],
+                "radius": 5100.0,
+                "start_angle": 90,
+                "end_angle": 270
+              }
+            ]
+          },
+          "job_id": "7e886513da354f5b84ada6afcdc2b897",
+          "model_id": "6d244a80c9124f5ab686469ca0870c32",
+          "status": "succeeded",
+          "revision": 3,
+          "previous_revision": 2,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "volume_mm3": 28979282660.423916
+        },
+        {
+          "case": "capsule_xy_geometry_export",
+          "tool": "creo_export_model",
+          "input": {
+            "model_id": "6d244a80c9124f5ab686469ca0870c32",
+            "format": "stl"
+          },
+          "job_id": "beaaa352a77846a59d53c4f5df83ab0c",
+          "model_id": "6d244a80c9124f5ab686469ca0870c32",
+          "status": "succeeded",
+          "revision": 3,
+          "previous_revision": 3,
+          "read_only": true,
+          "saved_file_reloaded_and_verified": false,
+          "rollback_succeeded": false,
+          "volume_mm3": 28979282660.423916
+        },
+        {
+          "case": "capsule_xy_rollback",
+          "tool": "creo_execute_plan",
+          "input": {
+            "model_id": "6d244a80c9124f5ab686469ca0870c32",
+            "expected_revision": 3,
+            "operations": [
+              {
+                "op": "set_sketch_dimensions",
+                "sketch": "profile",
+                "values": {
+                  "coord_bottom_end_x": 20000
+                }
+              }
+            ],
+            "assertions": {
+              "volume_mm3": 0
+            }
+          },
+          "job_id": "98c765732317411b8bd2ec1ed4a4b73d",
+          "model_id": "6d244a80c9124f5ab686469ca0870c32",
+          "status": "failed",
+          "revision": null,
+          "previous_revision": 3,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": false,
+          "rollback_succeeded": true,
+          "volume_mm3": 28979282660.423916,
+          "raw_message": "Volume assertion failed",
+          "toolkit_code": -1,
+          "revision_verified_by_following_refresh": 3
+        },
+        {
+          "case": "capsule_xy_refresh",
+          "tool": "creo_refresh_model",
+          "input": {
+            "model_id": "6d244a80c9124f5ab686469ca0870c32"
+          },
+          "job_id": "b615ff382b4341cd9100131daec2b00a",
+          "model_id": "6d244a80c9124f5ab686469ca0870c32",
+          "status": "succeeded",
+          "revision": 3,
+          "previous_revision": 3,
+          "read_only": true,
+          "saved_file_reloaded_and_verified": false,
+          "rollback_succeeded": false,
+          "volume_mm3": 28979282660.423916
+        },
+        {
+          "case": "capsule_xz_create",
+          "tool": "creo_execute_plan",
+          "input": {
+            "model_name": "d2_capsule_xz_e4b02",
+            "operations": [
+              {
+                "op": "sketch",
+                "label": "profile",
+                "plane": "XZ",
+                "offset": 25,
+                "entities": [
+                  {
+                    "type": "line",
+                    "name": "top",
+                    "start": [
+                      18839.74596215561,
+                      19330.127018922194
+                    ],
+                    "end": [
+                      36160.25403784439,
+                      29330.127018922194
+                    ]
+                  },
+                  {
+                    "type": "arc",
+                    "name": "right",
+                    "center": [
+                      38660.25403784439,
+                      25000.0
+                    ],
+                    "radius": 5000,
+                    "start_angle": -60,
+                    "end_angle": 120
+                  },
+                  {
+                    "type": "line",
+                    "name": "bottom",
+                    "start": [
+                      41160.25403784439,
+                      20669.872981077806
+                    ],
+                    "end": [
+                      23839.74596215561,
+                      10669.872981077806
+                    ]
+                  },
+                  {
+                    "type": "arc",
+                    "name": "left",
+                    "center": [
+                      21339.74596215561,
+                      15000.0
+                    ],
+                    "radius": 5000,
+                    "start_angle": 120,
+                    "end_angle": 300
+                  }
+                ],
+                "dimensioning": "auto"
+              },
+              {
+                "op": "extrude",
+                "label": "solid",
+                "sketch": "profile",
+                "depth": 100
+              },
+              {
+                "op": "export",
+                "format": "stl"
+              }
+            ],
+            "assertions": {
+              "require_solid": true,
+              "volume_mm3": 27853981633.97448,
+              "volume_tolerance": 278.5398163397448
+            }
+          },
+          "job_id": "11b822048c334c3ca258e44c15ce7fec",
+          "model_id": "9f5517fe2542494589644dda6cda446b",
+          "status": "succeeded",
+          "revision": 1,
+          "previous_revision": 0,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "volume_mm3": 27853981636.96934
+        },
+        {
+          "case": "capsule_xz_edit",
+          "tool": "creo_execute_plan",
+          "input": {
+            "model_id": "9f5517fe2542494589644dda6cda446b",
+            "expected_revision": 1,
+            "operations": [
+              {
+                "op": "set_sketch_dimensions",
+                "sketch": "profile",
+                "values": {
+                  "coord_bottom_end_x": 24078.143421777168,
+                  "coord_bottom_end_y": 10776.571710888584,
+                  "coord_bottom_start_x": 41571.85657822283,
+                  "coord_bottom_start_y": 20876.571710888584,
+                  "coord_left_center_x": 21553.143421777168,
+                  "coord_left_center_y": 15150.0,
+                  "coord_left_radius": 5050.0,
+                  "coord_right_center_x": 39046.85657822284,
+                  "coord_right_center_y": 25250.0,
+                  "coord_right_radius": 5050.0,
+                  "coord_top_end_x": 36521.85657822283,
+                  "coord_top_end_y": 29623.428289111416,
+                  "coord_top_start_x": 19028.143421777168,
+                  "coord_top_start_y": 19523.428289111416
+                }
+              },
+              {
+                "op": "export",
+                "format": "stl"
+              }
+            ],
+            "assertions": {
+              "require_solid": true,
+              "volume_mm3": 28413846664.817368,
+              "volume_tolerance": 278.5398163397448
+            }
+          },
+          "job_id": "af478bc5e587471ea0a2213e6071fb15",
+          "model_id": "9f5517fe2542494589644dda6cda446b",
+          "status": "succeeded",
+          "revision": 2,
+          "previous_revision": 1,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "volume_mm3": 28413846667.872738
+        },
+        {
+          "case": "circle_yz_create",
+          "tool": "creo_execute_plan",
+          "input": {
+            "model_name": "d2_circle_yz_0c410",
+            "operations": [
+              {
+                "op": "sketch",
+                "label": "profile",
+                "plane": "YZ",
+                "offset": 10,
+                "entities": [
+                  {
+                    "type": "circle",
+                    "name": "circle",
+                    "center": [
+                      30000,
+                      20000
+                    ],
+                    "radius": 5000
+                  }
+                ],
+                "dimensioning": "auto"
+              },
+              {
+                "op": "extrude",
+                "label": "solid",
+                "sketch": "profile",
+                "depth": 100
+              },
+              {
+                "op": "export",
+                "format": "stl"
+              }
+            ],
+            "assertions": {
+              "require_solid": true,
+              "volume_mm3": 7853981633.974483,
+              "volume_tolerance": 78.53981633974483
+            }
+          },
+          "job_id": "b8ef794f2e6c413ca210d13e7556d52a",
+          "model_id": "441277f1565f463e95edda17e11d5af5",
+          "status": "succeeded",
+          "revision": 1,
+          "previous_revision": 0,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "volume_mm3": 7853981633.9745
+        },
+        {
+          "case": "circle_yz_edit",
+          "tool": "creo_execute_plan",
+          "input": {
+            "model_id": "441277f1565f463e95edda17e11d5af5",
+            "expected_revision": 1,
+            "operations": [
+              {
+                "op": "set_sketch_dimensions",
+                "sketch": "profile",
+                "values": {
+                  "coord_circle_center_x": 30300.0,
+                  "coord_circle_center_y": 20200.0,
+                  "coord_circle_radius": 5050.0
+                }
+              },
+              {
+                "op": "export",
+                "format": "stl"
+              }
+            ],
+            "assertions": {
+              "require_solid": true,
+              "volume_mm3": 8011846664.817369,
+              "volume_tolerance": 78.53981633974483
+            }
+          },
+          "job_id": "395c86bbcf084d4b84b14f14f1c24792",
+          "model_id": "441277f1565f463e95edda17e11d5af5",
+          "status": "succeeded",
+          "revision": 2,
+          "previous_revision": 1,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "volume_mm3": 8011846664.817396
+        },
+        {
+          "case": "rectangle_coordinates_create",
+          "tool": "creo_execute_plan",
+          "input": {
+            "model_name": "d2_rectangle_coordina_5e74e",
+            "operations": [
+              {
+                "op": "sketch",
+                "label": "profile",
+                "plane": "XY",
+                "offset": 0,
+                "entities": [
+                  {
+                    "type": "rectangle",
+                    "name": "box",
+                    "min": [
+                      -50,
+                      -40
+                    ],
+                    "max": [
+                      50,
+                      40
+                    ]
+                  }
+                ],
+                "dimensioning": "coordinates"
+              },
+              {
+                "op": "extrude",
+                "label": "solid",
+                "sketch": "profile",
+                "depth": 100
+              },
+              {
+                "op": "export",
+                "format": "stl"
+              }
+            ],
+            "assertions": {
+              "require_solid": true,
+              "volume_mm3": 800000,
+              "volume_tolerance": 1
+            }
+          },
+          "job_id": "2d92bb174b7c460e82eb5b5a6f9d2890",
+          "model_id": "2f2e4113194d4982bc1a34ee0995fa10",
+          "status": "succeeded",
+          "revision": 1,
+          "previous_revision": 0,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "volume_mm3": 799999.9999999998
+        },
+        {
+          "case": "rectangle_coordinates_edit",
+          "tool": "creo_execute_plan",
+          "input": {
+            "model_id": "2f2e4113194d4982bc1a34ee0995fa10",
+            "expected_revision": 1,
+            "operations": [
+              {
+                "op": "set_sketch_dimensions",
+                "sketch": "profile",
+                "values": {
+                  "coord_box_0_end_x": 51.0,
+                  "coord_box_0_start_x": 51.0,
+                  "coord_box_1_start_x": 51.0,
+                  "coord_box_2_end_x": 51.0,
+                  "coord_box_2_start_x": 51.0,
+                  "coord_box_3_start_x": 51.0
+                }
+              },
+              {
+                "op": "export",
+                "format": "stl"
+              }
+            ],
+            "assertions": {
+              "require_solid": true,
+              "volume_mm3": 816000.0,
+              "volume_tolerance": 1
+            }
+          },
+          "job_id": "5e681811b8e84e2da89482e6b710a212",
+          "model_id": "2f2e4113194d4982bc1a34ee0995fa10",
+          "status": "succeeded",
+          "revision": 2,
+          "previous_revision": 1,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "volume_mm3": 816000.0
+        },
+        {
+          "case": "airfoil_create",
+          "tool": "creo_new_airfoil_blade",
+          "input": {
+            "model_name": "d2_airfoil_61500f79",
+            "stations": [
+              {
+                "offset": 5,
+                "chord": 8,
+                "twist_deg": 30,
+                "pivot_fraction": 0.4
+              },
+              {
+                "offset": 24,
+                "chord": 23,
+                "twist_deg": 25,
+                "pivot_fraction": 0.4
+              },
+              {
+                "offset": 55,
+                "chord": 28,
+                "twist_deg": 18,
+                "pivot_fraction": 0.4
+              },
+              {
+                "offset": 90,
+                "chord": 20,
+                "twist_deg": 12,
+                "pivot_fraction": 0.4
+              },
+              {
+                "offset": 120,
+                "chord": 9,
+                "twist_deg": 7,
+                "pivot_fraction": 0.4
+              }
+            ]
+          },
+          "job_id": "8a3f8475b3d844fa82d2c93fc2713523",
+          "model_id": "34c51eb3791b40abbc97951eb14434ac",
+          "status": "succeeded",
+          "revision": 1,
+          "previous_revision": 0,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "volume_mm3": 4639.546824078841
+        },
+        {
+          "case": "airfoil_edit",
+          "tool": "creo_set_airfoil_parameters",
+          "input": {
+            "model_id": "34c51eb3791b40abbc97951eb14434ac",
+            "expected_revision": 1,
+            "sketch": "blade_section_3",
+            "values": {
+              "chord": 32,
+              "thickness_ratio": 0.15,
+              "twist_deg": 12
+            }
+          },
+          "job_id": "d23307f358174dd6b1734485588dbc4f",
+          "model_id": "34c51eb3791b40abbc97951eb14434ac",
+          "status": "succeeded",
+          "revision": 2,
+          "previous_revision": 1,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "volume_mm3": 5968.945935745813
+        },
+        {
+          "case": "airfoil_edit_again",
+          "tool": "creo_set_airfoil_parameters",
+          "input": {
+            "model_id": "34c51eb3791b40abbc97951eb14434ac",
+            "expected_revision": 2,
+            "sketch": "blade_section_3",
+            "values": {
+              "twist_deg": 16,
+              "origin": [
+                1,
+                0
+              ]
+            }
+          },
+          "job_id": "b519c2cf9eb24a18ab06585aa3204f9f",
+          "model_id": "34c51eb3791b40abbc97951eb14434ac",
+          "status": "succeeded",
+          "revision": 3,
+          "previous_revision": 2,
+          "read_only": false,
+          "saved_file_reloaded_and_verified": true,
+          "rollback_succeeded": false,
+          "volume_mm3": 5971.547776332344
+        },
+        {
+          "case": "airfoil_export",
+          "tool": "creo_export_model",
+          "input": {
+            "model_id": "34c51eb3791b40abbc97951eb14434ac",
+            "format": "stl"
+          },
+          "job_id": "4a1da430b72d48a1b9b11b82bd6b8d19",
+          "model_id": "34c51eb3791b40abbc97951eb14434ac",
+          "status": "succeeded",
+          "revision": 3,
+          "previous_revision": 3,
+          "read_only": true,
+          "saved_file_reloaded_and_verified": false,
+          "rollback_succeeded": false,
+          "volume_mm3": 5971.547776332344
+        }
+      ],
+      "serial_only_no_concurrency_claim": true,
+      "open_contour_negative": {
+        "request": {
+          "name": "creo_new_loft_part",
+          "arguments": {
+            "sections": [
+              {
+                "op": "sketch",
+                "label": "s0",
+                "offset": 0,
+                "entities": [
+                  {
+                    "type": "line",
+                    "name": "open",
+                    "start": [
+                      0,
+                      0
+                    ],
+                    "end": [
+                      10,
+                      0
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "sketch",
+                "label": "s1",
+                "offset": 20,
+                "entities": [
+                  {
+                    "type": "line",
+                    "name": "open",
+                    "start": [
+                      0,
+                      0
+                    ],
+                    "end": [
+                      10,
+                      0
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "response": {
+          "meta": null,
+          "content": [
+            {
+              "type": "text",
+              "text": "Error executing tool creo_new_loft_part: Section s0: Profile is open or branched near [0.0, 0.0]; connect endpoints within 0.0001 mm",
+              "annotations": null,
+              "meta": null
+            }
+          ],
+          "structured_content": null,
+          "is_error": true,
+          "result_type": "complete"
+        },
+        "success": true,
+        "no_job_created": true
+      }
+    },
+    "submission_rejections": [
+      {
+        "case": "capsule_xy_edit",
+        "confirmed_not_queued": true,
+        "response": [
+          {
+            "type": "text",
+            "text": "Error executing tool creo_execute_plan: Creo Toolkit is busy with another task; query its job and try later",
+            "annotations": null,
+            "meta": null
+          }
+        ],
+        "at": "2026-10-15T07:42:48.532882+00:00"
+      }
+    ],
+    "harness_notes": {
+      "script": "build/dev002-batch2/run_native.py",
+      "script_sha256": "76c7b3c7f1e5f2f5be7a8b64499df6087a4e58f5fd1b0f453778da3d3c0e0335",
+      "original_harness_sha256": "ca576c62439e3324f0d8da79801c5885a81ea362f7118f338058a55720e4f7ed",
+      "raw_report_sha256": "d10843851349e1d449849132600575fa913a7750cf598e77b334c0c4029f2295",
+      "cases_source": "tools/test_sketch_stability.py geometry/summary functions reused; tools/test_portable_modeling.py airfoil scenario adapted to current compact/full contract and 9-seed library",
+      "adjustments": "Read-only export does not require a new save/reload; completed stages resumed with original job IDs. Explicit busy errors with no job ID retained and retried with a bounded 20s budget. No unknown outcome or lost submission was retried.",
+      "busy_issue": "One explicit busy refusal occurred before queue creation, related to BUG-009; lock/scheduler code was not modified",
+      "unknown_outcome_jobs": 0,
+      "open_contour_raw_response": "Persisted separately in native.open_contour_negative; no job created.",
+      "open_contour_probe_sha256": "10d369e562e8200f1c018206a46f0c7c9e018d07a329481aa707e9aa60c31445"
+    },
+    "remaining": [
+      "WorkBuddy MCP black-box acceptance against E: developer copy",
+      "Independent Creo 10 acceptance",
+      "Ordinary Codex host connection discrepancy BUG-005; startup TimeoutExpired root cause unresolved"
+    ],
+    "production_C_deployment_modified": false,
+    "source_or_native_code_modified_during_post_acceptance": false
+  }
+}

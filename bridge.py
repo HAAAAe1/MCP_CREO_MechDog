@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import ctypes
+import errno
 import hashlib
 import json
 import math
@@ -22,6 +23,7 @@ from typing import TextIO
 
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS
 from creo_mechdog.blend_callback import prepare_callback
+from creo_mechdog.recovery import job_evidence, process_identity
 
 ROOT = Path(__file__).resolve().parent
 JOBS = ROOT / "jobs"
@@ -160,7 +162,7 @@ def _replace_json(temp: Path, path: Path) -> None:
             delay = min(delay * 2, 0.05)
 
 
-def write_json(path: Path, value: dict) -> None:
+def write_json(path: Path, value: dict, *, durable: bool = False) -> None:
     content = json.dumps(value, ensure_ascii=False, indent=2)
     temp = path.with_suffix(path.suffix + f".{uuid.uuid4().hex}.tmp")
     owned = False
@@ -168,6 +170,9 @@ def write_json(path: Path, value: dict) -> None:
         with temp.open("x", encoding="utf-8") as stream:
             owned = True
             stream.write(content)
+            if durable:
+                stream.flush()
+                os.fsync(stream.fileno())
         _replace_json(temp, path)
     except BaseException as exc:
         if owned:
@@ -249,8 +254,29 @@ def validate_spec(
     return {**{k: float(v) for k, v in values.items()}, "holes": checked, "model_name": model_name}
 
 
+def toolkit_owner() -> dict:
+    """Best-effort owner snapshot; only a failed OS lock proves channel contention."""
+    try:
+        value = read_json(ROOT / "toolkit-owner.lock")
+    except (OSError, ValueError):
+        return {}
+    if not isinstance(value, dict):
+        return {}
+    return {
+        key: value[key]
+        for key in ("job_id", "model_id", "operation", "pid", "since")
+        if key in value
+    }
+
+
 @contextmanager
-def toolkit_lock(wait_seconds: float = 0):
+def toolkit_lock(
+    wait_seconds: float = 0,
+    *,
+    operation: str = "native_operation",
+    job_id: str | None = None,
+    model_id: str | None = None,
+):
     """Serialize all native calls across MCP clients and detached jobs."""
     lock = ROOT / "toolkit.lock"
     with lock.open("a+b") as f:
@@ -261,21 +287,65 @@ def toolkit_lock(wait_seconds: float = 0):
                 f.seek(0)
                 msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
                 break
-            except OSError:
+            except OSError as exc:
+                if exc.errno not in (errno.EACCES, errno.EAGAIN, errno.EDEADLK):
+                    raise
                 if time.monotonic() >= deadline:
-                    raise ToolkitBusy(
-                        "Creo Toolkit is busy with another task; query its job and try later"
-                    )
+                    raise ToolkitBusy(holder=toolkit_owner()) from None
                 time.sleep(0.25)
         try:
+            write_json(
+                ROOT / "toolkit-owner.lock",
+                {
+                    "job_id": job_id,
+                    "model_id": model_id,
+                    "operation": operation,
+                    "pid": os.getpid(),
+                    "since": now(),
+                },
+            )
             yield
         finally:
-            f.seek(0)
-            msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
+            try:
+                # Remove before unlock: deleting afterwards could erase the next owner.
+                (ROOT / "toolkit-owner.lock").unlink(missing_ok=True)
+            finally:
+                f.seek(0)
+                msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
 
 
 class ToolkitBusy(RuntimeError):
     """A native call is active; startup must wait without launching another Creo."""
+
+    def __init__(self, message: str | None = None, *, holder: dict | None = None):
+        holder = holder or {}
+        job_id = holder.get("job_id")
+        guidance = (
+            f"Poll creo_get_job(job_id='{job_id}', detail='compact') until terminal; "
+            "inspect unknown_outcome before retrying. "
+            if job_id
+            else "No occupying job could be determined; the owner may be a session probe, "
+            "build or another client. "
+        )
+        guidance += (
+            "This request was not accepted. Retry this request after 1 second only when "
+            "the occupying operation has finished; re-read the model revision before writing. "
+            "Do not resubmit an already accepted job."
+        )
+        self.payload = {
+            "status": "busy",
+            "code": "toolkit_busy",
+            "accepted": False,
+            "blocking_job_id": job_id,
+            "blocking_model_id": holder.get("model_id"),
+            "blocking_operation": holder.get("operation"),
+            "owner_snapshot": holder or None,
+            "owner_determined": bool(holder),
+            "retry_after_seconds": 1,
+            "retry_guidance": guidance,
+            "message": message or "Creo Toolkit is busy with another operation",
+        }
+        super().__init__(f"{self.payload['message']}. {guidance}")
 
 
 def license_setting_state(value: str | None) -> str:
@@ -599,82 +669,151 @@ exit /b 0
     return exe
 
 
-def session_status(connect_timeout_seconds: int = 30) -> dict:
+def channel_health() -> dict:
+    try:
+        return read_json(ROOT / "build/toolkit_health.json")
+    except (OSError, ValueError):
+        return {}
+
+
+def record_channel_health(connected: bool, **fields) -> dict:
+    value = {"connected": connected, "checked_at": now(), **fields}
+    (ROOT / "build").mkdir(exist_ok=True)
+    write_json(ROOT / "build/toolkit_health.json", value)
+    return value
+
+
+def note_native_outcome(manifest: dict) -> None:
+    result = manifest.get("result", {})
+    if (
+        manifest["status"] == "unknown_outcome"
+        or result.get("connected") is False
+        or result.get("toolkit_code") == -38
+        or result.get("disconnect_code") not in (None, 0)
+    ):
+        record_channel_health(
+            False,
+            job_id=manifest["job_id"],
+            model_id=manifest.get("model_id"),
+            connection_state="recheck_required",
+            message=manifest.get("message"),
+        )
+
+
+def session_status(connect_timeout_seconds: int = 30, *, build_worker: bool = True) -> dict:
     if (
         isinstance(connect_timeout_seconds, bool)
         or not isinstance(connect_timeout_seconds, int)
         or not 1 <= connect_timeout_seconds <= 30
     ):
         raise ValueError("connect_timeout_seconds must be 1–30")
-    with toolkit_lock():
-        exe = build_native()
-        result = subprocess.run(
-            [str(exe), "status", str(connect_timeout_seconds)],
-            cwd=ROOT / "build",
-            env=native_environment(),
-            capture_output=True,
-            timeout=connect_timeout_seconds + min(connect_timeout_seconds, 15) + 5,
-            creationflags=HIDDEN,
-        )
+    with toolkit_lock(operation="session_status"):
+        exe = build_native() if build_worker else ROOT / "build/creo_worker.exe"
+        if not build_worker and not exe.is_file():
+            return {
+                "connected": False,
+                "connection_state": "worker_unavailable",
+                "message": "Native worker is unavailable; request creo_startup_status(retry=true)",
+            }
+        budget = connect_timeout_seconds + min(connect_timeout_seconds, 15) + 5
+        try:
+            result = subprocess.run(
+                [str(exe), "status", str(connect_timeout_seconds)],
+                cwd=ROOT / "build",
+                env=native_environment(),
+                capture_output=True,
+                timeout=budget,
+                creationflags=HIDDEN,
+            )
+        except subprocess.TimeoutExpired:
+            return record_channel_health(
+                False,
+                connection_state="probe_timeout",
+                toolkit_code=None,
+                probe_budget_seconds=budget,
+                message="Toolkit connection probe timed out; only this probe helper was stopped. "
+                "Inspect Creo dialogs and occupying jobs; preserve unknown jobs/models, then "
+                "request creo_startup_status(retry=true). No Creo process was closed.",
+            )
+        return _record_probe_result(result)
+
+
+def _record_probe_result(result: subprocess.CompletedProcess) -> dict:
     try:
         value = json.loads(result.stdout.decode("utf-8"))
+        if not isinstance(value, dict) or not isinstance(value.get("connected"), bool):
+            raise ValueError("Invalid status object")
     except (ValueError, UnicodeDecodeError):
-        raise RuntimeError(
-            f"Toolkit worker failed without a result (exit {result.returncode}); check the Creo session and runtime libraries"
-        ) from None
+        return record_channel_health(
+            False,
+            connection_state="invalid_probe_result",
+            worker_exit_code=result.returncode,
+            message="Toolkit worker returned no valid status result; inspect the Creo session and runtime libraries, then request explicit startup retry",
+        )
     value["worker_exit_code"] = result.returncode
+    if result.returncode != 0 and value.get("connected"):
+        value.update(connected=False, connection_state="probe_worker_failed")
+    if value.get("disconnect_code") not in (None, 0):
+        value.update(connected=False, connection_state="disconnect_failed")
+    record_channel_health(
+        bool(value.get("connected")), **{k: v for k, v in value.items() if k != "connected"}
+    )
     return value
 
 
 def create_job(spec: dict) -> dict:
-    JOBS.mkdir(exist_ok=True)
-    job_id = uuid.uuid4().hex
-    directory = job_path(job_id)
-    directory.mkdir()
-    output = directory / "output"
-    output.mkdir()
-    if len(str(output)) >= 230:
-        raise ValueError("Project path is too long for this Creo Toolkit build")
-    spec = dict(spec)
-    spec["model_name"] = spec["model_name"] or f"ai_plate_{job_id[:12]}"
-    manifest = {
-        "job_id": job_id,
-        "status": "queued",
-        "created_at": now(),
-        "spec": spec,
-        "job_directory": str(directory),
-        "output_directory": str(output),
-        "message": "Call creo_get_job until succeeded, failed or unknown_outcome. Do not repeat create_plate to poll.",
-    }
-    write_json(directory / "job.json", manifest)
-    try:
-        with (directory / "runner.log").open("ab") as log:
-            subprocess.Popen(
-                [sys.executable, str(ROOT / "bridge.py"), "run-job", job_id],
-                cwd=ROOT,
-                stdin=subprocess.DEVNULL,
-                stdout=log,
-                stderr=subprocess.STDOUT,
-                creationflags=HIDDEN,
-                close_fds=True,
-            )
-    except Exception as exc:
-        manifest.update(status="failed", message=str(exc), finished_at=now())
+    with toolkit_lock(operation="submit_plate"):
+        JOBS.mkdir(exist_ok=True)
+        job_id = uuid.uuid4().hex
+        directory = job_path(job_id)
+        directory.mkdir()
+        output = directory / "output"
+        output.mkdir()
+        if len(str(output)) >= 230:
+            raise ValueError("Project path is too long for this Creo Toolkit build")
+        spec = dict(spec)
+        spec["model_name"] = spec["model_name"] or f"ai_plate_{job_id[:12]}"
+        manifest = {
+            "job_id": job_id,
+            "status": "queued",
+            "created_at": now(),
+            "spec": spec,
+            "job_directory": str(directory),
+            "output_directory": str(output),
+            "message": "Call creo_get_job until succeeded, failed or unknown_outcome. Do not repeat create_plate to poll.",
+        }
         write_json(directory / "job.json", manifest)
-        raise
-    return manifest
+        try:
+            with (directory / "runner.log").open("ab") as log:
+                subprocess.Popen(
+                    [sys.executable, str(ROOT / "bridge.py"), "run-job", job_id],
+                    cwd=ROOT,
+                    stdin=subprocess.DEVNULL,
+                    stdout=log,
+                    stderr=subprocess.STDOUT,
+                    creationflags=HIDDEN,
+                    close_fds=True,
+                )
+        except Exception as exc:
+            manifest.update(status="failed", message=str(exc), finished_at=now())
+            write_json(directory / "job.json", manifest)
+            raise
+        return manifest
 
 
 def run_job(job_id: str) -> None:
     directory = job_path(job_id)
     manifest = read_json(directory / "job.json")
+    manifest.update(runner_identity=process_identity(os.getpid()), stage="waiting_for_channel")
+    write_json(directory / "job.json", manifest)
     if manifest.get("kind") == "generic":
         from generic_bridge import run_generic_job
 
         run_generic_job(job_id, manifest)
         return
+    worker_started = False
     try:
-        with toolkit_lock(wait_seconds=120):
+        with toolkit_lock(wait_seconds=120, operation="create_plate", job_id=job_id):
             manifest.update(
                 status="running", stage="building_worker", started_at=now(), runner_pid=os.getpid()
             )
@@ -704,6 +843,7 @@ def run_job(job_id: str) -> None:
             manifest.update(stage="creating_native_features")
             write_json(directory / "job.json", manifest)
             with (directory / "worker.log").open("wb") as log:
+                worker_started = True
                 proc = subprocess.run(
                     [str(exe), "create", str(directory)],
                     cwd=directory,
@@ -723,6 +863,14 @@ def run_job(job_id: str) -> None:
                 result = read_json(result_path)
                 manifest["result"] = result
                 if (
+                    result.get("disconnect_code") not in (None, 0)
+                    or result.get("delivery_complete") is False
+                ):
+                    manifest.update(
+                        status="unknown_outcome",
+                        message="Native finalization was not confirmed; preserve saved files and inspect the checkpoint",
+                    )
+                elif (
                     proc.returncode == 0
                     and result.get("success")
                     and result.get("saved_file_reloaded_and_verified")
@@ -753,11 +901,14 @@ def run_job(job_id: str) -> None:
                     )
     except subprocess.TimeoutExpired:
         manifest.update(
-            status="unknown_outcome",
-            message="Native helper timed out and was stopped; Creo may contain a partial/new model. Inspect Creo before retrying.",
+            status="unknown_outcome" if worker_started else "failed",
+            message="Native helper timed out and was stopped; inspect native checkpoint and Creo before retrying."
+            if worker_started
+            else "Native build exceeded its subprocess budget; inspect build logs. No native modeling worker started.",
         )
     except Exception as exc:
-        manifest.update(status="failed", message=str(exc))
+        manifest.update(status="unknown_outcome" if worker_started else "failed", message=str(exc))
+    note_native_outcome(manifest)
     manifest["finished_at"] = now()
     write_json(directory / "job.json", manifest)
 
@@ -786,11 +937,27 @@ def get_job(job_id: str, detail: str = "full") -> dict:
             if manifest.get("kind") == "generic"
             else config()["native_timeout_seconds"]
         )
-        if age > 120 + 120 + timeout + 30:
+        if age > 120 + 180 + timeout + 30:
             manifest.update(
                 status="unknown_outcome",
                 message="Job exceeded its expected lifetime; inspect runner.log and Creo before retrying",
             )
+    if manifest["status"] == "unknown_outcome" or manifest.get("recovery_required"):
+        model = None
+        if manifest.get("model_id"):
+            from generic_bridge import model_info
+
+            try:
+                model = model_info(manifest["model_id"])
+            except (OSError, ValueError) as exc:
+                manifest["model_evidence_error"] = (
+                    f"Model registry could not be read ({type(exc).__name__}); preserve it for operator reconciliation"
+                )
+        manifest["recovery"] = job_evidence(directory, manifest, model)
+        manifest.setdefault(
+            "recovery_required",
+            ("Outcome is unconfirmed; preserve reservation and inspect recovery evidence"),
+        )
     if detail == "compact":
         manifest = compact_job(manifest)
     return manifest
@@ -811,6 +978,11 @@ def compact_job(manifest: dict) -> dict:
         "finished_at",
         "message",
         "construction",
+        "busy",
+        "recovery_required",
+        "recovery",
+        "runner_identity",
+        "model_evidence_error",
     )
     summary = {key: manifest[key] for key in keys if key in manifest}
     summary["detail"] = "compact"
@@ -883,7 +1055,7 @@ if __name__ == "__main__":
     if args.action == "run-job":
         run_job(args.job_id)
     elif args.action == "build":
-        with toolkit_lock():
+        with toolkit_lock(operation="build_native"):
             print(build_native())
     else:
         print(

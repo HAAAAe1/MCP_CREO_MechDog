@@ -2,7 +2,7 @@
 
 ## 需要的环境
 
-可使用 Creo 10 或 Creo 12。Creo 10 为正式验收基线；Creo 12 已验证可用，已有实机记录使用 12.4.0.0，具体已测范围与未测项见 [兼容矩阵](COMPATIBILITY.md)。仅做 Python 单元和语言检查的开发环境见 [开发入口](DEVELOPMENT.md)，不必先运行完整 Creo 安装流程。
+可使用 Creo 10 或 Creo 12。当前开发与发布按本机 Creo 12.4.0.0 的改动范围验收，Creo 10 独立复测不作为项目门槛，其他环境收到具体测试反馈后再跟进；具体已测范围与未测项见 [兼容矩阵](COMPATIBILITY.md)。仅做 Python 单元和语言检查的开发环境见 [开发入口](DEVELOPMENT.md)，不必先运行完整 Creo 安装流程。
 
 - Windows x64；Creo Parametric 10 或 12，使用与目标安装匹配的 SDK。Creo 12.4 已有自动启动、建模、参数编辑和保存重载的成功实机记录；0.2.6 发布时另一次冷启动复测失败，保留原结果见 [发布验收](validation/RELEASE-0.2.6.md)。
 - Python 3.12+ x64；本版安装实测使用 Python 3.12。

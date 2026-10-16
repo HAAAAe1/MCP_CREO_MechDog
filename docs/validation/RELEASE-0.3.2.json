@@ -1,0 +1,526 @@
+{
+  "work_item": "DEV-025",
+  "version": "0.3.2",
+  "date": "2026-10-16",
+  "phase": "premerge_acceptance_complete; remote delivery recorded in PR #6",
+  "source_provenance": {
+    "commit": "32d8b9299cf0327d0c1ac6232216554080194972",
+    "candidate_zip": "MCP_CREO_MechDog-0.3.2-source-v2.zip",
+    "candidate_sha256": "5ceb9e7bdf5964009b43270c127adef56d8d783a27d337360f5b596081cd0aea",
+    "extracted_git": {
+      "commit": null,
+      "dirty": null
+    },
+    "note": "Native helper reports parent E checkout Git identity, not extracted source identity; ZIP and normalized runtime fingerprints establish provenance."
+  },
+  "environment": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+    "creo_root": "C:\\Program Files\\PTC\\Creo 12.4.0.0"
+  },
+  "source_fingerprints": {
+    "server.py": "a2389f8c97d36d1d687e7d508cf3fc3c545cb6574e8b7651267f74d29f6f0e60",
+    "bridge.py": "84eb1e0ec34fd208b28f403816f7bb876f0b67ea982b750b5d5f1eefdc677a85",
+    "creo_startup.py": "7d803ee8c679da483080c9e3cda31b6cf276178383542a9b5e3fac82885c2a22",
+    "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
+    "src/creo_mechdog/paths.py": "389dca158e3a7d02337ca3a099a1872bf858e38cc8108d78172cff235256dff5",
+    "src/creo_mechdog/references.py": "584a6c6ae235e798d3a97e26c6af3c3509a518db2e7495d6cecd496dcfa1c640",
+    "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+    "src/creo_mechdog/blend_callback.py": "5d7cd97d46d52dd08080ccd117ef14748b0fd16600477e9467d5a6450c1d2e5f",
+    "src/creo_mechdog/recovery.py": "f64bc43164e7e75a51b7be1f29e152a5ad588a71c4f055f7cf549f92a4180e4f",
+    "src/creo_mechdog/startup_state.py": "5b482745c0dfd93fc2ec699a1071b6c6cac1bca17944e854941bef197cda9e4c",
+    "src/creo_mechdog/windows_boot.py": "4b3d521e3387eed0668317501e1ee6db7a81d32358c9fbd898c24957455bc6da",
+    "src/creo_mechdog/schema.py": "9cbd671d85d738ff9cc9dae4ebb2926034457aea71950e6d802cf7d825c2998d",
+    "src/creo_mechdog/profile_checks.py": "c160c3b2d800eb84b7aca2f7ddc4e7ce3e46e10498ce2cc799fafd7cfa83df24",
+    "src/creo_mechdog/airfoil.py": "5adbf9d2205239f02d4b974c7fee405c47c81b3cf6201e18966109ad1595d176",
+    "version.py": "c7c87fcb8c8bee5c2e0c0f81c9290849e844970c38bbd0b3c41e6f9e8a624cf3",
+    "generic_bridge.py": "f3d4cc91ce54099b761ca76d430574ba1f7ae54f9ae57ffbbae01f7ea97b4f51",
+    "schema.py": "dfb81ba2a123612ac98fbe21993f24a85b778afb9b6d0b1ebcfece7acba97cdd",
+    "profile_checks.py": "6a06b4b215952e13adb182b2adb07539c28dabcaedd857b39381b0b1b57e5731",
+    "airfoil.py": "8897c9b792e0ef67b9ee3aaab03d4f473014ce2ae3894b74ddac5d7e83c250d6",
+    "native/worker.cpp": "128306b8f392cf13590383f8a08ba1869b1bd21c8a10fbbd186d7fe7b034c7ad",
+    "native/generic.cpp": "e35ce3967b6c70486bed8d25581dee6fbd15fe8cfab4ed586f2fad31ceb27c3a",
+    "native/drawing.cpp": "d280916202fcb20c39cb30afa7b0fdf53460447596429dc1e5f9a005e4fbf3d3",
+    "native/result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220"
+  },
+  "development": {
+    "work_item": "DEV-025",
+    "version": "0.3.2",
+    "timestamp_utc": "2026-10-16T03:04:52.153164+00:00",
+    "environment": {
+      "os": "Windows",
+      "python": "3.12.14"
+    },
+    "source": {
+      "commit": null,
+      "dirty": null,
+      "checked_source_sha256": "975c23df152bd8c645d5a67241d818408c713277a42338a4450b02e92a7026d5"
+    },
+    "native_validation": "not_run",
+    "unit_tests": "passed",
+    "success": true,
+    "style_summary": {
+      "lint_findings": 40,
+      "unformatted_files": 28,
+      "cpp_files_checked": 16,
+      "python_files_checked": 93
+    },
+    "tools": {
+      "ruff": "0.17.0",
+      "clang-format": "23.1.3"
+    },
+    "configuration": {
+      "pyproject.toml": "e447f3352a09d8674cba3893dd4b654d185be120a22202c61e9a6e489eb93c75",
+      ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+      "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc"
+    }
+  },
+  "unit_tests": {
+    "version": "0.3.2",
+    "timestamp": 1792119945.8435898,
+    "tests_run": 247,
+    "success": true,
+    "failures": 0,
+    "errors": 0
+  },
+  "native": {
+    "success": true,
+    "started_at": "2026-10-16T03:05:48.459897+00:00",
+    "finished_at": "2026-10-16T03:07:12.658562+00:00",
+    "worker_sha256": "ba0ffb206dfd36dff75888191470ab0f98dd3d65def9820fb04f9b138f9b78bf",
+    "session_before": {
+      "connected": true,
+      "connection_state": "connected",
+      "toolkit_code": 0,
+      "current_model": "▩BUG008_17921197310001",
+      "current_model_code": 0,
+      "model_type": 2,
+      "release_numeric": 44,
+      "disconnect_code": 0,
+      "feature_creation_license": "requires_actual_modeling_test",
+      "worker_exit_code": 0,
+      "startup": {
+        "launch_reserved": false,
+        "launch_attempt": 1,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "coordination_error": null,
+        "launch_state_known": true,
+        "automatic_launch_allowed": true,
+        "state": "ready",
+        "connected": true,
+        "message": "Toolkit connection verified",
+        "retry_allowed": false,
+        "updated_at": "2026-10-16T03:06:00.706027+00:00",
+        "coordinator_pid": 13152,
+        "native": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0,
+          "current_model": "▩BUG008_17921197310001",
+          "current_model_code": 0,
+          "model_type": 2,
+          "release_numeric": 44,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 0
+        },
+        "verified_at": "2026-10-16T03:06:00.706027+00:00",
+        "snapshot": true,
+        "verification_age_seconds": 0,
+        "stale": false,
+        "coordinator_running": false
+      }
+    },
+    "session_after": {
+      "connected": true,
+      "connection_state": "connected",
+      "toolkit_code": 0,
+      "current_model": "",
+      "current_model_code": -8,
+      "model_type": -1,
+      "release_numeric": 44,
+      "disconnect_code": 0,
+      "feature_creation_license": "requires_actual_modeling_test",
+      "worker_exit_code": 0,
+      "startup": {
+        "launch_reserved": false,
+        "launch_attempt": 1,
+        "auto_start_enabled": true,
+        "selected_session_configured": false,
+        "coordination_error": null,
+        "launch_state_known": true,
+        "automatic_launch_allowed": true,
+        "state": "ready",
+        "connected": true,
+        "message": "Toolkit connection verified",
+        "retry_allowed": false,
+        "updated_at": "2026-10-16T03:06:37.821695+00:00",
+        "coordinator_pid": 11884,
+        "native": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 44,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 0
+        },
+        "verified_at": "2026-10-16T03:06:37.821695+00:00",
+        "snapshot": true,
+        "verification_age_seconds": 0,
+        "stale": false,
+        "coordinator_running": false
+      }
+    },
+    "original_saved_checkpoint": {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\release032\\candidate-extracted\\MCP_CREO_MechDog\\models\\94cd195c847e44dcb3838662c5375781\\output\\bug008_1792119960.prt.4",
+      "sha256": "f3bd6a8e16922347aa6d7a0dcd6ba71f0a20daf47a37b29d4cd7da71d7cafca7",
+      "unchanged": true
+    },
+    "overlapping_retry_requests": [
+      {
+        "state": "checking",
+        "connected": false,
+        "message": "Checking Creo startup and connection",
+        "retry_allowed": false,
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.3.2",
+          "latest_version": "0.3.0",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-source.zip",
+          "checked_at": "2026-10-16T03:05:50.999358+00:00",
+          "last_success_at": "2026-10-16T03:05:50.999358+00:00",
+          "message": "当前版本高于最高公开版本，无需降级。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      },
+      {
+        "state": "checking",
+        "connected": false,
+        "message": "Checking Creo startup and connection",
+        "retry_allowed": false,
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.3.2",
+          "latest_version": "0.3.0",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-source.zip",
+          "checked_at": "2026-10-16T03:05:52.332575+00:00",
+          "last_success_at": "2026-10-16T03:05:52.332575+00:00",
+          "message": "当前版本高于最高公开版本，无需降级。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      }
+    ],
+    "jobs": [
+      {
+        "job_id": "94774ce594c6447a84109541db8472a8",
+        "model_id": "94cd195c847e44dcb3838662c5375781",
+        "status": "succeeded",
+        "revision": 1,
+        "readonly": false,
+        "result": {
+          "success": true,
+          "volume_mm3": null,
+          "saved_file_reloaded_and_verified": true,
+          "delivery_complete": true,
+          "disconnect_code": 0,
+          "rollback_succeeded": false,
+          "part_file": "E:\\Projects\\MCP_CREO_MechDog\\build\\release032\\candidate-extracted\\MCP_CREO_MechDog\\models\\94cd195c847e44dcb3838662c5375781\\output\\bug008_1792119960.prt.2",
+          "sha256": "7dc4c7945a46c9d0e3022521e85cc3f4504079670fce4196144089a1f61cec79"
+        }
+      },
+      {
+        "job_id": "2f95dbfec4ac4481a95b58afd1ac3331",
+        "model_id": "94cd195c847e44dcb3838662c5375781",
+        "status": "succeeded",
+        "revision": 2,
+        "readonly": false,
+        "result": {
+          "success": true,
+          "volume_mm3": null,
+          "saved_file_reloaded_and_verified": true,
+          "delivery_complete": true,
+          "disconnect_code": 0,
+          "rollback_succeeded": false,
+          "part_file": "E:\\Projects\\MCP_CREO_MechDog\\build\\release032\\candidate-extracted\\MCP_CREO_MechDog\\models\\94cd195c847e44dcb3838662c5375781\\output\\bug008_1792119960.prt.3",
+          "sha256": "48ceb9c12d76f63534630377612225fedc5c5b7a75668dd6bc8dccdb6d61c3d7"
+        }
+      },
+      {
+        "job_id": "4e7e9d0ed7e947ad85b89097e8e98eb6",
+        "model_id": "94cd195c847e44dcb3838662c5375781",
+        "status": "succeeded",
+        "revision": 3,
+        "readonly": false,
+        "result": {
+          "success": true,
+          "volume_mm3": null,
+          "saved_file_reloaded_and_verified": true,
+          "delivery_complete": true,
+          "disconnect_code": 0,
+          "rollback_succeeded": false,
+          "part_file": "E:\\Projects\\MCP_CREO_MechDog\\build\\release032\\candidate-extracted\\MCP_CREO_MechDog\\models\\94cd195c847e44dcb3838662c5375781\\output\\bug008_1792119960.prt.4",
+          "sha256": "f3bd6a8e16922347aa6d7a0dcd6ba71f0a20daf47a37b29d4cd7da71d7cafca7"
+        }
+      },
+      {
+        "job_id": "1eb54ba51df7430d9a492e00c89ebd4e",
+        "model_id": "94cd195c847e44dcb3838662c5375781",
+        "status": "failed",
+        "revision": null,
+        "readonly": false,
+        "result": {
+          "success": false,
+          "volume_mm3": null,
+          "saved_file_reloaded_and_verified": false,
+          "delivery_complete": true,
+          "disconnect_code": 0,
+          "rollback_succeeded": true,
+          "part_file": null,
+          "sha256": null
+        }
+      },
+      {
+        "job_id": "4143453bc92844b1807beca52d404a25",
+        "model_id": "40e77bc17d964a7ebfeaf971ee65e241",
+        "status": "succeeded",
+        "revision": 1,
+        "readonly": false,
+        "result": {
+          "success": true,
+          "volume_mm3": null,
+          "saved_file_reloaded_and_verified": true,
+          "delivery_complete": true,
+          "disconnect_code": 0,
+          "rollback_succeeded": false,
+          "part_file": "E:\\Projects\\MCP_CREO_MechDog\\build\\release032\\candidate-extracted\\MCP_CREO_MechDog\\models\\40e77bc17d964a7ebfeaf971ee65e241\\output\\bug008_after_1792119997.prt.2",
+          "sha256": "a03455aac8d0a62c4590b252bfbebf584c8ddd499f085b01d6de8f450764040a"
+        }
+      },
+      {
+        "job_id": "27731e1dc86c4e0d991b9e01faa2dd55",
+        "model_id": "40e77bc17d964a7ebfeaf971ee65e241",
+        "status": "succeeded",
+        "revision": 2,
+        "readonly": false,
+        "result": {
+          "success": true,
+          "volume_mm3": null,
+          "saved_file_reloaded_and_verified": true,
+          "delivery_complete": true,
+          "disconnect_code": 0,
+          "rollback_succeeded": false,
+          "part_file": "E:\\Projects\\MCP_CREO_MechDog\\build\\release032\\candidate-extracted\\MCP_CREO_MechDog\\models\\40e77bc17d964a7ebfeaf971ee65e241\\output\\bug008_after_1792119997.prt.3",
+          "sha256": "c8b2678ea1ff62c5358d81551fee408c7955dc31296972b4ccc57d2038edac3b"
+        }
+      },
+      {
+        "job_id": "5ba0c5c0edf04231b3094d0b0d40bc2e",
+        "model_id": null,
+        "status": "succeeded",
+        "revision": null,
+        "readonly": null,
+        "result": {
+          "success": true,
+          "volume_mm3": 600,
+          "saved_file_reloaded_and_verified": true,
+          "delivery_complete": true,
+          "disconnect_code": 0,
+          "rollback_succeeded": null,
+          "part_file": "E:\\Projects\\MCP_CREO_MechDog\\build\\release032\\candidate-extracted\\MCP_CREO_MechDog\\jobs\\5ba0c5c0edf04231b3094d0b0d40bc2e\\output\\bug008_plate_1792120011.prt.2",
+          "sha256": "2789295b5acb78febeadcc1fca6a0a2a7cdb1094dbbd2819d078301add015073"
+        }
+      },
+      {
+        "job_id": "56b8778b41854ad5a0340cb5e4252ea5",
+        "model_id": "8761b228cf4a4c22b7a5f25b701d466d",
+        "status": "succeeded",
+        "revision": 1,
+        "readonly": false,
+        "result": {
+          "success": true,
+          "volume_mm3": null,
+          "saved_file_reloaded_and_verified": true,
+          "delivery_complete": true,
+          "disconnect_code": 0,
+          "rollback_succeeded": false,
+          "part_file": "E:\\Projects\\MCP_CREO_MechDog\\build\\release032\\candidate-extracted\\MCP_CREO_MechDog\\models\\8761b228cf4a4c22b7a5f25b701d466d\\output\\bug008_drw_1792120019.drw.1",
+          "sha256": "4ce10f4046984a269c102b0994e1769cd56965647a00f214e5be97f6a322fdc7"
+        }
+      },
+      {
+        "job_id": "f330341907b2463f90ed9e45c479630e",
+        "model_id": "94cd195c847e44dcb3838662c5375781",
+        "status": "succeeded",
+        "revision": 3,
+        "readonly": true,
+        "result": {
+          "success": true,
+          "volume_mm3": null,
+          "saved_file_reloaded_and_verified": false,
+          "delivery_complete": true,
+          "disconnect_code": 0,
+          "rollback_succeeded": false,
+          "part_file": "E:\\Projects\\MCP_CREO_MechDog\\build\\release032\\candidate-extracted\\MCP_CREO_MechDog\\models\\94cd195c847e44dcb3838662c5375781\\output\\bug008_1792119960.prt.4",
+          "sha256": "f3bd6a8e16922347aa6d7a0dcd6ba71f0a20daf47a37b29d4cd7da71d7cafca7"
+        }
+      }
+    ],
+    "final_volume_mm3": 600.0
+  },
+  "protocol": {
+    "version": "0.3.2",
+    "distribution_version": "0.3.2",
+    "tool_count": 82,
+    "available_seeds": 9,
+    "archive_install_verified": true,
+    "seed_zip_sha256": "e7b07e9a18f6101ec3fed145359831a7ffcf801be2e53a65f335d4c3cc9c2a16",
+    "success": true
+  },
+  "original_reports_preserved": [
+    {
+      "path": "docs/validation/2026-10-15_CREO_0.3.0_旧版ToolkitSDK原生编译失败.md",
+      "sha256": "06bee49ffbf1922395a76a705a449b9a65c7a09c8af96ca9ee5704bb072f52f9"
+    },
+    {
+      "path": "docs/validation/BUG-008-WorkBuddy-reboot-retest-result-2026-10-16.md",
+      "sha256": "1ca9f2fa7bb9b3cf962fa2915e23287122ea64a581aa08a14413992e5d82abcb"
+    },
+    {
+      "path": "docs/validation/MCP_CREO_MechDog_0.3.0_全量实测问题报告.md",
+      "sha256": "83dbac0673a8a4a2fb3bf62c846d68ce09ebd28556c4453eb4fd6018f2e6e06a"
+    },
+    {
+      "path": "docs/validation/MCP_CREO_MechDog_0.3.1_全量实测问题报告.md",
+      "sha256": "d3bae967c6b58978a5eb1e862a178e5aeccb8f82cca02ec14a444747db001ee1"
+    },
+    {
+      "path": "docs/validation/feedback-2026-10-16/2026-10-15_CREO_0.3.0_叶片种子加载失败与筋特征失败.md",
+      "sha256": "ec0fa5631b8907e3b0d7a0a785f2862e3e62e8158db94b300df00679304be9a5"
+    },
+    {
+      "path": "docs/validation/feedback-2026-10-16/2026-10-16_CREO_0.3.1_多区域截面拉伸与共面合并等10项缺陷.md",
+      "sha256": "6b802c93d80847e9444f3dabfafcba66b932c0b11283b76d6014c4755c65e0f0"
+    },
+    {
+      "path": "docs/validation/feedback-2026-10-16/2026-10-16_CREO_0.3.1_钣金工具链增料失效与折边方向不可控等10项缺陷.md",
+      "sha256": "af1f46afe44afc581e0b8b608c54050dc16678253c97cde96131b3dc821c795a"
+    },
+    {
+      "path": "docs/validation/feedback-2026-10-16/2026-10-16常驻回调注册负担与版本发现缺口.md",
+      "sha256": "00ccd9c774372494ee5aea4cccaed3c709b04436ae66f3426e5c0ca9b49d7792"
+    }
+  ],
+  "historical_unknown_protection": {
+    "model_id": "27143ef77ce641938543e0ca44cc3c03",
+    "revision": 9,
+    "pending_job": "272513b7238040c68dce4b923725d870",
+    "model_json_sha256": "03a4d13a90d4f34295525945790d72e53e8acd0fc2827004258efb15ad6536ae",
+    "saved_prt_sha256": "324dd24ebd4d7b682fa9bbb41fbe02bc06b8158b5f43e75dec4b10f0f2323c6e"
+  },
+  "raw_artifacts": [
+    {
+      "path": "C:\\Users\\Administrator\\.codex\\worktrees\\dev025-release032\\MCP_CREO_MechDog\\build\\release032\\native.json",
+      "sha256": "b3cb643e6bdc9deca767a0caa1f7c478f578abe5d97d4716ac0012ba60a589e1"
+    },
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\release032\\candidate-extracted\\MCP_CREO_MechDog\\build\\release032\\native.json",
+      "sha256": "35d254004aed52d82a872565c97f514b6f3d81947c1fa864f4ec4fe71a847a8f"
+    },
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\release032\\candidate-extracted\\MCP_CREO_MechDog\\build\\release032\\native-v2.json",
+      "sha256": "bbb9bc06b47198a91e0fe6ed1353b4c4568823e40df9376a2539536f7a219551"
+    },
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\release032\\candidate-extracted\\MCP_CREO_MechDog\\build\\release032\\protocol.log",
+      "sha256": "12ebfab873446d805734116db8806e7b4e367931679d3223c9c6fbb726679aa8"
+    },
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\release032\\candidate-extracted\\MCP_CREO_MechDog\\build\\release032\\protocol-v2.json",
+      "sha256": "d8933f55b3727b9ab62689bdd5b43f84559ba3630bb83a9de6c088e9e6f1e55a"
+    },
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\release032\\candidate-extracted\\MCP_CREO_MechDog\\build\\release032\\protocol-v2.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\release032\\candidate-extracted\\MCP_CREO_MechDog\\build\\development_check.json",
+      "sha256": "6052a4156445b4de59cc096c090c64810f4a4ed69acc780f8a5c6c072d1c08ed"
+    },
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\release032\\candidate-extracted\\MCP_CREO_MechDog\\build\\unit_test_report.json",
+      "sha256": "36ff60eb3474b4c203205d14dc2d72dc17e911f322be0099f5efbe8ec57309f2"
+    },
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\release032\\candidate-extracted\\MCP_CREO_MechDog\\build\\release032\\native-build.log",
+      "sha256": "c59d9c295b0001cd26ef2d974ca88fb7b9fff0c7ce9a89ba11bdea44218cb596"
+    }
+  ],
+  "first_failure": "Parallel RegistryJobs synthetic failure wrote real build/toolkit_health.json: ROOT was not patched. New part succeeded; next plan rejected before queue. Added ROOT isolation/regression, then 247 units and full native suite passed sequentially.",
+  "probe_harness_correction": "Initial metadata probe queried session before startup finished. Corrected helper waits for public ready, then verified 82 tools/9 seeds/connected and archive installation; no product code change.",
+  "not_retested": [
+    "Cold reboot corruption fault: earlier developer evidence referenced separately",
+    "All modeling families and parameter branches",
+    "Full historical transform/save/-38 chain",
+    "Creo 10 and other maintenance versions",
+    "WorkBuddy full new 0.3.2 acceptance"
+  ],
+  "delivery_pr": "https://github.com/wudahua/MCP_CREO_MechDog/pull/6",
+  "controlled": {
+    "cases": [
+      {
+        "scenario": "normal",
+        "exit_code": 0,
+        "elapsed_seconds": 0.15599999999994907
+      },
+      {
+        "scenario": "hang",
+        "exit_code": 31,
+        "elapsed_seconds": 0.25
+      },
+      {
+        "scenario": "hang_default",
+        "exit_code": 31,
+        "elapsed_seconds": 20.10900000000038
+      },
+      {
+        "scenario": "disconnect_failure",
+        "exit_code": 0,
+        "elapsed_seconds": 0.03099999999994907
+      },
+      {
+        "scenario": "write_failure",
+        "exit_code": 32,
+        "elapsed_seconds": 0.04699999999957072
+      }
+    ],
+    "probe_timeout": {
+      "result": {
+        "connected": false,
+        "checked_at": "2026-10-16T02:57:36.576503+00:00",
+        "connection_state": "probe_timeout",
+        "toolkit_code": null,
+        "probe_budget_seconds": 9,
+        "message": "Toolkit connection probe timed out; only this probe helper was stopped. Inspect Creo dialogs and occupying jobs; preserve unknown jobs/models, then request creo_startup_status(retry=true). No Creo process was closed."
+      },
+      "elapsed_seconds": 9.016000000000531,
+      "helper_after": {
+        "pid": 22432,
+        "alive": false,
+        "windows_error": 87
+      }
+    }
+  }
+}

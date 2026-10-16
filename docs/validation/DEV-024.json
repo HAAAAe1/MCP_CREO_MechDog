@@ -1,0 +1,584 @@
+{
+  "work_item": "DEV-024",
+  "timestamp": "2026-10-16T09:35:11.701804+08:00",
+  "environment": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14"
+  },
+  "head_at_start": "001a4b8088344249c0a04eca0dbe6dc923435950",
+  "head_at_check": "001a4b8088344249c0a04eca0dbe6dc923435950",
+  "branch": "codex/bug-008-channel-recovery",
+  "dirty_at_start": true,
+  "dirty_at_check": true,
+  "scope": "Documentation synchronization only; source reports are external evidence, not new MCP or Creo tests.",
+  "command": ".\\.venv\\Scripts\\python.exe build\\backlog-dev024\\verify.py",
+  "checks": [
+    {
+      "name": "unique_ids",
+      "passed": true,
+      "detail": {
+        "duplicates": []
+      }
+    },
+    {
+      "name": "existing_ids_and_metadata_preserved",
+      "passed": true,
+      "detail": {
+        "old_count": 79,
+        "lost": [],
+        "changed_metadata": {},
+        "external_concurrent_changes_preserved": {
+          "BUG-008": {
+            "before": [
+              "P0",
+              "验收中",
+              "未排期"
+            ],
+            "after": [
+              "P0",
+              "开发中",
+              "未排期"
+            ]
+          }
+        },
+        "external_change_reason": "BUG-008 row was updated by concurrent channel-recovery work; DEV-024 patches did not edit it."
+      }
+    },
+    {
+      "name": "expected_new_ids",
+      "passed": true,
+      "detail": {
+        "new_ids": [
+          "BUG-034",
+          "BUG-035",
+          "BUG-036",
+          "BUG-037",
+          "BUG-038",
+          "BUG-039",
+          "BUG-040",
+          "BUG-041",
+          "BUG-042",
+          "BUG-043",
+          "BUG-044",
+          "BUG-045",
+          "BUG-046",
+          "BUG-047",
+          "DEV-024",
+          "FEAT-029",
+          "FEAT-030"
+        ],
+        "count": 17
+      }
+    },
+    {
+      "name": "new_issue_status_and_version",
+      "passed": true,
+      "detail": {
+        "expected": {
+          "FEAT-029": [
+            "P2",
+            "待规划",
+            "未排期"
+          ],
+          "FEAT-030": [
+            "P2",
+            "待规划",
+            "未排期"
+          ],
+          "DEV-024": [
+            "P2",
+            "已完成",
+            "未排期"
+          ],
+          "BUG-034": [
+            "P1",
+            "待核实",
+            "未排期"
+          ],
+          "BUG-035": [
+            "P1",
+            "待核实",
+            "未排期"
+          ],
+          "BUG-036": [
+            "P1",
+            "待核实",
+            "未排期"
+          ],
+          "BUG-037": [
+            "P1",
+            "待核实",
+            "未排期"
+          ],
+          "BUG-038": [
+            "P2",
+            "待核实",
+            "未排期"
+          ],
+          "BUG-039": [
+            "P2",
+            "待核实",
+            "未排期"
+          ],
+          "BUG-040": [
+            "P2",
+            "待核实",
+            "未排期"
+          ],
+          "BUG-041": [
+            "P2",
+            "待核实",
+            "未排期"
+          ],
+          "BUG-042": [
+            "P1",
+            "待核实",
+            "未排期"
+          ],
+          "BUG-043": [
+            "P1",
+            "待核实",
+            "未排期"
+          ],
+          "BUG-044": [
+            "P2",
+            "待核实",
+            "未排期"
+          ],
+          "BUG-045": [
+            "P2",
+            "待核实",
+            "未排期"
+          ],
+          "BUG-046": [
+            "P1",
+            "待核实",
+            "未排期"
+          ],
+          "BUG-047": [
+            "P1",
+            "待核实",
+            "未排期"
+          ]
+        }
+      }
+    },
+    {
+      "name": "new_cards_have_identity_and_acceptance",
+      "passed": true,
+      "detail": {
+        "count": 17,
+        "invalid": []
+      }
+    },
+    {
+      "name": "four_reports_byte_identical",
+      "passed": true,
+      "detail": [
+        {
+          "source": "C:\\Users\\Administrator\\Downloads\\2026-10-16\\2026-10-15_CREO_0.3.0_叶片种子加载失败与筋特征失败.md",
+          "archive": "docs/validation/feedback-2026-10-16/2026-10-15_CREO_0.3.0_叶片种子加载失败与筋特征失败.md",
+          "size": 18522,
+          "sha256": "ec0fa5631b8907e3b0d7a0a785f2862e3e62e8158db94b300df00679304be9a5",
+          "byte_identical": true
+        },
+        {
+          "source": "C:\\Users\\Administrator\\Downloads\\2026-10-16\\2026-10-16_CREO_0.3.1_多区域截面拉伸与共面合并等10项缺陷.md",
+          "archive": "docs/validation/feedback-2026-10-16/2026-10-16_CREO_0.3.1_多区域截面拉伸与共面合并等10项缺陷.md",
+          "size": 12564,
+          "sha256": "6b802c93d80847e9444f3dabfafcba66b932c0b11283b76d6014c4755c65e0f0",
+          "byte_identical": true
+        },
+        {
+          "source": "C:\\Users\\Administrator\\Downloads\\2026-10-16\\2026-10-16_CREO_0.3.1_钣金工具链增料失效与折边方向不可控等10项缺陷.md",
+          "archive": "docs/validation/feedback-2026-10-16/2026-10-16_CREO_0.3.1_钣金工具链增料失效与折边方向不可控等10项缺陷.md",
+          "size": 13793,
+          "sha256": "af1f46afe44afc581e0b8b608c54050dc16678253c97cde96131b3dc821c795a",
+          "byte_identical": true
+        },
+        {
+          "source": "C:\\Users\\Administrator\\Downloads\\2026-10-16\\2026-10-16常驻回调注册负担与版本发现缺口.md",
+          "archive": "docs/validation/feedback-2026-10-16/2026-10-16常驻回调注册负担与版本发现缺口.md",
+          "size": 15192,
+          "sha256": "00ccd9c774372494ee5aea4cccaed3c709b04436ae66f3426e5c0ca9b49d7792",
+          "byte_identical": true
+        }
+      ]
+    },
+    {
+      "name": "source_hashes_unchanged",
+      "passed": true,
+      "detail": "Compared with before.json"
+    },
+    {
+      "name": "all_41_numbered_items_mapped",
+      "passed": true,
+      "detail": {
+        "count": 41,
+        "mapping": {
+          "Q1": [
+            "FEAT-029",
+            "FEAT-029",
+            "FEAT-022"
+          ],
+          "Q2": [
+            "FEAT-008"
+          ],
+          "Q3": [
+            "DEV-015",
+            "DEV-015",
+            "DEV-023"
+          ],
+          "Q4": [
+            "DEV-023",
+            "DEV-015"
+          ],
+          "Q5": [
+            "FEAT-001",
+            "BUG-011",
+            "FEAT-006"
+          ],
+          "Q6": [
+            "BUG-008",
+            "BUG-011",
+            "FEAT-001"
+          ],
+          "C9-P0-1": [
+            "BUG-034",
+            "BUG-034",
+            "FEAT-030",
+            "FEAT-030",
+            "FEAT-008"
+          ],
+          "C9-P0-2": [
+            "BUG-017",
+            "BUG-017",
+            "FEAT-006"
+          ],
+          "C9-P1-1": [
+            "BUG-035",
+            "BUG-035"
+          ],
+          "C9-P1-2": [
+            "BUG-036",
+            "BUG-036"
+          ],
+          "C9-P1-3": [
+            "BUG-037",
+            "BUG-037",
+            "FEAT-008"
+          ],
+          "C9-P2-1": [
+            "FEAT-008",
+            "FEAT-006"
+          ],
+          "C9-P2-2": [
+            "FEAT-006",
+            "FEAT-023"
+          ],
+          "C9-P2-3": [
+            "FEAT-008",
+            "FEAT-017"
+          ],
+          "C9-P2-4": [
+            "BUG-038",
+            "BUG-038"
+          ],
+          "C9-P2-5": [
+            "BUG-039",
+            "BUG-039"
+          ],
+          "C9-P2-6": [
+            "BUG-040",
+            "BUG-040",
+            "BUG-014"
+          ],
+          "C9-P2-7": [
+            "BUG-041",
+            "BUG-041"
+          ],
+          "C9-P2-8": [
+            "BUG-013"
+          ],
+          "C9-P2-9": [
+            "FEAT-018",
+            "BUG-001"
+          ],
+          "C9-P2-10": [
+            "FEAT-008",
+            "FEAT-025",
+            "DEV-006"
+          ],
+          "P1": [
+            "BUG-042",
+            "BUG-042",
+            "FEAT-008"
+          ],
+          "P2": [
+            "BUG-043",
+            "BUG-043",
+            "FEAT-006"
+          ],
+          "P3": [
+            "FEAT-008",
+            "FEAT-006",
+            "BUG-031"
+          ],
+          "P4": [
+            "BUG-044",
+            "BUG-044"
+          ],
+          "P5": [
+            "BUG-045",
+            "BUG-045",
+            "FEAT-008"
+          ],
+          "P6": [
+            "FEAT-023"
+          ],
+          "P7": [
+            "FEAT-008",
+            "FEAT-023"
+          ],
+          "P8": [
+            "FEAT-006"
+          ],
+          "P9": [
+            "FEAT-007"
+          ],
+          "P10": [
+            "BUG-018",
+            "FEAT-006",
+            "FEAT-018"
+          ],
+          "S1": [
+            "BUG-046",
+            "BUG-046",
+            "FEAT-008"
+          ],
+          "S2": [
+            "BUG-047",
+            "BUG-047",
+            "FEAT-008"
+          ],
+          "S3": [
+            "FEAT-014",
+            "FEAT-006",
+            "DEV-006"
+          ],
+          "S4": [
+            "BUG-032",
+            "BUG-032",
+            "FEAT-008"
+          ],
+          "S5": [
+            "BUG-032",
+            "BUG-032"
+          ],
+          "S6": [
+            "FEAT-008",
+            "FEAT-006"
+          ],
+          "S7": [
+            "BUG-008",
+            "BUG-011",
+            "FEAT-001"
+          ],
+          "S8": [
+            "FEAT-020",
+            "DEV-015"
+          ],
+          "S9": [
+            "FEAT-023",
+            "FEAT-008"
+          ],
+          "S10": [
+            "BUG-018",
+            "FEAT-006",
+            "FEAT-018"
+          ]
+        }
+      }
+    },
+    {
+      "name": "all_new_issues_have_sources",
+      "passed": true,
+      "detail": "Summary references all new IDs"
+    },
+    {
+      "name": "hashes_present_in_summary",
+      "passed": true,
+      "detail": "Four source hashes"
+    },
+    {
+      "name": "evidence_boundaries",
+      "passed": true,
+      "detail": "Environment, provenance, inference, rollout and rollback limits"
+    },
+    {
+      "name": "local_markdown_links",
+      "passed": true,
+      "detail": {
+        "count": 196,
+        "errors": []
+      }
+    },
+    {
+      "name": "markdown_table_columns",
+      "passed": true,
+      "detail": {
+        "errors": []
+      }
+    },
+    {
+      "name": "targeted_git_diff_check",
+      "passed": true,
+      "detail": {
+        "command": [
+          "git",
+          "diff",
+          "--check",
+          "--",
+          "docs/BACKLOG.md",
+          "docs/BACKLOG_COMPLETED.md",
+          "docs/work-items/BUG-013.md",
+          "docs/work-items/BUG-017.md",
+          "docs/work-items/BUG-032.md",
+          "docs/work-items/DEV-015.md",
+          "docs/work-items/FEAT-020.md",
+          "docs/validation/FEEDBACK-2026-10-16.md",
+          "docs/work-items/BUG-034.md",
+          "docs/work-items/BUG-035.md",
+          "docs/work-items/BUG-036.md",
+          "docs/work-items/BUG-037.md",
+          "docs/work-items/BUG-038.md",
+          "docs/work-items/BUG-039.md",
+          "docs/work-items/BUG-040.md",
+          "docs/work-items/BUG-041.md",
+          "docs/work-items/BUG-042.md",
+          "docs/work-items/BUG-043.md",
+          "docs/work-items/BUG-044.md",
+          "docs/work-items/BUG-045.md",
+          "docs/work-items/BUG-046.md",
+          "docs/work-items/BUG-047.md",
+          "docs/work-items/FEAT-029.md",
+          "docs/work-items/FEAT-030.md",
+          "docs/work-items/DEV-024.md"
+        ],
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "warning: in the working copy of 'docs/BACKLOG_COMPLETED.md', LF will be replaced by CRLF the next time Git touches it\n"
+      }
+    }
+  ],
+  "passed": true,
+  "files": [
+    {
+      "path": "docs/BACKLOG.md",
+      "sha256": "47d73bc5476723832df668663a761cad6fa0ffc5636fcaea6bf91bd68f28dea4"
+    },
+    {
+      "path": "docs/BACKLOG_COMPLETED.md",
+      "sha256": "1144071b0ca44c9cd53501b69b4cd524c0a57143eeed66af0e2a2809afa15670"
+    },
+    {
+      "path": "docs/work-items/BUG-013.md",
+      "sha256": "0eed8e6250be77456d93ca25618157399564a0f4e6681eb99e73bf70a3a85942"
+    },
+    {
+      "path": "docs/work-items/BUG-017.md",
+      "sha256": "0dd21dd0e112a0e4839393775d7770912f5a6bbbfbc3d61700fb31caee0aa59f"
+    },
+    {
+      "path": "docs/work-items/BUG-032.md",
+      "sha256": "5f30dd454fe2137029ea4b3ca0f48868d1f3e239591fa0175baa0e2b12837056"
+    },
+    {
+      "path": "docs/work-items/DEV-015.md",
+      "sha256": "921301a20e24c38879ecb464ba644ab0027f2f76b0e8c60cdc3aade54e1247a0"
+    },
+    {
+      "path": "docs/work-items/FEAT-020.md",
+      "sha256": "00f816643e75bd55e0f38ed51de92487bc218d9ee2e581ab4e1e1c68f2fc8596"
+    },
+    {
+      "path": "docs/validation/FEEDBACK-2026-10-16.md",
+      "sha256": "7358c864f8e80878b24e45c219e44f94f90333e9a8ed37bd9fcdf0f6ce5ada98"
+    },
+    {
+      "path": "docs/work-items/BUG-034.md",
+      "sha256": "b4ea6298170b43b2e0b31a5041c2d5dfbf566dea71fb82b375c4d312b541e9f1"
+    },
+    {
+      "path": "docs/work-items/BUG-035.md",
+      "sha256": "b2cbd31bdb37d3873da751be9a9851a0d3483a45f041f26ab23bcd186a55467d"
+    },
+    {
+      "path": "docs/work-items/BUG-036.md",
+      "sha256": "b20da41a264ebec02afd79de22104ba3c0cdbc13c64c424cffdee732c6ae9662"
+    },
+    {
+      "path": "docs/work-items/BUG-037.md",
+      "sha256": "f77eeb109c665590da326bf2595a2070a12226f1f40e8ecc19a7f5dbd0e50862"
+    },
+    {
+      "path": "docs/work-items/BUG-038.md",
+      "sha256": "5b7c290193cdaf23cd0dc53bf415d284ec53d9ddac976eb697030b5f34f71dfa"
+    },
+    {
+      "path": "docs/work-items/BUG-039.md",
+      "sha256": "940c22971d4ce4afed6b68e594d72093815bedc3ce93dcf2675b97cefec06d9f"
+    },
+    {
+      "path": "docs/work-items/BUG-040.md",
+      "sha256": "2b05dac5536780aabf58fc9fb0be36924cbd69d6a56a83fd2915bedb70a22474"
+    },
+    {
+      "path": "docs/work-items/BUG-041.md",
+      "sha256": "534eeb3ec8ff5fe01c8aa973485011abb8e546f1b8fa615314ad344d9212889f"
+    },
+    {
+      "path": "docs/work-items/BUG-042.md",
+      "sha256": "fdb6fa91109ccfca3a71bfb3e6dc937164fd9d7e184ed11a4154a54ad0b9961a"
+    },
+    {
+      "path": "docs/work-items/BUG-043.md",
+      "sha256": "4f53f14b06378e9bed2f3c35a570918ecd0b44df835e2d55f0744e9a76e2b0ef"
+    },
+    {
+      "path": "docs/work-items/BUG-044.md",
+      "sha256": "be52247eef5cc31f474ae81ddaf7c8951749ae030fe9d81173d083d7c367c01a"
+    },
+    {
+      "path": "docs/work-items/BUG-045.md",
+      "sha256": "a3ae4426a210dfeb56f0c9b8ff7f976cab27e52788c234c955de31194d2058a9"
+    },
+    {
+      "path": "docs/work-items/BUG-046.md",
+      "sha256": "ed70c168cfdc941d9b54a80da708d16d5f931567000e215f33f3816629a4189c"
+    },
+    {
+      "path": "docs/work-items/BUG-047.md",
+      "sha256": "c75465df8ffbcf5a537c9ff3c834c71c519b2f7e65c156f99e6bed9098171b85"
+    },
+    {
+      "path": "docs/work-items/FEAT-029.md",
+      "sha256": "b22bdffb1fc8e56ef03b930b1084f8d6459f9fabafc64d85012fcf4a5f0560ee"
+    },
+    {
+      "path": "docs/work-items/FEAT-030.md",
+      "sha256": "c78180bb21d05e06b710abb826f204006b7b95d9267c725f7e5f32401ebbb4a0"
+    },
+    {
+      "path": "docs/work-items/DEV-024.md",
+      "sha256": "741d79e60698f756c24fe0b924cffb559b16c49a3f0d838bbef3f529d69e7cbe"
+    }
+  ],
+  "verification_script_sha256": "335ea6e913d118d66cd87407b5fd1642901407f6a2abc2fa1e506357a3459ae7",
+  "not_run": [
+    "Program unit/development checks",
+    "SDK build",
+    "MCP/Creo/WorkBuddy tests",
+    "Remote Release verification"
+  ]
+}

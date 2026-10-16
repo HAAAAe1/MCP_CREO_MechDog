@@ -13,7 +13,7 @@ import bridge
 import generic_bridge as general
 import server
 from creo_mechdog.references import reference_capabilities
-from schema import AxisPatternOp, validate_operations
+from creo_mechdog.schema import AxisPatternOp, validate_operations
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -214,7 +214,7 @@ class ReferenceQueueTests(unittest.IsolatedAsyncioTestCase):
         self.enterContext(patch.object(bridge, "JOBS", self.root / "jobs"))
         self.enterContext(patch.object(general, "MODELS", self.root / "models"))
         self.enterContext(
-            patch.object(bridge, "toolkit_lock", side_effect=lambda: contextlib.nullcontext())
+            patch.object(bridge, "toolkit_lock", side_effect=lambda **kw: contextlib.nullcontext())
         )
         self.enterContext(
             patch.object(bridge, "config", return_value={"creo_root": str(self.root / "creo")})

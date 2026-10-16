@@ -2056,15 +2056,14 @@ static int run_generic(const std::wstring &job) {
         } else
             report["rollback_code"] = loaded;
     }
-    if (connected) {
-        int disconnected = ProEngineerDisconnect(&process, 15);
-        report["disconnect_code"] = disconnected;
-        log("DISCONNECT=%d\n", disconnected);
-    }
-    std::ofstream output(job + L"\\native_result.json", std::ios::binary);
-    output << report.dump(2);
-    output.close();
+    generic_stage("disconnect");
+    int delivered = deliver_native_result(job, report, connected, [&]() {
+        int code = ProEngineerDisconnect(&process, 15);
+        log("DISCONNECT=%d\n", code);
+        return code;
+    });
+    generic_stage("result_delivery_complete");
     fclose(board_log);
     board_log = nullptr;
-    return report["success"].get<bool>() ? 0 : 30;
+    return delivered;
 }

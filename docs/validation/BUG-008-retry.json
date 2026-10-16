@@ -1,0 +1,785 @@
+{
+  "work_item": "BUG-008",
+  "record": "WorkBuddy retry failure follow-up; developer evidence, not final black-box acceptance",
+  "recorded_at": "2026-10-15T15:23:30.330990+00:00",
+  "status": "acceptance_pending",
+  "source_commit": "001a4b8088344249c0a04eca0dbe6dc923435950",
+  "dirty": true,
+  "version": "0.3.1",
+  "environment": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+    "creo_root": "C:\\Program Files\\PTC\\Creo 12.4.0.0"
+  },
+  "source_fingerprints_lf_normalized": {
+    "bridge.py": "61013e3377c2d6848ca3c6db1898ea4c8819262e729e16805f70b1861a0178bf",
+    "generic_bridge.py": "f3d4cc91ce54099b761ca76d430574ba1f7ae54f9ae57ffbbae01f7ea97b4f51",
+    "creo_startup.py": "957108354ec952d5d6864f976f8144d9a21eea9643829210d3c415097fbef85c",
+    "server.py": "8c9db166d313793842b69d59f9f65f59a4c35b3998dde5709843f34cee37ba62",
+    "src/creo_mechdog/startup_state.py": "48a54c888a5532d4feba2c35735695e7fb6d175c801e1f52de1113902ebdb4fb",
+    "src/creo_mechdog/recovery.py": "f64bc43164e7e75a51b7be1f29e152a5ad588a71c4f055f7cf549f92a4180e4f",
+    "native/worker.cpp": "128306b8f392cf13590383f8a08ba1869b1bd21c8a10fbbd186d7fe7b034c7ad",
+    "native/result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220",
+    "tools/test_startup_retry.py": "f7e8976e79c416ec6b426193b8bab052c9c3474986fb8ee3dd60a77d230bc5e5",
+    "tests/unit/test_startup_retry.py": "6ed570b68ec0fb1bbf6d3914816c537deef436e551a5ffd052ed43084826d801",
+    "tests/unit/test_toolkit_recovery.py": "08b8b3df9bbd6b93dc1053b00c4483b27a74d25a4c03639410f3090060753f6f",
+    "tests/test_creo_startup.py": "27d2ad9cef4bf46fb48fbef9063793c745aac6becb66335f038e0737cb802dfc"
+  },
+  "worker_sha256": "4bb3c984d9c083f271bb7760f48b968bd5ede6b9e83e9031b328d2d9754f786b",
+  "native_changes_in_this_follow_up": false,
+  "previous_round": "docs/validation/BUG-008.json; prior fingerprints/results remain historical",
+  "workbuddy_original": {
+    "bytes": 16297,
+    "sha256": "a2734b7658ba40efffacecea246b6c0f602c3d52a96a97b8e454cc0375d36ca3"
+  },
+  "workbuddy_original_outcome": {
+    "passed": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7
+    ],
+    "failed": [
+      "6",
+      "6.2"
+    ],
+    "not_verified": [
+      "8",
+      "concurrency coordination"
+    ]
+  },
+  "confirmed_fault": {
+    "invalid_shared_json": {
+      "path": "C:\\Users\\Administrator\\AppData\\Local\\MCP_CREO_MechDog\\startup\\6235eee86323f49c8d99f96a\\state.json",
+      "bytes": 380,
+      "all_nul": true,
+      "sha256": "08c3e5bbea4fba57201a69d4bf70a0d255df921fdef4924c22da087f9338c2bc"
+    },
+    "corruption_writer_and_cause": "not_confirmed"
+  },
+  "checks": {
+    "unit": {
+      "version": "0.3.1",
+      "timestamp": 1792077269.941675,
+      "tests_run": 230,
+      "success": true,
+      "failures": 0,
+      "errors": 0
+    },
+    "standard_development_check": {
+      "command": ".venv/Scripts/python.exe tools/dev_check.py --work-item BUG-008 --skip-unit",
+      "exit_code": 1,
+      "success": false,
+      "regressions": [
+        "docs/validation/2026-10-15_CREO_0.3.0_旧版ToolkitSDK原生编译失败.md: new or changed file must pass its formatter"
+      ]
+    },
+    "supplemental_scoped_style": {
+      "command": ".venv/Scripts/python.exe -m build.bug008-retry.check-scoped",
+      "success": true,
+      "excluded_file": "docs/validation/2026-10-15_CREO_0.3.0_旧版ToolkitSDK原生编译失败.md",
+      "excluded_sha256": "06bee49ffbf1922395a76a705a449b9a65c7a09c8af96ca9ee5704bb072f52f9",
+      "baseline_unchanged": true
+    }
+  },
+  "cold_corrupt_history": {
+    "source_fingerprints": {
+      "bridge.py": "61013e3377c2d6848ca3c6db1898ea4c8819262e729e16805f70b1861a0178bf",
+      "generic_bridge.py": "f3d4cc91ce54099b761ca76d430574ba1f7ae54f9ae57ffbbae01f7ea97b4f51",
+      "creo_startup.py": "9a3c81cb8680f8abdaf3bd47378e581616a87edc72d2b68049d38369e74b8b14",
+      "server.py": "8c9db166d313793842b69d59f9f65f59a4c35b3998dde5709843f34cee37ba62",
+      "src/creo_mechdog/startup_state.py": "48a54c888a5532d4feba2c35735695e7fb6d175c801e1f52de1113902ebdb4fb",
+      "src/creo_mechdog/recovery.py": "f64bc43164e7e75a51b7be1f29e152a5ad588a71c4f055f7cf549f92a4180e4f",
+      "native/worker.cpp": "128306b8f392cf13590383f8a08ba1869b1bd21c8a10fbbd186d7fe7b034c7ad",
+      "native/result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220",
+      "tools/test_startup_retry.py": "444d3d74a212745777fd8a507ac1026143273ec017db2e51f9198558b6d2bbac"
+    },
+    "started_at": "2026-10-15T15:06:44.787380+00:00",
+    "finished_at": "2026-10-15T15:06:48.440649+00:00",
+    "cold_explicit_retry": true,
+    "raw_script_success": false,
+    "classification": "structured_safe_stop_requiring_manual_action; not automatic recovery",
+    "rpc_overlap_seconds": 0.003330200000164041,
+    "jobs": [],
+    "retry_responses": [
+      {
+        "state": "checking",
+        "connected": false,
+        "message": "Checking Creo startup and connection",
+        "retry_allowed": false,
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.3.1",
+          "latest_version": "0.3.0",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-source.zip",
+          "checked_at": "2026-10-15T15:06:47.416485+00:00",
+          "last_success_at": "2026-10-15T15:06:47.416485+00:00",
+          "message": "当前版本高于最高公开版本，无需降级。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      },
+      {
+        "state": "checking",
+        "connected": false,
+        "message": "Checking Creo startup and connection",
+        "retry_allowed": false,
+        "update": {
+          "status": "checking",
+          "current_version": "0.3.1",
+          "latest_version": null,
+          "is_prerelease": null,
+          "release_url": null,
+          "download_url": null,
+          "checked_at": null,
+          "last_success_at": null,
+          "message": "正在检查更新；已有版本信息来自缓存。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      }
+    ],
+    "terminal_states": [
+      {
+        "state": "selection_required",
+        "connected": false,
+        "message": "Shared startup history cannot be trusted. Preserve state.json and existing job/model reservations; inspect pending launch dialogs and the configured Creo session. Retry may verify an existing session but cannot automatically launch a replacement until launch history is reconciled. Open Creo manually if needed.",
+        "retry_allowed": true,
+        "updated_at": "2026-10-15T15:06:47.794191+00:00",
+        "coordinator_pid": 21344,
+        "coordination_error": {
+          "code": "startup_state_unreadable",
+          "launch_state_known": false,
+          "automatic_launch_allowed": false,
+          "reason": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+          "recovery_required": "Shared startup history cannot be trusted. Preserve state.json and existing job/model reservations; inspect pending launch dialogs and the configured Creo session. Retry may verify an existing session but cannot automatically launch a replacement until launch history is reconciled. Open Creo manually if needed."
+        },
+        "launch_state_known": false,
+        "automatic_launch_allowed": false,
+        "launch_reserved": true,
+        "snapshot": true,
+        "verification_age_seconds": null,
+        "stale": true,
+        "coordinator_running": false,
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.3.1",
+          "latest_version": "0.3.0",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-source.zip",
+          "checked_at": "2026-10-15T15:06:47.416485+00:00",
+          "last_success_at": "2026-10-15T15:06:47.416485+00:00",
+          "message": "当前版本高于最高公开版本，无需降级。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      },
+      {
+        "state": "selection_required",
+        "connected": false,
+        "message": "Shared startup history cannot be trusted. Preserve state.json and existing job/model reservations; inspect pending launch dialogs and the configured Creo session. Retry may verify an existing session but cannot automatically launch a replacement until launch history is reconciled. Open Creo manually if needed.",
+        "retry_allowed": true,
+        "updated_at": "2026-10-15T15:06:47.795488+00:00",
+        "coordinator_pid": 1664,
+        "coordination_error": {
+          "code": "startup_state_unreadable",
+          "launch_state_known": false,
+          "automatic_launch_allowed": false,
+          "reason": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+          "recovery_required": "Shared startup history cannot be trusted. Preserve state.json and existing job/model reservations; inspect pending launch dialogs and the configured Creo session. Retry may verify an existing session but cannot automatically launch a replacement until launch history is reconciled. Open Creo manually if needed."
+        },
+        "launch_state_known": false,
+        "automatic_launch_allowed": false,
+        "launch_reserved": true,
+        "snapshot": true,
+        "verification_age_seconds": null,
+        "stale": true,
+        "coordinator_running": false,
+        "update": {
+          "status": "checking",
+          "current_version": "0.3.1",
+          "latest_version": null,
+          "is_prerelease": null,
+          "release_url": null,
+          "download_url": null,
+          "checked_at": null,
+          "last_success_at": null,
+          "message": "正在检查更新；已有版本信息来自缓存。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      }
+    ]
+  },
+  "manual_open": {
+    "mode": "Explicit developer manual startup after confirmed absence; not automatic retry recovery",
+    "started_at": "2026-10-15T15:12:03.064614+00:00",
+    "before": {
+      "processes": [],
+      "uncertain": false
+    },
+    "success": true,
+    "state_before_sha256": "08c3e5bbea4fba57201a69d4bf70a0d255df921fdef4924c22da087f9338c2bc",
+    "probes": [
+      {
+        "time": "2026-10-15T15:12:04.537426+00:00",
+        "result": {
+          "connected": false,
+          "connection_state": "not_found_or_unreadable",
+          "toolkit_code": -4,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 0,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 20
+        }
+      },
+      {
+        "time": "2026-10-15T15:12:07.020697+00:00",
+        "result": {
+          "connected": false,
+          "connection_state": "not_found_or_unreadable",
+          "toolkit_code": -4,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 0,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 20
+        }
+      },
+      {
+        "time": "2026-10-15T15:12:09.738199+00:00",
+        "result": {
+          "connected": false,
+          "connection_state": "not_found_or_unreadable",
+          "toolkit_code": -4,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 0,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 20
+        }
+      },
+      {
+        "time": "2026-10-15T15:12:20.690228+00:00",
+        "result": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 44,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 0
+        }
+      }
+    ],
+    "after": {
+      "processes": [
+        {
+          "pid": 17232,
+          "created": 134365507231642002,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Parametric\\bin\\parametric.exe",
+          "matches": true
+        },
+        {
+          "pid": 4616,
+          "created": 134365507239922667,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+          "matches": true
+        }
+      ],
+      "uncertain": false
+    },
+    "state_after_sha256": "08c3e5bbea4fba57201a69d4bf70a0d255df921fdef4924c22da087f9338c2bc",
+    "finished_at": "2026-10-15T15:12:20.697200+00:00"
+  },
+  "warm_retry": {
+    "started_at": "2026-10-15T15:18:08.536133+00:00",
+    "finished_at": "2026-10-15T15:19:03.063024+00:00",
+    "runtime": {
+      "python_executable": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+      "server_entry": "E:\\Projects\\MCP_CREO_MechDog\\server.py",
+      "code_root": "E:\\Projects\\MCP_CREO_MechDog",
+      "python_package_root": "E:\\Projects\\MCP_CREO_MechDog\\src\\creo_mechdog",
+      "resource_root": "E:\\Projects\\MCP_CREO_MechDog",
+      "data_root": "E:\\Projects\\MCP_CREO_MechDog",
+      "source_fingerprints_at_startup": {
+        "server.py": "8c9db166d313793842b69d59f9f65f59a4c35b3998dde5709843f34cee37ba62",
+        "bridge.py": "61013e3377c2d6848ca3c6db1898ea4c8819262e729e16805f70b1861a0178bf",
+        "creo_startup.py": "957108354ec952d5d6864f976f8144d9a21eea9643829210d3c415097fbef85c",
+        "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
+        "src/creo_mechdog/paths.py": "389dca158e3a7d02337ca3a099a1872bf858e38cc8108d78172cff235256dff5",
+        "src/creo_mechdog/references.py": "584a6c6ae235e798d3a97e26c6af3c3509a518db2e7495d6cecd496dcfa1c640",
+        "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+        "src/creo_mechdog/blend_callback.py": "5d7cd97d46d52dd08080ccd117ef14748b0fd16600477e9467d5a6450c1d2e5f",
+        "src/creo_mechdog/recovery.py": "f64bc43164e7e75a51b7be1f29e152a5ad588a71c4f055f7cf549f92a4180e4f",
+        "src/creo_mechdog/startup_state.py": "48a54c888a5532d4feba2c35735695e7fb6d175c801e1f52de1113902ebdb4fb",
+        "src/creo_mechdog/schema.py": "9cbd671d85d738ff9cc9dae4ebb2926034457aea71950e6d802cf7d825c2998d",
+        "src/creo_mechdog/profile_checks.py": "c160c3b2d800eb84b7aca2f7ddc4e7ce3e46e10498ce2cc799fafd7cfa83df24",
+        "src/creo_mechdog/airfoil.py": "5adbf9d2205239f02d4b974c7fee405c47c81b3cf6201e18966109ad1595d176",
+        "version.py": "03d9ad0a146f85ae2f6ed7042adea89d8a2996ea818f2614c906c6f7d79baa94",
+        "generic_bridge.py": "f3d4cc91ce54099b761ca76d430574ba1f7ae54f9ae57ffbbae01f7ea97b4f51",
+        "schema.py": "dfb81ba2a123612ac98fbe21993f24a85b778afb9b6d0b1ebcfece7acba97cdd",
+        "profile_checks.py": "6a06b4b215952e13adb182b2adb07539c28dabcaedd857b39381b0b1b57e5731",
+        "airfoil.py": "8897c9b792e0ef67b9ee3aaab03d4f473014ce2ae3894b74ddac5d7e83c250d6",
+        "native/worker.cpp": "128306b8f392cf13590383f8a08ba1869b1bd21c8a10fbbd186d7fe7b034c7ad",
+        "native/generic.cpp": "e35ce3967b6c70486bed8d25581dee6fbd15fe8cfab4ed586f2fad31ceb27c3a",
+        "native/drawing.cpp": "d280916202fcb20c39cb30afa7b0fdf53460447596429dc1e5f9a005e4fbf3d3",
+        "native/result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220"
+      },
+      "source_changed_since_startup": false
+    },
+    "retry_rpc_overlap_seconds": 0.007294400000319001,
+    "ready_states": [
+      {
+        "launch_reserved": true,
+        "coordination_error": {
+          "code": "startup_state_unreadable",
+          "launch_state_known": false,
+          "automatic_launch_allowed": false,
+          "reason": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+          "recovery_required": "Shared startup history cannot be trusted. Preserve state.json and existing job/model reservations; inspect pending launch dialogs and the configured Creo session. Retry may verify an existing session but cannot automatically launch a replacement until launch history is reconciled. Open Creo manually if needed."
+        },
+        "launch_state_known": false,
+        "automatic_launch_allowed": false,
+        "state": "ready",
+        "connected": true,
+        "message": "Existing Toolkit connection verified; startup history remains untrusted and automatic replacement is disabled",
+        "retry_allowed": false,
+        "updated_at": "2026-10-15T15:18:30.678070+00:00",
+        "coordinator_pid": 21612,
+        "native": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 44,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 0
+        },
+        "verified_at": "2026-10-15T15:18:30.678070+00:00",
+        "snapshot": true,
+        "verification_age_seconds": 0.373682,
+        "stale": false,
+        "coordinator_running": false,
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.3.1",
+          "latest_version": "0.3.0",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-source.zip",
+          "checked_at": "2026-10-15T15:18:10.962827+00:00",
+          "last_success_at": "2026-10-15T15:18:10.962827+00:00",
+          "message": "当前版本高于最高公开版本，无需降级。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      },
+      {
+        "launch_reserved": true,
+        "coordination_error": {
+          "code": "startup_state_unreadable",
+          "launch_state_known": false,
+          "automatic_launch_allowed": false,
+          "reason": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+          "recovery_required": "Shared startup history cannot be trusted. Preserve state.json and existing job/model reservations; inspect pending launch dialogs and the configured Creo session. Retry may verify an existing session but cannot automatically launch a replacement until launch history is reconciled. Open Creo manually if needed."
+        },
+        "launch_state_known": false,
+        "automatic_launch_allowed": false,
+        "state": "ready",
+        "connected": true,
+        "message": "Existing Toolkit connection verified; startup history remains untrusted and automatic replacement is disabled",
+        "retry_allowed": false,
+        "updated_at": "2026-10-15T15:18:25.617867+00:00",
+        "coordinator_pid": 16864,
+        "native": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 44,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 0
+        },
+        "verified_at": "2026-10-15T15:18:25.617867+00:00",
+        "snapshot": true,
+        "verification_age_seconds": 0.27077,
+        "stale": false,
+        "coordinator_running": false,
+        "update": {
+          "status": "up_to_date",
+          "current_version": "0.3.1",
+          "latest_version": "0.3.0",
+          "is_prerelease": true,
+          "release_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.0",
+          "download_url": "https://github.com/wudahua/MCP_CREO_MechDog/releases/download/v0.3.0/MCP_CREO_MechDog-0.3.0-source.zip",
+          "checked_at": "2026-10-15T15:18:12.111236+00:00",
+          "last_success_at": "2026-10-15T15:18:12.111236+00:00",
+          "message": "当前版本高于最高公开版本，无需降级。",
+          "error": null,
+          "from_cache": true,
+          "stale": false
+        }
+      }
+    ],
+    "session": {
+      "connected": true,
+      "connection_state": "connected",
+      "toolkit_code": 0,
+      "current_model": "",
+      "current_model_code": -8,
+      "model_type": -1,
+      "release_numeric": 44,
+      "disconnect_code": 0,
+      "feature_creation_license": "requires_actual_modeling_test",
+      "worker_exit_code": 0,
+      "startup": {
+        "launch_reserved": true,
+        "coordination_error": {
+          "code": "startup_state_unreadable",
+          "launch_state_known": false,
+          "automatic_launch_allowed": false,
+          "reason": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+          "recovery_required": "Shared startup history cannot be trusted. Preserve state.json and existing job/model reservations; inspect pending launch dialogs and the configured Creo session. Retry may verify an existing session but cannot automatically launch a replacement until launch history is reconciled. Open Creo manually if needed."
+        },
+        "launch_state_known": false,
+        "automatic_launch_allowed": false,
+        "state": "ready",
+        "connected": true,
+        "message": "Toolkit connection verified",
+        "retry_allowed": false,
+        "updated_at": "2026-10-15T15:18:35.951082+00:00",
+        "coordinator_pid": 21612,
+        "native": {
+          "connected": true,
+          "connection_state": "connected",
+          "toolkit_code": 0,
+          "current_model": "",
+          "current_model_code": -8,
+          "model_type": -1,
+          "release_numeric": 44,
+          "disconnect_code": 0,
+          "feature_creation_license": "requires_actual_modeling_test",
+          "worker_exit_code": 0
+        },
+        "verified_at": "2026-10-15T15:18:35.951082+00:00",
+        "snapshot": true,
+        "verification_age_seconds": 0,
+        "stale": false,
+        "coordinator_running": false
+      }
+    },
+    "no_duplicate_launch": true,
+    "inventory_before_retry": {
+      "processes": [
+        {
+          "pid": 17232,
+          "created": 134365507231642002,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Parametric\\bin\\parametric.exe",
+          "matches": true
+        },
+        {
+          "pid": 4616,
+          "created": 134365507239922667,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+          "matches": true
+        }
+      ],
+      "uncertain": false
+    },
+    "inventory_after_retry": {
+      "processes": [
+        {
+          "pid": 17232,
+          "created": 134365507231642002,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Parametric\\bin\\parametric.exe",
+          "matches": true
+        },
+        {
+          "pid": 4616,
+          "created": 134365507239922667,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+          "matches": true
+        }
+      ],
+      "uncertain": false
+    },
+    "inventory_after_clients_close": {
+      "processes": [
+        {
+          "pid": 17232,
+          "created": 134365507231642002,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Parametric\\bin\\parametric.exe",
+          "matches": true
+        },
+        {
+          "pid": 4616,
+          "created": 134365507239922667,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+          "matches": true
+        }
+      ],
+      "uncertain": false
+    },
+    "protected_before": {
+      "E:\\Projects\\MCP_CREO_MechDog\\models\\27143ef77ce641938543e0ca44cc3c03\\model.json": "03a4d13a90d4f34295525945790d72e53e8acd0fc2827004258efb15ad6536ae",
+      "E:\\Projects\\MCP_CREO_MechDog\\jobs\\272513b7238040c68dce4b923725d870\\job.json": "d4cc02ef096839e8ca689537c45ce0a54e0cebd37e26d4cba712c3b3202d14a7",
+      "E:\\Projects\\MCP_CREO_MechDog\\models\\27143ef77ce641938543e0ca44cc3c03\\output\\bug009_1792054655.prt.10": "324dd24ebd4d7b682fa9bbb41fbe02bc06b8158b5f43e75dec4b10f0f2323c6e"
+    },
+    "protected_after": {
+      "E:\\Projects\\MCP_CREO_MechDog\\models\\27143ef77ce641938543e0ca44cc3c03\\model.json": "03a4d13a90d4f34295525945790d72e53e8acd0fc2827004258efb15ad6536ae",
+      "E:\\Projects\\MCP_CREO_MechDog\\jobs\\272513b7238040c68dce4b923725d870\\job.json": "d4cc02ef096839e8ca689537c45ce0a54e0cebd37e26d4cba712c3b3202d14a7",
+      "E:\\Projects\\MCP_CREO_MechDog\\models\\27143ef77ce641938543e0ca44cc3c03\\output\\bug009_1792054655.prt.10": "324dd24ebd4d7b682fa9bbb41fbe02bc06b8158b5f43e75dec4b10f0f2323c6e"
+    },
+    "historical_unknown": {
+      "job_id": "272513b7238040c68dce4b923725d870",
+      "kind": "generic",
+      "model_id": "27143ef77ce641938543e0ca44cc3c03",
+      "status": "unknown_outcome",
+      "readonly": true,
+      "created_at": "2026-10-15T08:58:36.576982+00:00",
+      "message": "Job exceeded its expected lifetime; inspect runner.log and Creo before retrying",
+      "recovery_required": "Outcome is unconfirmed; preserve reservation and inspect recovery evidence",
+      "recovery": {
+        "job_id": "272513b7238040c68dce4b923725d870",
+        "model_id": "27143ef77ce641938543e0ca44cc3c03",
+        "automatic_replay_allowed": false,
+        "native_result_present": false,
+        "next_steps": "Do not resubmit or clear pending_job. Inspect this job's native result/checkpoint, runner identity and saved file in Creo; preserve the original model/checkpoint. Use creo_session_status and explicit startup retry to recheck the channel. A connected channel does not resolve this job or commit its revision. If the result cannot be verified, operator reconciliation is required.",
+        "runner": {
+          "observed": null,
+          "reason": "No recorded process creation identity"
+        },
+        "model": {
+          "status": "ready",
+          "revision": 9,
+          "pending_job": "272513b7238040c68dce4b923725d870",
+          "last_job": "0eef840c5efc4cd092aa03a631fd4443"
+        },
+        "saved_baseline": {
+          "path": "E:\\Projects\\MCP_CREO_MechDog\\models\\27143ef77ce641938543e0ca44cc3c03\\output\\bug009_1792054655.prt.10",
+          "exists": true,
+          "sha256": "324dd24ebd4d7b682fa9bbb41fbe02bc06b8158b5f43e75dec4b10f0f2323c6e"
+        }
+      },
+      "detail": "compact",
+      "operation_count": 1,
+      "full_result_available": false
+    },
+    "success": true
+  },
+  "jobs": [
+    {
+      "job_id": "863bbf18726d493696e5354bbc28fad2",
+      "model_id": "e6b63ac86df3432a963dcceba350f254",
+      "status": "succeeded",
+      "revision": 1,
+      "volume_mm3": null,
+      "retry_verified": null,
+      "saved_file_reloaded_and_verified": true,
+      "delivery_complete": true,
+      "disconnect_code": 0
+    },
+    {
+      "job_id": "5d5e2cbfa9f94336ab92573f425bc077",
+      "model_id": "e6b63ac86df3432a963dcceba350f254",
+      "status": "succeeded",
+      "revision": 2,
+      "volume_mm3": 120.0,
+      "retry_verified": {
+        "type": 52,
+        "value": 1
+      },
+      "saved_file_reloaded_and_verified": true,
+      "delivery_complete": true,
+      "disconnect_code": 0
+    }
+  ],
+  "final_readonly": {
+    "captured_at": "2026-10-15T15:19:32.889184+00:00",
+    "shared_state": {
+      "path": "C:\\Users\\Administrator\\AppData\\Local\\MCP_CREO_MechDog\\startup\\6235eee86323f49c8d99f96a\\state.json",
+      "bytes": 380,
+      "all_nul": true,
+      "sha256": "08c3e5bbea4fba57201a69d4bf70a0d255df921fdef4924c22da087f9338c2bc"
+    },
+    "inventory": {
+      "processes": [
+        {
+          "pid": 17232,
+          "created": 134365507231642002,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Parametric\\bin\\parametric.exe",
+          "matches": true
+        },
+        {
+          "pid": 4616,
+          "created": 134365507239922667,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+          "matches": true
+        }
+      ],
+      "uncertain": false
+    }
+  },
+  "raw_evidence_integrity_note": "The reused first-round scoped style helper overwrote build/bug008/scoped-style.json. Its old archived digest is historical and cannot be verified against that path now. New follow-up outputs are separate.",
+  "unverified": [
+    "final WorkBuddy retest of this implementation",
+    "real cold automatic startup with reconciled trustworthy history",
+    "source/cause of startup record corruption and a reconciled reset procedure",
+    "historical transform/save hang/-38 causal chain",
+    "unattended recovery of a deliberately damaged real Creo",
+    "other environments"
+  ],
+  "raw_outputs": {
+    "build/bug008-retry/build-evidence.py": {
+      "bytes": 5918,
+      "sha256": "b4aab7bf6b01cf1d8db0458967cdca0f94a2654f160ec0df87e12d6f4494f269"
+    },
+    "build/bug008-retry/capture-final.py": {
+      "bytes": 707,
+      "sha256": "1b4578376e8090a9333b772e2469bb137277398c0b7ffeb38f5a180004a5209e"
+    },
+    "build/bug008-retry/check-scoped.py": {
+      "bytes": 1201,
+      "sha256": "465c9b5efca081f142ce9be0adc99ab2a29e21a1082116e61e0cd01c9d8fd2bf"
+    },
+    "build/bug008-retry/cold-protected-state.json": {
+      "bytes": 48948,
+      "sha256": "75a744a2faecf32a75855b2800d4bc315785ef6364b90b76af3e5f61fa3906fb"
+    },
+    "build/bug008-retry/cold-protected-state.log": {
+      "bytes": 129,
+      "sha256": "9d2f7ec6f82859a9d293770ab33c42a610de2743a6ae80a850f22da5a43c805a"
+    },
+    "build/bug008-retry/development-check.json": {
+      "bytes": 1214,
+      "sha256": "034062b77177a44f81f66b07d7cde3768c421f0a3d12292a9834d7bdd8a0e7c5"
+    },
+    "build/bug008-retry/development-check.log": {
+      "bytes": 1226,
+      "sha256": "79c6b7b60f6b5c9fdf54fec943e68b70e322e23fa0b17aaafe5441fe8c7610b0"
+    },
+    "build/bug008-retry/final-readonly.json": {
+      "bytes": 809,
+      "sha256": "4344a375440c394ffef749954735e7cf6b0ded773c1b9ad874a00d44a72345b0"
+    },
+    "build/bug008-retry/manual-open.json": {
+      "bytes": 2822,
+      "sha256": "6467aa10c34f016c7f15b6f17beb3dabbe0cf80dde555c3a5aaebc4bd3dedf8b"
+    },
+    "build/bug008-retry/manual-open.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "build/bug008-retry/manual-open.py": {
+      "bytes": 1829,
+      "sha256": "914897e3e2e8d126960f23adc46f0a39c3dcb93003d2a2cf206fa5dc5ce3c3b1"
+    },
+    "build/bug008-retry/native-exit.json": {
+      "bytes": 48,
+      "sha256": "1944bb4f07e37a42601e0bf331a0da9ae608499fe2202d4f53887b81c9aef39e"
+    },
+    "build/bug008-retry/native-preflight-attempt.log": {
+      "bytes": 2298,
+      "sha256": "4f66f75db5279f6f20facebf665f313672dce8f9e7a18dbfd742f6a949919f90"
+    },
+    "build/bug008-retry/native.json": {
+      "bytes": 48948,
+      "sha256": "75a744a2faecf32a75855b2800d4bc315785ef6364b90b76af3e5f61fa3906fb"
+    },
+    "build/bug008-retry/native.log": {
+      "bytes": 129,
+      "sha256": "9d2f7ec6f82859a9d293770ab33c42a610de2743a6ae80a850f22da5a43c805a"
+    },
+    "build/bug008-retry/previous-evidence.json": {
+      "bytes": 83772,
+      "sha256": "f298be8035365d257a78ef2ce05a1e5f977b3c7bb947cff2639a4f4e4df93df0"
+    },
+    "build/bug008-retry/run-manual-open.py": {
+      "bytes": 329,
+      "sha256": "75afc696811b8510b34a5e706885a6152efe068815618b52245b1b79ebe5bd24"
+    },
+    "build/bug008-retry/run-native.py": {
+      "bytes": 576,
+      "sha256": "30533bc4cd5403960958d024ec3b04e015e2a6b7c5b096e342d19fc64fd68e5e"
+    },
+    "build/bug008-retry/run-warm-native.py": {
+      "bytes": 553,
+      "sha256": "73b120bd56286e452c53c9826616280b83da663008accab3d2bc3f5d90e2a7d5"
+    },
+    "build/bug008-retry/scoped-style.json": {
+      "bytes": 12915,
+      "sha256": "4b27327c1c28dc94a8f3f0ba204505b4e11d354dc5bcf865b26d01c64b097ff2"
+    },
+    "build/bug008-retry/shared-before.bin": {
+      "bytes": 380,
+      "sha256": "08c3e5bbea4fba57201a69d4bf70a0d255df921fdef4924c22da087f9338c2bc"
+    },
+    "build/bug008-retry/style-final.log": {
+      "bytes": 38,
+      "sha256": "229e21536e0c26f2d9af866f5ffeabed13f57d8e4ae8c5a900f5dcee32af70ca"
+    },
+    "build/bug008-retry/style.log": {
+      "bytes": 38,
+      "sha256": "229e21536e0c26f2d9af866f5ffeabed13f57d8e4ae8c5a900f5dcee32af70ca"
+    },
+    "build/bug008-retry/unit-final.log": {
+      "bytes": 37980,
+      "sha256": "6766cfaae52cd465d6411abf487c84cebac552b0a7b1679c68c5fc6fde8b10d2"
+    },
+    "build/bug008-retry/unit-report.json": {
+      "bytes": 136,
+      "sha256": "44d43fdbf25a4b0da53816299c65e572832e17b41b1ec58ba369cd33aa524acb"
+    },
+    "build/bug008-retry/unit.log": {
+      "bytes": 37620,
+      "sha256": "d11d21e02b90dd69690e11b0e29f8dd553d47a6d4da6c2bfca77c8fb935ba8b2"
+    },
+    "build/bug008-retry/warm-inventory-assertion.json": {
+      "bytes": 686895,
+      "sha256": "47aac75e3d6d5a0f9625e20db07d81d89cb65ded37953b85b245868b18c16d3a"
+    },
+    "build/bug008-retry/warm-inventory-assertion.log": {
+      "bytes": 130,
+      "sha256": "4e23abaebcea4e993f8b1d22081596560c000c7effd71e249b67df11b32af8ba"
+    },
+    "build/bug008-retry/warm-native-exit.json": {
+      "bytes": 48,
+      "sha256": "6a69835b7d76933659a030d9f895fd619f8f6539e9ce1b062e894b14aa2ed238"
+    },
+    "build/bug008-retry/warm-native.json": {
+      "bytes": 599902,
+      "sha256": "ea51754bb3f4b1918f20b1e70bca9690ec78c04d9eedf8dcc0df28e49fa773ef"
+    },
+    "build/bug008-retry/warm-native.log": {
+      "bytes": 49,
+      "sha256": "4be1960401eefa39ce4b572e02a95ab44398c4279c1c98caa09d810c072ce908"
+    }
+  }
+}

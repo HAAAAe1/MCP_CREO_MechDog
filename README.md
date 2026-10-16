@@ -1,14 +1,14 @@
-# MCP_CREO_MechDog 0.3.1
+# MCP_CREO_MechDog 0.3.2
 
 开发维护从 [开发入口](docs/DEVELOPMENT.md) 和 [统一功能台账](docs/BACKLOG.md) 开始。每项工作先定义验收；语言与单元检查、Creo 实机验收分别记录。项目采用渐进布局整理，当前支持环境见 [兼容矩阵](docs/COMPATIBILITY.md)。
 
-本地 Windows MCP 服务，按需启动或连接 Creo Parametric 10 / 12，通过官方 C/C++ Toolkit 创建、查询和修改**原生参数化特征**。Creo 10 为正式验收基线；Creo 12 已验证可用，已有实机记录使用 12.4.0.0，具体功能与未测范围见 [兼容矩阵](docs/COMPATIBILITY.md)。建模由任意支持的草图轮廓及顺序特征组成：新建零件 → 草图 → 拉伸/旋转 → 切除/孔 → 后续特征。原先的底板接口保留为快捷工具。
+本地 Windows MCP 服务，按需启动或连接 Creo Parametric 10 / 12，通过官方 C/C++ Toolkit 创建、查询和修改**原生参数化特征**。当前开发与发布按本机 Creo 12.4.0.0 的改动范围验收；Creo 10 不再要求独立复测，其他环境收到具体测试反馈后再跟进。历史证据、具体功能与未测范围见 [兼容矩阵](docs/COMPATIBILITY.md)。建模由任意支持的草图轮廓及顺序特征组成：新建零件 → 草图 → 拉伸/旋转 → 切除/孔 → 后续特征。原先的底板接口保留为快捷工具。
 
 **本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 本版对客户端公开 **82 个可用工具**（0.2.6 为 81 个）；`creo_loft` 已通过直接创建和已有零件追加验收并开放。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
 
-当前服务/源码版本为 **0.3.1**，合入放样初始化及引用兼容、尺寸与关系诊断、原生孔/筋、真实检查结果及分页修复。变更与调用迁移见 [0.3.1说明](docs/RELEASE_NOTES_0.3.1.md)，当前检查及原生证据复用范围见 [主干准备记录](docs/validation/RELEASE-0.3.1.md)。历史 [0.3.0](docs/RELEASE_NOTES_0.3.0.md)、[0.2.6](docs/RELEASE_NOTES_0.2.6.md) 与 [0.2.5](docs/RELEASE_NOTES_0.2.5.md) 的发布说明和验证保持原日期。
+当前服务/源码版本为 **0.3.2**，包含通道结果交付与重启后启动恢复、任务收尾时序修复、Python 辅助模块第二批迁移，以及此前 0.3.1 建模和查询修复。变更、验收范围及升级方法见 [0.3.2 说明](docs/RELEASE_NOTES_0.3.2.md)和[发布记录](docs/validation/RELEASE-0.3.2.md)。历史版本说明保留原日期。
 
-本版包含 [FEAT-019 自动启动](docs/work-items/FEAT-019.md)：后台检测、启动协调和建模就绪保护已实现；用户于 2026-10-13 接受 WorkBuddy / Creo 12.4 的自动启动、Toolkit 就绪及建模/保存重载验收，并于 2026-10-14 确认补充 Creo 12 已验证可用的说明。FEAT-019 的 Creo 10 正式基线专项复测未执行；Codex 冷启动连接复测失败另列 [BUG-005](docs/work-items/BUG-005.md)。见 [原验收证据](docs/validation/FEAT-019.md)。
+本版包含 [FEAT-019 自动启动](docs/work-items/FEAT-019.md)：后台检测、启动协调和建模就绪保护已实现；用户于 2026-10-13 接受 WorkBuddy / Creo 12.4 的自动启动、Toolkit 就绪及建模/保存重载验收，并于 2026-10-14 确认补充 Creo 12 已验证可用的说明。该专项未取得 Creo 10 实测结果；Codex 冷启动连接复测失败另列 [BUG-005](docs/work-items/BUG-005.md)。见 [原验收证据](docs/validation/FEAT-019.md)。
 
 普通混合可直接创建或追加，范围见 [直接混合](docs/DIRECT_BLEND_0.2.5.md)；种子复用见 [调用说明](docs/LOFT_SEED.md)、[多截面](docs/MULTISECTION_BLEND.md)。草图支持 `dimensioning="auto" / "autodim" / "coordinates"`，坐标模式的范围与尺寸编辑规则见 [草图说明](docs/SKETCH_STABILITY_0.2.5.md)。迁移步骤见 [种子库](docs/SEED_LIBRARY.md) 和 [换电脑、换 Agent](docs/MIGRATION.md)。
 
@@ -105,6 +105,10 @@ DEV-002 已开始分批迁移：更新检查实现位于 `src/creo_mechdog/`，�
 4. 保留 `model_id` 和最新 `revision`。修改已有零件时提供 `expected_revision`；版本不一致会拒绝旧请求。
 5. 查询实际面/边/尺寸 ID 后追加特征。引用发生变化时重新查询，不复用猜测的拓扑 ID。
 
+Toolkit 操作共用一个通道，提交时忙碌会立即拒绝；响应保持 MCP `isError=true`，JSON 文本与 `structuredContent` 同时给出 `status="busy"`、`accepted=false`、`blocking_job_id`、`blocking_model_id`、`blocking_operation`、`retry_after_seconds` 和 `retry_guidance`。未创建新任务。占用者可能是任务、提交登记、连接探针或构建；无法确定时 ID 为 null，不能猜测最近的任务就是占用者。1 秒是建议重查间隔，不是完成时间承诺。已接受的任务只轮询，不重新提交；未知结果先检查模型。
+
+任务模型登记（revision、pending_job、保存结果）在锁内收尾，释放通道后才发布持久化终态。观察到旧任务 succeeded 后，其他客户端仍可能取得通道，此时按新响应的占用者处理。`creo_get_job`、`creo_list_jobs`、`creo_inspect_model`、`creo_list_models` 读取持久化快照，不等待 Toolkit；`creo_refresh_model`、导出和实际连接检查仍需要通道。已接受后台 runner 最多等锁 120 秒；没有公开 FIFO、容量或排队顺序保证，本次没有增加队列能力。开发与 WorkBuddy 验收范围见 [BUG-009](docs/work-items/BUG-009.md)。
+
 例如创建有原生特征树的圆柱：
 
 ```json
@@ -167,6 +171,10 @@ DEV-002 已开始分批迁移：更新检查实现位于 `src/creo_mechdog/`，�
 
 现有 MCP 零件任务失败，会尝试从任务开始前的保存文件恢复；只有 `rollback_succeeded` 确认成功才能继续。版本号不随失败增加。辅助进程崩溃、超时或结果不能确认时标记 `unknown_outcome`，保留现场供检查。新零件失败可能留下本任务的部分模型。
 
+BUG-008 保留未知作业的 `pending_job`，`creo_get_job` 的 `recovery` 提供执行器身份、断开前检查点及已保存基线的核对信息；检查点不等于任务成功，也不自动提交 revision。原生断开有 20 秒 helper 看门狗，只退出自有 helper，不关闭 Creo。`creo_startup_status(retry=true)` 重新核实通道及安全启动条件，不能解锁或重放未知作业。启动等待区分 `waiting_for_channel` 与 `building_worker`，preparation 180 秒、总预算为 180 秒加配置的启动预算；到期仍在执行时明确说明 in-flight，继续保留保护。状态快照带 `verified_at`、`verification_age_seconds`、`stale`；`creo_session_status` 的独立探针预算为 9 秒，超时返回 `probe_timeout` 和处理指引。本机已验证范围和保留边界见 [BUG-008 关闭复核](docs/validation/BUG-008-closure-2026-10-16.md)。
+
+共享启动历史损坏时，新开发实现仅在核实记录早于本次 Windows 启动、双锁已取得且没有现有 Creo 后，备份原字节并重建启动状态，再由协调器启动 Creo；`startup_recovery` 提供归档与重启依据。同次开机损坏、时钟/会话不确定或备份失败仍返回 `startup_state_unreadable` 和处理说明，已有会话可只读重连。未知任务和模型保护不随启动历史重建而清除，当前验证进度见 [重启恢复记录](docs/validation/BUG-008-reboot-recovery.md)。
+
 目前高层工具覆盖上述常见实体特征，仍有明确范围：
 
 - 持续修改只支持本服务创建、登记的零件、钣金模型和装配；未提供直接接管用户现有模型的接口。
@@ -196,7 +204,7 @@ DEV-002 已开始分批迁移：更新检查实现位于 `src/creo_mechdog/`，�
 
 除输入验证外，上述集成测试会实际连接 Creo 并创建或修改独立测试模型。`test_v021.py` 默认验证启用功能和禁用接口的拒绝行为；禁用接口的拒绝测试不是建模成功证明。日志位于任务 `native.log`/`runner.log`/`job.json` 和 `build/build.log`；证据在 `build/*integration_test.json`。保存目录较长时应缩短项目路径。
 
-Windows 登记文件读取允许共享删除，写入使用单步原子替换；短暂占用最多重试 1 秒，持续失败保留旧登记并报错，不会自动重复原生操作。登记读写压力与并发实机轮询可分别运行 `tools/test_registry_io.py` 和 `tools/test_registry_native.py --readers 3`。本次 Creo 12.4 结果及 Creo 10 复测步骤见 [BUG-002 验证与交接](docs/validation/BUG-002.md)。
+Windows 登记文件读取允许共享删除，写入使用单步原子替换；短暂占用最多重试 1 秒，持续失败保留旧登记并报错，不会自动重复原生操作。登记读写压力与并发实机轮询可分别运行 `tools/test_registry_io.py` 和 `tools/test_registry_native.py --readers 3`。Creo 12.4 结果及历史交接记录见 [BUG-002 验证与交接](docs/validation/BUG-002.md)。
 
 实现依据：[PTC 草图特征 Element Tree 文档](https://support.ptc.com/help/creo_toolkit/protoolkit_plus/usascii/creo_toolkit/user_guide/Element_Tree_for_Sketched_Features.html)、本机 Creo 10 Toolkit 头文件与示例、[官方 MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk)。实际本机建模成功、保存重载成功的记录才证明该路径可用，SDK/许可环境文件存在本身不能证明许可可用。
 
