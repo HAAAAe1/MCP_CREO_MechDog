@@ -1,0 +1,112 @@
+{
+  "work_item": "FEAT-029",
+  "timestamp": "2026-10-16T11:35:24.543707+08:00",
+  "scope": "Task-card and backlog documentation only. No feature implementation, GUI registration, native build/modeling or WorkBuddy acceptance.",
+  "head": "001a4b8088344249c0a04eca0dbe6dc923435950",
+  "branch": "codex/bug-008-channel-recovery",
+  "dirty": true,
+  "environment": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14"
+  },
+  "command": ".\\.venv\\Scripts\\python.exe build\\feat029-task-card\\verify.py",
+  "checks": [
+    {
+      "name": "metadata",
+      "passed": true,
+      "detail": "Scope confirmed; investigation and solution selection remain pending."
+    },
+    {
+      "name": "task_card_sections",
+      "passed": true,
+      "detail": [
+        "问题与目标",
+        "范围与方案约束",
+        "开发执行顺序与交付",
+        "验收标准",
+        "开发者验证命令",
+        "WorkBuddy 交接要求",
+        "实现与证据"
+      ]
+    },
+    {
+      "name": "confirmed_full_scope",
+      "passed": true,
+      "detail": "Primary objective, separate operator actions, upgrade branches and acceptance matrix present."
+    },
+    {
+      "name": "backlog_change_scope",
+      "passed": true,
+      "detail": {
+        "changed_lines": [
+          9,
+          30,
+          89
+        ],
+        "expected": "Only FEAT-029 progress/row and FEAT-008 ownership row."
+      }
+    },
+    {
+      "name": "all_backlog_ids_and_metadata_preserved",
+      "passed": true,
+      "detail": {
+        "before_count": 78,
+        "after_count": 78
+      }
+    },
+    {
+      "name": "workbuddy_and_evidence_boundary",
+      "passed": true,
+      "detail": "MCP black-box acceptance and future developer commands are distinguished from this documentation work."
+    },
+    {
+      "name": "local_links_and_anchors",
+      "passed": true,
+      "detail": {
+        "checked_count": 15,
+        "errors": []
+      }
+    },
+    {
+      "name": "tables_and_whitespace",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "existing_and_planned_entries",
+      "passed": true,
+      "detail": {
+        "existing": [
+          "tests/unit/test_blend_callback.py",
+          "tools/test_direct_loft.py",
+          "tools/test_loft_seed.py",
+          "tools/test_multisection_blend.py",
+          "tools/dev_check.py",
+          "bridge.py"
+        ],
+        "planned_not_implemented": "tools/test_callback_lifecycle.py"
+      }
+    },
+    {
+      "name": "git_diff_check",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "documents_sha256": {
+    "docs\\work-items\\FEAT-029.md": "2614b57612a7818a18bef0ea7fd78945f7206a6fefde90f1ea3eb109fcd9e365",
+    "docs\\BACKLOG.md": "8f9af65402f6030e2d53dd5a9cc71a7160551eb956c052f3817b42ae42ec3642"
+  },
+  "inspected_source_sha256": {
+    "src/creo_mechdog/blend_callback.py": "5d7cd97d46d52dd08080ccd117ef14748b0fd16600477e9467d5a6450c1d2e5f",
+    "native/blend_create.cpp": "50c0fe6e470154f2c6c0801a5dfd92568ba37997592abefe20db74ed15115033"
+  },
+  "not_run": [
+    "Python unit/development checks",
+    "SDK/native build",
+    "GUI registration and upgrade experiment",
+    "Creo modeling and save/reload",
+    "WorkBuddy MCP acceptance"
+  ],
+  "passed": true
+}

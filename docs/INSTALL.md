@@ -2,9 +2,9 @@
 
 ## 需要的环境
 
-可使用 Creo 10 或 Creo 12。当前开发与发布按本机 Creo 12.4.0.0 的改动范围验收，Creo 10 独立复测不作为项目门槛，其他环境收到具体测试反馈后再跟进；具体已测范围与未测项见 [兼容矩阵](COMPATIBILITY.md)。仅做 Python 单元和语言检查的开发环境见 [开发入口](DEVELOPMENT.md)，不必先运行完整 Creo 安装流程。
+支持 Creo 9 / 10 / 12，其中 Creo 9 按第三方已测场景提供有限支持。当前开发与发布按本机 Creo 12.4.0.0 的改动范围验收，Creo 10 独立复测不作为项目门槛，其他环境收到具体测试反馈后再跟进；具体已测范围与未测项见 [兼容矩阵](COMPATIBILITY.md)。仅做 Python 单元和语言检查的开发环境见 [开发入口](DEVELOPMENT.md)，不必先运行完整 Creo 安装流程。
 
-- Windows x64；Creo Parametric 10 或 12，使用与目标安装匹配的 SDK。Creo 12.4 已有自动启动、建模、参数编辑和保存重载的成功实机记录；0.2.6 发布时另一次冷启动复测失败，保留原结果见 [发布验收](validation/RELEASE-0.2.6.md)。
+- Windows x64；Creo Parametric 9、10 或 12，使用与目标安装匹配的 SDK。Creo 12.4 已有自动启动、建模、参数编辑和保存重载的成功实机记录；0.2.6 发布时另一次冷启动复测失败，保留原结果见 [发布验收](validation/RELEASE-0.2.6.md)。
 - Python 3.12+ x64；本版安装实测使用 Python 3.12。
 - 与 Creo 安装匹配的 C/C++ Toolkit SDK，包括头文件和 x64 链接库。
 - Creo 公制模板 `Common Files/templates/mmns_part_solid_abs.prt` 和 `mmns_asm_design_abs.asm`。安装器与环境检查都要求这两份文件，即使首次只建零件，也需安装公制装配模板。
@@ -13,6 +13,14 @@
 - 能运行本地 stdio MCP 服务的 AI 客户端。
 
 本项目不提供 Creo、SDK、许可证或已解锁的二进制。项目 MIT 许可证及第三方条件见 [LICENSE](../LICENSE) 和 [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md)。
+
+## Creo 9 支持范围
+
+已有 Windows 10 / Creo 9.0.0.0 / 服务 0.3.0 的[第三方运行报告](validation/feedback-2026-10-16/2026-10-15_CREO_0.3.0_叶片种子加载失败与筋特征失败.md)，记录草图和实体建模、直接放样/扫掠、部分装配、钣金及工程图场景成功。按这些已反馈场景提供有限支持；本次文档调整没有新增 Creo 9 实机测试。
+
+Creo 9 SDK 源码编译仍有 [BUG-033](work-items/BUG-033.md)：当前源码硬引用旧 SDK 缺少的孔常量，修复尚未合入；反馈方使用本地绕过后编译和冒烟成功，不能据此保证当前未修改源码可直接完成安装。叶片种子加载失败见 [BUG-034](work-items/BUG-034.md)，筋特征失败见 [BUG-017](work-items/BUG-017.md)；报告中的其他问题继续按台账跟进，不能用 Creo 12 的通过结果代替 Creo 9 验收。FEAT-029 新回调生命周期尚未在 Creo 9 验证。
+
+Creo 9 安装目录参数示例为 `-CreoRoot 'C:\Program Files\PTC\Creo 9.0.0.0'`，按本机路径替换并使用匹配 SDK；当前支持定位及证据范围见 [兼容矩阵](COMPATIBILITY.md)。
 
 ## 安装步骤
 
@@ -49,7 +57,7 @@ Creo 12.4 的安装示例：
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 10.0.0.0'
 ```
 
-脚本保留已有本机配置中的额外选项，创建项目内的 Python 虚拟环境及客户端配置，再安装锁定依赖、更新本机 SDK 常量并编译执行器。同步混合回调 DLL 独立校验缓存，只有自身源码、ABI/SDK、构建参数或 DLL 内容改变才重建。BUG-007开发版在build/blend_callback中生成按DLL哈希分开的初始化副本和protk.dat；所有策略下，直接Blend前由使用者通过Creo辅助应用程序完成一次初始化，PROMPT下的安全确认也在该阶段完成，否则建模任务明确拒绝。注册文件路径由creo_capabilities.direct_blend_callback返回，构建副本存在不代表DLL已加载；MCP不修改Creo安全策略，NEVER策略由管理员处理。新建种子放样不需要该回调。每次构建先按当前 SDK 更新常量，并将 SDK 头文件内容计入缓存指纹；源码、配置及头文件都不变时复用现有二进制。不需要把 Creo 安装到示例路径；不修改 PTC 安装目录或全局 AI 客户端配置。
+脚本保留已有本机配置中的额外选项，创建项目内的 Python 虚拟环境及客户端配置，再安装锁定依赖、更新本机 SDK 常量并编译执行器。同步混合回调 DLL 独立校验缓存，只有自身源码、ABI/SDK、构建参数或 DLL 内容改变才重建。FEAT-029 功能分支将公开注册入口固定为安装目录的 `build/blend_callback_protk.dat`；首次由使用者显式注册并启动，跨 Creo 重启保留入口需自行将生成的 `build/blend_callback.config.pro` 片段合入实际加载的 config.pro。`delay_start true` 保留每次手动启动；MCP 不修改配置、安全策略或代办 DLL 确认。升级时保留安装目录、build 下旧回调和登记文件，不能每次换到新的开发 worktree；原协议 2 入口需一次迁移。`creo_callback_status` 实时验证当前模块；prepared 只表示产物已准备。功能分支已通过本机开发者实机与 WorkBuddy 独立核心验收，尚未发布，详见 [回调生命周期与升级](CALLBACK_LIFECYCLE.md)。新建种子放样不依赖该回调。每次构建先按当前 SDK 更新常量，并将 SDK 头文件内容计入缓存指纹；源码、配置及头文件都不变时复用现有二进制。不需要把 Creo 安装到示例路径；不修改 PTC 安装目录或全局 AI 客户端配置。
 
 安装中断会输出 `INSTALL_INCOMPLETE`、失败阶段、已完成步骤和重跑方法。修复错误后在同一目录重跑相同安装命令即可，不必删除 `.venv`、模型或任务。`client-config.json` 提前生成便于接入与诊断；它存在不代表依赖、原生执行器或许可验证已完成。
 

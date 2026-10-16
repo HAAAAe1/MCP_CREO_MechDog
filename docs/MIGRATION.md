@@ -21,14 +21,14 @@ MCP_CREO_MechDog 0.3.0 在安装 Creo 的 Windows 电脑上运行，通过本地
 
 ## 换到另一台电脑
 
-1. 在目标 Windows x64 电脑准备 Creo 10 或 Creo 12、匹配 Toolkit SDK、MSVC x64 / Windows SDK、Python 3.12+ x64 和可用的 Toolkit 运行许可。当前开发与发布使用本机 Creo 12.4.0.0 验收，不要求 Creo 10 独立复测；其他环境收到具体测试反馈后再跟进，具体范围见 [兼容矩阵](COMPATIBILITY.md)。
+1. 在目标 Windows x64 电脑准备 Creo 9、10 或 12、匹配 Toolkit SDK、MSVC x64 / Windows SDK、Python 3.12+ x64 和可用的 Toolkit 运行许可。当前开发与发布使用本机 Creo 12.4.0.0 验收，不要求 Creo 10 独立复测；其他环境收到具体测试反馈后再跟进，Creo 9 按第三方已测场景有限支持，旧 SDK 编译、种子及筋特征的已知问题见 [Creo 9 安装说明](INSTALL.md#creo-9-支持范围)；具体范围见 [兼容矩阵](COMPATIBILITY.md)。
 2. 下载0.3.0 源码包，内附 `seed_library/`。源码解压到例如 `C:\MCP_CREO_MechDog`，执行：
 
    ```powershell
    .\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 10.0.0.0'
    ```
 
-   填写目标机真实的 Creo 路径；Creo 12.4 可使用 `-CreoRoot 'C:\Program Files\PTC\Creo 12.4.0.0'`，其他程序路径选项见 [INSTALL.md](INSTALL.md)。重新生成本机环境、执行器和客户端配置，不直接复制原电脑的 `.venv`、二进制、`config.json` 或会话 ID。
+   填写目标机真实的 Creo 路径；Creo 9 可使用 `-CreoRoot 'C:\Program Files\PTC\Creo 9.0.0.0'`，并先核对上面的已知编译问题；Creo 12.4 可使用 `-CreoRoot 'C:\Program Files\PTC\Creo 12.4.0.0'`，其他程序路径选项见 [INSTALL.md](INSTALL.md)。重新生成本机环境、执行器和客户端配置，不直接复制原电脑的 `.venv`、二进制、`config.json` 或会话 ID。
 3. 安装器自动验证并注册随源码的种子库。调用 `creo_list_seeds` 确认可用数量为 9（2/3/4/6 直线和平滑，5 平滑）。若另有原始库目录，可用 `creo_install_seed_library(directory=...)` 注册；无需向 Agent 提供种子内部 ID。步骤见 [SEED_LIBRARY.md](SEED_LIBRARY.md)。
 4. 将新生成的 `client-config.json` 配置到目标 Agent，打开一个 Creo 会话。
 5. 调用 `creo_capabilities` 确认 `version == "0.3.0"`，检查 `creo_check_environment` 和 `creo_session_status`。再创建一个小零件，核对任务成功、原生特征树和保存重载，验证目标机实际运行条件。
@@ -48,3 +48,7 @@ Agent 通过上述 MCP 工具即可查询和使用随包种子，无需读取本
 ## 包含 FEAT-020 后的手动升级
 
 首次使用时查询 `creo_check_update`；发现新版本后由客户端提醒，同一会话对同一版本只提醒一次。升级前等待任务完成并停止 MCP 服务，保留本机配置、模型、任务和种子登记，更新源码并使用目标 Creo 对应 SDK 重跑安装，再重启服务并核对工具和 runtime 指纹。旧安装需要先手动升级到包含此功能的版本；网络失败不影响启动或建模，也不代表已是最新版。详见 [版本检查说明](UPDATE_CHECK.md)。
+
+## FEAT-029 功能分支验收（2026-10-16，未发布）
+
+固定安装目录及 `build/blend_callback_protk.dat` 为长期入口。首次从旧协议 2 迁入需显式注册；持久配置和手动启动、升级/回退及预检分支见 [回调生命周期](CALLBACK_LIFECYCLE.md)。不把开发 worktree 当长期安装目录。SDK 构建、离线测试与真实 Creo 生命周期分开记录；不同载荷实时应答、43 作业直接放样/种子/回滚、计划入口、繁忙查询、不兼容保护、部署回退、双安装并存及正式停止后保护已通过。持久注册补验曾因启动目录缺少 config.pro 失败；补入固定入口后，使用者从原快捷方式重启确认条目自动出现并启动，最终载荷实时身份及 9 个直接/计划建模作业通过。DLL 未变的源码提示更新在原会话及完整重启后各通过身份和 4 作业，本机开发者阶段和 WorkBuddy 独立核心验收通过，报告 12 作业已只读核对；独立生命周期阶段未复跑，见[关闭记录](validation/FEAT-029-closure-2026-10-16.md)；MCP 自动启动目录仅完成配置，不复用 BUG-007 的历史成功代替，见 [实机记录](validation/FEAT-029-live-2026-10-16.md)和[本轮建模证据](validation/FEAT-029-modeling-2026-10-16.json)。

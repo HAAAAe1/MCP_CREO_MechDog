@@ -1,0 +1,23 @@
+{
+  "work_item": "FEAT-029",
+  "timestamp_utc": "2026-10-16T07:19:12.552528+00:00",
+  "files": {
+    "README.md": "3a2aee961cdf1aaeea9fc4adca51cf1cc97f0c3ba102b075cad18bf329513958",
+    "docs/BACKLOG.md": "1ecd6ea2cce10ef59a73ac100037f935e5b5506a4897654f4a00146f1feda301",
+    "docs/BACKLOG_COMPLETED.md": "67e594084373511dcba1cd7974865f65695d4738922eb779357000861c505223",
+    "docs/COMPATIBILITY.md": "1a3285b9270fc1ce4f403322da265082f656574156e5e9c751cd2bea3b3ab339",
+    "docs/INSTALL.md": "fd9f1c9544c1349327122b0200e7439832cea2b1780c7e353076473de25cd62b",
+    "docs/MIGRATION.md": "68101ab15e5a063108c4386bd726a8bf58e8578b4fc39d92919e3695a240191d",
+    "docs/CALLBACK_LIFECYCLE.md": "e1855100e7c55465b3f50ec82213d90221fb4f60894fcc1519c949f2540fe10b",
+    "docs/work-items/FEAT-029.md": "0d7f8dc7180d26f422b9b1f1e7e50e23fdc687cdb4daa5772d1436699b2de913",
+    "docs/work-items/DEV-026.md": "88bf8ad73afbd9866ef110f4b45d352622337873cbf3cda2018cb451088a3666",
+    "docs/validation/FEAT-029-live-2026-10-16.md": "f60252166845b0423524d79b76b7f588e94167e4404bb88d26fbf2420a94398d",
+    "docs/validation/FEAT-029-WorkBuddy-test.md": "009190c744120a54fc616b01e14af1064c9b357954ced557c045b82523dc1224"
+  },
+  "local_reference_count": 274,
+  "broken": [],
+  "json_evidence_parses": true,
+  "matrix_evidence_files_exist": true,
+  "scope": "Local file references and JSON/evidence presence; external URLs and anchors not checked",
+  "success": true
+}

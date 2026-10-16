@@ -43,6 +43,7 @@ def source_files():
         ".clang-format",
         ".editorconfig",
         "tools/test_result_delivery.cpp",
+        "tools/test_callback_payload.cpp",
     )
     files = [ROOT / name for name in names]
     for directory, extensions in {

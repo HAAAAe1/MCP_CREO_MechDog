@@ -8,14 +8,16 @@
 
 ## 当前进展
 
-- 2026-10-16 用户指定执行顺序：BUG-008 现已按本机已验证范围完成验收收尾，随后优先处理 [FEAT-029：常驻回调升级注册](work-items/FEAT-029.md)。FEAT-029 从 P2 提升为 P1，列为其余工作之前的首项；关联 FEAT-008 的回调就绪预检，具体方案仍待规划与核实。
+- 2026-10-16 按用户要求补充 Creo 9 支持说明，文档统一为支持 Creo 9 / 10 / 12；Creo 9 按第三方已测场景有限支持，旧 SDK 编译、种子、筋等已知问题保留，见 [DEV-026](work-items/DEV-026.md)及[兼容矩阵](COMPATIBILITY.md)。本次未新增 Creo 9 实测。
+
+- 2026-10-16 [FEAT-029](work-items/FEAT-029.md) 按本机 Creo 12.4 已测范围完成并移至[归档](BACKLOG_COMPLETED.md)：开发者升级/重启/回退/并存矩阵、258 项检查与新 WorkBuddy 独立核心验收通过；12 个独立作业终态只读核对一致。固定运行目录为 `E:\Projects\MCP_CREO_MechDog_Test`；WorkBuddy 未独立复跑生命周期阶段，其他环境与并行建模未测，见[关闭记录](validation/FEAT-029-closure-2026-10-16.md)。本次为功能分支提交推送，未发布新版本。
 - [P1 联合修复](work-items/P1-MODELING-REPAIR.md)：本环境已测分支已有 WorkBuddy 通过记录；查询预算、放样计划入口引用及恢复失败等功能边界按各项继续验收。BUG-022 已完成并归档，原环境反馈保留来源。
 - 已核实 0.3.1 合入 main@515d50b，但未有 v0.3.1 标签/Release/附件；本次由 DEV-025 以新版本 0.3.2 累计交付，不补造历史发布。更新提醒仍有未测场景，Python 包迁移继续分批推进。
 - P0 通道恢复 BUG-008 按本机 Creo 12.4 已验证范围完成并移入[完成事项归档](BACKLOG_COMPLETED.md)：246 项单元、同实现真实冷态自动归档/重建/单次启动，以及新 WorkBuddy retry/120 mm³ 建模/unknown 保护通过。WorkBuddy 冷态与异常环境、历史完整链仍未验证，分层边界见[关闭复核](validation/BUG-008-closure-2026-10-16.md)。BUG-009 已完成并归档；其他未确定版本的事项保持“未排期”。
 - [0.3.1 实测补录](validation/WORKBUDDY-0.3.1.md)：新增 4 项待核实缺陷、4 项能力/体验建议，其余复用已有 ID；报告统计与输入适用性有待核实之处，本次未复现或修复。
 - [2026-10-16 四份反馈补录](validation/FEEDBACK-2026-10-16.md)：41 个编号问题及构建绕过线索已去重映射；新增 BUG-034～BUG-047（14 项待核实）和 FEAT-029～FEAT-030（2 项待规划）。保留 Creo 9/10 与具体版本未明的不同来源；回调升级负担、拓扑/API 根因和 Release 状态按证据边界继续核实，本次仅同步文档。
 - 2026-10-15 按用户要求取消整个项目的 Creo 10 独立验收门槛，见 [DEV-018](work-items/DEV-018.md)。DEV-002 第二批本机开发与 WorkBuddy 已测场景通过，本批完成；整体迁移继续推进。
-- 2026-10-15 收到第三方用户 Creo 9 SDK（Toolkit 9）编译失败反馈，[报告已归档](validation/2026-10-15_CREO_0.3.0_旧版ToolkitSDK原生编译失败.md)。登记 [BUG-033](work-items/BUG-033.md)（探测宏修复，P1，暂不声明 Creo 9 支持）及 DEV-019～DEV-022（构建诊断与安装链改进）；兼容范围按反馈补录策略，收到更多 Creo 9 反馈后再定。
+- 2026-10-15 收到第三方用户 Creo 9 SDK（Toolkit 9）编译失败反馈，[报告已归档](validation/2026-10-15_CREO_0.3.0_旧版ToolkitSDK原生编译失败.md)。登记 [BUG-033](work-items/BUG-033.md)（探测宏修复，P1；当时暂不声明 Creo 9 支持，现定位见 DEV-026）及 DEV-019～DEV-022（构建诊断与安装链改进）；当前支持说明已按 2026-10-16 用户要求更新，问题仍按反馈跟进。
 
 ## 使用规则
 
@@ -29,7 +31,6 @@
 
 | ID | 优先级 | 状态 | 目标版本 | 范围与下一步 |
 | --- | --- | --- | --- | --- |
-| [FEAT-029](work-items/FEAT-029.md) | P1 | 待规划 | 未排期 | 用户指定仅次于 BUG-008 验收收尾，优先于其余工作。围绕 build/blend_callback.protk.dat 的升级注册生命周期，核实 DLL/命令变化的实际负担，评估稳定入口或准确再注册/重启提示，关联 FEAT-008 回调就绪预检；覆盖已加载模块、协议、并存安装与回滚，不自动加载 DLL/改策略，方案尚未确定。 |
 | [BUG-013](work-items/BUG-013.md) | P1 | 验收中 | 未排期 | 默认摘要、section 分页与过期 cursor 拒绝已有 WorkBuddy 通过记录，0.3.1 再次正向复验；精确 32 KiB/单条超预算边界未补齐。jobs 列表日志归 FEAT-023。 |
 | [BUG-014](work-items/BUG-014.md) | P1 | 验收中 | 未排期 | 恢复快照/空件/plate 已有本环境通过记录，0.3.1 drawing 未知计数为 null；新增泛型作业 counts=null 而后续查询有值的差异待对齐终态/来源核实；未知值仍保留 null，恢复失败等未测。 |
 | [BUG-017](work-items/BUG-017.md) | P1 | 验收中 | 未排期 | 本机合法筋、方向/厚度侧及负例恢复已有 WorkBuddy 通过记录，0.3.1 L形件+YZ斜筋再次通过。新增 Creo 9/0.3.0 四次再生失败反馈，补完整平面/轮廓及部署身份后核实；不覆盖本机正例或恢复旧版独立验收门槛，完整功能边界继续验收。 |
@@ -37,7 +38,7 @@
 | [BUG-021](work-items/BUG-021.md) | P1 | 待核实 | 未排期 | 本环境简单/含放样件编辑链路已通过；0.3.1 补自由尺寸/草绘尺寸、参数关系及关系控制拒绝定位正例。原报告失败未在本机复现、根因未确认；保留来源，收到朋友新反馈后再核实，不安排原环境独立复测。 |
 | [FEAT-020](work-items/FEAT-020.md) | P2 | 验收中 | 0.3.0 | 0.3.1 高于公开0.3.0时无需降级符合比较契约；新增本地领先/local_dev 文案与公开来源区分建议，缺 Release 归 DEV-015，不认定永久收不到未来更新。断网/限流、高版本提醒、客户端去重及网络失败期间建模仍待验收，见[证据](validation/FEAT-020.md)。 |
 | [DEV-002](work-items/DEV-002.md) | P2 | 开发中 | 未排期 | 第一、二批完成；第二批独立安装、199 项完整开发检查、82 工具真实协议和 Creo 12 的 24 个作业补验通过，见[开发证据](validation/DEV-002-batch2.md)；E 盘 [WorkBuddy 已测场景](validation/DEV-002-batch2-WorkBuddy-acceptance-20261015.md)通过。下一批处理 seeds/capabilities 等依赖；BUG-005/009 独立跟踪，未部署 C 盘。 |
-| [BUG-033](work-items/BUG-033.md) | P1 | 待开发 | 未排期 | 原生代码硬引用 Creo 10 新增常量（PRO_E_HLE_ADD_PARAMETERS 等），Creo 9 SDK 编译报 C2065。方案已定：generate_constants.py 输出 MECHDOG_HAS_* 探测宏 + 两处调用点 #ifdef；验收用夹具单测模拟常量缺失 + 本机 Creo 12 回归，Creo 9 运行时标未验证。暂不声明支持 Creo 9，见[工作卡](work-items/BUG-033.md)。 |
+| [BUG-033](work-items/BUG-033.md) | P1 | 待开发 | 未排期 | 原生代码硬引用 Creo 10 新增常量（PRO_E_HLE_ADD_PARAMETERS 等），Creo 9 SDK 编译报 C2065。方案已定：generate_constants.py 输出 MECHDOG_HAS_* 探测宏 + 两处调用点 #ifdef；验收用夹具单测模拟常量缺失 + 本机 Creo 12 回归，Creo 9 运行时标未验证。Creo 9 有限支持定位见 DEV-026，本项编译修复尚未实现，见[工作卡](work-items/BUG-033.md)。 |
 
 ## 待核实缺陷
 
@@ -59,7 +60,7 @@
 | BUG-019 | P2 | 待核实 | 未排期 | 0.3.1 round输入radius、chamfer输入distance，计划/回显size；旧报告字段表述不同，按工具核实规范。保留旧输入兼容，验证两工具与 execute_plan 的 schema、回显、实际尺寸及重载。 |
 | BUG-020 | P2 | 待核实 | 未排期 | STEP 导出留下 *_out.log.N。定义导出产物/诊断附件的归档边界，仅处理本作业自有副产物；验证 STEP 仍有效、用户文件不受影响。清理细节靠开发者文件检查，MCP 只能验收返回的产物契约 |
 | [BUG-032](work-items/BUG-032.md) | P2 | 待核实 | 未排期 | 钣金闭合壁 depth=1/30 均 vol=140、z=0..1；新增线轮廓 depth=1/t232 却成 185×232×232 及三轴语义反馈。先定开放/闭合壁类型与 depth/thickness/草图坐标契约，逐分支核实，不预设参数覆盖根因；验收几何、后续折弯、重载与失败恢复。 |
-| [BUG-034](work-items/BUG-034.md) | P1 | 待核实 | 未排期 | Creo 9/0.3.0 的 two_smooth/two_straight 清单哈希有效但 ProMdlFiletypeLoad=-16；核实种子生产版本、实际加载原因及支持边界，保留加载诊断，成功须参数/几何/重载正确。文件头不兼容为推测，不承诺 Creo 9 支持，原生预检归 FEAT-030。 |
+| [BUG-034](work-items/BUG-034.md) | P1 | 待核实 | 未排期 | Creo 9/0.3.0 的 two_smooth/two_straight 清单哈希有效但 ProMdlFiletypeLoad=-16；核实种子生产版本、实际加载原因及支持边界，保留加载诊断，成功须参数/几何/重载正确。文件头不兼容为推测，不据此承诺 Creo 9 种子可加载，原生预检归 FEAT-030。 |
 | [BUG-035](work-items/BUG-035.md) | P1 | 待核实 | 未排期 | 含 shell=2 的 dimension_pattern 孔阵列成功后体积 41820.01→43327.97、孔外出现 r7 环箍；核实 leader/壳体树顺序和受支持语义，与无壳/axis_pattern 对照，验证材料减量、原生阵列及重载，不凭中间态再生推测定根因。 |
 | [BUG-036](work-items/BUG-036.md) | P1 | 待核实 | 未排期 | component_constraints 成功且 underconstrained=false，元件仍保留旧平移+Z30°；补完整引用、side、矩阵与求解残差，约束和实际位姿/保存重载一致，失败保留检查点。 |
 | [BUG-037](work-items/BUG-037.md) | P1 | 待核实 | 未排期 | horizontal/vertical 单 whole、distance 双 whole 报 ProSecdimCreate=-2；双点组合对照可用。补尺寸类型×引用矩阵与端点解析，支持路径驱动几何/重载正确，不支持组合准确拒绝，相邻点测零先核对实际坐标。 |
@@ -87,7 +88,7 @@
 | FEAT-005 | P2 | 待规划 | 未排期 | revision 冲突结构化返回 model_id/current_revision/expected_revision，保留旧请求拒绝保护，拒绝时不创建 job。 |
 | FEAT-006 | P2 | 待规划 | 未排期 | 统一错误码、Toolkit调用、操作/草图标签及失败索引、元素/截面诊断、失败调用前后有界上下文；精简 Pydantic union dump。保留已执行后回滚/失败/未执行/未知，不把执行历史当保留成果；body/plane/fixed_surface 错误给有效引用/查询指引，未知明说，不从 -1 推断根因，衔接 BUG-018/FEAT-023。 |
 | FEAT-007 | P2 | 待规划 | 未排期 | 进度阶段：实际完成/总操作、当前操作、建模/重载/回滚/人工等待；不虚构百分比 |
-| FEAT-008 | P2 | 待规划 | 未排期 | capabilities compact/full/section、逐工具引用/包装/互斥示例及证据环境/日期一致；body ID 来自 inspection 非下标，datum_plane 匹配已有面与新建 offset 分清，hole/fixed_surface/csys/壁参数及 blade/loft requires_setup 明确。回调给实际 loaded/协议匹配/未知预检及指引，验收已/未就绪，产物 prepared 不等于就绪，查询不加载 DLL；BUG-006 不代替全量契约验收。 |
+| FEAT-008 | P2 | 待规划 | 未排期 | capabilities compact/full/section、逐工具引用/包装/互斥示例及证据环境/日期一致；body ID 来自 inspection 非下标，datum_plane 匹配已有面与新建 offset 分清，hole/fixed_surface/csys/壁参数及 blade/loft requires_setup 明确。回调实际 loaded/协议匹配/未知预检及指引由 FEAT-029 承接，产物 prepared 不等于就绪，查询不加载 DLL；BUG-006 不代替全量契约验收。 |
 | FEAT-009 | P2 | 待规划 | 未排期 | Loft 切除/曲面、非平行截面、相切/曲率；7～20 截面种子验证、截面增删、模式转换分别拆验收 |
 | FEAT-010 | P2 | 待规划 | 未排期 | 坐标草图显式驱动尺寸与基础约束；不能直接推导任意约束组合支持 |
 | FEAT-011 | P2 | 待规划 | 未排期 | 复合轨迹、可变截面、螺旋扫掠，分支分别验收 |

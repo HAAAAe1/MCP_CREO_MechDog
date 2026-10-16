@@ -1,0 +1,22 @@
+{
+  "work_item": "FEAT-029",
+  "timestamp_utc": "2026-10-16T07:14:34.655472+00:00",
+  "scope": "Development snapshot only, not Release; includes source before subsequent final-restart evidence",
+  "source": {
+    "commit": "6a55119f5dc2c9b95fb3365c8073c354f83c7325",
+    "dirty": true
+  },
+  "archive": {
+    "path": "C:\\Users\\Administrator\\.codex\\worktrees\\feat-029-callback-lifecycle\\MCP_CREO_MechDog\\build\\feat029-post-persistence-source-check.zip",
+    "sha256": "038e352810baf0acd2448fb2aac5992444823384a940f296f5b8626f4241354c",
+    "files": 419
+  },
+  "checks": {
+    "allowlist_matches_all_bytes": true,
+    "new_callback_headers_and_fixture_cpp_present": true,
+    "runtime_data_local_config_sdk_and_binaries_excluded": true,
+    "extracted_resource_root_matches_resolved_windows_path": true
+  },
+  "extracted_root": "C:\\Users\\Administrator\\AppData\\Local\\Temp\\mcd_pkg_px9t5osv\\MCP_CREO_MechDog",
+  "success": true
+}

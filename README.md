@@ -2,9 +2,9 @@
 
 开发维护从 [开发入口](docs/DEVELOPMENT.md) 和 [统一功能台账](docs/BACKLOG.md) 开始。每项工作先定义验收；语言与单元检查、Creo 实机验收分别记录。项目采用渐进布局整理，当前支持环境见 [兼容矩阵](docs/COMPATIBILITY.md)。
 
-本地 Windows MCP 服务，按需启动或连接 Creo Parametric 10 / 12，通过官方 C/C++ Toolkit 创建、查询和修改**原生参数化特征**。当前开发与发布按本机 Creo 12.4.0.0 的改动范围验收；Creo 10 不再要求独立复测，其他环境收到具体测试反馈后再跟进。历史证据、具体功能与未测范围见 [兼容矩阵](docs/COMPATIBILITY.md)。建模由任意支持的草图轮廓及顺序特征组成：新建零件 → 草图 → 拉伸/旋转 → 切除/孔 → 后续特征。原先的底板接口保留为快捷工具。
+本地 Windows MCP 服务，支持 Creo Parametric 9 / 10 / 12，按需启动或连接 Creo，通过官方 C/C++ Toolkit 创建、查询和修改**原生参数化特征**。Creo 9 按第三方已测场景提供有限支持，旧 SDK 编译、叶片种子和筋特征仍有已知问题。当前开发与发布按本机 Creo 12.4.0.0 的改动范围验收；Creo 10 不再要求独立复测，其他环境收到具体测试反馈后再跟进。历史证据、具体功能与未测范围见 [兼容矩阵](docs/COMPATIBILITY.md)。建模由任意支持的草图轮廓及顺序特征组成：新建零件 → 草图 → 拉伸/旋转 → 切除/孔 → 后续特征。原先的底板接口保留为快捷工具。
 
-**本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 本版对客户端公开 **82 个可用工具**（0.2.6 为 81 个）；`creo_loft` 已通过直接创建和已有零件追加验收并开放。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
+**本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 本版对客户端公开 **83 个可用工具**（增加回调只读预检）；`creo_loft` 已通过直接创建和已有零件追加验收并开放。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
 
 当前服务/源码版本为 **0.3.2**，包含通道结果交付与重启后启动恢复、任务收尾时序修复、Python 辅助模块第二批迁移，以及此前 0.3.1 建模和查询修复。变更、验收范围及升级方法见 [0.3.2 说明](docs/RELEASE_NOTES_0.3.2.md)和[发布记录](docs/validation/RELEASE-0.3.2.md)。历史版本说明保留原日期。
 
@@ -12,7 +12,7 @@
 
 普通混合可直接创建或追加，范围见 [直接混合](docs/DIRECT_BLEND_0.2.5.md)；种子复用见 [调用说明](docs/LOFT_SEED.md)、[多截面](docs/MULTISECTION_BLEND.md)。草图支持 `dimensioning="auto" / "autodim" / "coordinates"`，坐标模式的范围与尺寸编辑规则见 [草图说明](docs/SKETCH_STABILITY_0.2.5.md)。迁移步骤见 [种子库](docs/SEED_LIBRARY.md) 和 [换电脑、换 Agent](docs/MIGRATION.md)。
 
-BUG-007开发分支已将直接Blend的首次DLL加载移出建模作业：先通过Creo辅助应用程序初始化 `creo_capabilities.direct_blend_callback.registry_file` 指向的回调，再提交loft。未初始化时明确拒绝，MCP保留原有安全策略。Creo12.4本轮完整正例、三轮串行、已有实体追加及回滚/重载已通过开发者验证，WorkBuddy最终验收仍待完成；见 [本次记录](docs/validation/BUG-007.md)。新建种子放样不需要此回调。
+FEAT-029 功能分支增加 `creo_callback_status`：放样前实时核对回调身份，产物 prepared 与会话 ready 分开。注册入口固定为安装目录下的 `build/blend_callback_protk.dat`；显式持久配置后，回调升级沿用该入口，正常重启 Creo 后手动启动应用。首次注册、启动及 DLL 提示由使用者处理，建模和查询不加载 DLL或修改安全策略。新方案已通过本机开发者生命周期与 WorkBuddy 独立核心验收，尚未发布；范围见 [关闭记录](docs/validation/FEAT-029-closure-2026-10-16.md)，操作与限制见 [回调升级说明](docs/CALLBACK_LIFECYCLE.md)；旧原生放样证据保留在 [BUG-007](docs/validation/BUG-007.md)，不替代本项验收。新建种子放样不需要此回调。
 
 工程图、曲面、布尔、筋、UDF、钣金和装配沿用已有接口与各自的验收范围。此前 [安装修复](docs/INSTALL_FIX_2026-10-10.md) 和 [建模增量](docs/PORTABLE_MODELING_2026-10-11.md) 保留原版本历史记录；新版本不会自动改写已发布的 GitHub 源码或附件。
 
@@ -36,6 +36,8 @@ DEV-002 已开始分批迁移：更新检查实现位于 `src/creo_mechdog/`，�
    ```powershell
    .\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 10.0.0.0'
    ```
+
+   Creo 9 的路径示例为 `-CreoRoot 'C:\Program Files\PTC\Creo 9.0.0.0'`；当前旧 SDK 编译问题及已测边界见 [安装说明](docs/INSTALL.md#creo-9-支持范围)。
 
    Creo 12.4 的安装示例：
 

@@ -167,7 +167,7 @@ class ReferenceContractTests(unittest.TestCase):
 
     def test_schema_examples_list_all_three_axis_forms(self):
         tools = {tool.name: tool for tool in asyncio.run(server.mcp.list_tools())}
-        self.assertEqual(len(tools), 82)
+        self.assertEqual(len(tools), 83)
         axis = tools["creo_axis_pattern"].input_schema["properties"]["axis"]
         self.assertEqual(
             {form["properties"]["kind"]["const"] for form in axis["oneOf"]},

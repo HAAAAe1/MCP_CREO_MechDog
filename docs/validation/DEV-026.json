@@ -1,0 +1,49 @@
+{
+  "work_item": "DEV-026",
+  "timestamp_utc": "2026-10-16T06:08:08.261944+00:00",
+  "source": {
+    "commit": "6a55119f5dc2c9b95fb3365c8073c354f83c7325",
+    "dirty": true
+  },
+  "scope": "Documentation only: add Creo 9 support with third-party evidence and known limitations",
+  "files": {
+    "README.md": "56ab2dd39ec32cc412e62b22a263af8705b178183bda94ebb3d62bd6497ad4fe",
+    "docs/INSTALL.md": "a187b44dec2d49d8f4e7d69a75caece7e145fed4554bf2921baabd58813dbebb",
+    "docs/MIGRATION.md": "87f57fb1c93172fc758893afa67412bf9478571b269cfdb7bd16b805a0dc2420",
+    "docs/COMPATIBILITY.md": "230a22da36a34180fb6d9818bd100244f8e4ab38527b8e574b5c04728b68c245",
+    "docs/BACKLOG.md": "f73ddc7e23cf01dce2c042438da999cec1fdbcc2005b7e27340e89969b7edf24",
+    "docs/BACKLOG_COMPLETED.md": "67e594084373511dcba1cd7974865f65695d4738922eb779357000861c505223",
+    "docs/work-items/DEV-026.md": "88bf8ad73afbd9866ef110f4b45d352622337873cbf3cda2018cb451088a3666",
+    "docs/work-items/BUG-033.md": "f4937c7462455b21e52ad4b8ebe02f95e511b3b007da1a7622c704e3e68ceaa7",
+    "docs/work-items/BUG-034.md": "a5139593af6fec81b91d1e398290043db7f73c0dbf37f8d01dd324a27e3a53d7",
+    "docs/work-items/FEAT-030.md": "d8c2b0d9ae93219e054eae13e9fb0f11638eb59f7ab3ed3d132c63f7222c4960"
+  },
+  "checks": {
+    "support_wording_consistent": true,
+    "known_sdk_seed_rib_issues_retained": true,
+    "local_references": 214,
+    "broken_references": [],
+    "completed_id_unique": true,
+    "program_and_original_reports_unchanged": true,
+    "preserved_files_count": 121,
+    "git_diff_check": true
+  },
+  "original_report_fingerprints": {
+    "docs/validation/feedback-2026-10-16/2026-10-15_CREO_0.3.0_叶片种子加载失败与筋特征失败.md": "ec0fa5631b8907e3b0d7a0a785f2862e3e62e8158db94b300df00679304be9a5",
+    "docs/validation/feedback-2026-10-16/2026-10-16_CREO_0.3.1_多区域截面拉伸与共面合并等10项缺陷.md": "6b802c93d80847e9444f3dabfafcba66b932c0b11283b76d6014c4755c65e0f0",
+    "docs/validation/feedback-2026-10-16/2026-10-16_CREO_0.3.1_钣金工具链增料失效与折边方向不可控等10项缺陷.md": "af1f46afe44afc581e0b8b608c54050dc16678253c97cde96131b3dc821c795a",
+    "docs/validation/feedback-2026-10-16/2026-10-16常驻回调注册负担与版本发现缺口.md": "00ccd9c774372494ee5aea4cccaed3c709b04436ae66f3426e5c0ca9b49d7792",
+    "docs/validation/FEEDBACK-2026-10-16.md": "7358c864f8e80878b24e45c219e44f94f90333e9a8ed37bd9fcdf0f6ce5ada98",
+    "docs/validation/2026-10-15_CREO_0.3.0_旧版ToolkitSDK原生编译失败.md": "06bee49ffbf1922395a76a705a449b9a65c7a09c8af96ca9ee5704bb072f52f9"
+  },
+  "tests": {
+    "python_unit": "not run for this documentation-only change",
+    "native_sdk_build": "not run",
+    "creo9": "not run; previous third-party evidence only"
+  },
+  "publication": {
+    "main_changed": false,
+    "release_changed": false
+  },
+  "success": true
+}

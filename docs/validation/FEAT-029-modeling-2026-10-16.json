@@ -1,0 +1,521 @@
+{
+  "work_item": "FEAT-029",
+  "version": "0.3.2",
+  "source_worktree": {
+    "commit": "6a55119f5dc2c9b95fb3365c8073c354f83c7325",
+    "dirty": true
+  },
+  "runtime_fingerprints": {
+    "airfoil.py": "8897c9b792e0ef67b9ee3aaab03d4f473014ce2ae3894b74ddac5d7e83c250d6",
+    "bridge.py": "5639d0acdde9ad21c321dbc4b37c113182daf3b73ad0bf029fb8d1c7a86d524a",
+    "capabilities.py": "42039dd336d393bc9fd926a9269d74cee3317c86ece28f97e8c2250b66324a34",
+    "creo_startup.py": "7d803ee8c679da483080c9e3cda31b6cf276178383542a9b5e3fac82885c2a22",
+    "generic_bridge.py": "c7cf24e280d2ab2ef1492b50b86b8923a9eafc433b5a28d9533209ad07a78eee",
+    "profile_checks.py": "6a06b4b215952e13adb182b2adb07539c28dabcaedd857b39381b0b1b57e5731",
+    "schema.py": "dfb81ba2a123612ac98fbe21993f24a85b778afb9b6d0b1ebcfece7acba97cdd",
+    "seeds.py": "1359bd122a1c67864a56271f5c4b1db5d99a414b2b166e64383d0f375c52508d",
+    "server.py": "d477e596b926d250cbfa775973c60c41d481555b68d8833c87e2e5ea0e00f851",
+    "version.py": "c7c87fcb8c8bee5c2e0c0f81c9290849e844970c38bbd0b3c41e6f9e8a624cf3",
+    "src/creo_mechdog/airfoil.py": "5adbf9d2205239f02d4b974c7fee405c47c81b3cf6201e18966109ad1595d176",
+    "src/creo_mechdog/blend_callback.py": "b7d46e47a7254b1fc4294bd78044e469dc37f17506bc2972e58e782dabad960c",
+    "src/creo_mechdog/model_queries.py": "32c4b66ec9f08e215c4f1f22365cac2b29857db718312c0819fdcdcff253b29a",
+    "src/creo_mechdog/paths.py": "389dca158e3a7d02337ca3a099a1872bf858e38cc8108d78172cff235256dff5",
+    "src/creo_mechdog/profile_checks.py": "c160c3b2d800eb84b7aca2f7ddc4e7ce3e46e10498ce2cc799fafd7cfa83df24",
+    "src/creo_mechdog/query_client.py": "827ee653f04998e5d8031f1f7bc638f425dd77f47c7be9834edee816467bdcb2",
+    "src/creo_mechdog/recovery.py": "f64bc43164e7e75a51b7be1f29e152a5ad588a71c4f055f7cf549f92a4180e4f",
+    "src/creo_mechdog/references.py": "584a6c6ae235e798d3a97e26c6af3c3509a518db2e7495d6cecd496dcfa1c640",
+    "src/creo_mechdog/schema.py": "9cbd671d85d738ff9cc9dae4ebb2926034457aea71950e6d802cf7d825c2998d",
+    "src/creo_mechdog/startup_state.py": "5b482745c0dfd93fc2ec699a1071b6c6cac1bca17944e854941bef197cda9e4c",
+    "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+    "src/creo_mechdog/windows_boot.py": "4b3d521e3387eed0668317501e1ee6db7a81d32358c9fbd898c24957455bc6da",
+    "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
+    "native/advanced.cpp": "4eefd397f6694d1bef185bd47ed7cbc530cc80e600337a1c1dd375c679f67d4d",
+    "native/blend_create.cpp": "e02624fa539313a16492bbadfc8ac35fdb5cef2b1f878799c23648667282adf7",
+    "native/blend_loader.cpp": "327dfdd9ecdf810d66877baba66b88fe98cb4f2d072b7de07367f45d20109008",
+    "native/blend_sync.cpp": "7b0895e246999e124459eb086128d00b94333e1a02ec99ab515c33700914bab0",
+    "native/drawing.cpp": "d280916202fcb20c39cb30afa7b0fdf53460447596429dc1e5f9a005e4fbf3d3",
+    "native/generic.cpp": "fecc7c9c0ec45b61c922f0fe745b935bdaf752633a537dd8afc558e461dcd48e",
+    "native/geometry.cpp": "6cf225cdce32c3ee3ba25d2660df2a6fe8737c18645b00b85ac1b46c420c2bed",
+    "native/loft_mode.cpp": "9a4543f474d26f245392acce239070865dd0c5cf28d957859dbd585fa461fada",
+    "native/loft_seed.cpp": "2ea07eb7960eed9ec522e9c90562383e64f41461d9ebe737fe83f600757deaa3",
+    "native/placement.cpp": "87b732b85a0a0581e2a07d82c7c893f17756d90d8869bdd41b2608db031d325d",
+    "native/sketch_coordinates.cpp": "e229ea20e83c0ba9e3780a2c17cff18d178cc6d3baebdc0bc2d0ce43eba4ba85",
+    "native/sketch_edit.cpp": "f7ec7be57782c73f26cbb179601429a2405942a0db0ea3b6b61116895f7fb51f",
+    "native/sketch_solver.cpp": "1cfc3f60b26f5bc2442a6fb6ccdb3a38c7fefe389ca001b8805035b4cdd9d224",
+    "native/surfaces.cpp": "c00784132a9a1102005e17aa82d7531e1848bb4927bc2c0d29159e57b3546d9e",
+    "native/udf.cpp": "f0e076a63b1bc6a9fa1c44665dffcbbaa6806ec3242b1b091145deaf6d0fa736",
+    "native/worker.cpp": "37b3c8ef0d4cedd91adcf3d0dff03f41a33516c10f7d467ecfe62defc476bc7c",
+    "tools/test_direct_loft.py": "a5d07b24286fbb240f23fa7b776246118f88815fe7dde67d0a7581fd04d56b13"
+  },
+  "native_build": {
+    "creo_worker.exe": "7ead09d87d2341ac1b62ef34a30a5f6a49d0a069fe33e0f3b9695cc5ca1f9d8d",
+    "creo_blend_sync.dll": "ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86",
+    "source.sha256": "eaf421610bbb4e1f2a1b6106b946b8f229b949aff63dd459fd13984daf7c685f",
+    "blend_sync_build.json": "{\n  \"fingerprint\": \"81815d4aeda0141b474df0401f514f45efa6a3cca8164c2995d7e58c7c589001\",\n  \"sha256\": \"ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86\"\n}"
+  },
+  "actual_runtime_root": "E:\\Projects\\MCP_CREO_MechDog_Test",
+  "environment": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14"
+  },
+  "started_at": "2026-10-16T05:43:43.114920+00:00",
+  "finished_at": "2026-10-16T05:50:45.126483+00:00",
+  "launch_context": "verified same-user Explorer desktop; BUG-005 host limitation remains",
+  "command": "python -m tools.test_direct_loft --suite --work-item FEAT-029 --output build/feat029-direct-suite.json",
+  "result": {
+    "success": true,
+    "jobs": 43,
+    "succeeded": 36,
+    "expected_failed_with_rollback": 7,
+    "unexpected_or_unknown_outcome": false
+  },
+  "jobs": [
+    {
+      "case": "connection_small_solid",
+      "job_id": "88348c0d635d46caa5fcff8ae9dc1b64",
+      "model_id": "fd45d39af63c4075b21e7eaf2b76ea37",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": 1999.9999999999998,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_0_2_straight_checkpoint",
+      "job_id": "8c48d8aefe7c4c95b57779280b05801b",
+      "model_id": "343c02ab892d437985e498f81295b32d",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": null,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_0_2_straight",
+      "job_id": "cb15db3c84d24b7b8b9eee1e465aeaf4",
+      "model_id": "343c02ab892d437985e498f81295b32d",
+      "revision": 2,
+      "status": "succeeded",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_0_2_straight_seed_control",
+      "job_id": "a4106fe2789046509b72880c601f1e91",
+      "model_id": "93d2fb357e9f4932b25300020a557401",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_0_2_straight_rollback",
+      "job_id": "b91a9a67dc174619bc32e18328368d9f",
+      "model_id": "343c02ab892d437985e498f81295b32d",
+      "revision": null,
+      "status": "failed",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": false,
+      "rollback_succeeded": true
+    },
+    {
+      "case": "direct_0_2_straight_rollback_refresh",
+      "job_id": "4bad9f7495c84ef38999dd5b8c43611f",
+      "model_id": "343c02ab892d437985e498f81295b32d",
+      "revision": 2,
+      "status": "succeeded",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": false,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_0_2_straight_post_failure_small_solid",
+      "job_id": "6c605ed099594ef880f63c31810ebe3c",
+      "model_id": "a50d3ef9e75d49adb3749eb10057e3a2",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": 1999.9999999999998,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_1_2_straight_checkpoint",
+      "job_id": "a9c40352dde94e97b5e6d6c926b6c354",
+      "model_id": "7937a3be2d3e480fab5e7ab692eca524",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": null,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_1_2_straight",
+      "job_id": "6306fedd6fde4d539448871fe3ac3786",
+      "model_id": "7937a3be2d3e480fab5e7ab692eca524",
+      "revision": 2,
+      "status": "succeeded",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_1_2_straight_seed_control",
+      "job_id": "c090e130e3744b9e8fad8be057554aa7",
+      "model_id": "bff2b451affc4237a658b9c0419cd123",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_1_2_straight_rollback",
+      "job_id": "970bb1d462004eed9f47e3b482621dde",
+      "model_id": "7937a3be2d3e480fab5e7ab692eca524",
+      "revision": null,
+      "status": "failed",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": false,
+      "rollback_succeeded": true
+    },
+    {
+      "case": "direct_1_2_straight_rollback_refresh",
+      "job_id": "d9cbb24cbf294100abd09ba2e3ccd477",
+      "model_id": "7937a3be2d3e480fab5e7ab692eca524",
+      "revision": 2,
+      "status": "succeeded",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": false,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_1_2_straight_post_failure_small_solid",
+      "job_id": "b80776a61cbc4de4a30cd6ecf8683b53",
+      "model_id": "129965d2d65b4e298b44f25e9ea25a23",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": 1999.9999999999998,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_2_2_straight_checkpoint",
+      "job_id": "4c264faef19d4546b6ce1f879c04f407",
+      "model_id": "9771834edba74312af9a0e8ed9c23095",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": null,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_2_2_straight",
+      "job_id": "2122e1fd332b40f293667e9b6be7ed42",
+      "model_id": "9771834edba74312af9a0e8ed9c23095",
+      "revision": 2,
+      "status": "succeeded",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_2_2_straight_seed_control",
+      "job_id": "9dc7fe20b0db4f51ae3cdc8fdc978c61",
+      "model_id": "9a5f0bd4ddfe4632bb24614b614d4a60",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_2_2_straight_rollback",
+      "job_id": "ec06b3453c904d1ab65ddf9297d72579",
+      "model_id": "9771834edba74312af9a0e8ed9c23095",
+      "revision": null,
+      "status": "failed",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": false,
+      "rollback_succeeded": true
+    },
+    {
+      "case": "direct_2_2_straight_rollback_refresh",
+      "job_id": "87c5f15e3d48475a93059f02376aab5e",
+      "model_id": "9771834edba74312af9a0e8ed9c23095",
+      "revision": 2,
+      "status": "succeeded",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": false,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_2_2_straight_post_failure_small_solid",
+      "job_id": "b4350a4313a04599b9016c2d087443cf",
+      "model_id": "f60a10c24654485f8408dfb7a7ac016d",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": 1999.9999999999998,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_3_3_straight_checkpoint",
+      "job_id": "88c0e28d7f134f6f94c7eb0a28283f0e",
+      "model_id": "9616303b2f7c44cf8c564255d9f0b6a4",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": null,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_3_3_straight",
+      "job_id": "c060e9e6c97f4a8e85630a79786c5520",
+      "model_id": "9616303b2f7c44cf8c564255d9f0b6a4",
+      "revision": 2,
+      "status": "succeeded",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_3_3_straight_seed_control",
+      "job_id": "6fca600665df41f4a795a0602f571495",
+      "model_id": "e39c5f660f6f4414a2e5259c1559070a",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_3_3_straight_rollback",
+      "job_id": "42a06e9f40db4c7dba9e570ed737e5d2",
+      "model_id": "9616303b2f7c44cf8c564255d9f0b6a4",
+      "revision": null,
+      "status": "failed",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": false,
+      "rollback_succeeded": true
+    },
+    {
+      "case": "direct_3_3_straight_rollback_refresh",
+      "job_id": "c8372a9cd804438aa2a8d5b44273ae4d",
+      "model_id": "9616303b2f7c44cf8c564255d9f0b6a4",
+      "revision": 2,
+      "status": "succeeded",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": false,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_3_3_straight_post_failure_small_solid",
+      "job_id": "95009ec85fae4e978b1054ff5bc2138e",
+      "model_id": "95cc362a5f444c328a5182b814ca6168",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": 1999.9999999999998,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_4_2_smooth_checkpoint",
+      "job_id": "6c4af42d0082479e8e26ade5db854c23",
+      "model_id": "6f4be81ab09f4dd78b391bf79118af4b",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": null,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_4_2_smooth",
+      "job_id": "1fb1021f3a32474cbd96a57d63f7d0a6",
+      "model_id": "6f4be81ab09f4dd78b391bf79118af4b",
+      "revision": 2,
+      "status": "succeeded",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_4_2_smooth_seed_control",
+      "job_id": "7985e57e207f48e280cff6356a344905",
+      "model_id": "4e4b8746c10b4adca5d83e2b76d934d9",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_4_2_smooth_rollback",
+      "job_id": "71d54f7b768e4de98f0e362c131f3e34",
+      "model_id": "6f4be81ab09f4dd78b391bf79118af4b",
+      "revision": null,
+      "status": "failed",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": false,
+      "rollback_succeeded": true
+    },
+    {
+      "case": "direct_4_2_smooth_rollback_refresh",
+      "job_id": "6afb388d6ece42b4bf022885db8a6589",
+      "model_id": "6f4be81ab09f4dd78b391bf79118af4b",
+      "revision": 2,
+      "status": "succeeded",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": false,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_4_2_smooth_post_failure_small_solid",
+      "job_id": "fcb00d1b6fab4bbdb047da41ef92e708",
+      "model_id": "ae0f768914f2405e9fd7c8e7c14c2c3d",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": 1999.9999999999998,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_5_3_smooth_checkpoint",
+      "job_id": "74c558f0b5d04909bb943f780cb3bfcd",
+      "model_id": "3e648c80edd740c9a4329cfd8834a3d8",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": null,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_5_3_smooth",
+      "job_id": "95629345da49460b864751bd7e2bfe90",
+      "model_id": "3e648c80edd740c9a4329cfd8834a3d8",
+      "revision": 2,
+      "status": "succeeded",
+      "volume_mm3": 5130.649365654384,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_5_3_smooth_seed_control",
+      "job_id": "601f94d9ea3e4c1c8c61f7b12af49588",
+      "model_id": "b64699cc8f6a4c14a7e65cd3b117f6df",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": 5130.649365654384,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_5_3_smooth_rollback",
+      "job_id": "67fe57c9eb374d65986924f11cb5da91",
+      "model_id": "3e648c80edd740c9a4329cfd8834a3d8",
+      "revision": null,
+      "status": "failed",
+      "volume_mm3": 5130.649365654384,
+      "saved_file_reloaded_and_verified": false,
+      "rollback_succeeded": true
+    },
+    {
+      "case": "direct_5_3_smooth_rollback_refresh",
+      "job_id": "9fabd9d1a9b94f55bd81bbf0a7ff1ac5",
+      "model_id": "3e648c80edd740c9a4329cfd8834a3d8",
+      "revision": 2,
+      "status": "succeeded",
+      "volume_mm3": 5130.649365654384,
+      "saved_file_reloaded_and_verified": false,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_5_3_smooth_post_failure_small_solid",
+      "job_id": "98a6501bd926437daf7439b308f0fc82",
+      "model_id": "217bdb36268c4a41bc80582f52e1f563",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": 1999.9999999999998,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_6_2_straight_checkpoint",
+      "job_id": "0d23314b9e98435b90c09e3a0f1a56de",
+      "model_id": "cc8ed9b88287406297188f33544ef174",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": 1999.9999999999998,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_6_2_straight",
+      "job_id": "e6d5bcb305db47bebe7deb4b7648ffb0",
+      "model_id": "cc8ed9b88287406297188f33544ef174",
+      "revision": 2,
+      "status": "succeeded",
+      "volume_mm3": 7131.268000907383,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_6_2_straight_seed_control",
+      "job_id": "c95cafce43474f16947ce2fe14857ec2",
+      "model_id": "cf930a81053e41bcaf480cab9b1c526f",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": 5131.268000863329,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_6_2_straight_rollback",
+      "job_id": "659efb69a5e746a981464554e8419198",
+      "model_id": "cc8ed9b88287406297188f33544ef174",
+      "revision": null,
+      "status": "failed",
+      "volume_mm3": 7131.268000907383,
+      "saved_file_reloaded_and_verified": false,
+      "rollback_succeeded": true
+    },
+    {
+      "case": "direct_6_2_straight_rollback_refresh",
+      "job_id": "82b295e01a6a4ee29dbf49bbac66d64d",
+      "model_id": "cc8ed9b88287406297188f33544ef174",
+      "revision": 2,
+      "status": "succeeded",
+      "volume_mm3": 7131.268000907383,
+      "saved_file_reloaded_and_verified": false,
+      "rollback_succeeded": false
+    },
+    {
+      "case": "direct_6_2_straight_post_failure_small_solid",
+      "job_id": "bb9d0279f6674ae9a9c803b3f39ae472",
+      "model_id": "7c9ebd79c54e4d1baffaeb4c2ec161a9",
+      "revision": 1,
+      "status": "succeeded",
+      "volume_mm3": 1999.9999999999998,
+      "saved_file_reloaded_and_verified": true,
+      "rollback_succeeded": false
+    }
+  ],
+  "raw_report": {
+    "file": "FEAT-029-direct-suite-2026-10-16.json",
+    "sha256": "66141463c5c43b0c3176344c6ddf68679545c1d7ee1e6a6b58b008178b90b6d2",
+    "scope": "Extracted inputs and terminal results; original native logs and repeated read results retained outside Git",
+    "original": {
+      "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\feat029-direct-suite.json",
+      "sha256": "108dec21cf77ca8b879fcf38900af634448356236d0e8ace9695500b0fa43a68"
+    }
+  },
+  "unverified": [
+    "WorkBuddy final acceptance",
+    "plan loft in this suite; separate follow-up",
+    "full callback upgrade/rollback matrix",
+    "two installations loaded",
+    "Creo 10",
+    "parallel modeling submissions"
+  ]
+}

@@ -220,7 +220,7 @@ async def run(args: argparse.Namespace) -> dict:
         Path(__file__),
     ]
     report = {
-        "work_item": "BUG-007",
+        "work_item": args.work_item,
         "version": VERSION,
         "started_at": datetime.now(timezone.utc).isoformat(),
         "source": {
@@ -358,7 +358,10 @@ async def run(args: argparse.Namespace) -> dict:
                         assert "TK_CALL_BEGIN name=blend_dll_load" not in report["jobs"][-1].get(
                             "developer_native_log", ""
                         )
-                    assert direct["result"]["rollback_succeeded"] is True, direct
+                    assert (
+                        direct["result"].get("rollback_succeeded") is True
+                        or direct["result"].get("model_unchanged") is True
+                    ), direct
                     after = await probe.call(
                         "creo_inspect_model", {"model_id": checkpoint["model_id"]}
                     )
@@ -399,7 +402,10 @@ async def run(args: argparse.Namespace) -> dict:
                             expected_failure=True,
                         )
                         assert "BLEND_CALLBACK_SETUP_REQUIRED" in plan_failure.get("message", "")
-                        assert plan_failure["result"]["rollback_succeeded"] is True
+                        assert (
+                            plan_failure["result"].get("rollback_succeeded") is True
+                            or plan_failure["result"].get("model_unchanged") is True
+                        )
                         assert report["jobs"][-1]["elapsed_seconds"] < 30
                         assert "TK_CALL_BEGIN name=blend_dll_load" not in report["jobs"][-1].get(
                             "developer_native_log", ""
@@ -545,6 +551,7 @@ def main() -> int:
         help="Explicit startup recheck; existing Creo sessions are preserved",
     )
     parser.add_argument("--suite", action="store_true")
+    parser.add_argument("--work-item", default="BUG-007")
     parser.add_argument(
         "--expect-setup-required",
         action="store_true",
