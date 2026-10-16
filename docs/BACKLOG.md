@@ -6,7 +6,7 @@
 
 ## 当前进展
 
-- 2026-10-16 [DEV-028：Creo 9 编译与安装闭环](work-items/DEV-028.md) 已完成，BUG-033 与 DEV-019～022 统一移入[完成归档](BACKLOG_COMPLETED.md)：14 项新增定向回归、260 项完整单元/语言守卫、本机 SDK 构建、显式环境真实编译及桌面环境 Creo 12.4 七个原生作业通过，逐任务保存重载 true，见[本次证据](validation/DEV-028.md)。Creo 9 实机编译/运行时仍未验证；普通 Codex 宿主连接 -4 的限制单独记录。一个本地提交，不推送、不发布、不升版。
+- 2026-10-16 [DEV-028：Creo 9 编译与安装闭环](work-items/DEV-028.md) 已完成，BUG-033 与 DEV-019～022 统一移入[完成归档](BACKLOG_COMPLETED.md)：14 项新增定向回归、260 项完整单元/语言守卫、本机 SDK 构建、显式环境真实编译及桌面环境 Creo 12.4 七个原生作业通过，逐任务保存重载 true，见[本次证据](validation/DEV-028.md)。Creo 9 实机编译/运行时仍未验证；普通 Codex 宿主连接 -4 的限制单独记录。一个本地提交，不推送、不发布、不升版。 后续 [WorkBuddy 复核](validation/DEV-028-WorkBuddy-review-20261016.md)采纳部署和通用计划单孔/双孔通过；底板快捷入口参数受阻，仍未覆盖，序列化原因待核实，线索归 FEAT-008。
 - 2026-10-16 用户指定执行顺序：BUG-008 现已按本机已验证范围完成验收收尾，随后优先处理 [FEAT-029：常驻回调升级注册](work-items/FEAT-029.md)。FEAT-029 从 P2 提升为 P1，列为其余工作之前的首项；用户已确认以兼容升级尽量免重复注册为主目标，配套 FEAT-008 回调就绪预检和升级提示。完整任务卡已补齐，实际生命周期与实现方案仍待核实、选型，未开始功能实现或实机验收。
 - [P1 联合修复](work-items/P1-MODELING-REPAIR.md)：本环境已测分支已有 WorkBuddy 通过记录；查询预算、放样计划入口引用及恢复失败等功能边界按各项继续验收。BUG-022 已完成并归档，原环境反馈保留来源。
 - 0.3.1 版本同步和合入准备已完成，实际主干集成待核对。更新提醒仍有未测场景，Python 包迁移继续分批推进。
@@ -84,7 +84,7 @@
 | FEAT-005 | P2 | 待规划 | 未排期 | revision 冲突结构化返回 model_id/current_revision/expected_revision，保留旧请求拒绝保护，拒绝时不创建 job。 |
 | FEAT-006 | P2 | 待规划 | 未排期 | 统一错误码、Toolkit调用、操作/草图标签及失败索引、元素/截面诊断、失败调用前后有界上下文；精简 Pydantic union dump。保留已执行后回滚/失败/未执行/未知，不把执行历史当保留成果；body/plane/fixed_surface 错误给有效引用/查询指引，未知明说，不从 -1 推断根因，衔接 BUG-018/FEAT-023。0.3.2 报告确认已给出 BUILD_FAILED/PHASE/失败调用与错误码，但 union dump、过期 surface id −23 提示、失败模型清理与其恢复边界仍待验收。 |
 | FEAT-007 | P2 | 待规划 | 未排期 | 进度阶段：实际完成/总操作、当前操作、建模/重载/回滚/人工等待；不虚构百分比 |
-| FEAT-008 | P2 | 待规划 | 未排期 | capabilities compact/full/section、逐工具引用/包装/互斥示例及证据环境/日期一致；body ID 来自 inspection 非下标，datum_plane 匹配已有面与新建 offset 分清，hole/fixed_surface/csys/壁参数及 blade/loft requires_setup 明确。0.3.2 报告补 P3 字典平面 offset、P5 变换矩阵回显、S4 壁参数语义、S6 fixed_surface 接受范围等引用/回显缺口。回调实际 loaded/兼容匹配/未知预检与指引由 FEAT-029 承接，产物 prepared 不等于就绪，查询不加载 DLL；其余范围保持本项，BUG-006 不代替全量契约验收。 |
+| FEAT-008 | P2 | 待规划 | 未排期 | capabilities compact/full/section、逐工具引用/包装/互斥示例及证据环境/日期一致；body ID 来自 inspection 非下标，datum_plane 匹配已有面与新建 offset 分清，hole/fixed_surface/csys/壁参数及 blade/loft requires_setup 明确。0.3.2 报告补 P3 字典平面 offset、P5 变换矩阵回显、S4 壁参数语义、S6 fixed_surface 接受范围等引用/回显缺口。回调实际 loaded/兼容匹配/未知预检与指引由 FEAT-029 承接，产物 prepared 不等于就绪，查询不加载 DLL；其余范围保持本项，BUG-006 不代替全量契约验收。 补 DEV-028 WorkBuddy 客户端 holes 可空数组参数据报被传成字符串、/holes: must be array；仅为待核实包装/序列化线索，需原始请求和错误及独立客户端对照，不承诺改 array 即解决，见[复核](validation/DEV-028-WorkBuddy-review-20261016.md)。 |
 | FEAT-009 | P2 | 待规划 | 未排期 | Loft 切除/曲面、非平行截面、相切/曲率；7～20 截面种子验证、截面增删、模式转换分别拆验收 |
 | FEAT-010 | P2 | 待规划 | 未排期 | 坐标草图显式驱动尺寸与基础约束；不能直接推导任意约束组合支持 |
 | FEAT-011 | P2 | 待规划 | 未排期 | 复合轨迹、可变截面、螺旋扫掠，分支分别验收 |

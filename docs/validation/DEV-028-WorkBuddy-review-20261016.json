@@ -1,0 +1,700 @@
+{
+  "work_item": "DEV-028",
+  "date": "2026-10-16",
+  "timezone": "Asia/Shanghai",
+  "recorded_at": "2026-10-16T10:25:01.973219+00:00",
+  "reviewed_commit": "e41f9280a2e1f1582157dbba3abc84336fb54bfc",
+  "scope": "Documentation only; user WorkBuddy report plus separate developer read-only registry and PRT verification. No new modeling or source tests. Runtime sources unchanged. At the user's subsequent request, commit this evidence as a separate local documentation commit while preserving the original implementation commit; no push, release or version change.",
+  "source_report": {
+    "path": "docs/validation/DEV-028-WorkBuddy-report-20261016.txt",
+    "bytes": 12891,
+    "sha256": "24e56989d3100566cc408b640291ee9081a10330f8c356643bb30df0cbaa63f7",
+    "copied_byte_for_byte": true,
+    "CRLF_count": 0
+  },
+  "reported_deployment": {
+    "version": "0.3.1",
+    "creo": "12.4.0.0",
+    "release_numeric": 44,
+    "tool_count": 82,
+    "fingerprints_match": true,
+    "source_changed_since_startup": false,
+    "raw_capabilities_response_provided": false,
+    "git_build_branch_publicly_confirmed": false
+  },
+  "accepted_workbuddy_scope": [
+    "reported deployment/readiness",
+    "execute_plan single through hole",
+    "execute_plan through and blind holes with dimensions and saved reload"
+  ],
+  "not_accepted_as_pass": [
+    "creo_create_plate dedicated native path through WorkBuddy",
+    "client anyOf serialization root cause",
+    "claim that array-only schema guarantees a fix",
+    "strict all-actions-MCP-only claim",
+    "claim failed exploratory job created no model registration"
+  ],
+  "dedicated_plate_observation": {
+    "stage": "reported argument validation",
+    "error": "/holes: must be array",
+    "attempts_reported": 3,
+    "raw_requests_and_responses_provided": false,
+    "native_successful_job_from_dedicated_tool_provided": false,
+    "follow_up_id": "FEAT-008",
+    "status": "unverified client/schema compatibility lead; no API change implemented"
+  },
+  "independent_read_only_job_checks": [
+    {
+      "job_id": "0c9d1335da704329ad368e7c2103ee6e",
+      "model_id": "814e1d7ed0364d878bdc3d181096aff3",
+      "revision": 1,
+      "status": "succeeded",
+      "message": "General feature plan completed",
+      "created_at": "2026-10-16T10:06:52.571251+00:00",
+      "finished_at": "2026-10-16T10:07:01.057559+00:00",
+      "manifest_sha256": "3f2a7f11b246aba65cde61a25d69c60c764cdefad3d8d5426d2fac127db69317",
+      "request": {
+        "new": true,
+        "model": {
+          "model_id": "814e1d7ed0364d878bdc3d181096aff3",
+          "model_name": "ai_part_814e1d7ed036",
+          "revision": 0,
+          "created_at": "2026-10-16T10:06:52.557113+00:00",
+          "status": "new",
+          "aliases": {},
+          "model_type": "part",
+          "output_directory": "E:\\Projects\\MCP_CREO_MechDog\\models\\814e1d7ed0364d878bdc3d181096aff3\\output",
+          "part_file": null,
+          "pending_job": "0c9d1335da704329ad368e7c2103ee6e"
+        },
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "p2_s1",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "rectangle",
+                "name": "p2_r1",
+                "min": [
+                  -20.0,
+                  -15.0
+                ],
+                "max": [
+                  20.0,
+                  15.0
+                ],
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "p2_e1",
+            "sketch": "p2_s1",
+            "depth": 6.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "hole",
+            "label": "p2_h1",
+            "placement": {
+              "kind": "plane",
+              "axis": "z",
+              "offset": 6
+            },
+            "reference1": {
+              "kind": "datum_plane",
+              "axis": "x"
+            },
+            "reference2": {
+              "kind": "datum_plane",
+              "axis": "y"
+            },
+            "offset1": 0.0,
+            "offset2": 0.0,
+            "diameter": 6.0,
+            "flip": false
+          }
+        ],
+        "readonly": false,
+        "components": {},
+        "template_file": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\templates\\mmns_part_solid_abs.prt",
+        "assertions": {
+          "require_solid": false,
+          "volume_tolerance": 0.01
+        }
+      },
+      "request_sha256": "3b07689211365fd025608ce4ee8a0a4c4844aa73f209f35623aa6e181ddaf0bb",
+      "inspection_volume_mm3": 7030.353996706152,
+      "healthy": true,
+      "saved_file_reloaded_and_verified": true,
+      "delivery_complete": true,
+      "disconnect_code": 0,
+      "operations": [
+        {
+          "label": "p2_s1",
+          "op": "sketch",
+          "succeeded": true
+        },
+        {
+          "label": "p2_e1",
+          "op": "extrude",
+          "succeeded": true
+        },
+        {
+          "axes": [
+            {
+              "end": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "id": 91,
+              "start": [
+                0.0,
+                2.465190328815662e-32,
+                6.0
+              ]
+            }
+          ],
+          "feature_id": 78,
+          "label": "p2_h1",
+          "material_removed_mm3": 169.64600329384757,
+          "op": "hole",
+          "succeeded": true
+        }
+      ],
+      "features": [
+        {
+          "id": 49,
+          "name": "P2_E1",
+          "type": 917,
+          "type_name": "protrusion",
+          "status": 0,
+          "dimensions": [
+            {
+              "id": 5,
+              "relation_driven": false,
+              "relation_query_code": 0,
+              "symbol": "d5",
+              "type": -1,
+              "value": 0.0
+            },
+            {
+              "id": 6,
+              "relation_driven": false,
+              "relation_query_code": 0,
+              "symbol": "d6",
+              "type": -1,
+              "value": 0.0
+            },
+            {
+              "id": 7,
+              "relation_driven": false,
+              "relation_query_code": 0,
+              "symbol": "d7",
+              "type": 9,
+              "value": 30.0
+            },
+            {
+              "id": 8,
+              "relation_driven": false,
+              "relation_query_code": 0,
+              "symbol": "d8",
+              "type": 9,
+              "value": 40.0
+            },
+            {
+              "id": 9,
+              "relation_driven": false,
+              "relation_query_code": 0,
+              "symbol": "d9",
+              "type": 9,
+              "value": 6.0
+            }
+          ]
+        },
+        {
+          "id": 78,
+          "name": "P2_H1",
+          "type": 911,
+          "type_name": "hole",
+          "status": 0,
+          "dimensions": [
+            {
+              "id": 12,
+              "relation_driven": false,
+              "relation_query_code": 0,
+              "symbol": "d12",
+              "type": 4,
+              "value": 6.0
+            }
+          ]
+        }
+      ],
+      "part_file": "E:\\Projects\\MCP_CREO_MechDog\\models\\814e1d7ed0364d878bdc3d181096aff3\\output\\ai_part_814e1d7ed036.prt.2",
+      "part_sha256": "ec2f158d86ddf755273911a308453af9d99a6638311408f5e7552c4f60c846fd",
+      "recorded_part_sha256": "ec2f158d86ddf755273911a308453af9d99a6638311408f5e7552c4f60c846fd",
+      "part_hash_matches": true,
+      "current_model": {
+        "model_id": "814e1d7ed0364d878bdc3d181096aff3",
+        "revision": 1,
+        "pending_job": null,
+        "status": "ready",
+        "part_file": "E:\\Projects\\MCP_CREO_MechDog\\models\\814e1d7ed0364d878bdc3d181096aff3\\output\\ai_part_814e1d7ed036.prt.2"
+      }
+    },
+    {
+      "job_id": "9c15196efb59499eaf104ccbd8382b2c",
+      "model_id": "517eb3aa8a95493192c44aa554b23227",
+      "revision": 1,
+      "status": "succeeded",
+      "message": "General feature plan completed",
+      "created_at": "2026-10-16T10:07:22.080681+00:00",
+      "finished_at": "2026-10-16T10:07:31.830491+00:00",
+      "manifest_sha256": "ecd7da1de847b7b0eb7644f2f44729b6dea752d56dea1d09bf7fda4dbc0343b9",
+      "request": {
+        "new": true,
+        "model": {
+          "model_id": "517eb3aa8a95493192c44aa554b23227",
+          "model_name": "ai_part_517eb3aa8a95",
+          "revision": 0,
+          "created_at": "2026-10-16T10:07:22.060700+00:00",
+          "status": "new",
+          "aliases": {},
+          "model_type": "part",
+          "output_directory": "E:\\Projects\\MCP_CREO_MechDog\\models\\517eb3aa8a95493192c44aa554b23227\\output",
+          "part_file": null,
+          "pending_job": "9c15196efb59499eaf104ccbd8382b2c"
+        },
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "p3_s1",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "rectangle",
+                "name": "p3_r1",
+                "min": [
+                  -20.0,
+                  -15.0
+                ],
+                "max": [
+                  20.0,
+                  15.0
+                ],
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "p3_e1",
+            "sketch": "p3_s1",
+            "depth": 6.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "hole",
+            "label": "p3_h_thru",
+            "placement": {
+              "kind": "plane",
+              "axis": "z",
+              "offset": 6
+            },
+            "reference1": {
+              "kind": "datum_plane",
+              "axis": "x"
+            },
+            "reference2": {
+              "kind": "datum_plane",
+              "axis": "y"
+            },
+            "offset1": 0.0,
+            "offset2": 0.0,
+            "diameter": 6.0,
+            "flip": false
+          },
+          {
+            "op": "hole",
+            "label": "p3_h_blind",
+            "placement": {
+              "kind": "plane",
+              "axis": "z",
+              "offset": 6
+            },
+            "reference1": {
+              "kind": "datum_plane",
+              "axis": "x"
+            },
+            "reference2": {
+              "kind": "datum_plane",
+              "axis": "y"
+            },
+            "offset1": 10.0,
+            "offset2": 0.0,
+            "diameter": 2.0,
+            "depth": 3.0,
+            "flip": false
+          }
+        ],
+        "readonly": false,
+        "components": {},
+        "template_file": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\templates\\mmns_part_solid_abs.prt",
+        "assertions": {
+          "require_solid": false,
+          "volume_tolerance": 0.01
+        }
+      },
+      "request_sha256": "ac8feadd760d1eb49aa7970d8fa6f0f1b0b92aece1c05b34566bc554281c881c",
+      "inspection_volume_mm3": 7020.929218745383,
+      "healthy": true,
+      "saved_file_reloaded_and_verified": true,
+      "delivery_complete": true,
+      "disconnect_code": 0,
+      "operations": [
+        {
+          "label": "p3_s1",
+          "op": "sketch",
+          "succeeded": true
+        },
+        {
+          "label": "p3_e1",
+          "op": "extrude",
+          "succeeded": true
+        },
+        {
+          "axes": [
+            {
+              "end": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "id": 91,
+              "start": [
+                0.0,
+                2.465190328815662e-32,
+                6.0
+              ]
+            }
+          ],
+          "feature_id": 78,
+          "label": "p3_h_thru",
+          "material_removed_mm3": 169.64600329384757,
+          "op": "hole",
+          "succeeded": true
+        },
+        {
+          "axes": [
+            {
+              "end": [
+                10.0,
+                6.123233995736766e-17,
+                3.0
+              ],
+              "id": 129,
+              "start": [
+                10.0,
+                6.123233995736766e-17,
+                6.0
+              ]
+            }
+          ],
+          "feature_id": 116,
+          "label": "p3_h_blind",
+          "material_removed_mm3": 9.424777960769461,
+          "op": "hole",
+          "succeeded": true
+        }
+      ],
+      "features": [
+        {
+          "id": 49,
+          "name": "P3_E1",
+          "type": 917,
+          "type_name": "protrusion",
+          "status": 0,
+          "dimensions": [
+            {
+              "id": 5,
+              "relation_driven": false,
+              "relation_query_code": 0,
+              "symbol": "d5",
+              "type": -1,
+              "value": 0.0
+            },
+            {
+              "id": 6,
+              "relation_driven": false,
+              "relation_query_code": 0,
+              "symbol": "d6",
+              "type": -1,
+              "value": 0.0
+            },
+            {
+              "id": 7,
+              "relation_driven": false,
+              "relation_query_code": 0,
+              "symbol": "d7",
+              "type": 9,
+              "value": 30.0
+            },
+            {
+              "id": 8,
+              "relation_driven": false,
+              "relation_query_code": 0,
+              "symbol": "d8",
+              "type": 9,
+              "value": 40.0
+            },
+            {
+              "id": 9,
+              "relation_driven": false,
+              "relation_query_code": 0,
+              "symbol": "d9",
+              "type": 9,
+              "value": 6.0
+            }
+          ]
+        },
+        {
+          "id": 78,
+          "name": "P3_H_THRU",
+          "type": 911,
+          "type_name": "hole",
+          "status": 0,
+          "dimensions": [
+            {
+              "id": 12,
+              "relation_driven": false,
+              "relation_query_code": 0,
+              "symbol": "d12",
+              "type": 4,
+              "value": 6.0
+            }
+          ]
+        },
+        {
+          "id": 116,
+          "name": "P3_H_BLIND",
+          "type": 911,
+          "type_name": "hole",
+          "status": 0,
+          "dimensions": [
+            {
+              "id": 17,
+              "relation_driven": false,
+              "relation_query_code": 0,
+              "symbol": "d17",
+              "type": 4,
+              "value": 2.0
+            },
+            {
+              "id": 18,
+              "relation_driven": false,
+              "relation_query_code": 0,
+              "symbol": "d18",
+              "type": 9,
+              "value": 3.0
+            },
+            {
+              "id": 19,
+              "relation_driven": false,
+              "relation_query_code": 0,
+              "symbol": "d19",
+              "type": 9,
+              "value": 10.0
+            }
+          ]
+        }
+      ],
+      "part_file": "E:\\Projects\\MCP_CREO_MechDog\\models\\517eb3aa8a95493192c44aa554b23227\\output\\ai_part_517eb3aa8a95.prt.2",
+      "part_sha256": "b4ef5f073998b55840df2f4602b28036865301ce3581671294737e19a93c13b5",
+      "recorded_part_sha256": "b4ef5f073998b55840df2f4602b28036865301ce3581671294737e19a93c13b5",
+      "part_hash_matches": true,
+      "current_model": {
+        "model_id": "517eb3aa8a95493192c44aa554b23227",
+        "revision": 1,
+        "pending_job": null,
+        "status": "ready",
+        "part_file": "E:\\Projects\\MCP_CREO_MechDog\\models\\517eb3aa8a95493192c44aa554b23227\\output\\ai_part_517eb3aa8a95.prt.2"
+      }
+    },
+    {
+      "job_id": "02bf0f7c030c400fb346fb8d9151107d",
+      "model_id": "2424973e8bac41e68fafcb35157e087c",
+      "revision": 1,
+      "status": "succeeded",
+      "message": "General feature plan completed",
+      "created_at": "2026-10-16T09:58:36.073544+00:00",
+      "finished_at": "2026-10-16T09:58:42.953267+00:00",
+      "manifest_sha256": "9e7fa70ee3ea43d619ce56fbf205711438fe3015d599fb52c89ac420de29275a",
+      "request": {
+        "new": true,
+        "model": {
+          "model_id": "2424973e8bac41e68fafcb35157e087c",
+          "model_name": "ai_part_2424973e8bac",
+          "revision": 0,
+          "created_at": "2026-10-16T09:58:36.064279+00:00",
+          "status": "new",
+          "aliases": {},
+          "model_type": "part",
+          "output_directory": "E:\\Projects\\MCP_CREO_MechDog\\models\\2424973e8bac41e68fafcb35157e087c\\output",
+          "part_file": null,
+          "pending_job": "02bf0f7c030c400fb346fb8d9151107d"
+        },
+        "operations": [],
+        "readonly": false,
+        "components": {},
+        "template_file": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\templates\\mmns_part_solid_abs.prt",
+        "assertions": {
+          "require_solid": false,
+          "volume_tolerance": 0.01
+        }
+      },
+      "request_sha256": "b38dbdbb9688a199ed968a9de6be13b508b152883addb8ec0389afd061b30a00",
+      "inspection_volume_mm3": null,
+      "healthy": true,
+      "saved_file_reloaded_and_verified": true,
+      "delivery_complete": true,
+      "disconnect_code": 0,
+      "operations": [],
+      "features": [],
+      "part_file": "E:\\Projects\\MCP_CREO_MechDog\\models\\2424973e8bac41e68fafcb35157e087c\\output\\ai_part_2424973e8bac.prt.2",
+      "part_sha256": "b0f51c57a9d1c0564a6f5ef6e2e6d6bffb08c72f68f5b67d0f9afcc55a25d49a",
+      "recorded_part_sha256": "b0f51c57a9d1c0564a6f5ef6e2e6d6bffb08c72f68f5b67d0f9afcc55a25d49a",
+      "part_hash_matches": true,
+      "current_model": {
+        "model_id": "2424973e8bac41e68fafcb35157e087c",
+        "revision": 1,
+        "pending_job": null,
+        "status": "ready",
+        "part_file": "E:\\Projects\\MCP_CREO_MechDog\\models\\2424973e8bac41e68fafcb35157e087c\\output\\ai_part_2424973e8bac.prt.2"
+      }
+    },
+    {
+      "job_id": "cb07b70ae7c84d688f223ed5ae61a31b",
+      "model_id": "e42c1cc428c24c51b10b3b68658bd785",
+      "revision": null,
+      "status": "failed",
+      "message": "Unknown feature label: s1",
+      "created_at": "2026-10-16T10:03:26.674675+00:00",
+      "finished_at": "2026-10-16T10:03:32.193699+00:00",
+      "manifest_sha256": "e92fd8314f7bc3488ee266cf70269d2a03f4a5f071b85853b7d85c6b0ae65f3a",
+      "request": {
+        "new": true,
+        "model": {
+          "model_id": "e42c1cc428c24c51b10b3b68658bd785",
+          "model_name": "ai_part_e42c1cc428c2",
+          "revision": 0,
+          "created_at": "2026-10-16T10:03:26.664483+00:00",
+          "status": "new",
+          "aliases": {},
+          "model_type": "part",
+          "output_directory": "E:\\Projects\\MCP_CREO_MechDog\\models\\e42c1cc428c24c51b10b3b68658bd785\\output",
+          "part_file": null,
+          "pending_job": "cb07b70ae7c84d688f223ed5ae61a31b"
+        },
+        "operations": [
+          {
+            "op": "extrude",
+            "label": "e1",
+            "sketch": "s1",
+            "depth": 1.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "hole",
+            "label": "h1",
+            "placement": {
+              "kind": "plane",
+              "axis": "z",
+              "offset": 6
+            },
+            "reference1": {
+              "kind": "datum_plane",
+              "axis": "x"
+            },
+            "reference2": {
+              "kind": "datum_plane",
+              "axis": "y"
+            },
+            "offset1": 0.0,
+            "offset2": 0.0,
+            "diameter": 6.0,
+            "flip": false
+          }
+        ],
+        "readonly": false,
+        "components": {},
+        "template_file": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\templates\\mmns_part_solid_abs.prt",
+        "assertions": {
+          "require_solid": false,
+          "volume_tolerance": 0.01
+        }
+      },
+      "request_sha256": "067e6eee0e96463e21a5cd45243fe9001ade69b5ed4a917cd978a6d18b49ea20",
+      "inspection_volume_mm3": null,
+      "healthy": null,
+      "saved_file_reloaded_and_verified": false,
+      "delivery_complete": true,
+      "disconnect_code": 0,
+      "operations": null,
+      "features": [],
+      "part_file": null,
+      "part_sha256": null,
+      "recorded_part_sha256": null,
+      "part_hash_matches": null,
+      "current_model": {
+        "model_id": "e42c1cc428c24c51b10b3b68658bd785",
+        "revision": 0,
+        "pending_job": null,
+        "status": "failed",
+        "part_file": null
+      }
+    }
+  ],
+  "unchanged_unverified_scope": [
+    "actual Creo 9 SDK compilation and modeling",
+    "constant generator internals",
+    "build log limits",
+    "setup parameter writeback and WindowsApps detection",
+    "inactive explicit compiler environment installation branch"
+  ],
+  "report_process_note": "Attachment narrative mentions reading MCP response cache with filesystem/shell tools and writing daily memory; no evidence in supplied text of reading source/Git/local config or running source tests. Those ancillary actions are not acceptance evidence.",
+  "documentation_validation": {
+    "success": true,
+    "errors": [],
+    "links_and_anchors_checked": 158,
+    "tables_checked": 14,
+    "unique_current_ids": 101,
+    "raw_report_sha256_verified": true,
+    "tracked_runtime_sources_unchanged": true,
+    "scope": "Documentation only; no unit, dev_check or native tests rerun",
+    "git_diff_check": {
+      "status": "passed_excluding_verbatim_report",
+      "excluded_path": "docs/validation/DEV-028-WorkBuddy-report-20261016.txt",
+      "reason": "Original report line 19 contains trailing whitespace. Preserve original bytes and verify SHA256; all other staged documentation passes git diff --cached --check."
+    }
+  }
+}
