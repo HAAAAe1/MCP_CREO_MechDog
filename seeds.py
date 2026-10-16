@@ -10,6 +10,7 @@ import zipfile
 from pathlib import Path, PurePosixPath
 
 import bridge
+from creo_mechdog.seed_distribution import seed_file_bytes
 
 REGISTRY_NAME = "seed_registry.json"
 
@@ -130,7 +131,7 @@ def install_seed_library(directory: str | None = None, archive_file: str | None 
         if not source.is_absolute() or not source.is_file():
             raise ValueError("archive_file must be an existing absolute local ZIP path")
         # Accept only the published library, not arbitrary executable ZIP contents.
-        expected_digest = "ddcc4faacab5d1e9b5052f9fff724b406386d10a89683dc59e141264583e7cce"
+        expected_digest = "7e1332dd87ec0a90dd20600594e88580721df50eaff66f4e588a7ad771e79e70"
         if hashlib.sha256(source.read_bytes()).hexdigest() != expected_digest:
             raise ValueError("Archive SHA256 differs from the published MIT seed library")
         if destination.exists():
@@ -178,7 +179,7 @@ def install_seed_library(directory: str | None = None, archive_file: str | None 
 def _validate_library(root: Path) -> None:
     if bridge.read_json(root / "seed_manifest.json") != manifest():
         raise ValueError("Library manifest differs from the published compatible seed manifest")
-    if (root / "LICENSE").read_bytes() != (bridge.ROOT / "LICENSE").read_bytes():
+    if seed_file_bytes(root / "LICENSE") != seed_file_bytes(bridge.ROOT / "LICENSE"):
         raise ValueError("Seed library must retain the project MIT license")
     if not all(_checked_seed(root, entry)["available"] for entry in manifest()["seeds"]):
         raise ValueError("One or more seed files are missing or fail SHA256 validation")
