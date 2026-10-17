@@ -1,5 +1,7 @@
 # 源码安装与接入
 
+当前源码版本0.3.5：切除材料守卫与恢复参数契约见[版本说明](RELEASE_NOTES_0.3.5.md)。BUG-056通道掉线仍待核实，发布不意味着完整兼容或稳定性已验收。
+
 ## 需要的环境
 
 可使用 Creo 9、10 或 Creo 12。当前开发与发布按本机 Creo 12.4.0.0 的改动范围验收，Creo 10 独立复测不作为项目门槛；Creo 9 与匹配 Toolkit 9 已纳入支持/要求范围，[BUG-033](work-items/BUG-033.md) 编译探测修复已实现。本机无 Creo 9 SDK，Creo 9 实机编译与建模运行时均未验收，支持声明不代表本机测试通过。其他环境收到具体测试反馈后再跟进；具体已测范围与未测项见 [兼容矩阵](COMPATIBILITY.md)。仅做 Python 单元和语言检查的开发环境见 [开发入口](DEVELOPMENT.md)，不必先运行完整 Creo 安装流程。
@@ -184,7 +186,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C
 
 ## 本机开发恢复联调（2026-10-17）
 
-按用户要求，WorkBuddy/Codex 只启用 `MCP_CREO_MechDog_dev`，启动 E盘项目的 `.venv/Scripts/python.exe` 与 `server.py`；C盘旧副本和test项保持禁用。注册名不等于发布版本，当前源码VERSION为0.3.4；用实际入口、源码指纹和84工具辨认部署。不要在同一Creo会话混用不同安装根的客户端：它们的根目录Toolkit锁互不共享。正式使用恢复入口前，先看[恢复说明](MODEL_RECOVERY.md)与[本轮中断记录](validation/BUG-001-recovery-2026-10-17.md)。目前实机测试已停止，卡死原因未定位。
+按用户要求，WorkBuddy/Codex 只启用 `MCP_CREO_MechDog_dev`，启动 E盘项目的 `.venv/Scripts/python.exe` 与 `server.py`；C盘旧副本和test项保持禁用。注册名不等于发布版本，当前源码VERSION为0.3.5；用实际入口、源码指纹和84工具辨认部署。不要在同一Creo会话混用不同安装根的客户端：它们的根目录Toolkit锁互不共享。正式使用恢复入口前，先看[恢复说明](MODEL_RECOVERY.md)与[本轮中断记录](validation/BUG-001-recovery-2026-10-17.md)。目前实机测试已停止，卡死原因未定位。
 
 ## FEAT-029开发集成后的回调入口
 

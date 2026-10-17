@@ -36,3 +36,6 @@ docs/validation/feedback-0.3.3-2026-10-17/*.md -text
 
 # Preserve the original 0.3.4 feedback report byte for byte.
 docs/validation/feedback-0.3.4-2026-10-17/*.md -text
+
+# DEV-035: preserve the historical user plan as supplied.
+docs/DEV-026_0_3_2_三份反馈补录与_Creo_9_SDK_文档口径.md -text

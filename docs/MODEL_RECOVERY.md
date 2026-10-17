@@ -1,6 +1,6 @@
 # 未知作业与受控模型恢复
 
-当前状态：恢复实现纳入0.3.4；BUG-001按用户决定关闭，FEAT-018仍验收中。Creo卡死根因未定，完整实机及WorkBuddy未完成；关闭与发布不代表这些验证通过。见[本次验证记录](validation/BUG-001-recovery-2026-10-17.md)。本机开发联调只启用指向 E 盘的 `MCP_CREO_MechDog_dev`；这是客户端注册名，不是已发布版本号。
+当前版本0.3.5已补齐恢复MCP空值/省略契约、畸形ID精确错误及stale诊断，BUG-055的核心WorkBuddy验收见[记录](validation/BUG-055-WorkBuddy-acceptance-2026-10-17.md)。客户端不能保真发送null时省略该字段；M2终态因BUG-056通道掉线未取得，禁止自动清保护或重放。FEAT-018完整范围仍验收中，BUG-001按用户决定关闭。本机开发只使用指向E盘的MCP_CREO_MechDog_dev，部署身份按公开启动指纹核对。
 
 适用于0.3.4提供的 `creo_reconcile_model`；历史公开0.3.3没有该工具。通过 `creo_capabilities` 确认实际部署，更新源码后构建执行器并重新连接 MCP，不能仅凭磁盘上的版本说明判断客户端已经加载新工具。
 

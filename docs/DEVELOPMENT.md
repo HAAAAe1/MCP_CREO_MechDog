@@ -2,11 +2,11 @@
 
 本项目按可交付的 Creo MCP 工具维护，采用功能条目驱动、短分支和分批整理。日常开发从 [统一台账](BACKLOG.md) 选择条目；新增工作先登记，复杂条目复制 [模板](templates/WORK_ITEM.md)。开发准入对小修复同样适用，内容可精简为几行。
 
-当前服务/源码版本0.3.4，用户指定关闭BUG-001并将全部待合分支统一交付main，流程见[DEV-032](work-items/DEV-032.md)及[本版验收](validation/RELEASE-0.3.4.md)。BUG关闭保留未完成实机和卡死未定位事实；FEAT-018/029仍验收中。[DEV-030](work-items/DEV-030.md)的G2～G4继续分期。历史恢复及集成验证按原提交/指纹分别保留，本轮不新增Toolkit连接、故障注入或WorkBuddy。
+当前服务/源码版本0.3.5，用户要求通过[DEV-035](work-items/DEV-035.md)统一交付main和Release；DEV-033/BUG-054、DEV-034/BUG-055按本机及WorkBuddy已测核心范围完成。M2终态未取得、BUG-056通道掉线待核实和FEAT-018/029完整验收保持，见[本版记录](validation/RELEASE-0.3.5.md)。本次发布不新增Toolkit连接或故障注入。
 
 最新[BUG-001离线卡死核对](validation/BUG-001-hang-offline-2026-10-17.md)已确认Creo IPC初始化通信失败及同一12.4进程无响应关闭，底层诱因仍待定位。当前无Creo会话可验证，确认可操作前继续停止Toolkit连接/注入；此核对不替代实机/WorkBuddy验收。
 
-根据当前台账，[DEV-033](work-items/DEV-033.md)/BUG-054 已完成本机实机及 WorkBuddy 验收，成果尚未合入 main 或发布。[DEV-034：恢复工具 MCP 空值契约核实、修复与验收](work-items/DEV-034.md) 已完成 G0～G4：服务端各层无 null→空串转换、空串即外部报告错误成因，契约与最小修复落地，真实 stdio 协议回归与本机实机 null apply 闭环通过；WorkBuddy 核心验收通过（客户端 null→空串降级被实测证实并闭环外部报告根因链）；M2 收尾与稳定通道对照因通道静默掉线未取得，外部 Creo 9 未复测。FEAT-018/029 的剩余验收继续在原卡跟踪。
+当前优先核实[BUG-056](work-items/BUG-056.md)的通道静默掉线，原有DEV-030后续分期保持。DEV-034真实MCP和WorkBuddy证据已经记录，不再按未开发任务重复实施；完整恢复和回调生命周期边界仍在原卡跟踪。
 
 ## 每次开发的顺序
 
