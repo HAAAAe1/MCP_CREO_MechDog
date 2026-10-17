@@ -113,6 +113,7 @@ class InstallationValidation(unittest.TestCase):
                 calls.append("compile")
                 (self.root / "build/creo_worker.exe").write_bytes(b"fixture worker")
                 (self.root / "build/creo_blend_sync.dll").write_bytes(b"fixture callback")
+                (self.root / "build/creo_blend_loader.dll").write_bytes(b"fixture loader")
             else:
                 calls.append("constants")
             return subprocess.CompletedProcess(command, 0, stdout=b"{}")
@@ -168,6 +169,8 @@ class InstallationValidation(unittest.TestCase):
                 script = (self.root / "build/build.cmd").read_text()
                 callback_compiled = "blend_sync.cpp" in script
                 builds.append(callback_compiled)
+                if "blend_loader.cpp" in script:
+                    (self.root / "build/creo_blend_loader.dll").write_bytes(b"verified loader")
                 (self.root / "build/creo_worker.exe").write_bytes(b"worker")
                 if callback_compiled:
                     (self.root / "build/creo_blend_sync.dll").write_bytes(b"verified callback")

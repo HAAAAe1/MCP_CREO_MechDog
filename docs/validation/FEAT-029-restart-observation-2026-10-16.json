@@ -1,0 +1,70 @@
+{
+  "work_item": "FEAT-029",
+  "timestamp": "2026-10-16T13:19:28.716430+08:00",
+  "operator_report": "original entry remained and was started after requested restart",
+  "process_restart_verified": false,
+  "desktop_observation": {
+    "inventory": {
+      "processes": [
+        {
+          "pid": 6320,
+          "created": 134365965602660110,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Parametric\\bin\\parametric.exe",
+          "matches": true
+        },
+        {
+          "pid": 22940,
+          "created": 134365965609511525,
+          "image": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+          "matches": true
+        }
+      ],
+      "uncertain": false
+    },
+    "setup_hash": "3f25c8f8ef44622857a24d4cab310bb0a67a9f7526debba4a751c33f59d940fd",
+    "selected_payload": "ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86",
+    "ready": {
+      "application_id_code": 0,
+      "codes": [],
+      "command": "MechDogBlend_191e32fe24842deef1a285d8_7ffafcc9",
+      "contract": "blend-selection-v3-ordered-curves-mm",
+      "dll_sha256": "191e32fe24842deef1a285d8f7eb07d8224ad3065e8fee708e7f2bbb233c43f2",
+      "initialize_code": 0,
+      "initialize_stage": "after_command_register",
+      "initialize_tick_ms": 13871187,
+      "loader_abi": 1,
+      "loader_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_loader\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\loader.dll",
+      "loader_sha256": "a4a75e71a47abd66e16cbd994e34e19ea67aba4abb7e7f3eccf2dd098e196fb9",
+      "module_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback\\191e32fe24842deef1a285d8f7eb07d8224ad3065e8fee708e7f2bbb233c43f2\\callback.dll",
+      "process_id": 22940,
+      "protocol": 3,
+      "resource_root": "E:\\Projects\\MCP_CREO_MechDog_Test",
+      "selected": 0,
+      "terminated": true
+    },
+    "ready_mtime": 1792125709559055200,
+    "loader_selection": {
+      "loader_abi": 1,
+      "dll_sha256": "ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86"
+    },
+    "runtime_source_hash": "69eeea35841b3a37ae73aaf0a73474f8f09f00e59c21c6ecf7c498f6f9cca6d1",
+    "probe": null
+  },
+  "comparison_to_prior": {
+    "same_parametric_pid_and_creation": true,
+    "same_xtop_pid_and_creation": true,
+    "old_payload_terminated": true,
+    "new_payload_initialization_seen": false
+  },
+  "real_rpc": {
+    "connected": true,
+    "toolkit_code": 0,
+    "readiness": "unknown",
+    "reason": "live_identity_unavailable",
+    "callback_toolkit_code": -3,
+    "callback_code": -8
+  },
+  "models_or_modeling_jobs_created": 0,
+  "next_step": "operator to verify full Creo process exit and reopen; do not count entry persistence across a new process until observed",
+  "claim_boundary": "operator statement preserved; process and current module transition not independently verified"
+}

@@ -1,84 +1,222 @@
-"""Prepare an immutable resident Blend callback for explicit Creo loading."""
+"""Immutable callback payloads and an operator-started, persistent registration."""
 
 from __future__ import annotations
 
 import hashlib
 import json
+import os
+import re
+import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
 
+PROTOCOL = 3
+LOADER_ABI = 1
+CONTRACT = "blend-selection-v3-ordered-curves-mm"
+REGISTRY_FILENAME = "blend_callback_protk.dat"
 
-def prepare_callback(build: Path, dll_sha256: str) -> dict:
-    """Publish setup files without loading code or changing Creo security policy."""
+
+def _digest(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _publish(path: Path, content: str) -> None:
+    """Replace metadata atomically; never touch a published binary."""
+    if path.is_file() and path.read_text(encoding="utf-8") == content:
+        return
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", newline="\n", dir=path.parent, delete=False
+        ) as output:
+            temporary = Path(output.name)
+            output.write(content)
+            output.flush()
+            os.fsync(output.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
+def _immutable(source: Path, target: Path, digest: str) -> None:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if target.exists():
+        if _digest(target) != digest:
+            raise ValueError("Immutable Blend callback copy was changed; inspect it before setup")
+        return
+    # A hard link publishes a complete file without replacing an existing image.
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(dir=target.parent, delete=False) as output:
+            temporary = Path(output.name)
+            output.write(source.read_bytes())
+            output.flush()
+            os.fsync(output.fileno())
+        if _digest(temporary) != digest:
+            raise ValueError("Callback build changed while preparing immutable artifacts")
+        os.link(temporary, target)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
+def prepare_callback(build: Path, dll_sha256: str, loader_fingerprint: str) -> dict:
+    """Prepare a future operator startup; never load, unload or replace loaded DLLs."""
     dll = build / "creo_blend_sync.dll"
-    if len(dll_sha256) != 64 or hashlib.sha256(dll.read_bytes()).hexdigest() != dll_sha256:
+    loader = build / "creo_blend_loader.dll"
+    if not re.fullmatch("[0-9a-f]{64}", dll_sha256) or _digest(dll) != dll_sha256:
         raise ValueError("Blend callback hash does not match the current build")
+    if not re.fullmatch("[0-9a-f]{64}", loader_fingerprint):
+        raise ValueError("Invalid callback loader generation")
     root = build.parent.resolve()
     directory = build / "blend_callback" / dll_sha256
-    directory.mkdir(parents=True, exist_ok=True)
+    loader_directory = build / "blend_loader" / loader_fingerprint
     target = directory / "callback.dll"
-    if target.exists():
-        if hashlib.sha256(target.read_bytes()).hexdigest() != dll_sha256:
-            raise ValueError("Immutable Blend callback copy was changed; inspect it before setup")
-    else:
-        with target.open("xb") as output:
-            output.write(dll.read_bytes())
-    root_tag = hashlib.sha256(str(root).casefold().encode()).hexdigest()[:8]
-    command = "MechDogBlend_" + dll_sha256[:24] + "_" + root_tag
-    bootstrap = {"protocol": 2, "command": command, "resource_root": str(root)}
-    metadata = {
-        **bootstrap,
-        "dll_sha256": dll_sha256,
-        "module_file": str(target.resolve()),
-        "ready_file": str((directory / "callback_result.json").resolve()),
-        "registry_file": str((directory / "protk.dat").resolve()),
-        "setup": "In Creo Auxiliary Applications, register protk.dat and start this application; review any DLL prompt yourself. Modeling never changes the security policy.",
-    }
-    if len(metadata["module_file"]) >= 260 or any(
-        "\n" in value for value in (str(root), str(directory))
+    loader_target = loader_directory / "loader.dll"
+    loader_sha256 = _digest(loader)
+    if (
+        len(str(target.resolve())) >= 260
+        or len(str(loader_target.resolve())) >= 260
+        or any(c in str(root) for c in "\r\n")
     ):
         raise ValueError("Blend callback setup path is too long or contains a newline")
-
-    def publish(path: Path, content: str) -> None:
-        if not path.is_file() or path.read_text(encoding="utf-8") != content:
-            path.write_text(content, encoding="utf-8", newline="\n")
-
-    publish(directory / "callback_bootstrap.json", json.dumps(bootstrap, indent=2) + "\n")
-    registry_content = (
-        "name MCP_CREO_MechDog Blend\nstartup dll\nexec_file " + metadata["module_file"]
+    _immutable(dll, target, dll_sha256)
+    _immutable(loader, loader_target, loader_sha256)
+    root_tag = hashlib.sha256(str(root).casefold().encode()).hexdigest()[:8]
+    command = "MechDogBlend_" + dll_sha256[:24] + "_" + root_tag
+    bootstrap = {
+        "protocol": PROTOCOL,
+        "contract": CONTRACT,
+        "command": command,
+        "resource_root": str(root),
+        "dll_sha256": dll_sha256,
+    }
+    metadata = {
+        **bootstrap,
+        "loader_abi": LOADER_ABI,
+        "loader_fingerprint": loader_fingerprint,
+        "loader_sha256": loader_sha256,
+        "loader_file": str(loader_target.resolve()),
+        "module_file": str(target.resolve()),
+        "ready_file": str((loader_directory / "callback_result.json").resolve()),
+        "registry_file": str((build / REGISTRY_FILENAME).resolve()),
+        "registry_generation_file": str((loader_directory / "protk.dat").resolve()),
+        "registry_shortcut": str((build / REGISTRY_FILENAME).resolve()),
+        "persistent_registration_config": str((build / "blend_callback.config.pro").resolve()),
+        "setup": (
+            "In Creo Auxiliary Applications, register registry_file once and start it; "
+            "review DLL prompts yourself. For persistence across Creo restarts, explicitly "
+            "add the generated config snippet to your own loaded config.pro. The snippet is "
+            "not automatically loaded. If the entry disappears after restart, fix that "
+            "persistent configuration once; repeatedly selecting the dat file is temporary. "
+            "An existing entry that is not running needs manual Start (delay_start true). "
+            "After a payload upgrade, normally restart Creo "
+            "and start the same registered application. Keep its registry_file unchanged. "
+            "Legacy protocol-2 registration requires one explicit migration. A changed "
+            "loader/SDK generation needs a fresh Creo startup reading the same persistent "
+            "registry file; a session-only registration may need selecting that file again. "
+            "MCP never changes security policy."
+        ),
+    }
+    bootstrap_file = directory / "callback_bootstrap.json"
+    bootstrap_text = json.dumps(bootstrap, indent=2) + "\n"
+    if bootstrap_file.exists() and bootstrap_file.read_text(encoding="utf-8") != bootstrap_text:
+        raise ValueError("Immutable callback bootstrap changed; inspect it before setup")
+    _publish(bootstrap_file, bootstrap_text)
+    registry = (
+        f"name MCP_CREO_MechDog Blend {root_tag}\nstartup dll\n"
+        f"exec_file {metadata['loader_file']}\ntext_dir {loader_directory.resolve()}\n"
+        "allow_stop true\ndelay_start true\nend\n"
     )
-    registry_content += (
-        "\ntext_dir " + str(directory.resolve()) + "\nallow_stop true\ndelay_start false\nend\n"
+    _publish(loader_directory / "protk.dat", registry)
+    _publish(build / REGISTRY_FILENAME, registry)
+    _publish(build / "blend_callback.config.pro", f"protkdat {metadata['registry_file']}\n")
+    # Publish the selection only after every immutable artifact is complete. Old
+    # payloads/loader generations remain available for an explicit rollback.
+    _publish(
+        loader_directory / "deployment.json",
+        json.dumps({"loader_abi": LOADER_ABI, "dll_sha256": dll_sha256}, indent=2) + "\n",
     )
-    publish(directory / "protk.dat", registry_content)
-    publish(build / "blend_callback.protk.dat", registry_content)
-    metadata["registry_shortcut"] = str((build / "blend_callback.protk.dat").resolve())
-    publish(build / "blend_callback_setup.json", json.dumps(metadata, indent=2) + "\n")
+    _publish(build / "blend_callback_setup.json", json.dumps(metadata, indent=2) + "\n")
     return metadata
 
 
 def callback_setup_status(build: Path) -> dict:
-    """Report setup artifacts without claiming the DLL is loaded in Creo."""
+    """Artifact inspection is separate from a live, nonce-verified session probe."""
+    base = {
+        "readiness": "unknown",
+        "registration_status": "unknown",
+        "runtime_readiness": "Call creo_callback_status for a live read-only probe",
+        "status_tool": "creo_callback_status",
+    }
     try:
         data = json.loads((build / "blend_callback_setup.json").read_text(encoding="utf-8"))
-        module = Path(data["module_file"])
+        if data.get("protocol") == 2:
+            return {
+                **base,
+                "artifact_status": "legacy",
+                "reason": "legacy_registration",
+                "instruction": "Build this version, then migrate once to its stable loader registration",
+            }
         if (
-            data["protocol"] != 2
-            or hashlib.sha256(module.read_bytes()).hexdigest() != data["dll_sha256"]
+            data["protocol"] != PROTOCOL
+            or data["contract"] != CONTRACT
+            or data["loader_abi"] != LOADER_ABI
+            or _digest(Path(data["module_file"])) != data["dll_sha256"]
+            or _digest(Path(data["loader_file"])) != data["loader_sha256"]
+            or Path(data["resource_root"]).resolve() != build.parent.resolve()
+            or json.loads(
+                (Path(data["loader_file"]).parent / "deployment.json").read_text(encoding="utf-8")
+            )
+            != {"loader_abi": LOADER_ABI, "dll_sha256": data["dll_sha256"]}
+            or not Path(data["registry_file"]).is_file()
         ):
             raise ValueError("Invalid callback setup")
         return {
+            **base,
+            **{
+                key: data[key]
+                for key in (
+                    "protocol",
+                    "contract",
+                    "loader_abi",
+                    "loader_fingerprint",
+                    "loader_sha256",
+                    "registry_file",
+                    "registry_generation_file",
+                    "registry_shortcut",
+                    "persistent_registration_config",
+                    "loader_file",
+                    "module_file",
+                    "dll_sha256",
+                    "resource_root",
+                )
+            },
             "artifact_status": "prepared",
-            "protocol": 2,
-            "registry_file": data["registry_file"],
-            "registry_shortcut": data.get("registry_shortcut", data["registry_file"]),
-            "module_file": data["module_file"],
-            "dll_sha256": data["dll_sha256"],
             "manual_setup_when_not_loaded": True,
-            "runtime_readiness": "Native worker checks the active Creo DLL handle and protocol for each loft; artifacts alone do not confirm readiness",
             "instruction": data["setup"],
         }
     except (OSError, ValueError, KeyError, TypeError):
         return {
+            **base,
             "artifact_status": "not_prepared",
-            "instruction": "Build the native worker to create the explicit callback setup artifacts",
+            "instruction": "Build the native worker to create verified callback setup artifacts",
         }
+
+
+def unknown_readiness(artifacts: dict, reason: str, **details) -> dict:
+    """Never infer GUI registration or runtime load state from a failed probe."""
+    return {
+        **artifacts,
+        "readiness": "unknown",
+        "reason": reason,
+        "checked_at": datetime.now(timezone.utc).isoformat(),
+        "snapshot": True,
+        "instruction": (
+            "Inspect session/channel details and finish modal commands, then query again. "
+            "Registration and loaded state cannot be inferred from this failed probe. "
+            "Preserve unknown jobs/models; do not resubmit unknown_outcome."
+        ),
+        **details,
+    }

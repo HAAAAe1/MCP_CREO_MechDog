@@ -1,0 +1,22 @@
+{
+  "work_item": "FEAT-029",
+  "timestamp_utc": "2026-10-16T06:02:47.551654+00:00",
+  "scope": "Development source package snapshot verification; not a Release",
+  "source": {
+    "commit": "6a55119f5dc2c9b95fb3365c8073c354f83c7325",
+    "dirty": true
+  },
+  "archive": {
+    "path": "C:\\Users\\Administrator\\.codex\\worktrees\\feat-029-callback-lifecycle\\MCP_CREO_MechDog\\build\\feat029-candidate-source-check.zip",
+    "sha256": "41e5de5089b1dd2feb84f66059dbc2850bc816534585b5d4b270ef9ccc9c4118",
+    "files": 382
+  },
+  "checks": {
+    "allowlist_matches_all_bytes": true,
+    "new_callback_sources_and_test_cpp_present": true,
+    "runtime_data_and_local_config_excluded": true,
+    "extracted_resource_root_matches_resolved_windows_path": true
+  },
+  "extracted_root": "C:\\Users\\Administrator\\AppData\\Local\\Temp\\mcd_pkg_hf2s3398\\MCP_CREO_MechDog",
+  "success": true
+}

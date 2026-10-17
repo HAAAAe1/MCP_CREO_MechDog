@@ -328,12 +328,15 @@ async def mcp_acceptance(directory: Path, metadata_only: bool = False) -> None:
             return value
 
         capability = await call("creo_capabilities", {})
-        assert capability["tool_count"] == 83
+        assert capability["tool_count"] == 84
         assert Path(capability["runtime"]["job_root"]) == bridge.JOBS
         # Public diagnostic remains accessible while the actual shared OS lock is busy.
         first = fixtures["items"][0]
         with bridge.toolkit_lock(operation="developer_busy_probe"):
             evidence = await call("creo_reconcile_model", {"model_id": first["model_id"]})
+            callback = await call("creo_callback_status", {})
+            assert callback["readiness"] == "unknown" and callback["reason"] == "channel_busy"
+            assert callback["session"]["blocking_operation"] == "developer_busy_probe"
             args = {
                 "model_id": first["model_id"],
                 "mode": "apply",

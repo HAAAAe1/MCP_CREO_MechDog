@@ -173,8 +173,18 @@ def _deployment(deadline: float) -> str:
         "native/generic.cpp",
         "native/result_delivery.h",
         "native/recovery_deadline.h",
+        "src/creo_mechdog/blend_callback.py",
+        "native/worker.cpp",
+        "native/blend_create.cpp",
+        "native/blend_sync.cpp",
+        "native/blend_loader.cpp",
+        "native/callback_runtime.h",
+        "native/callback_api.h",
+        "native/callback_identity.h",
     )
     values = [identity(bridge.ROOT / name, deadline) for name in names]
+    setup = bridge.ROOT / "build/blend_callback_setup.json"
+    values.append(identity(setup, deadline) if setup.is_file() else {"callback": "not_prepared"})
     worker = bridge.ROOT / "build/creo_worker.exe"
     values.append(identity(worker, deadline) if worker.is_file() else {"worker": "not_built"})
     return digest(values)

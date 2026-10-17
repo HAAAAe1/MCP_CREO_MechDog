@@ -88,6 +88,13 @@ def require_available(operations: list[dict]) -> None:
 
 def families() -> dict:
     return {
+        "callback_lifecycle": {
+            "enabled": True,
+            "tool": "creo_callback_status",
+            "scope": "Stable resident Blend registration, deployment identity and bounded live readiness",
+            "automatic_loading": False,
+            "automatic_creo_restart": False,
+        },
         "model_reconciliation": {
             "enabled": True,
             "tool": "creo_reconcile_model",

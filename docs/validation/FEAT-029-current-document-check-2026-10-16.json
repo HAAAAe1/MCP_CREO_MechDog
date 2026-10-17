@@ -1,0 +1,19 @@
+{
+  "work_item": "FEAT-029",
+  "timestamp_utc": "2026-10-16T06:02:47.551654+00:00",
+  "files": {
+    "README.md": "9e42e583dfb606f247e2ad287111b43f05b81d5c1635a8069b196f0376b96a2c",
+    "docs\\BACKLOG.md": "b210cb1e52502ef79cddd7ab4cad7a0e681f7a7cfa9977a2e9e5b5051d4aa243",
+    "docs\\COMPATIBILITY.md": "ab9cdf4aee07b534bcfc1cd548006ae97263048557cbb87f23d6d411a5569286",
+    "docs\\INSTALL.md": "5906bbcce520cabbadf152c9951a027942553139331cef756d01e02cc3999167",
+    "docs\\MIGRATION.md": "d1209f798de9f1322277e859ba15a6f91bcda64e11db4439cd18f24ea1ffa9d7",
+    "docs\\work-items\\FEAT-029.md": "1f40b983ff50119f103fdbeea540332932b0d30e30b190ffe66ab72f2a1655b7",
+    "docs\\CALLBACK_LIFECYCLE.md": "b62704e3590faa6882d165c67d167c2247527bc9489e2b01e0ec3ca6237399ff",
+    "docs\\validation\\FEAT-029-live-2026-10-16.md": "71e7e0653f963507150bd11738aee92a0b355d26c516553c5e8f874d24278f43",
+    "docs\\validation\\FEAT-029-WorkBuddy-test.md": "ff5fd54dc41531a27c8cc7ed6bff14b656c46aad546f9db05a4c4317bcef0078"
+  },
+  "local_reference_count": 170,
+  "broken": [],
+  "scope": "Local referenced files and current evidence links; external URLs and anchor text not checked",
+  "success": true
+}

@@ -456,7 +456,14 @@ def run_generic_job(job_id: str, manifest: dict):
                     else:
                         model["status"] = (
                             "ready"
-                            if (request["readonly"] or result.get("rollback_succeeded"))
+                            if (
+                                request["readonly"]
+                                or result.get("rollback_succeeded")
+                                or (
+                                    result.get("model_unchanged") is True
+                                    and result.get("failed_stage") == "callback_preflight"
+                                )
+                            )
                             and model.get("part_file")
                             else "failed"
                         )

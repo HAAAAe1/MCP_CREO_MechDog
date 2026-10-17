@@ -1,0 +1,84 @@
+{
+  "work_item": "FEAT-029",
+  "timestamp_utc": "2026-10-16T07:03:30.197015+00:00",
+  "source": {
+    "commit": "6a55119f5dc2c9b95fb3365c8073c354f83c7325",
+    "dirty": true,
+    "creo_startup_sha256": "7d803ee8c679da483080c9e3cda31b6cf276178383542a9b5e3fac82885c2a22"
+  },
+  "operator_report": "原条目消失，必须重新选择 dat",
+  "conclusion": "Persistence failed in the reported restart. Both observed desktop and source-confirmed MCP launch directories now have explicit one-time config.pro setup; effective loading and persistence remain unverified until a subsequent normal restart.",
+  "configuration_changes": [
+    {
+      "original_report": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\feat029-startup-config-install.json",
+      "original_sha256": "835473f7c787945d30e763fdc63ceb9c7161a0f27cc1abef3ed2394172519409",
+      "record": {
+        "work_item": "FEAT-029",
+        "timestamp_utc": "2026-10-16T06:57:03.362642+00:00",
+        "scope": "One-time installation configuration for the observed Creo 12.4 startup directory; no runtime registration or DLL startup performed",
+        "operator_report": "原条目消失，必须重新选择 dat",
+        "before": {
+          "config_file_exists": false,
+          "shortcut_start_in": "C:\\Users\\Public\\Documents",
+          "observed_xtop_pid": 23632,
+          "observed_start_local": "2026-10-16T14:45:34+08:00"
+        },
+        "configuration_file": "C:\\Users\\Public\\Documents\\config.pro",
+        "added_line": "protkdat E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback_protk.dat",
+        "registry_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback_protk.dat",
+        "registry_sha256": "a420dfebdd23753f17b8bdd0aac17f59b99757e64b31ba659e904c234e1bb3e2",
+        "requires_creo_restart_to_verify": true,
+        "registration_persistence_verified": false,
+        "runtime_config_query": {
+          "connect_code": -4,
+          "status": "unavailable; not used to prove effective configuration"
+        },
+        "preserved_security_and_existing_files": true,
+        "after": {
+          "created": true,
+          "sha256": "d1210ae4bc371be7c83d64ca65eba821d2d8ff832fbd390b20f4771d28f875ac",
+          "byte_count": 75
+        }
+      },
+      "current_config_sha256": "d1210ae4bc371be7c83d64ca65eba821d2d8ff832fbd390b20f4771d28f875ac"
+    },
+    {
+      "original_report": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\feat029-mcp-startup-config-install.json",
+      "original_sha256": "bc572095418007f33d2abbf0b3b22f47f90c7b01b7a962e299b4e820ac10fbdf",
+      "record": {
+        "work_item": "FEAT-029",
+        "timestamp_utc": "2026-10-16T07:01:46.868903+00:00",
+        "scope": "Explicit one-time setup for the source-confirmed MCP automatic launch directory; no runtime registration, DLL startup or security policy change",
+        "launch_source": "creo_startup.py: directory = bridge.ROOT / build/creo_session passed to launch_creo",
+        "configuration_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\creo_session\\config.pro",
+        "before_exists": false,
+        "created": true,
+        "added_line": "protkdat E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback_protk.dat",
+        "sha256": "d1210ae4bc371be7c83d64ca65eba821d2d8ff832fbd390b20f4771d28f875ac",
+        "registry_sha256": "a420dfebdd23753f17b8bdd0aac17f59b99757e64b31ba659e904c234e1bb3e2",
+        "registration_persistence_verified": false,
+        "requires_restart": true
+      },
+      "current_config_sha256": "d1210ae4bc371be7c83d64ca65eba821d2d8ff832fbd390b20f4771d28f875ac"
+    }
+  ],
+  "registry_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback_protk.dat",
+  "registry_sha256": "a420dfebdd23753f17b8bdd0aac17f59b99757e64b31ba659e904c234e1bb3e2",
+  "latest_observed_creo": {
+    "parametric_pid": 13984,
+    "xtop_pid": 18100,
+    "started_local": "2026-10-16T14:55:07+08:00",
+    "note": "Started before both config.pro files were created; no inference that new configuration was read"
+  },
+  "effective_config_probe": {
+    "connect_code": -4,
+    "scope": "developer read-only configuration diagnostic; no Set, load, model or restart"
+  },
+  "no_files_overwritten": true,
+  "runtime_registration_performed": false,
+  "security_policy_changed": false,
+  "registration_persistence_verified": false,
+  "final_payload_loaded_verified": false,
+  "remaining_operator_step": "Normal restart through original Creo 12.4 shortcut, check entry appears without dat selection, then manually start existing entry and confirm security prompt",
+  "scope": "Developer setup and investigation; not WorkBuddy acceptance"
+}

@@ -330,7 +330,8 @@ int wmain(int argc, wchar_t *argv[]) {
         printf("%s\n", result.dump().c_str());
         return 0;
     }
-    bool probe = (argc == 2 || argc == 3) && wcscmp(argv[1], L"status") == 0;
+    bool callback_probe = (argc == 2 || argc == 3) && wcscmp(argv[1], L"callback-status") == 0;
+    bool probe = callback_probe || ((argc == 2 || argc == 3) && wcscmp(argv[1], L"status") == 0);
     unsigned int probe_timeout = 30;
     if (probe && argc == 3) {
         wchar_t *end = nullptr;
@@ -367,6 +368,28 @@ int wmain(int argc, wchar_t *argv[]) {
         log("CONNECT=%d\n", result);
     }
     if (probe) {
+        if (callback_probe) {
+            J state = {{"connected", connected},
+                       {"toolkit_code", result},
+                       {"connection_state", connected ? "connected" : "connection_failed"}};
+            if (connected) {
+                wchar_t executable[MAX_PATH];
+                GetModuleFileNameW(nullptr, executable, MAX_PATH);
+                ProToolkitDllHandle verified = nullptr;
+                std::string command;
+                state["direct_blend_callback"] = callback_runtime_status(
+                    std::filesystem::path(executable).parent_path(), verified, command);
+                disconnect_code =
+                    ProEngineerDisconnect(&process, probe_timeout < 15 ? probe_timeout : 15);
+                if (disconnect_code) {
+                    state["connected"] = false;
+                    state["connection_state"] = "disconnect_failed";
+                }
+            }
+            state["disconnect_code"] = disconnect_code;
+            printf("%s\n", state.dump().c_str());
+            return result ? 20 : 0;
+        }
         std::wstring name;
         int type = -1, current_code = -8, release = 0;
         if (connected) {

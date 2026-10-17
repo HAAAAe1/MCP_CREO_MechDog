@@ -15,7 +15,7 @@
 - [DEV-029：0.3.3 主干交付](work-items/DEV-029.md)已完成：main@9ee923c 与 v0.3.3 指向一致，[Release](https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.3)已公开为 Pre-release，四份附件从实际主干生成并下载核对 SHA256；主干 CI、两目录各 263 项与原生回归通过，最终交付见 [PR #8](https://github.com/wudahua/MCP_CREO_MechDog/pull/8)。原[候选记录](validation/RELEASE-0.3.3.md)保留当时阶段与未测范围。
 
 - 2026-10-16 [DEV-028：Creo 9 编译与安装闭环](work-items/DEV-028.md) 已完成，BUG-033 与 DEV-019～022 统一移入[完成归档](BACKLOG_COMPLETED.md)：14 项新增定向回归、260 项完整单元/语言守卫、本机 SDK 构建、显式环境真实编译及桌面环境 Creo 12.4 七个原生作业通过，逐任务保存重载 true，见[本次证据](validation/DEV-028.md)。Creo 9 实机编译/运行时仍未验证；普通 Codex 宿主连接 -4 的限制单独记录。一个本地提交，不推送、不发布、不升版。 后续 [WorkBuddy 复核](validation/DEV-028-WorkBuddy-review-20261016.md)采纳部署和通用计划单孔/双孔通过；底板快捷入口参数受阻，仍未覆盖，序列化原因待核实，线索归 FEAT-008。
-- FEAT-029独立分支879aebe已有实现与分层验收，尚未合入公开0.3.3。当前按[DEV-030](work-items/DEV-030.md)在已确认的BUG-001/FEAT-018恢复修复之后衔接[主干集成交付](work-items/FEAT-029.md)；不重复开发、不把旧分支结果当主干通过，也不因公开旧机制的新目录反馈判新方案失效。
+- FEAT-029已按2026-10-17用户指令集成到E盘codex/feat-029-integration：297项单元、SDK编译、载荷ABI及84工具stdio离线检查通过。见[本次集成](validation/FEAT-029-integration-2026-10-17.md)。BUG-001卡死未定位，集成环境实机/WorkBuddy待测，未合入main或发布；历史879aebe证据不改标为本轮通过。
 - [P1 联合修复](work-items/P1-MODELING-REPAIR.md)：本环境已测分支已有 WorkBuddy 通过记录；查询预算、放样计划入口引用及恢复失败等功能边界按各项继续验收。BUG-022 已完成并归档，原环境反馈保留来源。
 - 0.3.1 已合入历史 main@515d50b，未发布 v0.3.1；累计公开交付已由 DEV-025 / v0.3.2 完成。更新提醒仍有未测场景，Python 包迁移继续分批推进。
 - P0 通道恢复 BUG-008 按本机 Creo 12.4 已验证范围完成并移入[完成事项归档](BACKLOG_COMPLETED.md)：246 项单元、同实现真实冷态自动归档/重建/单次启动，以及新 WorkBuddy retry/120 mm³ 建模/unknown 保护通过。WorkBuddy 冷态与异常环境、历史完整链仍未验证，分层边界见[关闭复核](validation/BUG-008-closure-2026-10-16.md)。BUG-009 已完成并归档；其他未确定版本的事项保持“未排期”。
@@ -37,7 +37,7 @@
 
 | ID | 优先级 | 状态 | 目标版本 | 范围与下一步 |
 | --- | --- | --- | --- | --- |
-| [FEAT-029](work-items/FEAT-029.md) | P1 | 验收中 | 未排期 | 功能分支 879aebe 已按本机范围完成并附开发者/WorkBuddy 分层证据，尚未合入 0.3.3。下步按 DEV-030 G1 合并当前主干、核对构建/回调/安装/分发交叉、补集成回归并发布新版本；不重复开发、不用旧分支证据冒充新主干。 当前排在BUG-001/FEAT-018已确认恢复修复之后，公开0.3.3新增目录反馈不等于本分支方案失败。 |
+| [FEAT-029](work-items/FEAT-029.md) | P1 | 验收中 | 未排期 | 879aebe已集成E盘恢复开发基线；297项单元、SDK编译、12项载荷ABI及84工具离线/busy检查通过。集成环境实机/WorkBuddy待测；保留BUG-001卡死限制，未合入main/发布。见[集成证据](validation/FEAT-029-integration-2026-10-17.md)。 |
 | [BUG-013](work-items/BUG-013.md) | P1 | 验收中 | 未排期 | 默认摘要、section 分页与过期 cursor 拒绝已有 WorkBuddy 通过记录，0.3.1 再次正向复验；精确 32 KiB/单条超预算边界未补齐。jobs 列表日志归 FEAT-023。0.3.2/Creo 9 报告确认 compact 分页正常并建议补 truncated/complete 标志。 |
 | [BUG-014](work-items/BUG-014.md) | P1 | 验收中 | 未排期 | 恢复快照/空件/plate 已有本环境通过记录，0.3.1 drawing 未知计数为 null；新增泛型作业 counts=null 而后续查询有值的差异待对齐终态/来源核实；未知值仍保留 null，恢复失败等未测。 |
 | [BUG-017](work-items/BUG-017.md) | P1 | 验收中 | 未排期 | 本机合法筋、方向/厚度侧及负例恢复已有 WorkBuddy 通过记录，0.3.1 L形件+YZ斜筋再次通过。新增 Creo 9/0.3.0 四次再生失败反馈，补完整平面/轮廓及部署身份后核实；不覆盖本机正例或恢复旧版独立验收门槛，完整功能边界继续验收。0.3.2/Creo 9 报告记录 4 次仍失败（两阶段创建成功、redefine 后状态非 ACTIVE），按来源补录，不改本机正例结论。 |

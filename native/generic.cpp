@@ -2069,6 +2069,19 @@ static int run_generic(const std::wstring &job) {
             generic_stage("recovery_" + request["reconciliation"]["action"].get<std::string>());
             reconcile_native(request, report);
         } else {
+            // Recovery has its own evidence-bound path. Check callback readiness
+            // only for a normal plan that will create a direct Blend.
+            for (const auto &operation : request.at("operations")) {
+                if (operation.value("op", "") == "loft") {
+                    generic_stage("callback_preflight");
+                    wchar_t executable[MAX_PATH];
+                    GetModuleFileNameW(nullptr, executable, MAX_PATH);
+                    std::string command;
+                    resident_blend_callback(std::filesystem::path(executable).parent_path(),
+                                            command);
+                    break;
+                }
+            }
             ProName name;
             wcscpy_s(name, model_name.c_str());
             ProMdlType mdltype =
@@ -2228,6 +2241,8 @@ static int run_generic(const std::wstring &job) {
         log("BUILD_FAILED=%s\n", error.what());
     }
     if (!report["success"].get<bool>()) {
+        if (generic_phase == "callback_preflight" && !mutated)
+            report["model_unchanged"] = true;
         report["failed_stage"] = generic_phase;
         report["failed_toolkit_call"] =
             last_toolkit_error.empty() ? J(nullptr) : J(last_toolkit_error);

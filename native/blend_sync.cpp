@@ -13,6 +13,9 @@
 #include <string>
 #include <vector>
 #include "third_party/json.hpp"
+#include "callback_identity.h"
+#include "callback_api.h"
+static const MechDogCallbackApi *host = nullptr;
 using Json = nlohmann::json;
 static std::wstring directory, expected_model;
 static std::vector<int> curve_ids;
@@ -22,6 +25,13 @@ static bool resident = false, active = false;
 static std::wstring module_directory, resource_root, current_request;
 static std::string resident_command;
 static Json resident_identity;
+static std::filesystem::path identity_file;
+static void persist_identity() {
+    std::ofstream file(identity_file, std::ios::binary);
+    file << resident_identity.dump(2);
+    if (!file)
+        throw std::runtime_error("Cannot publish callback identity");
+}
 static bool safe_token(const std::string &value) {
     if (value.empty() || value.size() > 70)
         return false;
@@ -45,6 +55,23 @@ static std::wstring from_utf8(const std::string &value) {
     MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, value.data(), (int)value.size(),
                         result.data(), size);
     return result;
+}
+
+static std::string to_utf8(const std::wstring &value) {
+    int size = WideCharToMultiByte(CP_UTF8, 0, value.data(), (int)value.size(), nullptr, 0, nullptr,
+                                   nullptr);
+    std::string result(size, '\0');
+    if (size)
+        WideCharToMultiByte(CP_UTF8, 0, value.data(), (int)value.size(), result.data(), size,
+                            nullptr, nullptr);
+    return result;
+}
+
+// Required by the Toolkit DLL link support, but payloads are never registered directly.
+extern "C" __declspec(dllexport) int user_initialize(int, char **, char *, char *,
+                                                     wchar_t errmsg[80]) {
+    wcscpy_s(errmsg, 80, L"Register the MechDog loader protk.dat, not the callback payload");
+    return PRO_TK_BAD_CONTEXT;
 }
 
 static void configure_request(const Json &request) {
@@ -72,7 +99,7 @@ extern "C" PRO_TK_DLL_EXPORT ProError MechDogBlendPrepare(ProArgument *inputs,
         return PRO_TK_BAD_CONTEXT;
     try {
         int count = 0;
-        ProError code = ProArraySizeGet((ProArray)inputs, &count);
+        ProError code = host->array_size((ProArray)inputs, &count);
         if (code || count != 1 || inputs[0].value.type != PRO_VALUE_TYPE_WSTRING ||
             !inputs[0].value.v.w)
             return PRO_TK_BAD_INPUTS;
@@ -88,19 +115,19 @@ extern "C" PRO_TK_DLL_EXPORT ProError MechDogBlendPrepare(ProArgument *inputs,
         std::ifstream input(file, std::ios::binary);
         Json request;
         input >> request;
-        if (request.value("protocol", 0) != 2)
+        if (request.value("protocol", 0) != mechdog_callback::protocol)
             return PRO_TK_BAD_INPUTS;
         configure_request(request);
         ProMdl model = nullptr;
         ProMdlName name = L"";
-        code = ProMdlCurrentGet(&model);
+        code = host->current_model(&model);
         if (!code)
-            code = ProMdlMdlnameGet(model, name);
+            code = host->model_name(model, name);
         if (code || _wcsicmp(name, expected_model.c_str()))
             return code ? code : PRO_TK_BAD_CONTEXT;
         directory = file.parent_path().wstring();
         current_request = file.wstring();
-        outcome = {{"protocol", 2},
+        outcome = {{"protocol", mechdog_callback::protocol},
                    {"selected", 0},
                    {"codes", Json::array()},
                    {"command", resident_command},
@@ -121,7 +148,7 @@ extern "C" PRO_TK_DLL_EXPORT ProError MechDogBlendRelease(ProArgument *inputs,
         return PRO_TK_BAD_CONTEXT;
     try {
         int count = 0;
-        ProError code = ProArraySizeGet((ProArray)inputs, &count);
+        ProError code = host->array_size((ProArray)inputs, &count);
         if (code || count != 1 || inputs[0].value.type != PRO_VALUE_TYPE_WSTRING ||
             !inputs[0].value.v.w ||
             std::filesystem::weakly_canonical(inputs[0].value.v.w).wstring() != current_request)
@@ -139,24 +166,26 @@ static uiCmdAccessState access(uiCmdAccessMode) {
     return ACCESS_AVAILABLE;
 }
 static int select_section(uiCmdCmdId, uiCmdValue *, void *) {
+    if (!resident || !active || resident_identity.value("terminated", true))
+        return 0;
     ProSelection selected = nullptr;
     try {
         ProMdl model = nullptr;
         ProMdlName name = L"";
-        ProError code = ProMdlCurrentGet(&model);
+        ProError code = host->current_model(&model);
         if (!code)
-            code = ProMdlMdlnameGet(model, name);
+            code = host->model_name(model, name);
         if (!code && (_wcsicmp(name, expected_model.c_str()) || section_index >= curve_ids.size()))
             code = PRO_TK_BAD_CONTEXT;
         ProModelitem item;
         if (!code)
-            code = ProModelitemInit(model, curve_ids[section_index], PRO_CURVE, &item);
+            code = host->model_item(model, curve_ids[section_index], PRO_CURVE, &item);
         if (!code)
-            code = ProSelectionAlloc(nullptr, &item, &selected);
+            code = host->selection_alloc(nullptr, &item, &selected);
         if (!code)
-            code = ProSelectExternalselectionRecord(selected, PRO_SELECT_OVERRIDE);
+            code = host->selection_record(selected, PRO_SELECT_OVERRIDE);
         if (selected) {
-            ProSelectionFree(&selected);
+            host->selection_free(&selected);
             selected = nullptr;
         }
         outcome["codes"].push_back(code);
@@ -166,7 +195,7 @@ static int select_section(uiCmdCmdId, uiCmdValue *, void *) {
         persist();
     } catch (...) {
         if (selected)
-            ProSelectionFree(&selected);
+            host->selection_free(&selected);
         try {
             outcome["exception"] = true;
             persist();
@@ -175,34 +204,60 @@ static int select_section(uiCmdCmdId, uiCmdValue *, void *) {
     }
     return 0;
 }
-extern "C" __declspec(dllexport) int user_initialize(int, char **, char *, char *,
-                                                     wchar_t errmsg[80]) {
+extern "C" __declspec(dllexport) int MechDogBlendInitialize(int, char **, char *, char *,
+                                                            wchar_t errmsg[80],
+                                                            const wchar_t *application_id,
+                                                            const wchar_t *loader_file,
+                                                            const MechDogCallbackApi *api) {
     try {
+        if (!api || api->abi != mechdog_callback::loader_abi ||
+            api->size != sizeof(MechDogCallbackApi))
+            return PRO_TK_BAD_INPUTS;
+        host = api;
         wchar_t filename[MAX_PATH];
         HMODULE module = nullptr;
         if (!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
                                     GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-                                (LPCWSTR)&user_initialize, &module) ||
+                                (LPCWSTR)&MechDogBlendInitialize, &module) ||
             !GetModuleFileNameW(module, filename, MAX_PATH))
             return PRO_TK_GENERAL_ERROR;
         directory = filename;
         directory = directory.substr(0, directory.find_last_of(L"\\"));
         module_directory = directory;
-        resident = std::filesystem::is_regular_file(directory + L"\\callback_bootstrap.json");
-        std::ifstream input(directory +
-                            (resident ? L"\\callback_bootstrap.json" : L"\\callback_request.json"));
+        resident = true;
+        std::ifstream input(directory + L"\\callback_bootstrap.json");
         Json request;
         input >> request;
         std::string command = request.at("command");
         if (!safe_token(command))
             return PRO_TK_BAD_INPUTS;
         if (resident) {
-            if (request.value("protocol", 0) != 2)
+            auto actual_root = std::filesystem::path(filename)
+                                   .parent_path()
+                                   .parent_path()
+                                   .parent_path()
+                                   .parent_path();
+            if (request.value("protocol", 0) != mechdog_callback::protocol ||
+                request.value("contract", "") != mechdog_callback::contract ||
+                _wcsicmp(actual_root.c_str(), from_utf8(request.at("resource_root")).c_str()) ||
+                request.value("dll_sha256", "") != mechdog_callback::sha256(filename) ||
+                !application_id || !*application_id || !loader_file || !*loader_file)
                 return PRO_TK_BAD_INPUTS;
             resource_root = from_utf8(request.at("resource_root"));
             resident_command = command;
-            outcome["protocol"] = 2;
+            outcome["protocol"] = mechdog_callback::protocol;
+            outcome["terminated"] = false;
             outcome["command"] = command;
+            outcome["contract"] = mechdog_callback::contract;
+            outcome["resource_root"] = request.at("resource_root");
+            outcome["module_file"] = std::filesystem::path(filename).u8string();
+            outcome["dll_sha256"] = request.at("dll_sha256");
+            outcome["loader_file"] = std::filesystem::path(loader_file).u8string();
+            outcome["loader_sha256"] = mechdog_callback::sha256(loader_file);
+            outcome["loader_abi"] = mechdog_callback::loader_abi;
+            outcome["process_id"] = GetCurrentProcessId();
+            identity_file =
+                std::filesystem::path(loader_file).parent_path() / L"callback_result.json";
         } else {
             configure_request(request);
         }
@@ -211,13 +266,15 @@ extern "C" __declspec(dllexport) int user_initialize(int, char **, char *, char 
         outcome["initialize_stage"] = "before_application_id";
         outcome["initialize_tick_ms"] = GetTickCount64();
         persist();
-        ProName application_id;
-        ProError identified = ProToolkitDllIdGet(nullptr, application_id);
+        // The registered loader supplies its identifier. The payload itself is
+        // never independently registered as a Toolkit application.
+        ProError identified =
+            application_id && *application_id ? PRO_TK_NO_ERROR : PRO_TK_BAD_INPUTS;
         outcome["application_id_code"] = identified;
         outcome["initialize_stage"] = "after_application_id";
         if (!identified) {
             std::wstring id = application_id;
-            outcome["application_id"] = std::string(id.begin(), id.end());
+            outcome["application_id"] = to_utf8(id);
         }
         persist();
         if (identified)
@@ -225,13 +282,15 @@ extern "C" __declspec(dllexport) int user_initialize(int, char **, char *, char 
         outcome["initialize_stage"] = "before_command_register";
         persist();
         uiCmdCmdId action;
-        ProError code = ProCmdActionAdd(command.data(), select_section, uiProeAsynch, access,
-                                        PRO_B_FALSE, PRO_B_FALSE, &action);
+        ProError code = host->command_add(command.data(), select_section, uiProeAsynch, access,
+                                          PRO_B_FALSE, PRO_B_FALSE, &action);
         outcome["initialize_code"] = code;
         outcome["initialize_stage"] = "after_command_register";
         persist();
-        if (resident)
+        if (resident) {
             resident_identity = outcome;
+            persist_identity();
+        }
         return code;
     } catch (...) {
         wcscpy_s(errmsg, 80, L"Invalid MechDog Blend callback request");
@@ -244,9 +303,52 @@ extern "C" __declspec(dllexport) void user_terminate() {
         persist();
         if (resident) {
             resident_identity["terminated"] = true;
-            std::ofstream file(module_directory + L"\\callback_result.json", std::ios::binary);
-            file << resident_identity.dump(2);
+            persist_identity();
         }
     } catch (...) {
+    }
+}
+
+// A live response, not an initialization file, proves that this exact module is
+// running in the selected Creo session. It does not reset an active request.
+extern "C" PRO_TK_DLL_EXPORT ProError MechDogBlendIdentity(ProArgument *inputs,
+                                                           ProArgument **outputs) {
+    if (!outputs)
+        return PRO_TK_BAD_INPUTS;
+    *outputs = nullptr;
+    try {
+        if (!resident || !host || resident_identity.value("initialize_code", -1) != 0 ||
+            resident_identity.value("terminated", false))
+            return PRO_TK_BAD_CONTEXT;
+        int count = 0;
+        ProError array_code =
+            inputs ? host->array_size((ProArray)inputs, &count) : PRO_TK_BAD_INPUTS;
+        if (array_code)
+            return array_code;
+        if (count != 1 || inputs[0].value.type != PRO_VALUE_TYPE_WSTRING || !inputs[0].value.v.w)
+            return PRO_TK_BAD_INPUTS;
+        std::wstring nonce = inputs[0].value.v.w;
+        if (nonce.size() != 32 ||
+            nonce.find_first_not_of(L"0123456789abcdef") != std::wstring::npos)
+            return PRO_TK_BAD_INPUTS;
+        Json identity = resident_identity;
+        identity.erase("application_id");
+        identity["nonce"] = to_utf8(nonce);
+        identity["active_request"] = active;
+        ProError code = host->array_alloc(1, sizeof(ProArgument), 1, (ProArray *)outputs);
+        if (code)
+            return code;
+        (*outputs)[0] = {};
+        wcscpy_s((*outputs)[0].label, L"identity");
+        (*outputs)[0].value.type = PRO_VALUE_TYPE_WSTRING;
+        auto value = from_utf8(identity.dump());
+        code = host->wstring_set(&(*outputs)[0].value, value.data());
+        if (code)
+            host->arguments_free(outputs);
+        return code;
+    } catch (...) {
+        if (*outputs)
+            host->arguments_free(outputs);
+        return PRO_TK_GENERAL_ERROR;
     }
 }

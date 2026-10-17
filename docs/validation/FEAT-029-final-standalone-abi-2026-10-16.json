@@ -1,0 +1,29 @@
+{
+  "work_item": "FEAT-029",
+  "timestamp": "2026-10-16T06:17:11.247843+00:00",
+  "source": {
+    "commit": null,
+    "dirty": null
+  },
+  "source_fingerprints": {
+    "tools\\test_callback_payload.cpp": "a665fb37aa21b55721d89ec22dfba5b899716be94b395dbc9edbd4bbf6927dac",
+    "tools\\test_callback_payload.py": "020823a8ea82c4d36ed8c7490cbc5aabde3f67cfce458e6fe4f7f1905e9a9867",
+    "native\\blend_sync.cpp": "7500f24d69424f0afa1c027587e24c6e83af42bd953d32cdff28e9a49cf00075",
+    "native\\callback_api.h": "f911bd17afb6975843d53be13397ee7adb08c2272fa6148cadb38f0595e9d67a"
+  },
+  "environment": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14",
+    "creo_sdk": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit",
+    "creo_session": "not connected"
+  },
+  "payload_sha256": "9346f9e0410a6b7f91b6c33db2b6be9b8e2f1e597e6d41c5fa0f774b6081e20e",
+  "fixture": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\mcd_cb_v8verout",
+  "result": {
+    "checks": 12,
+    "scope": "standalone SDK allocation and fixture-model ABI; no Creo modeling",
+    "selected_fixture_sections": 2,
+    "success": true
+  },
+  "scope": "SDK allocation and fixture-model host API only; not Creo or WorkBuddy acceptance"
+}

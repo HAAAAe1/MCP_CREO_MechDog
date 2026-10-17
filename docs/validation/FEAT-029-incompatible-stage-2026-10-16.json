@@ -1,0 +1,49 @@
+{
+  "work_item": "FEAT-029",
+  "scope": "developer incompatible worker injection, no source or loaded DLL changes",
+  "started_at": "2026-10-16T05:54:19.326502+00:00",
+  "original_worker_sha256": "7ead09d87d2341ac1b62ef34a30a5f6a49d0a069fe33e0f3b9695cc5ca1f9d8d",
+  "incompatible_worker_sha256": "ca3de7a6d1566dc866cb5e4df1ea8fd936aadb0985c940c3fb05736ef5a1dfef",
+  "fixture_build": {
+    "work_item": "FEAT-029",
+    "scope": "Developer incompatible worker fixture; not released source or WorkBuddy",
+    "changes": {
+      "native/callback_identity.h": {
+        "protocol": 99,
+        "contract": "feat029-incompatible-test-contract"
+      }
+    },
+    "worker_sha256": "ca3de7a6d1566dc866cb5e4df1ea8fd936aadb0985c940c3fb05736ef5a1dfef",
+    "source_fingerprints": {
+      "advanced.cpp": "4eefd397f6694d1bef185bd47ed7cbc530cc80e600337a1c1dd375c679f67d4d",
+      "blend_create.cpp": "e02624fa539313a16492bbadfc8ac35fdb5cef2b1f878799c23648667282adf7",
+      "blend_loader.cpp": "327dfdd9ecdf810d66877baba66b88fe98cb4f2d072b7de07367f45d20109008",
+      "blend_sync.cpp": "7500f24d69424f0afa1c027587e24c6e83af42bd953d32cdff28e9a49cf00075",
+      "callback_api.h": "f911bd17afb6975843d53be13397ee7adb08c2272fa6148cadb38f0595e9d67a",
+      "callback_identity.h": "429d9ff467f5bd20e2561cdc1a9daa245bde3dd64dc2af1c373d0f0cdc2027a3",
+      "callback_runtime.h": "69eeea35841b3a37ae73aaf0a73474f8f09f00e59c21c6ecf7c498f6f9cca6d1",
+      "constants.inc": "46deeac73a28a41af18772dffdf020fea0d8c3fccdfa04a6d4fd226de25434f2",
+      "drawing.cpp": "d280916202fcb20c39cb30afa7b0fdf53460447596429dc1e5f9a005e4fbf3d3",
+      "generic.cpp": "fecc7c9c0ec45b61c922f0fe745b935bdaf752633a537dd8afc558e461dcd48e",
+      "geometry.cpp": "6cf225cdce32c3ee3ba25d2660df2a6fe8737c18645b00b85ac1b46c420c2bed",
+      "loft_mode.cpp": "9a4543f474d26f245392acce239070865dd0c5cf28d957859dbd585fa461fada",
+      "loft_seed.cpp": "2ea07eb7960eed9ec522e9c90562383e64f41461d9ebe737fe83f600757deaa3",
+      "placement.cpp": "87b732b85a0a0581e2a07d82c7c893f17756d90d8869bdd41b2608db031d325d",
+      "result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220",
+      "sketch_coordinates.cpp": "e229ea20e83c0ba9e3780a2c17cff18d178cc6d3baebdc0bc2d0ce43eba4ba85",
+      "sketch_edit.cpp": "f7ec7be57782c73f26cbb179601429a2405942a0db0ea3b6b61116895f7fb51f",
+      "sketch_solver.cpp": "1cfc3f60b26f5bc2442a6fb6ccdb3a38c7fefe389ca001b8805035b4cdd9d224",
+      "surfaces.cpp": "c00784132a9a1102005e17aa82d7531e1848bb4927bc2c0d29159e57b3546d9e",
+      "udf.cpp": "f0e076a63b1bc6a9fa1c44665dffcbbaa6806ec3242b1b091145deaf6d0fa736",
+      "worker.cpp": "37b3c8ef0d4cedd91adcf3d0dff03f41a33516c10f7d467ecfe62defc476bc7c",
+      "third_party/json.hpp": "aaf127c04cb31c406e5b04a63f1ae89369fccde6d8fa7cdda1ed4f32dfc5de63",
+      "third_party/LICENSE.nlohmann-json": "46a65cffd1ea955132d95a8dd921640714a8d6b537d2e4e482d31145ae95b603"
+    },
+    "command": "@echo off\ncall \"C:\\MCP_CREO_MechDog\\vcvars64_local.cmd\"\nif errorlevel 1 exit /b 1\ncl /nologo /MD /EHsc /std:c++17 /bigobj /W3 /DPRO_MACHINE=36 /DPRO_OS=4 /DPRO_USE_VAR_ARGS /I\"C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit\\includes\" /c \"C:\\Users\\Administrator\\.codex\\worktrees\\feat-029-callback-lifecycle\\MCP_CREO_MechDog\\build\\feat029_incompatible\\native\\worker.cpp\" /Fo\"C:\\Users\\Administrator\\.codex\\worktrees\\feat-029-callback-lifecycle\\MCP_CREO_MechDog\\build\\feat029_incompatible\\worker.obj\"\nif errorlevel 1 exit /b 2\nlink /nologo /MACHINE:X64 /SUBSYSTEM:CONSOLE /OUT:\"C:\\Users\\Administrator\\.codex\\worktrees\\feat-029-callback-lifecycle\\MCP_CREO_MechDog\\build\\feat029_incompatible\\creo_worker.exe\" \"C:\\Users\\Administrator\\.codex\\worktrees\\feat-029-callback-lifecycle\\MCP_CREO_MechDog\\build\\feat029_incompatible\\worker.obj\" \"C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit\\x86e_win64\\obj\\protkmd_NU.lib\" \"C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit\\x86e_win64\\obj\\ptasyncmd.lib\" \"C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit\\x86e_win64\\obj\\ucore.lib\" \"C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit\\x86e_win64\\obj\\udata.lib\" kernel32.lib user32.lib wsock32.lib advapi32.lib mpr.lib winspool.lib netapi32.lib psapi.lib gdi32.lib shell32.lib comdlg32.lib ole32.lib ws2_32.lib\n",
+    "log_sha256": "21de760114b4cd951f1ab698e2afb9526a0496e95583a62ebd94b3de9ee12c15"
+  },
+  "test_exit_code": 0,
+  "restored_worker_sha256": "7ead09d87d2341ac1b62ef34a30a5f6a49d0a069fe33e0f3b9695cc5ca1f9d8d",
+  "worker_restored": true,
+  "finished_at": "2026-10-16T05:55:07.224431+00:00"
+}

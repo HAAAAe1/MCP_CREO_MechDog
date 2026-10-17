@@ -185,3 +185,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C
 ## 本机开发恢复联调（2026-10-17）
 
 按用户要求，WorkBuddy/Codex 只启用 `MCP_CREO_MechDog_dev`，启动 E盘项目的 `.venv/Scripts/python.exe` 与 `server.py`；C盘旧副本和test项保持禁用。注册名不等于发布版本，当前源码VERSION仍为0.3.3并含未发布改动；用实际入口、源码指纹和83工具辨认开发部署。不要在同一Creo会话混用不同安装根的客户端：它们的根目录Toolkit锁互不共享。正式使用恢复入口前，先看[恢复说明](MODEL_RECOVERY.md)与[本轮中断记录](validation/BUG-001-recovery-2026-10-17.md)。目前实机测试已停止，卡死原因未定位。
+
+## FEAT-029开发集成后的回调入口
+
+本开发分支共84工具，新增只读creo_callback_status；运行实例需重连才会加载新定义。构建准备固定 `build/blend_callback_protk.dat`，其指向不可变引导及部署载荷，不代表Creo已注册或加载。首次及旧protocol 2迁移仍需使用者一次正式注册；将生成的blend_callback.config.pro片段合入实际加载的config.pro，delay_start true仍需手动启动。兼容升级通常需正常重启Creo并启动同一条目，无须为载荷哈希重新选择注册文件。具体步骤、拒绝/未知分支和限制见[生命周期说明](CALLBACK_LIFECYCLE.md)；当前卡死限制下只完成[离线集成](validation/FEAT-029-integration-2026-10-17.md)，本轮不执行这些GUI操作或实机复验。

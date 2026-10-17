@@ -22,7 +22,7 @@ import generic_bridge as general
 import seeds
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS, families
 from creo_mechdog import update_check
-from creo_mechdog.blend_callback import callback_setup_status
+from creo_mechdog.blend_callback import callback_setup_status, unknown_readiness
 from creo_mechdog.paths import SOURCE_PATHS
 from creo_mechdog.reconciliation import reconcile
 from creo_mechdog.references import PatternAxis, reference_capabilities
@@ -80,6 +80,12 @@ _SOURCE_NAMES = (
     "native/drawing.cpp",
     "native/result_delivery.h",
     "native/recovery_deadline.h",
+    "native/blend_sync.cpp",
+    "native/blend_loader.cpp",
+    "native/blend_create.cpp",
+    "native/callback_identity.h",
+    "native/callback_api.h",
+    "native/callback_runtime.h",
 )
 
 
@@ -172,6 +178,30 @@ async def creo_check_environment() -> dict[str, Any]:
 async def creo_session_status() -> dict[str, Any]:
     """Check the configured/unique Creo session through Toolkit (9 second probe budget, no rebuild). Busy returns its occupying job; probe_timeout returns recovery guidance. During startup return its snapshot promptly. connected=true requires verification; ambiguous/stale session selections never fall back to a random session."""
     return await invoke(startup.session_status)
+
+
+@mcp.tool(annotations=READ)
+async def creo_callback_status() -> dict[str, Any]:
+    """Read resident Blend readiness without building, loading a DLL, launching Creo or changing models. The native probe has a 9-second budget and verifies a fresh nonce, module/loader hashes, protocol, command and resource root. Returns ready/not_loaded/version_mismatch/unknown with identities, checked_at and next steps. GUI registration stays unknown; busy, unreachable and timeout never imply unregistered. Old protocol-2 registration requires a one-time migration; stable loader upgrades normally require a Creo restart and starting the same registration. Do not replay unknown_outcome."""
+    state = startup.status()
+    if state.get("coordinator_running"):
+        return unknown_readiness(
+            callback_setup_status(bridge.ROOT / "build"), "startup_in_progress", startup=state
+        )
+    result = await invoke(bridge.callback_status)
+    result["service"] = {
+        "version": VERSION,
+        "resource_root": str(SOURCE_PATHS.resource_root),
+        "source_fingerprints_at_startup": dict(_LOADED_FINGERPRINTS),
+        "source_changed_since_startup": _source_fingerprints() != _LOADED_FINGERPRINTS,
+    }
+    if result["service"]["source_changed_since_startup"]:
+        result.update(
+            readiness="unknown",
+            reason="service_source_changed",
+            instruction="Restart this MCP service to load the deployed code, then query again. Preserve unknown jobs/models.",
+        )
+    return result
 
 
 @mcp.tool(annotations=CREATE)
@@ -1092,10 +1122,11 @@ async def creo_loft(
     """Append a native solid Blend using independent MCP-owned XY sketches, ordered by increasing Z.
 
     Straight/smooth, default-body add only. Cut, surface and new_body are rejected.
-    Manually initialize the resident callback before modeling under every loader policy
-    before modeling using capabilities.direct_blend_callback.registry_file. If absent,
-    the native worker rejects before DLL loading with BLEND_CALLBACK_SETUP_REQUIRED.
-    Reuses the prepared callback across jobs; MCP does not change Creo security policy.
+    Query creo_callback_status before modeling. Register its registry_file once per
+    loader/SDK generation and start it manually under every loader policy. Payload
+    upgrades normally require restarting Creo and starting the same registration.
+    Missing, mismatched or unverified callbacks reject before model mutation with
+    BLEND_CALLBACK_SETUP_REQUIRED. MCP never loads DLLs or changes security policy.
     sections accepts sketch labels or integer feature IDs; digit-only strings are
     normalized to feature IDs for public-client compatibility. References must be distinct.
     """
