@@ -6,7 +6,7 @@
 
 最新[BUG-001离线卡死核对](validation/BUG-001-hang-offline-2026-10-17.md)已确认Creo IPC初始化通信失败及同一12.4进程无响应关闭，底层诱因仍待定位。当前无Creo会话可验证，确认可操作前继续停止Toolkit连接/注入；此核对不替代实机/WorkBuddy验收。
 
-[DEV-036](work-items/DEV-036.md) 两轮核实已闭环（[记录](validation/BUG-056-DEV-036-investigation-2026-10-17.md)）：BUG-056 定位为遗留nmsd（名字服务）侧会话信息失效、服务侧无缺陷；用户处置环境（关闭Creo、清理遗留nmsd与残留服务实例）后复测通过——38次间隔探测跨7.5分钟无掉线，建模闭环（新建/编辑/保存重载/空闲后探测）全程稳定，`creo_session_status`新增只读进程快照（服务重启后生效）。剩余T07/T08、WorkBuddy黑盒及M2收尾待发起者安排；期间不自动重连、不清保护。原有DEV-030后续分期及DEV-027最新Creo10反馈保持；DEV-034真实MCP和WorkBuddy证据已记录，不重复实施，M2受保护交接及FEAT-018/029完整验收仍分别跟踪。
+[DEV-036](work-items/DEV-036.md) 四轮闭环并已归档（[核实记录](validation/BUG-056-DEV-036-investigation-2026-10-17.md)、[WorkBuddy 验收](validation/DEV-036-WorkBuddy-acceptance-2026-10-17.md)）：BUG-056 定位为跨批次遗留nmsd（名字服务）侧会话信息失效、服务侧无缺陷，用户处置环境后复测通过并按用户确认关闭；M2 经 live 取证 abandon_new 收尾；WorkBuddy 黑盒（新字段/稳定性/MCP 建模/空值协议含字面 "null" 完整终态/M2 确认）全部通过。后续通道同机 -4 永久失效按核实记录的取证顺序排查（WMI 进程身份→IsHungAppWindow→单次 30 秒判别探测→trail）。FEAT-018/029 完整验收与 M2 外的 unknown 保护维持原状；DEV-036 的改动尚未合入 main，合入时按发布规则另行交付。
 
 ## 每次开发的顺序
 
