@@ -282,5 +282,100 @@
     "hang root cause",
     "Creo 9 SDK compile/runtime and Creo 10 independent retest"
   ],
-  "source_distribution": "pending committed snapshot and independent extraction; final assets must come from actual main commit"
+  "source_distribution": {
+    "commit": "85330543533b8375d52bd3022ef59db99ccbff21",
+    "source_file_count": 509,
+    "historical_files_match_git_objects": 195,
+    "protected_original_sha256_match": 13,
+    "source_zip_sha256": "049a204e63bf29e13a7e819be50521646b451534221cea89a37db96f5951a058",
+    "seed_zip_sha256": "e7e59429aa94e38e25002e2041b816747bca9cf6c766ed14ad8a65f44b901d59",
+    "no_runtime_config_sdk_or_untracked_plan": true,
+    "extracted_source": "E:\\Projects\\MCP_CREO_MechDog\\build\\release-0.3.4\\extracted-candidate\\MCP_CREO_MechDog",
+    "success": true,
+    "candidate_only": true,
+    "final_assets": "Rebuild from actual main merge commit; published hashes verified and recorded in PR #9 and Release."
+  },
+  "independent_install": {
+    "source_commit": "85330543533b8375d52bd3022ef59db99ccbff21",
+    "new_venv": true,
+    "locked_dependencies_installed": true,
+    "development_check": {
+      "work_item": "DEV-032",
+      "version": "0.3.4",
+      "timestamp_utc": "2026-10-17T06:22:36.367721+00:00",
+      "environment": {
+        "os": "Windows",
+        "python": "3.12.14"
+      },
+      "source": {
+        "commit": null,
+        "dirty": null,
+        "checked_source_sha256": "545729be4b3fb62b5c6b145f732cb810e391fe350c8c7eb6c2f4b4701d77d4f0"
+      },
+      "native_validation": "not_run",
+      "unit_tests": "passed",
+      "success": true,
+      "style_summary": {
+        "lint_findings": 35,
+        "unformatted_files": 25,
+        "cpp_files_checked": 21,
+        "python_files_checked": 106
+      },
+      "tools": {
+        "ruff": "0.17.0",
+        "clang-format": "23.1.3"
+      },
+      "configuration": {
+        "pyproject.toml": "4b786c9741c35ba69a3e27a08b686fbf2989821d4ab8d1daf00fe9889e09d0aa",
+        ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+        "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc"
+      }
+    },
+    "unit_tests": {
+      "version": "0.3.4",
+      "timestamp": 1792218224.9638507,
+      "tests_run": 297,
+      "success": true,
+      "failures": 0,
+      "errors": 0
+    },
+    "api_and_seed_install": {
+      "version": "0.3.4",
+      "tool_count": 84,
+      "source_root": "E:\\Projects\\MCP_CREO_MechDog\\build\\release-0.3.4\\extracted-candidate\\MCP_CREO_MechDog",
+      "startup_lifespan_entered": false,
+      "native_connections": 0,
+      "seed_archive_installed": true,
+      "seed_count": 9,
+      "seed_digests_valid": true,
+      "worker_sha256": "f77af2bc30ba3cc3eb714611f11a101f747308a0b32012cfb764666848f9b839",
+      "constants_generated_locally": true,
+      "success": true
+    },
+    "setup_check_only": {
+      "success": true,
+      "runtime_connection_or_license_not_verified": true
+    },
+    "sdk_build": {
+      "fresh": true,
+      "constants_generated_locally": 6521,
+      "success": true,
+      "native_connections": 0
+    }
+  },
+  "candidate_ci": [
+    {
+      "name": "windows-unit-and-style",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/wudahua/MCP_CREO_MechDog/actions/runs/39009612590/job/117329108050"
+    },
+    {
+      "name": "windows-unit-and-style",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/wudahua/MCP_CREO_MechDog/actions/runs/39009576440/job/117328989239"
+    }
+  ],
+  "pull_request": "https://github.com/wudahua/MCP_CREO_MechDog/pull/9"
 }
