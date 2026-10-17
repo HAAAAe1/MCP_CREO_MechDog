@@ -1,0 +1,55 @@
+{
+  "work_items": [
+    "BUG-001",
+    "FEAT-018"
+  ],
+  "date": "2026-10-17",
+  "recorded_at": "2026-10-17T01:03:29.189070+00:00",
+  "workspace": "E:\\Projects\\MCP_CREO_MechDog",
+  "branch": "codex/dev-030-e-drive-sync",
+  "base_commit": "bcd90abc3fb7a10a6b26d5b97c4b198483bc61e9",
+  "dirty": true,
+  "scope": "Create a joint executable recovery task card and align existing parent cards, ledger and development entry. No implementation or model operations.",
+  "success": true,
+  "document_sha256": {
+    "docs/work-items/BUG-001-FEAT-018-RECOVERY.md": "9e17398d9e9f714366fe86d9433a0b6f3db7945b924ecdee76f33271996588da",
+    "docs/work-items/BUG-001.md": "8da84729eb1716f92ceac0b54866892303b1381530229353e494bead6a9fe159",
+    "docs/work-items/FEAT-018.md": "74fbfdd7cb51a13ca4113f239449cfb53360cfa4ece629589a3e4a24aab14174",
+    "docs/work-items/DEV-030.md": "17008391091d483767f7d5a2493655d2a345ce5d901c3dd7cb9848aa0e042b7b",
+    "docs/BACKLOG.md": "9cd82c7e2af76c0e64373e55710c7a2740741cde0d92a083cc42ba995632fe1f",
+    "docs/DEVELOPMENT.md": "cb52c3675da06676224ed39fc42cd8ccb23863fddc68ea5b0daf2b9edadb4d71"
+  },
+  "checks": {
+    "relative_links_and_anchors": 156,
+    "table_groups": 15,
+    "unique_ledger_ids": 112,
+    "no_duplicate_or_new_work_item_id": true,
+    "implementation_stages": "G1-G5",
+    "acceptance_matrix": "R01-R12",
+    "planned_actions": [
+      "restore_baseline",
+      "accept_saved",
+      "accept_live",
+      "abandon_new"
+    ],
+    "parent_state": "待开发; implementation not started",
+    "proposed_tools_marked_unimplemented": true,
+    "planned_test_files_do_not_yet_exist": true,
+    "source_allowlist_includes_card_and_check_record": true,
+    "git_diff_check": true
+  },
+  "protected_g0_original_sha256": {
+    "docs/validation/BUG-001-repro-2026-10-16.md": "f3613c716648f12d7bf574bfc9711a46b9a6e85dda57b2d7f83c4427fb779212",
+    "docs/validation/BUG-001-repro-2026-10-16.json": "b2c3bf2ff05c1fb3224ac55b414f76a1dfda93acb5064bc66a2d4613ba232882",
+    "docs/validation/bug-001-repro-2026-10-16/g0_driver.py": "c54c1c51b3cf32263a78db1a3b011f98d91a642c15474449d0b6350172ba04b0",
+    "docs/validation/bug-001-repro-2026-10-16/g0_evidence.json": "5360e6b23c44da58ba3d4bc5237619036d9918cf3c5f1c08218999339752c5a4"
+  },
+  "not_run": [
+    "Python/C++ implementation",
+    "compiler or unit tests",
+    "native modeling/recovery/fault injection",
+    "WorkBuddy acceptance",
+    "main merge, version change or Release publication"
+  ],
+  "next_step": "Start G1 design verification and freeze the API/state/budget contract, then implement G2-G3 and validate G4 before G5 delivery."
+}

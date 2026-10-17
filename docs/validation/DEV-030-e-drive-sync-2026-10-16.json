@@ -1,0 +1,79 @@
+{
+  "work_item": "DEV-030",
+  "date": "2026-10-16",
+  "recorded_at": "2026-10-16T15:24:31.483623+00:00",
+  "success": true,
+  "current_workspace": "E:\\Projects\\MCP_CREO_MechDog",
+  "branch": "codex/dev-030-e-drive-sync",
+  "head": "bcd90abc3fb7a10a6b26d5b97c4b198483bc61e9",
+  "dirty": true,
+  "previous_e_drive_head": "09e6be4a1a2d4c3365ec4aa255781acdd2e2b360",
+  "source_worktree": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog",
+  "scope": "Sync existing released 0.3.3 plus committed task-card/G0 records and latest 18 document files into the requested E-drive checkout. Future work for this task uses E:. Historical validation paths remain truthful. One exact .gitattributes rule protects the original G0 evidence bytes; no modeling or recovery logic changed.",
+  "synced_uncommitted_document_sha256": {
+    "docs/BACKLOG.md": "015d1f62baeb1e61f290195706c20a13352356e687f02eaf4d05faed45676159",
+    "docs/COMPATIBILITY.md": "fd6d86ce0b960eaa422e7e176b894ecd078e78a57ce0ddc1cc9d2b7e1901cadf",
+    "docs/DEVELOPMENT.md": "e48bd35150163a4911dedb43aba8150f6215ec5f48ed3b16c7ac81bed548fe84",
+    "docs/INSTALL.md": "064ab2313f3008a29f8816ace0788b12421af700dbfda6a79d63d8c7149a74fb",
+    "docs/validation/DEV-030-build-feedback-sync-2026-10-16.json": "0dcf93f236799b6d6febc7ab4ac9beab04cbe62e6f9be469b37df43dce00a302",
+    "docs/validation/FEEDBACK-0.3.3-BUILD.md": "8b154c886350b3b46e4d68c815b6eb9b9dc89bac54affc9507c0d9ea032f3235",
+    "docs/validation/TRACK-FEEDBACK-2026-10-16.md": "2d8c9ba711aa2f5158adfadfe7a748e3103cd6fa4f5570598706b523a9bdeb0e",
+    "docs/validation/build-feedback-0.3.3-2026-10-16/creo10-vcvars-callback-report.md": "121862b7403ccf97d721504ed36602f5598e8e7d80bb4db8c4b56e1fe7565179",
+    "docs/validation/build-feedback-0.3.3-2026-10-16/manifest.json": "b4f635a3930449775b80a458946f31332e83ebdc455c80e858deca393a5e3fb4",
+    "docs/work-items/BUG-001.md": "9e49176d441d65468aee1b80967f2e49f3feb6723c51730f46a9b093340466a7",
+    "docs/work-items/BUG-008.md": "c9c24978317c52b340f5f174f77158dcdfaeea610e7a6ffe8ba4b11a9ff16fdc",
+    "docs/work-items/DEV-019.md": "ac72c7c342830a0b3e7638ea018c312611295bf3e345c718807b5d2046292aa9",
+    "docs/work-items/DEV-021.md": "941eecc0c8010a214e1f54b6324a546abb568ccfa7c9d3d684a23c42ee907a11",
+    "docs/work-items/DEV-027.md": "79b1e6275ec9cee9c3612a713a1b546b5e9aafb7444a22de4cf61618a7dc34a6",
+    "docs/work-items/DEV-028.md": "3a8c1534bdca476e27e42ad3c34a4e83b1aa481cfc425a4c2816097975d888a3",
+    "docs/work-items/DEV-030.md": "3dce3765551e903c0ba65770f5fea8012161983561ccc16e27bc06a4a70ba151",
+    "docs/work-items/FEAT-018.md": "3917b6928b6a08aad1ff6a1f3eb8f32a79f6e5c7f93aebe2da38fe1a8ad6dfa9",
+    "docs/work-items/FEAT-029.md": "74e219fcdae4339d0208de1387b14ea40b040eea0d0413c9115dc6552436fbd8"
+  },
+  "g0_original_records_byte_identical": [
+    "docs/validation/BUG-001-repro-2026-10-16.md",
+    "docs/validation/BUG-001-repro-2026-10-16.json",
+    "docs/validation/bug-001-repro-2026-10-16/g0_driver.py",
+    "docs/validation/bug-001-repro-2026-10-16/g0_evidence.json"
+  ],
+  "external_archives_verified": [
+    "docs/validation/track-feedback-2026-10-16/track-modeling-rev2.txt",
+    "docs/validation/track-feedback-2026-10-16/creo10-0.3.2-track-feedback.md",
+    "docs/validation/build-feedback-0.3.3-2026-10-16/creo10-vcvars-callback-report.md"
+  ],
+  "preserved_local_configuration_paths": [
+    "config.json",
+    "client-config.json",
+    "seed_registry.json",
+    "native/constants.inc"
+  ],
+  "preserved_user_file_count": 6,
+  "runtime_data": "No jobs/models, generated constants, binaries or configuration were copied from C:. Existing local jobs/models preserved.",
+  "editable_install": {
+    "command": "python -m pip install --no-deps -e .",
+    "version": "0.3.3",
+    "package_root": "E:\\Projects\\MCP_CREO_MechDog\\src\\creo_mechdog",
+    "success": true
+  },
+  "checks": {
+    "relative_links_and_anchors": 278,
+    "unique_ledger_ids": 112,
+    "all_task_documents_in_source_allowlist": true,
+    "generated_files_excluded": true,
+    "git_diff_check": true
+  },
+  "not_run": [
+    "MCP restart or registration",
+    "native build/modeling/recovery",
+    "main merge or Release publication",
+    "C-drive cleanup or deletion"
+  ],
+  "g0_evidence_line_endings": {
+    "path": "docs/validation/bug-001-repro-2026-10-16/g0_evidence.json",
+    "original_sha256": "5360e6b23c44da58ba3d4bc5237619036d9918cf3c5f1c08218999339752c5a4",
+    "original_crlf_restored": true,
+    "git_attribute": "exact path -text",
+    "git_clean_filter_preserves_bytes": true,
+    "reason": "Git checkout normalized the committed JSON line endings, conflicting with the original SHA256 in the reproduction record; restored the unchanged source bytes."
+  }
+}

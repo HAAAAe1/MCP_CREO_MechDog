@@ -65,7 +65,9 @@ $compilerEnv = @{ INCLUDE = $env:INCLUDE; LIB = $env:LIB; PATH = $env:PATH }
 .\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 12.4.0.0' -VcVars64Env $compilerEnv
 ```
 
-也可在本机 `config.json` 中添加 `"vcvars64_env": {"INCLUDE": "完整头文件目录列表", "LIB": "完整库目录列表", "PATH": "完整工具目录列表"}`，目录间用分号分隔，JSON 路径中的反斜杠写成 `\\`。三个键必须大写、完整、非空，值不能包含引号、百分号、换行或 NUL；使用展开后的绝对路径，不写 `%PATH%`。默认 `null` 使用 vcvars64。显式环境分支不调用或要求 vcvars64 文件，仍运行 compiler_preflight 检查 cl/link、UCRT 与 Windows SDK，`-CheckOnly` 只核对配置和前置文件，不执行编译自检。
+也可在本机 `config.json` 中添加 `"vcvars64_env": {"INCLUDE": "完整头文件目录列表", "LIB": "完整库目录列表", "PATH": "完整工具目录列表"}`，目录间用分号分隔，JSON 路径中的反斜杠写成 `\\`。当前0.3.3只接受恰好这三个键，必须大写、完整、非空；“完整环境”指这三个值中的完整路径列表，不是vcvars的全部变量转储。WindowsSdkDir、WindowsSDKVersion等额外键目前会被拒绝，并未实现忽略或透传。值不能包含引号、百分号、换行或 NUL；使用展开后的绝对路径，不写 `%PATH%`。默认 `null` 使用 vcvars64。显式环境分支不调用或要求 vcvars64 文件，仍运行 compiler_preflight 检查 cl/link、UCRT 与 Windows SDK，`-CheckOnly` 只核对配置和前置文件，不执行编译自检。
+
+外部[Creo10/0.3.3反馈](validation/FEEDBACK-0.3.3-BUILD.md)记录了reg.exe受限时三键环境的官方编译成功正例。额外键兼容和日志展示仍是待核对的后续请求；该外部记录不等于受限机器完整安装或其他SDK均已验收。
 
 `-VcVars64Env` 优先于同次提供的 `-VcVars64`；只显式提供 `-VcVars64` 时切回批处理分支并清除持久化环境，`-VcVars64Env $null` 也可恢复自动发现。未提供这两个参数时沿用本机配置。安装会回写选定环境并保留已有额外属性，`-CheckOnly` 不写配置。完整 PATH 必须包含 MSVC、Windows SDK 及必要系统工具；本机受限环境仍需管理员核实，不修改全局策略。
 
