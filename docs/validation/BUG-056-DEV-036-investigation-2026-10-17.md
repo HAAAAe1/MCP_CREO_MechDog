@@ -100,3 +100,32 @@ startup.log 路径 `%LOCALAPPDATA%\MCP_CREO_MechDog\startup\6235eee86323f49c8d99
 ## 未测范围
 
 40 秒窗口的精确机理（窗口已过去且当前为永久失效态，无法受控复现）；nmsd 内部状态（黑盒）；批次 C 期间 Creo 侧无警告对话框的确认仅来自窗口枚举与用户先前陈述；T03/T04/T05/T07/T08 全部待环境处置后执行；新增字段的 WorkBuddy 黑盒验证待服务重启后进行。
+
+## 第二轮：环境处置与复测（2026-10-17，用户授权「直接操作掉」）
+
+### 处置（用户先手动关闭 Creo）
+
+22:0x（北京时间）：核实 parametric 18720/xtop 24056/pro_comm_msg 已随用户关闭退出。开发者经授权执行：`Stop-Process` 结束遗留 nmsd.exe（PID 25996，06:03 UTC 批次遗留）；结束 codex.exe 名下 4 对残留 server.py（PID 12572/17324/26532/17036/27044/16504/4036/9400）；保留当前 ZCode 会话正在使用的 1 对（7716/24336，旧代码实例）。处置后无任何 Creo 侧进程。
+
+### 重启与新批次身份
+
+本地 `CreoStartup.start(retry=True)`（与 MCP `creo_startup_status(retry=true)` 同路径）：14:12:14 UTC `starting`（launch_attempt=9），**14:12:27 UTC ready**（连接验证通过，release 44）。新批次：parametric PID 4156、xtop PID 14912、pro_comm_msg PID 4048（xtop 子进程）、**nmsd PID 22452——随新批次启动的全新名字服务**（遗留 nmsd 已不在）。
+
+### T03 时间线与空闲对照 — 通过
+
+- 前置空闲对照 60 秒（14:12:56–14:13:56 UTC，无任何 Toolkit 调用）。
+- 间隔探测 38 次（10 秒周期，`bridge.session_status(2)`，与 MCP `creo_session_status` 同路径）：14:13:56–14:21:24 UTC 跨度约 7.5 分钟，**38/38 全部 connected=true、toolkit_code=0、exit 0**，单次探测耗时约 4.9 秒（2 秒 connect + 2 秒 disconnect + 进程开销）。第 30 次后插入 60 秒空闲对照（14:18:51–14:19:56），空闲后终探 connected=true。全程无任何失效、无约 40 秒模式。原始记录 `build/dev036_t03_timeline.json`、`build/dev036_t03_extra.json`。
+- T04 同批满足：≥5 分钟串行探测 + ≥60 秒空闲后探测全部成功；窗口内 xtop GUI 保持可操作（末次 `IsHungAppWindow=false`）。该窗口只覆盖本次环境。
+
+### T05 正常建模闭环 — 通过
+
+模型 `dev036_t05_probe`（model_id `c27ccf7ffe614e9fbd22baabda323ca4`）：新建（草图矩形+拉伸 8mm）作业 succeeded、revision 0→1、`saved_file_reloaded_and_verified=true`；编辑（顶面圆草图画孔 `through_all` cut）作业 succeeded、revision 1→2、`saved_file_reloaded_and_verified=true`；两作业均仅轮询原 job_id 到终态。保存文件 `…\output\dev036_t05_probe.prt.3`；**体积 4573.805328941535 mm³ 与理论值（30×20×8−π×3²×8）精确一致**；任务后空闲 60 秒再探测 connected=true（14:24:03 UTC）；GUI 窗口标题更新为 `DEV036_T05_PROBE (启用的)` 且 hung=false。原始记录 `build/dev036_t05_record.json`。
+
+备注（如实）：本会话 MCP 客户端层对 `creo_execute_plan` 传参做 union 校验失败（两次重试均未到达服务，客户端限制），T05 改用与 server.py 工具相同的 `generic_bridge.submit`/`bridge.get_job` 本地路径执行；此差异不改变建模闭环的验收含义，WorkBuddy 黑盒在服务重启后另行覆盖。
+
+### 复测结论
+
+- BUG-056「修复/规避」验收判据满足：按指引处置（清理跨批次遗留 nmsd + 重启 Creo）后，连续 ≥5 分钟探测无掉线且一次完整建模任务（新建→编辑→保存重载→空闲→探测）全程不掉线。
+- 「复现」判据按另一分支闭环：原现象不可再复现，且当时环境的唯一性说明已给出——失效发生在「遗留 nmsd（批次 B）+ 新 Creo（批次 C）」的跨批次组合下，清理遗留 nmsd 后同机同版本不复现。
+- 服务侧无行为变更（本轮修复仅为只读可观测性字段），unknown 作业处置契约未动；M2 保持 recovery_pending。
+- 残余：nmsd 内部触发器仍为黑盒假设；T07（稳定通道空值协议对照）与 T08（M2 受保护交接）待 WorkBuddy/发起者明确决定后执行；新增 `creo_process_snapshot` 字段的黑盒验证待 MCP 服务重启。

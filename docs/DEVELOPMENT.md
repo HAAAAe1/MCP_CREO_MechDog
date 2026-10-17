@@ -6,7 +6,7 @@
 
 最新[BUG-001离线卡死核对](validation/BUG-001-hang-offline-2026-10-17.md)已确认Creo IPC初始化通信失败及同一12.4进程无响应关闭，底层诱因仍待定位。当前无Creo会话可验证，确认可操作前继续停止Toolkit连接/注入；此核对不替代实机/WorkBuddy验收。
 
-[DEV-036](work-items/DEV-036.md) 已于2026-10-17完成BUG-056第一轮核实（[记录](validation/BUG-056-DEV-036-investigation-2026-10-17.md)）：定位为遗留nmsd（名字服务）侧会话信息失效，失败期连接请求未到达Creo，「40秒周期」为轮询伪影，服务侧探测/快照/分类无缺陷；`creo_session_status`新增只读进程快照区分进程退出与端点失效（服务重启后生效）。T03～T05实机复测与WorkBuddy黑盒待用户处置环境（关闭当前批次Creo、清理遗留nmsd与残留服务实例、重启）后执行；期间不自动重连、不清保护。原有DEV-030后续分期及DEV-027最新Creo10反馈保持；DEV-034真实MCP和WorkBuddy证据已记录，不重复实施，M2受保护交接及FEAT-018/029完整验收仍分别跟踪。
+[DEV-036](work-items/DEV-036.md) 两轮核实已闭环（[记录](validation/BUG-056-DEV-036-investigation-2026-10-17.md)）：BUG-056 定位为遗留nmsd（名字服务）侧会话信息失效、服务侧无缺陷；用户处置环境（关闭Creo、清理遗留nmsd与残留服务实例）后复测通过——38次间隔探测跨7.5分钟无掉线，建模闭环（新建/编辑/保存重载/空闲后探测）全程稳定，`creo_session_status`新增只读进程快照（服务重启后生效）。剩余T07/T08、WorkBuddy黑盒及M2收尾待发起者安排；期间不自动重连、不清保护。原有DEV-030后续分期及DEV-027最新Creo10反馈保持；DEV-034真实MCP和WorkBuddy证据已记录，不重复实施，M2受保护交接及FEAT-018/029完整验收仍分别跟踪。
 
 ## 每次开发的顺序
 
