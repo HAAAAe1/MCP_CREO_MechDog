@@ -6,7 +6,7 @@
 
 最新[BUG-001离线卡死核对](validation/BUG-001-hang-offline-2026-10-17.md)已确认Creo IPC初始化通信失败及同一12.4进程无响应关闭，底层诱因仍待定位。当前无Creo会话可验证，确认可操作前继续停止Toolkit连接/注入；此核对不替代实机/WorkBuddy验收。
 
-根据当前台账，[DEV-033](work-items/DEV-033.md)/BUG-054 已完成本机实机及 WorkBuddy 验收，成果尚未合入 main 或发布。[DEV-034：恢复工具 MCP 空值契约核实、修复与验收](work-items/DEV-034.md) 已完成 G0～G4：服务端各层无 null→空串转换、空串即外部报告错误成因，契约与最小修复落地，真实 stdio 协议回归与本机实机 null apply 闭环通过；BUG-055 转『已修复，WorkBuddy 验收待执行』，外部 Creo 9 环境未复测记为未验证。FEAT-018/029 的剩余验收继续在原卡跟踪。
+根据当前台账，[DEV-033](work-items/DEV-033.md)/BUG-054 已完成本机实机及 WorkBuddy 验收，成果尚未合入 main 或发布。[DEV-034：恢复工具 MCP 空值契约核实、修复与验收](work-items/DEV-034.md) 已完成 G0～G4：服务端各层无 null→空串转换、空串即外部报告错误成因，契约与最小修复落地，真实 stdio 协议回归与本机实机 null apply 闭环通过；WorkBuddy 核心验收通过（客户端 null→空串降级被实测证实并闭环外部报告根因链）；M2 收尾与稳定通道对照因通道静默掉线未取得，外部 Creo 9 未复测。FEAT-018/029 的剩余验收继续在原卡跟踪。
 
 ## 每次开发的顺序
 
