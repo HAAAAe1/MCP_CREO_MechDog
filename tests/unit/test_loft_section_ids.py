@@ -1,5 +1,6 @@
 """BUG-028 public section references normalize before duplicate validation."""
 
+import hashlib
 import json
 import tempfile
 import unittest
@@ -56,6 +57,13 @@ class LoftQueueTests(unittest.IsolatedAsyncioTestCase):
                 "output_directory": str(target / "output"),
                 "part_file": None,
             }
+            output = target / "output"
+            output.mkdir()
+            part = output / "fixture.prt.1"
+            part.write_bytes(b"controlled saved baseline fixture")
+            model.update(
+                part_file=str(part), part_sha256=hashlib.sha256(part.read_bytes()).hexdigest()
+            )
             template = root / "creo/Common Files/templates/mmns_part_solid_abs.prt"
             template.parent.mkdir(parents=True)
             template.write_bytes(b"fixture, never loaded by native code")

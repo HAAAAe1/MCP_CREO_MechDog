@@ -83,6 +83,9 @@ def model_summary(model: dict[str, Any]) -> dict[str, Any]:
             "created_at",
             "updated_at",
             "pending_job",
+            "recovery_pending",
+            "reconciliation",
+            "part_sha256",
             "last_job",
             "last_query_at",
             "part_file",
@@ -96,7 +99,7 @@ def model_summary(model: dict[str, Any]) -> dict[str, Any]:
         "revision": model.get("revision"),
         "at": model.get("updated_at"),
         "live_state_verified": False,
-        "mutation_pending": bool(model.get("pending_job")),
+        "mutation_pending": bool(model.get("pending_job") or model.get("recovery_pending")),
     }
     result["detail_available"] = True
     return result

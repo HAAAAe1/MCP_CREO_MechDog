@@ -827,6 +827,11 @@ def run_job(job_id: str) -> None:
     manifest = read_json(directory / "job.json")
     manifest.update(runner_identity=process_identity(os.getpid()), stage="waiting_for_channel")
     write_json(directory / "job.json", manifest)
+    if manifest.get("kind") == "reconciliation":
+        from creo_mechdog.reconciliation import run
+
+        run(job_id, manifest)
+        return
     if manifest.get("kind") == "generic":
         from generic_bridge import run_generic_job
 
@@ -941,6 +946,10 @@ def get_job(job_id: str, detail: str = "full") -> dict:
     if not (directory / "job.json").exists():
         raise ValueError("Unknown job_id")
     manifest = read_json(directory / "job.json")
+    if manifest.get("kind") == "reconciliation":
+        from creo_mechdog.reconciliation import resume_committed
+
+        manifest = resume_committed(job_id) or manifest
     native_log = directory / "native.log"
     if native_log.exists():
         tail = native_log.read_bytes()[-8000:].decode("utf-8", errors="replace")
@@ -955,7 +964,7 @@ def get_job(job_id: str, detail: str = "full") -> dict:
         ).total_seconds()
         timeout = (
             config().get("generic_timeout_seconds", 600)
-            if manifest.get("kind") == "generic"
+            if manifest.get("kind") in ("generic", "reconciliation")
             else config()["native_timeout_seconds"]
         )
         if age > 120 + 180 + timeout + 30:
@@ -1003,6 +1012,10 @@ def compact_job(manifest: dict) -> dict:
         "recovery_required",
         "recovery",
         "runner_identity",
+        "recovery_id",
+        "commit_pending",
+        "action",
+        "idempotency_key",
         "model_evidence_error",
     )
     summary = {key: manifest[key] for key in keys if key in manifest}
@@ -1012,6 +1025,7 @@ def compact_job(manifest: dict) -> dict:
     if result:
         result_keys = (
             "success",
+            "code",
             "toolkit_code",
             "message",
             "part_file",

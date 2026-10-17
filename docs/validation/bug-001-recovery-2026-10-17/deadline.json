@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "scope": "Actual production watchdog, no Creo calls",
+  "cases": [
+    {
+      "mode": "complete",
+      "exit_code": 0,
+      "elapsed_seconds": 0.20300000000042928
+    },
+    {
+      "mode": "timeout",
+      "exit_code": 31,
+      "elapsed_seconds": 0.1570000000001528,
+      "checkpoint": {
+        "completion_stage": "recovery_phase_timeout",
+        "delivery_complete": false,
+        "phase_budget_seconds": 0.1,
+        "success": false
+      }
+    }
+  ]
+}

@@ -24,6 +24,7 @@ from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS, families
 from creo_mechdog import update_check
 from creo_mechdog.blend_callback import callback_setup_status
 from creo_mechdog.paths import SOURCE_PATHS
+from creo_mechdog.reconciliation import reconcile
 from creo_mechdog.references import PatternAxis, reference_capabilities
 from creo_mechdog.schema import (
     AirfoilProfile,
@@ -60,6 +61,8 @@ _SOURCE_NAMES = (
     "src/creo_mechdog/seed_distribution.py",
     "seeds.py",
     "src/creo_mechdog/recovery.py",
+    "src/creo_mechdog/reconciliation.py",
+    "src/creo_mechdog/model_queries.py",
     "src/creo_mechdog/startup_state.py",
     "src/creo_mechdog/windows_boot.py",
     "src/creo_mechdog/schema.py",
@@ -76,6 +79,7 @@ _SOURCE_NAMES = (
     "native/generic.cpp",
     "native/drawing.cpp",
     "native/result_delivery.h",
+    "native/recovery_deadline.h",
 )
 
 
@@ -229,6 +233,31 @@ async def creo_get_job(job_id: str, detail: Literal["compact", "full"] = "full")
     return await invoke(bridge.get_job, job_id, detail)
 
 
+@mcp.tool(annotations=CREATE)
+async def creo_reconcile_model(
+    model_id: str,
+    mode: Literal["inspect", "apply"] = "inspect",
+    live: bool = False,
+    action: Literal["restore_baseline", "accept_saved", "accept_live", "abandon_new"] | None = None,
+    expected_revision: int | None = None,
+    expected_pending_job_id: str | None = None,
+    evidence_token: str | None = None,
+    idempotency_key: str | None = None,
+) -> dict[str, Any]:
+    """Inspect uncertain owned models without requiring Creo. live=true performs a bounded read-only session preflight. Apply an explicitly selected available action with the returned token, revision, pending_job (null when absent) and a unique 8–80 character idempotency_key. Poll its independent recovery job; never replay the original plan. restore_baseline keeps revision; accept_saved/live increments once; abandon_new preserves files and archives the model. accept_live requires live preflight. Unsupported/unproven ownership is rejected; no Creo restart or user file deletion."""
+    return await invoke(
+        reconcile,
+        model_id,
+        mode,
+        live,
+        action,
+        expected_revision,
+        expected_pending_job_id,
+        evidence_token,
+        idempotency_key,
+    )
+
+
 @mcp.tool(annotations=READ)
 async def creo_list_jobs(
     limit: int = 10, detail: Literal["compact", "full"] = "compact"
@@ -284,6 +313,8 @@ async def creo_capabilities() -> dict[str, Any]:
             "python_package_root": str(SOURCE_PATHS.code_root),
             "resource_root": str(SOURCE_PATHS.resource_root),
             "data_root": str(SOURCE_PATHS.data_root),
+            "job_root": str(bridge.JOBS),
+            "model_root": str(general.MODELS),
             "source_fingerprints_at_startup": dict(_LOADED_FINGERPRINTS),
             "source_changed_since_startup": _source_fingerprints() != _LOADED_FINGERPRINTS,
         },
@@ -306,6 +337,7 @@ async def creo_capabilities() -> dict[str, Any]:
                 "creo_list_jobs",
                 "creo_inspect_model",
                 "creo_list_models",
+                "creo_reconcile_model (inspect without live)",
             ],
         },
         "tool_count": len(await mcp.list_tools()),

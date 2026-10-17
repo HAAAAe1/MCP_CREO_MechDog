@@ -64,7 +64,8 @@ except bridge.ToolkitBusy as exc:
         def run(*args, **kwargs):
             if outcome == "timeout":
                 raise subprocess.TimeoutExpired(args[0], 1)
-            part = general.model_path(created["model_id"]) / "output/fixture.prt.1"
+            model = general.model_info(created["model_id"])
+            part = general.model_path(created["model_id"]) / f"output/{model['model_name']}.prt.1"
             part.write_bytes(b"synthetic native result")
             bridge.write_json(
                 bridge.job_path(created["job_id"]) / "native_result.json",

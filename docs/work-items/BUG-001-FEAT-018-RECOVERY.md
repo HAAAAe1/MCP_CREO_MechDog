@@ -1,6 +1,6 @@
 # BUG-001 / FEAT-018：受控恢复修复联合执行卡
 
-建立：2026-10-17（Asia/Shanghai）。类型：缺陷修复与恢复能力。优先级：P0（BUG-001）/ P1（FEAT-018）。状态：待开发（本次只完成执行卡，修复未实施；G1 为编码前设计核对）。目标版本：未排期。
+建立：2026-10-17（Asia/Shanghai）。类型：缺陷修复与恢复能力。优先级：P0（BUG-001）/ P1（FEAT-018）。状态：验收中（开发实现及部分实机通过；本轮Creo卡死未定位，未满足G5）。目标版本：下一功能版（未发布）。
 
 父条目：[BUG-001](BUG-001.md)、[FEAT-018](FEAT-018.md)；排期：[DEV-030 G0](DEV-030.md)。本卡是两项工作的共同实施入口，不新增或复用固定 ID，不另建一套台账。开发与验证工作目录为 `E:\Projects\MCP_CREO_MechDog`；隔离件放在 E 盘该项目的忽略目录中，历史 C 盘证据路径保持真实。
 
@@ -58,6 +58,14 @@ G0 使用本机 Creo 12.4 / 匹配 SDK 与受控 12s/阶段中断，不是原 Cr
 接纳保存/live 只证明“调用方选择的模型已核验并成为新基线”，不自动证明原计划剩余操作执行完成；原始 unknown_outcome 作业及输入/日志保留，附可追溯处置记录。公开查询要区分原始不确定结果、已协调处置和当前可用性，不能因旧状态重复封锁已完成协调的模型。
 
 ## G2：状态、事务与保护
+
+### G1 冻结（2026-10-17）
+
+接口冻结为 `creo_reconcile_model(model_id, mode="inspect", live=false, action=null, expected_revision=null, expected_pending_job_id=null, evidence_token=null, idempotency_key=null)`。apply 要求明确 action、revision、pending（null 表示明确无 pending）、令牌和幂等键；四个动作沿用上表名称。accept_live 必须使用 live=true 预检取得的令牌，并在执行时重新比较会话几何。inspect 返回候选是否可用及拒绝原因；持久化查询不要求 Creo 就绪。
+
+包内 `reconciliation.py` 统一协调业务。令牌绑定完整登记、原任务/恢复任务证据、输入文件流式 SHA256、部署源码和执行器身份，10 分钟失效。单次文件核验上限 1 GiB/8 秒；整个持久化快照 12 秒，到期拒绝，不接受空摘要。实时预检和恢复原生阶段预算 90 秒（只终止该新建 worker），断开另有既有 20 秒看门狗；Python 外层 115 秒，大于两段预算之和。构建沿用已有有界构建流程；恢复 runner 不等待通道，不增加排队。进程身份使用 Windows 创建时间；缺失或权限不足只允许诊断。
+
+恢复登记采用 durable intent → verified evidence → committed decision → model materialization → 通道释放 → job 终态发布。committed 之前中断保留保护；committed 之后只允许同一幂等键补全元数据，不再次执行原生动作。原始 unknown 作业保持原状，通过模型 resolution 和恢复审计关联，不能冒称原计划完成。已有基线必须与原成功作业记录的 SHA256 一致；没有可追溯摘要时拒绝 restore。候选必须来自绑定作业的原生核验检查点，不按目录后缀推断。
 
 1. **先核实活动所有者。** 核对 runner 的 PID 与创建时间、已有 Toolkit 所有者和恢复任务身份。进程权限不足或存活性无法确认时拒绝写恢复；PID 被复用不能误判旧执行器仍在或已结束。沿用 bridge.py 唯一持锁路径与现有锁顺序，不建立第二套 Toolkit 锁。
 2. **受控穿过模型保护。** 正常写工具继续拒绝 pending/unknown；只有正式恢复请求按绑定的 expected_pending_job_id 进入专用路径，且全程持有所需模型/通道保护。不能在执行前清 pending_job，也不能全局跳过 verify_saved 或简单移除 mutated 条件。
@@ -123,4 +131,4 @@ WorkBuddy最终验收由测试发起者提前准备隔离异常模型、候选�
 
 ## 当前交付与证据
 
-2026-10-17只建立本联合执行卡并同步父卡/台账，未修改Python/C++、未新增接口、未操作任何异常模型、未执行恢复或建模测试、未发布。文档校验见[任务卡检查](../validation/BUG-001-FEAT-018-task-card-2026-10-17.json)。父条目进入待开发不表示修复已完成；下一步按G1～G5实施。
+2026-10-17先完成任务卡，原建卡校验见[任务卡检查](../validation/BUG-001-FEAT-018-task-card-2026-10-17.json)；随后已在E盘实现正式入口、普通写保护、原生四动作与持久化提交。284项单元、受控预算/断开、stdio诊断/busy及部分实机流程通过；加强核验后的四动作通过，随后其他模型新建connect -11并收到用户Creo卡死报告，停止新的Toolkit连接/注入。最新看门狗提取仅完成编译/离线受控测试，完整实机与WorkBuddy仍未完成。见[本次验证/剩余矩阵](../validation/BUG-001-recovery-2026-10-17.md)。本机MCP已统一MCP_CREO_MechDog_dev指向E盘，C盘旧服务已退役；卡死根因尚未确定。未满足G5，未关闭父卡、合并main或发布。

@@ -340,7 +340,7 @@ class RegistryJobs(RegistryFixture, unittest.TestCase):
         def run(*args, **kwargs):
             directory = bridge.job_path(created["job_id"])
             model = generic_bridge.model_info(created["model_id"])
-            part = Path(model["output_directory"]) / "fixture.prt.1"
+            part = Path(model["output_directory"]) / f"{model['model_name']}.prt.1"
             part.write_bytes(b"native model evidence")
             result = {
                 "success": success,

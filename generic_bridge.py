@@ -192,11 +192,11 @@ def submit(
         else:
             path = model_path(model_id)
             model = model_info(model_id)
-            if model.get("pending_job"):
+            if model.get("pending_job") or model.get("recovery_pending"):
                 raise bridge.ToolkitBusy(
                     "Model has a pending job",
                     holder={
-                        "job_id": model["pending_job"],
+                        "job_id": model.get("recovery_pending") or model.get("pending_job"),
                         "model_id": model_id,
                         "operation": "pending_job",
                     },
@@ -209,6 +209,10 @@ def submit(
                 )
             if expected_revision is not None and expected_revision != model["revision"]:
                 raise ValueError(f"Stale revision: current model revision is {model['revision']}")
+            if not readonly:
+                from creo_mechdog.reconciliation import validate_baseline
+
+                validate_baseline(model)
         actual_type = model.get("model_type", "part")
         assembly_ops = {
             "assemble_component",
@@ -372,13 +376,20 @@ def run_generic_job(job_id: str, manifest: dict):
             wait_seconds=120, operation="execute_plan", job_id=job_id, model_id=model["model_id"]
         ):
             try:
-                manifest.update(status="running", stage="building_worker", started_at=bridge.now())
+                manifest.update(
+                    status="running",
+                    stage="building_worker",
+                    started_at=bridge.now(),
+                    worker_started=False,
+                )
                 bridge.write_json(directory / "job.json", manifest)
                 exe = bridge.build_native()
                 manifest["stage"] = "executing_feature_plan"
                 bridge.write_json(directory / "job.json", manifest)
                 with (directory / "worker.log").open("wb") as log:
                     worker_started = True
+                    manifest["worker_started"] = True
+                    bridge.write_json(directory / "job.json", manifest)
                     proc = subprocess.run(
                         [str(exe), "generic", str(directory)],
                         cwd=directory,
@@ -432,6 +443,7 @@ def run_generic_job(job_id: str, manifest: dict):
                                 aliases=result["aliases"],
                                 inspection=result["inspection"],
                                 part_file=result["part_file"],
+                                part_sha256=result["sha256"],
                                 updated_at=bridge.now(),
                                 last_job=job_id,
                             )

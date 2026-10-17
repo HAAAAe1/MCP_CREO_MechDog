@@ -1,0 +1,231 @@
+{
+  "work_item": "BUG-008",
+  "version": "0.3.3",
+  "started_at": "2026-10-17T01:57:18.166083+00:00",
+  "source_commit": "93b110123b09ea264e7e4070fe6aa2b445b150d5",
+  "dirty": true,
+  "environment": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+    "creo_root": "C:\\Program Files\\PTC\\Creo 12.4.0.0"
+  },
+  "source_fingerprints": {
+    "bridge.py": "9f31d2289a451c402f7f5554f07e1c9cd64353f1317414ce93fa89549a5ce359",
+    "generic_bridge.py": "8a6ab79d59a205f9d593cf5bf65882662cf9e17abc76eacb02b0350b18655bcf",
+    "creo_startup.py": "7d803ee8c679da483080c9e3cda31b6cf276178383542a9b5e3fac82885c2a22",
+    "server.py": "317796f28f31df1d80873a2bf0acd7f412b4415a765d761a118ce0247e4c09d5",
+    "src/creo_mechdog/recovery.py": "3478597d68764af0c351d8edb2e7c5e4245dca6bf9d0d0799b1a792aaddc982c",
+    "native/worker.cpp": "128306b8f392cf13590383f8a08ba1869b1bd21c8a10fbbd186d7fe7b034c7ad",
+    "native/generic.cpp": "2baa4c9ed5ba170a612a819c2b6525b5bd4a9db676576fc215f139fc247b9a24",
+    "native/drawing.cpp": "d280916202fcb20c39cb30afa7b0fdf53460447596429dc1e5f9a005e4fbf3d3",
+    "native/result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220",
+    "tools/test_result_delivery.cpp": "dfac4971fa14b7017ac7cd562a20e8c0a8b9644f4def3f8436fc65317910491f",
+    "tools/test_toolkit_recovery.py": "66f34ff3db529ea2c7153e0a98f3bd140a5efef4f000114973bb0ae828210dd6"
+  },
+  "timeline": [],
+  "jobs": [],
+  "success": true,
+  "controlled": {
+    "mode": "controlled C++ helper; no Creo calls or real PRT",
+    "cases": [
+      {
+        "scenario": "normal",
+        "exit_code": 0,
+        "elapsed_seconds": 0.23499999999967258,
+        "checkpoint": {
+          "completion_stage": "before_disconnect",
+          "delivery_complete": false,
+          "disconnect_budget_seconds": 0.2,
+          "disconnect_code": null,
+          "fixture_only": true,
+          "native_pid": 1740,
+          "saved_file_reloaded_and_verified": true,
+          "success": true
+        },
+        "result": {
+          "completion_stage": "result_delivery",
+          "delivery_complete": true,
+          "disconnect_budget_seconds": 0.2,
+          "disconnect_code": 0,
+          "fixture_only": true,
+          "native_pid": 1740,
+          "saved_file_reloaded_and_verified": true,
+          "success": true
+        }
+      },
+      {
+        "scenario": "hang",
+        "exit_code": 31,
+        "elapsed_seconds": 0.2970000000004802,
+        "checkpoint": {
+          "completion_stage": "disconnect_timeout",
+          "delivery_complete": false,
+          "disconnect_budget_seconds": 0.2,
+          "disconnect_code": null,
+          "fixture_only": true,
+          "native_pid": 20468,
+          "saved_file_reloaded_and_verified": true,
+          "success": true
+        },
+        "result": null
+      },
+      {
+        "scenario": "hang_default",
+        "exit_code": 31,
+        "elapsed_seconds": 20.04699999999957,
+        "checkpoint": {
+          "completion_stage": "disconnect_timeout",
+          "delivery_complete": false,
+          "disconnect_budget_seconds": 20.0,
+          "disconnect_code": null,
+          "fixture_only": true,
+          "native_pid": 16428,
+          "saved_file_reloaded_and_verified": true,
+          "success": true
+        },
+        "result": null
+      },
+      {
+        "scenario": "disconnect_failure",
+        "exit_code": 0,
+        "elapsed_seconds": 0.06300000000010186,
+        "checkpoint": {
+          "completion_stage": "before_disconnect",
+          "delivery_complete": false,
+          "disconnect_budget_seconds": 0.2,
+          "disconnect_code": null,
+          "fixture_only": true,
+          "native_pid": 14856,
+          "saved_file_reloaded_and_verified": true,
+          "success": true
+        },
+        "result": {
+          "completion_stage": "result_delivery",
+          "delivery_complete": true,
+          "disconnect_budget_seconds": 0.2,
+          "disconnect_code": -38,
+          "fixture_only": true,
+          "native_pid": 14856,
+          "saved_file_reloaded_and_verified": true,
+          "success": true
+        }
+      },
+      {
+        "scenario": "write_failure",
+        "exit_code": 32,
+        "elapsed_seconds": 0.04699999999957072,
+        "checkpoint": {
+          "completion_stage": "before_disconnect",
+          "delivery_complete": false,
+          "disconnect_budget_seconds": 0.2,
+          "disconnect_code": null,
+          "fixture_only": true,
+          "native_pid": 20116,
+          "saved_file_reloaded_and_verified": true,
+          "success": true
+        },
+        "result": null
+      }
+    ],
+    "unknown_protection": {
+      "job": {
+        "job_id": "e8b8c53f83cb4a47880c02fa701ed370",
+        "kind": "generic",
+        "model_id": "ae382f1b5b214354abe1771e1375aa67",
+        "status": "unknown_outcome",
+        "stage": "executing_feature_plan",
+        "readonly": false,
+        "created_at": "2026-10-17T01:57:43.795732+00:00",
+        "started_at": "2026-10-17T01:57:43.806529+00:00",
+        "finished_at": "2026-10-17T01:57:44.060516+00:00",
+        "message": "Native worker exited 31 without a result; inspect Creo before retrying",
+        "recovery_required": "Outcome is unconfirmed; preserve reservation and inspect recovery evidence",
+        "recovery": {
+          "job_id": "e8b8c53f83cb4a47880c02fa701ed370",
+          "model_id": "ae382f1b5b214354abe1771e1375aa67",
+          "automatic_replay_allowed": false,
+          "native_result_present": false,
+          "next_steps": "Do not resubmit or clear pending_job. Inspect this job's native result/checkpoint, runner identity and saved file in Creo; preserve the original model/checkpoint. Use creo_session_status and explicit startup retry to recheck the channel. A connected channel does not resolve this job or commit its revision. If the result cannot be verified, operator reconciliation is required.",
+          "runner": {
+            "recorded": {
+              "pid": 24896,
+              "created": 134366758370029002,
+              "alive": true
+            },
+            "observed": {
+              "pid": 24896,
+              "created": 134366758370029002,
+              "alive": true
+            },
+            "same_process": true
+          },
+          "native_checkpoint": {
+            "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\bug001-feat018-recovery\\delivery-fixture\\registry_1792202263785792900\\jobs\\e8b8c53f83cb4a47880c02fa701ed370\\native_checkpoint.json",
+            "exists": true,
+            "sha256": "9db21c6237048df1f31795053eb8a2363c9832d130a3c383c1a4b8a91a754e69",
+            "native_pid": 22604,
+            "completion_stage": "disconnect_timeout",
+            "delivery_complete": false,
+            "success": true,
+            "saved_file_reloaded_and_verified": true,
+            "disconnect_code": null,
+            "disconnect_budget_seconds": 0.2,
+            "authoritative_job_success": false
+          },
+          "resolution": null,
+          "model_currently_available": false,
+          "model": {
+            "status": "unknown_outcome",
+            "revision": 0,
+            "pending_job": "e8b8c53f83cb4a47880c02fa701ed370",
+            "last_job": "e8b8c53f83cb4a47880c02fa701ed370"
+          }
+        },
+        "runner_identity": {
+          "pid": 24896,
+          "created": 134366758370029002,
+          "alive": true
+        },
+        "detail": "compact",
+        "operation_count": 0,
+        "full_result_available": false
+      },
+      "revision": 0,
+      "rejection": {
+        "status": "busy",
+        "code": "toolkit_busy",
+        "accepted": false,
+        "blocking_job_id": "e8b8c53f83cb4a47880c02fa701ed370",
+        "blocking_model_id": "ae382f1b5b214354abe1771e1375aa67",
+        "blocking_operation": "pending_job",
+        "owner_snapshot": {
+          "job_id": "e8b8c53f83cb4a47880c02fa701ed370",
+          "model_id": "ae382f1b5b214354abe1771e1375aa67",
+          "operation": "pending_job"
+        },
+        "owner_determined": true,
+        "retry_after_seconds": 1,
+        "retry_guidance": "Poll creo_get_job(job_id='e8b8c53f83cb4a47880c02fa701ed370', detail='compact') until terminal; inspect unknown_outcome before retrying. This request was not accepted. Retry this request after 1 second only when the occupying operation has finished; re-read the model revision before writing. Do not resubmit an already accepted job.",
+        "message": "Model has a pending job"
+      }
+    },
+    "probe_timeout": {
+      "result": {
+        "connected": false,
+        "checked_at": "2026-10-17T01:57:53.078480+00:00",
+        "connection_state": "probe_timeout",
+        "toolkit_code": null,
+        "probe_budget_seconds": 9,
+        "message": "Toolkit connection probe timed out; only this probe helper was stopped. Inspect Creo dialogs and occupying jobs; preserve unknown jobs/models, then request creo_startup_status(retry=true). No Creo process was closed."
+      },
+      "elapsed_seconds": 9.030999999999949,
+      "helper_after": {
+        "pid": 7128,
+        "alive": false,
+        "windows_error": 87
+      }
+    },
+    "success": true
+  },
+  "finished_at": "2026-10-17T01:57:53.091725+00:00"
+}

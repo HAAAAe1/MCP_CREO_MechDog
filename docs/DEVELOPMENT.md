@@ -2,7 +2,7 @@
 
 本项目按可交付的 Creo MCP 工具维护，采用功能条目驱动、短分支和分批整理。日常开发从 [统一台账](BACKLOG.md) 选择条目；新增工作先登记，复杂条目复制 [模板](templates/WORK_ITEM.md)。开发准入对小修复同样适用，内容可精简为几行。
 
-当前后续批次见[DEV-030分期任务卡](work-items/DEV-030.md)：[BUG-001 G0复现](validation/BUG-001-repro-2026-10-16.md)已确认0.3.3模型协调阻断，受控恢复优先，按2026-10-17补齐的[联合执行卡](work-items/BUG-001-FEAT-018-RECOVERY.md)从G1设计核对进入编码/验收，其后交付FEAT-029已有分支。来源见[履带映射](validation/TRACK-FEEDBACK-2026-10-16.md)和[0.3.3构建/回调反馈](validation/FEEDBACK-0.3.3-BUILD.md)。当前同步只消费已完成复现和外部报告，不代表恢复已修复、功能已合入或已发布；单项状态以统一台账为准。
+当前后续批次见[DEV-030分期任务卡](work-items/DEV-030.md)：[BUG-001 G0复现](validation/BUG-001-repro-2026-10-16.md)已确认0.3.3模型协调阻断，受控恢复优先，按2026-10-17补齐的[联合执行卡](work-items/BUG-001-FEAT-018-RECOVERY.md)从G1设计核对进入编码/验收，其后交付FEAT-029已有分支。来源见[履带映射](validation/TRACK-FEEDBACK-2026-10-16.md)和[0.3.3构建/回调反馈](validation/FEEDBACK-0.3.3-BUILD.md)。2026-10-17恢复实现已落地，284项单元及四动作部分实机通过；随后Creo卡死未定位，停止新的Toolkit调用，完整实机/WorkBuddy仍未完成，见[本次验证记录](validation/BUG-001-recovery-2026-10-17.md)。当前本机MCP只启用MCP_CREO_MechDog_dev指向E盘，未合入或发布；单项状态以统一台账为准。
 
 ## 每次开发的顺序
 

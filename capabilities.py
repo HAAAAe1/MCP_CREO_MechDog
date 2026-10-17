@@ -88,6 +88,14 @@ def require_available(operations: list[dict]) -> None:
 
 def families() -> dict:
     return {
+        "model_reconciliation": {
+            "enabled": True,
+            "tool": "creo_reconcile_model",
+            "actions": ["restore_baseline", "accept_saved", "accept_live", "abandon_new"],
+            "scope": "Owned part/sheetmetal models; explicit evidence-bound recovery; assembly/drawing rejected",
+            "original_plan_replay": False,
+            "inspect_requires_creo": False,
+        },
         "seed_library": {
             "enabled": True,
             "scope": "MIT native seeds bundled with source; SHA256 validation, local registration and automatic count/mode selection",

@@ -181,3 +181,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C
 ## 引用参数核对（BUG-006）
 
 使用 capabilities.references.by_tool 查询工具特定种类和结构。axis_pattern.axis 支持几何轴 ID、datum_axis_feature 标签，并兼容 datum_feature 轴标签；其它参数中的 datum_feature 仍为基准平面。钣金边是裸引用，倒圆/倒角是集合数组，草图字典支撑面使用 reference 包装。更新源码后重启 MCP，并核对 schema、runtime 指纹及 [引用说明](REFERENCE_SYNTAX.md)；0.2.6 开发安装不能仅由版本号确认本项修复；0.3.0 包含本修复。
+
+## 本机开发恢复联调（2026-10-17）
+
+按用户要求，WorkBuddy/Codex 只启用 `MCP_CREO_MechDog_dev`，启动 E盘项目的 `.venv/Scripts/python.exe` 与 `server.py`；C盘旧副本和test项保持禁用。注册名不等于发布版本，当前源码VERSION仍为0.3.3并含未发布改动；用实际入口、源码指纹和83工具辨认开发部署。不要在同一Creo会话混用不同安装根的客户端：它们的根目录Toolkit锁互不共享。正式使用恢复入口前，先看[恢复说明](MODEL_RECOVERY.md)与[本轮中断记录](validation/BUG-001-recovery-2026-10-17.md)。目前实机测试已停止，卡死原因未定位。

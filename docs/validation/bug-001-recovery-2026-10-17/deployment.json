@@ -1,0 +1,78 @@
+{
+  "recorded_at": "2026-10-17T03:36:04.363057+00:00",
+  "codex": {
+    "MCP_CREO_MechDog": {
+      "command": "C:\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\MCP_CREO_MechDog\\server.py"
+      ],
+      "cwd": "C:\\MCP_CREO_MechDog",
+      "enabled": false
+    },
+    "MCP_CREO_MechDog_dev": {
+      "command": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+      "args": [
+        "E:\\Projects\\MCP_CREO_MechDog\\server.py"
+      ],
+      "cwd": "E:\\Projects\\MCP_CREO_MechDog",
+      "enabled": true
+    }
+  },
+  "workbuddy": {
+    "MCP_CREO_MechDog": {
+      "command": "C:\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\MCP_CREO_MechDog\\server.py"
+      ],
+      "disabled": true
+    },
+    "MCP_CREO_MechDog_dev": {
+      "command": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+      "args": [
+        "E:\\Projects\\MCP_CREO_MechDog\\server.py"
+      ]
+    },
+    "MCP_CREO_MechDog_test": {
+      "command": "E:\\Projects\\MCP_CREO_MechDog_Test\\.venv\\Scripts\\python.exe",
+      "args": [
+        "E:\\Projects\\MCP_CREO_MechDog_Test\\server.py"
+      ],
+      "disabled": true
+    }
+  },
+  "root": "E:\\Projects\\MCP_CREO_MechDog",
+  "old_service_version": "0.3.1",
+  "e_source_version": "0.3.3 with unreleased changes",
+  "native_calls_stopped": true,
+  "hang_root_cause": "unconfirmed; mixed installations observed; not evidence of wrong SDK or simultaneous native calls",
+  "retired_c_services": [
+    {
+      "ProcessId": 18544,
+      "ParentProcessId": 16540,
+      "CreationDate": "2026-10-17T08:47:51.843074+08:00",
+      "ExecutablePath": "C:\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+      "CommandLine": "\"C:\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe\" C:\\MCP_CREO_MechDog\\server.py"
+    },
+    {
+      "ProcessId": 15952,
+      "ParentProcessId": 18544,
+      "CreationDate": "2026-10-17T08:47:52.127636+08:00",
+      "ExecutablePath": "C:\\Users\\Administrator\\.workbuddy\\binaries\\python\\versions\\3.13.12\\python.exe",
+      "CommandLine": "\"C:\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe\" C:\\MCP_CREO_MechDog\\server.py"
+    },
+    {
+      "ProcessId": 21296,
+      "ParentProcessId": 16540,
+      "CreationDate": "2026-10-17T08:57:20.688083+08:00",
+      "ExecutablePath": "C:\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+      "CommandLine": "\"C:\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe\" C:\\MCP_CREO_MechDog\\server.py"
+    },
+    {
+      "ProcessId": 8364,
+      "ParentProcessId": 21296,
+      "CreationDate": "2026-10-17T08:57:20.80543+08:00",
+      "ExecutablePath": "C:\\Users\\Administrator\\.workbuddy\\binaries\\python\\versions\\3.13.12\\python.exe",
+      "CommandLine": "\"C:\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe\" C:\\MCP_CREO_MechDog\\server.py"
+    }
+  ]
+}
