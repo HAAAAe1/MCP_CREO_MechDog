@@ -2,7 +2,7 @@
 
 日期：2026-10-17（Asia/Shanghai）。工作目录：`E:\Projects\MCP_CREO_MechDog`。集成分支：`codex/feat-029-integration`。
 
-本轮将原功能分支 `879aebe71391865639f21ffcdad025725c27970f` 合入恢复开发基线 `5628a33cbb8f442b4505c31c066b75fbc91017a3`。代码集成、SDK 编译及离线验证完成；**没有合入 main 或发布，没有执行新的 Creo 连接、注册、加载、重启、模型写入或故障注入。** 当前实例的实机/WorkBuddy 验收继续待测，不关闭 BUG-001。
+本轮将原功能分支 `879aebe71391865639f21ffcdad025725c27970f` 合入恢复开发基线 `5628a33cbb8f442b4505c31c066b75fbc91017a3`。集成合并提交为 `9766e87`。代码集成、SDK 编译及离线验证完成；**没有合入 main 或发布，没有执行新的 Creo 连接、注册、加载、重启、模型写入或故障注入。** 当前实例的实机/WorkBuddy 验收继续待测，不关闭 BUG-001。
 
 ## 合并与交叉保护
 
@@ -24,7 +24,7 @@ Windows 11 x64 / Python 3.12.14 / 本机 Creo 12.4 Toolkit SDK / MSVC x64。SDK 
 | `python bridge.py build` | 集成后的 worker、loader、payload 编译通过；只准备本机产物，不注册、不启动 Creo |
 | `python -m tools.test_callback_payload --output build/feat029-integration-payload.json` | 实际编译载荷的 **12 项 ABI/状态检查**通过：nonce、初始化前拒绝、陈旧文件、活动请求、越界输入、双请求拒绝、选择/释放、终止状态。模型 API 为夹具，不是原生几何验收 |
 | 真正 stdio MCP 离线检查 | 新进程定义84工具；真实通道锁被占用时，模型证据查询可读，回调状态为 unknown/channel_busy 且携带占用者，写恢复返回结构化 busy。服务后台启动已在此夹具关闭，未调用 Toolkit |
-| 源码分发检查 | 从实际集成提交的 Git 快照制作、解压源码包；结果见[机器可读记录](FEAT-029-integration-2026-10-17.json)。运行数据、SDK、常量表和用户未跟踪计划不进入包 |
+| 源码分发检查 | 从9766e87实际集成提交的Git快照制作501文件源码包，解压导入和84工具schema通过；无运行数据/SDK/用户未跟踪计划，G0原件SHA256不变。结果见[机器可读记录](FEAT-029-integration-2026-10-17.json)。运行数据、SDK、常量表和用户未跟踪计划不进入包 |
 
 本轮源码、执行器/载荷/引导身份、命令与检查结果见[JSON](FEAT-029-integration-2026-10-17.json)。原始 `FEAT-029-WorkBuddy-report-2026-10-16.md` 与源分支逐字节相同，SHA256 仍为 `14f41ff0e6ec2c941c4ac3cee9791ae6613e374097fb39ab453eba8f6c744461`；G0 与 2026-10-17 恢复证据保留原件。
 

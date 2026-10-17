@@ -3278,10 +3278,73 @@
     "docs/validation/FEAT-029-worker-guidance-artifacts-2026-10-16.json": "343383a6ccbcb289c9092c75a0c41b562bce00ba043e1d27ffdba610c66d9482"
   },
   "public_tool_count": 84,
-  "package_validation": "pending_commit_snapshot",
+  "package_validation": {
+    "success": true,
+    "source_commit": "9766e87ffc2c47e5fa0ef01d1b015d053a79d94d",
+    "method": "git archive actual integration commit, then source allowlist; user untracked input excluded",
+    "archive": "E:\\Projects\\MCP_CREO_MechDog\\build\\feat029-integration\\FEAT-029-integration-9766e87-source.zip",
+    "sha256": "d6c3536efcad680f607555449945ec76ccb870bddd7399006e13cc6cfcb4cd43",
+    "file_count": 501,
+    "required_files": [
+      "native/blend_loader.cpp",
+      "native/callback_api.h",
+      "native/callback_identity.h",
+      "native/callback_runtime.h",
+      "native/recovery_deadline.h",
+      "src/creo_mechdog/blend_callback.py",
+      "src/creo_mechdog/reconciliation.py",
+      "tools/test_callback_payload.cpp",
+      "tools/test_recovery_deadline.cpp",
+      "docs/CALLBACK_LIFECYCLE.md",
+      "docs/validation/bug-001-repro-2026-10-16/g0_driver.py",
+      "docs/validation/DEV-028-WorkBuddy-report-20261016.txt"
+    ],
+    "runtime_artifacts_excluded": true,
+    "user_untracked_plan_excluded": true,
+    "g0_original_sha256_verified": true,
+    "extracted_schema": {
+      "tool_count": 84,
+      "resource_root": "E:\\Projects\\MCP_CREO_MechDog\\build\\feat029-integration\\snapshot-9766e87",
+      "sdk_calls": "none"
+    },
+    "full_setup_and_native_installation": "not_run"
+  },
   "native_connections_executed": false,
   "live_integration_acceptance": "not_run",
   "workbuddy_integration_acceptance": "not_run",
   "main_merge": false,
-  "release_published": false
+  "release_published": false,
+  "integration_merge_commit": "9766e87ffc2c47e5fa0ef01d1b015d053a79d94d",
+  "final_style_check": {
+    "work_item": "FEAT-029",
+    "version": "0.3.3",
+    "timestamp_utc": "2026-10-17T04:17:16.657710+00:00",
+    "environment": {
+      "os": "Windows",
+      "python": "3.12.14"
+    },
+    "source": {
+      "commit": "5628a33cbb8f442b4505c31c066b75fbc91017a3",
+      "dirty": true,
+      "checked_source_sha256": "db1dca5e25d1cd340c80c1113c2d3d021ee499703309e6461ac7ba1bb31cc10a"
+    },
+    "native_validation": "not_run",
+    "unit_tests": "not_run",
+    "success": true,
+    "style_summary": {
+      "lint_findings": 35,
+      "unformatted_files": 25,
+      "cpp_files_checked": 21,
+      "python_files_checked": 106
+    },
+    "tools": {
+      "ruff": "0.17.0",
+      "clang-format": "23.1.3"
+    },
+    "configuration": {
+      "pyproject.toml": "4b786c9741c35ba69a3e27a08b686fbf2989821d4ab8d1daf00fe9889e09d0aa",
+      ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+      "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc"
+    }
+  }
 }
