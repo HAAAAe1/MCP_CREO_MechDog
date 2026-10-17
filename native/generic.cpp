@@ -912,8 +912,10 @@ static void sketch(const J &op) {
     if (op.contains("profile"))
         aliases[op["label"].get<std::string>()]["airfoil"] = op["profile"];
 }
-static void extrude_or_revolve(const J &op, bool revolve) {
+static J extrude_or_revolve(const J &op, bool revolve) {
     ProFeature sketch_f = feature(op.at("sketch"));
+    bool cut = op.value("mode", "add") == "cut";
+    double before_volume = cut ? volume() : 0.0;
     ProSelection s = selection(sketch_f.id, PRO_FEATURE);
     std::string mode = op.value("mode", "add"), direction = op.value("direction", "positive");
     ProElement root = node(nullptr, PRO_E_FEATURE_TREE);
@@ -975,6 +977,18 @@ static void extrude_or_revolve(const J &op, bool revolve) {
     ProFeature f = create(root);
     CK(ProElementFree(&root));
     remember(op, f);
+    J details = J::object();
+    if (cut) {
+        CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
+        double removed = before_volume - volume();
+        log("CUT_MATERIAL_REMOVED_MM3=%.12f\n", removed);
+        if (removed <= std::max(1e-9, fabs(before_volume) * 1e-12))
+            throw std::runtime_error(
+                std::string(revolve ? "Revolve" : "Extrude") +
+                " cut removes no material; check the sketch position, direction and depth "
+                "against existing geometry");
+        details["material_removed_mm3"] = removed;
+    }
     J state = inspection();
     int active = 0;
     for (auto b : state["bodies"])
@@ -982,6 +996,7 @@ static void extrude_or_revolve(const J &op, bool revolve) {
             active++;
     if (active == 1 && !op.value("skip_empty_body_cleanup", false))
         remove_empty_body();
+    return details;
 }
 static bool hole_plane_normal(ProSelection selection, V &normal, const char *role) {
     ProModelitem item;
@@ -1576,7 +1591,7 @@ static void execute_operation(const J &op) {
     else if (kind == "set_geometry_transform")
         generic_transform_update(op);
     else if (kind == "extrude" || kind == "revolve")
-        extrude_or_revolve(op, kind == "revolve");
+        details = extrude_or_revolve(op, kind == "revolve");
     else if (kind == "hole")
         details = generic_hole(op);
     else if (kind == "round" || kind == "chamfer")

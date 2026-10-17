@@ -4,10 +4,15 @@
 
 ## 已完成事项
 
-以下保留原验收范围与目标版本，不因当前源码已到 0.3.4 而改写历史受测身份。2026-10-15 用户取消全项目 Creo 10 独立验收门槛，历史交接/复测安排不再作为当前要求；朋友反馈具体问题后再跟进。BUG-022 按已有本机证据完成并归档；DEV-015 的历史主干集成已核实，公开交付由 DEV-025 / v0.3.2 累计承接。BUG-038/042/043/044 于 2026-10-16 按用户决定采信 0.3.2 外部报告转已完成，均标注"本仓库无对应提交可核实、本机复现失败须重开"，不代表本机复验通过。
+以下保留原验收范围与目标版本，不因当前源码已到 0.3.5 而改写历史受测身份。2026-10-15 用户取消全项目 Creo 10 独立验收门槛，历史交接/复测安排不再作为当前要求；朋友反馈具体问题后再跟进。BUG-022 按已有本机证据完成并归档；DEV-015 的历史主干集成已核实，公开交付由 DEV-025 / v0.3.2 累计承接。BUG-038/042/043/044 于 2026-10-16 按用户决定采信 0.3.2 外部报告转已完成，均标注"本仓库无对应提交可核实、本机复现失败须重开"，不代表本机复验通过。
 
 | ID | 优先级 | 状态 | 目标版本 | 完成摘要与证据 |
 | --- | --- | --- | --- | --- |
+| [DEV-035](work-items/DEV-035.md) | P1 | 已完成（发布候选） | 0.3.5 | 用户指定统一交付DEV-033/BUG-054、DEV-034/BUG-055及反馈/BUG-056登记；两目录各307项单元/增量检查、84工具、SDK实际编译/6521常量、12项ABI、独立安装和9种子ZIP通过。已知通道问题和M2未取得范围保留；实际main/Release/四附件SHA256在[PR #10](https://github.com/wudahua/MCP_CREO_MechDog/pull/10)回填，见[验收](validation/RELEASE-0.3.5.md)。 |
+| [BUG-054](work-items/BUG-054.md) | P1 | 已完成（本机实机及WorkBuddy已测范围） | 0.3.5 | 拉伸/旋转切除零去料曾静默成功。2026-10-17 在 0.3.4 复现并按 DEV-033 修复：cut 前后测体积，零去料抛错回滚（revision 不变、别名无残留），成功返回 material_removed_mm3；T01～T08 实机与 WorkBuddy 5 场景黑盒均通过，revolve 正反例纳入。外部 Creo 10/9、thin/装配/钣金 cut 未测；BUG-016 不随本项关闭。证据见[验收记录](validation/BUG-054-cut-material-2026-10-17.md)与[黑盒记录](validation/BUG-054-WorkBuddy-acceptance-2026-10-17.md)。 |
+| [BUG-055](work-items/BUG-055.md) | P1 | 已完成（WorkBuddy核心范围，M2未完成） | 0.3.5 | 根因链闭环：WorkBuddy 实测客户端把显式 null 降级为空串（服务端回显 received ''），服务端各层无转换；修复后空串精确拒绝、省略字段替代路径端到端成功。M1 abandoned 闭环+幂等+历史保留全过；M2 终态与稳定通道字面 null 对照因通道静默掉线未取得（保护按契约保留），外部 Creo 9 未复测。 |
+| [DEV-033](work-items/DEV-033.md) | P1 | 已完成（本机实机及WorkBuddy已测范围） | 0.3.5 | 2026-10-17 按 G0～G5 执行 BUG-054：会话条件核对后复现、确定孔类一致契约、最小修复（native 守卫+docstring+compact 白名单+4 项单元回归）、实机 T01～T08 与 WorkBuddy 5 场景黑盒全通过（revolve 正反例纳入），台账/能力说明同步。未测边界（外部 Creo 10/9、thin/装配/钣金 cut）保留；未合入 main、未发布。 |
+| [DEV-034](work-items/DEV-034.md) | P1 | 已完成（WorkBuddy核心范围，M2未完成） | 0.3.5 | G0～G4 完成后 WorkBuddy 核心验收通过（客户端 null→空串降级实证、M1 闭环、空串精确拒绝、字面 null 接受、unknown 保护保留），开发者只读核对一致。未取得：M2 终态与稳定通道对照（通道 37–41 秒静默掉线三次，环境异常，是否另立条目待用户定）、外部 Creo 9。事实边界：同名残留模型触发 abandon owned 保护、journal 临时名过深数据根逼近 260 路径上限。不升版、不合入、不发布。 |
 | [DEV-032](work-items/DEV-032.md) | P1 | 已完成（发布候选） | 0.3.4 | 用户指定版本并要求汇总七个待合分支；BUG-001按用户决定关闭，FEAT-018/029仍验收中。两目录各297项单元/增量语言、独立SDK编译、12项ABI、84工具、源码分发及九种子ZIP安装通过；实机/WorkBuddy本轮未执行。实际main/标签/Release/四附件SHA256回填[PR #9](https://github.com/wudahua/MCP_CREO_MechDog/pull/9)，见[本版记录](validation/RELEASE-0.3.4.md)。 |
 | [BUG-001](work-items/BUG-001.md) | P0 | 已完成（用户决定关闭） | 0.3.4 | 2026-10-17用户要求先关闭并将待合分支一并交付main。正式恢复实现及部分实机证据保留；IPC初始化通信失败/Creo无响应根因未定，完整恢复与WorkBuddy未完成，不代表全部验收通过。详见[离线排查](validation/BUG-001-hang-offline-2026-10-17.md)；后续复现沿用本ID重开，FEAT-018/029仍验收中。 |
 | [DEV-029](work-items/DEV-029.md) | P1 | 已完成 | 0.3.3 | main@9ee923c、v0.3.3 与公开 [Pre-release](https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.3)一致；两目录各263项、原生回归和主干CI通过，四份主干附件已回下载核对SHA256；最终交付见 [PR #8](https://github.com/wudahua/MCP_CREO_MechDog/pull/8)，[候选验收](validation/RELEASE-0.3.3.md)及未测范围保留。 |

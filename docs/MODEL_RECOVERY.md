@@ -1,6 +1,6 @@
 # 未知作业与受控模型恢复
 
-当前状态：恢复实现纳入0.3.4；BUG-001按用户决定关闭，FEAT-018仍验收中。Creo卡死根因未定，完整实机及WorkBuddy未完成；关闭与发布不代表这些验证通过。见[本次验证记录](validation/BUG-001-recovery-2026-10-17.md)。本机开发联调只启用指向 E 盘的 `MCP_CREO_MechDog_dev`；这是客户端注册名，不是已发布版本号。
+当前版本0.3.5已补齐恢复MCP空值/省略契约、畸形ID精确错误及stale诊断，BUG-055的核心WorkBuddy验收见[记录](validation/BUG-055-WorkBuddy-acceptance-2026-10-17.md)。客户端不能保真发送null时省略该字段；M2终态因BUG-056通道掉线未取得，禁止自动清保护或重放。FEAT-018完整范围仍验收中，BUG-001按用户决定关闭。本机开发只使用指向E盘的MCP_CREO_MechDog_dev，部署身份按公开启动指纹核对。
 
 适用于0.3.4提供的 `creo_reconcile_model`；历史公开0.3.3没有该工具。通过 `creo_capabilities` 确认实际部署，更新源码后构建执行器并重新连接 MCP，不能仅凭磁盘上的版本说明判断客户端已经加载新工具。
 
@@ -35,11 +35,13 @@
   "mode":"apply",
   "action":"restore_baseline",
   "expected_revision":1,
-  "expected_pending_job_id":"<预检返回的pending_job，无则明确填null>",
+  "expected_pending_job_id":"<本次预检返回的pending_job；为null时发送JSON null或省略字段>",
   "evidence_token":"<本次预检令牌>",
   "idempotency_key":"operator_recovery_001"
 }
 ```
+
+`expected_pending_job_id` 契约：必须逐字等于本次预检返回的 `pending_job`。预检返回 null（无待定作业）时发送 JSON null 或省略该字段，两者等价；**不要发送空字符串 `""`**——空串/空白串会被作为请求缺陷精确拒绝（错误引用实际收到的值），不会与 null 混同，也不会被当作模型 revision 冲突。客户端确实无法发送 null 时优先省略字段；字面字符串 `"null"` 在当前 SDK 下会被预解析为 null，但不要依赖该行为。revision 与 pending 不匹配分别返回独立的 stale 错误并给出模型实际值。
 
 接受后只轮询返回的恢复 `job_id`，不重复提交原计划。同一幂等键与相同输入返回同一恢复任务；换动作或输入必须换键并重新预检。文件、部署、revision 或 reservation 改变会拒绝旧证据。busy 表示本次未获准，遵循其 blocking 字段，不假设排队。
 

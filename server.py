@@ -269,10 +269,24 @@ async def creo_reconcile_model(
     mode: Literal["inspect", "apply"] = "inspect",
     live: bool = False,
     action: Literal["restore_baseline", "accept_saved", "accept_live", "abandon_new"] | None = None,
-    expected_revision: int | None = None,
-    expected_pending_job_id: str | None = None,
-    evidence_token: str | None = None,
-    idempotency_key: str | None = None,
+    expected_revision: int | None = Field(
+        default=None, description="Apply only: the revision returned by this inspect."
+    ),
+    expected_pending_job_id: str | None = Field(
+        default=None,
+        description=(
+            "Apply only: the pending_job value returned by this inspect. Send JSON null "
+            "(or omit the parameter) when inspect returned pending_job=null; "
+            "never send an empty string."
+        ),
+    ),
+    evidence_token: str | None = Field(
+        default=None, description="Apply only: the evidence_token returned by this inspect."
+    ),
+    idempotency_key: str | None = Field(
+        default=None,
+        description="Apply only: unique 8-80 letters, digits, underscores or hyphens.",
+    ),
 ) -> dict[str, Any]:
     """Inspect uncertain owned models without requiring Creo. live=true performs a bounded read-only session preflight. Apply an explicitly selected available action with the returned token, revision, pending_job (null when absent) and a unique 8–80 character idempotency_key. Poll its independent recovery job; never replay the original plan. restore_baseline keeps revision; accept_saved/live increments once; abandon_new preserves files and archives the model. accept_live requires live preflight. Unsupported/unproven ownership is rejected; no Creo restart or user file deletion."""
     return await invoke(
@@ -811,7 +825,9 @@ async def creo_extrude(
     new_body: bool = False,
     thin: float | None = None,
 ) -> dict[str, Any]:
-    """Create native extrusion from a sketch label/ID. Supports protrusion, pocket, through cut, symmetric, surface and thin modes."""
+    """Create native extrusion from a sketch label/ID. Supports protrusion, pocket, through cut, symmetric, surface and thin modes.
+    A cut that removes no material (disjoint sketch, wrong direction or already-removed region) fails and rolls back;
+    a successful cut reports material_removed_mm3 in its operation details."""
     op = {
         "op": "extrude",
         "label": label,
@@ -840,7 +856,8 @@ async def creo_revolve(
     new_body: bool = False,
     thin: float | None = None,
 ) -> dict[str, Any]:
-    """Create native revolve/revolved cut from an arbitrary sketch, about its centerline or an external axis."""
+    """Create native revolve/revolved cut from an arbitrary sketch, about its centerline or an external axis.
+    A cut that removes no material fails and rolls back; a successful cut reports material_removed_mm3."""
     op = {
         "op": "revolve",
         "label": label,

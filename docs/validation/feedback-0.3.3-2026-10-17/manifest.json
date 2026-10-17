@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-17",
+  "task": "0.3.3 feedback deduplication and BACKLOG registration",
+  "repository_version_at_registration": "0.3.4",
+  "repository_base_commit": "7662f7e3c9bc11331fa32ed4bad8cf12a0d80212",
+  "instructions_in_reports_executed": false,
+  "reports": [
+    {
+      "source_id": "A",
+      "original_filename": "2026-10-17_CREO_0.3.3_钣金增料折边与wall参数仍未修复验收报告.md",
+      "original_path": "C:\\Users\\Administrator\\Downloads\\0.3.3\\2026-10-17_CREO_0.3.3_钣金增料折边与wall参数仍未修复验收报告.md",
+      "archive_path": "docs/validation/feedback-0.3.3-2026-10-17/sheetmetal-report.md",
+      "bytes": 8568,
+      "sha256": "304de98fb9457c22c357289d283bfcd5dcb9801375073553bce7e957c781bec8",
+      "reported_service_version": "0.3.3",
+      "reported_environment": "Creo/OS 未提供",
+      "evidence_kind": "external_report_not_reexecuted"
+    },
+    {
+      "source_id": "B",
+      "original_filename": "2026-10-17_CREO_0.3.3_核心问题_草图弧无dir参数且恒CCW_切除零去料仍无守卫.md",
+      "original_path": "C:\\Users\\Administrator\\Downloads\\0.3.3\\2026-10-17_CREO_0.3.3_核心问题_草图弧无dir参数且恒CCW_切除零去料仍无守卫.md",
+      "archive_path": "docs/validation/feedback-0.3.3-2026-10-17/gear-pump-report.md",
+      "bytes": 26871,
+      "sha256": "ea713fddd605e019679748cd0ebea031ab2054344fe475c4817d3300b03e0ee1",
+      "reported_service_version": "0.3.3",
+      "reported_environment": "Creo 10.0.0.0；其他环境按原件",
+      "evidence_kind": "external_report_not_reexecuted"
+    },
+    {
+      "source_id": "C",
+      "original_filename": "2026-10-17_CREO_0.3.3_BUG-033修复与DEV-021现场验证.md",
+      "original_path": "C:\\Users\\Administrator\\Downloads\\0.3.3\\2026-10-17_CREO_0.3.3_BUG-033修复与DEV-021现场验证.md",
+      "archive_path": "docs/validation/feedback-0.3.3-2026-10-17/creo9-build-report.md",
+      "bytes": 6068,
+      "sha256": "02fc63526696a7698910c03f77f341f846503a2543e007d8b6585063ab0e6e06",
+      "reported_service_version": "0.3.3",
+      "reported_environment": "Windows 10 x64 19045 / Python 3.13.14 x64 / MSVC 19.44.35229 / Windows SDK 10.0.26100 / Creo 9.0.0.0 SDK",
+      "evidence_kind": "external_report_not_reexecuted"
+    },
+    {
+      "source_id": "D",
+      "original_filename": "2026-10-17_CREO_0.3.3_Creo9编译修复已验收但种子筋放样三问题依旧.md",
+      "original_path": "C:\\Users\\Administrator\\Downloads\\0.3.3\\2026-10-17_CREO_0.3.3_Creo9编译修复已验收但种子筋放样三问题依旧.md",
+      "archive_path": "docs/validation/feedback-0.3.3-2026-10-17/creo9-modeling-report.md",
+      "bytes": 9390,
+      "sha256": "8f1da7b045200d6a58587cdd960357eefb91b092fe21251832d92459b42944cf",
+      "reported_service_version": "0.3.3",
+      "reported_environment": "Windows 10 / Creo 9.0.0.0 / stdio；release_numeric=41",
+      "evidence_kind": "external_report_not_reexecuted"
+    }
+  ]
+}

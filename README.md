@@ -1,12 +1,12 @@
-# MCP_CREO_MechDog 0.3.4
+# MCP_CREO_MechDog 0.3.5
 
 开发维护从 [开发入口](docs/DEVELOPMENT.md) 和 [统一功能台账](docs/BACKLOG.md) 开始。每项工作先定义验收；语言与单元检查、Creo 实机验收分别记录。项目采用渐进布局整理，当前支持环境见 [兼容矩阵](docs/COMPATIBILITY.md)。
 
 本地 Windows MCP 服务，按需启动或连接 Creo Parametric 9 / 10 / 12，通过官方 C/C++ Toolkit 创建、查询和修改**原生参数化特征**。当前开发与发布按本机 Creo 12.4.0.0 的改动范围验收；Creo 10 不再要求独立复测，Creo 9 与 Toolkit 9 已纳入支持/要求范围，[BUG-033](docs/work-items/BUG-033.md) 编译探测修复已实现。本机无 Creo 9 SDK，Creo 9 实机编译与建模运行时均未验收，其他环境收到具体测试反馈后再跟进。历史证据、具体功能与未测范围见 [兼容矩阵](docs/COMPATIBILITY.md)。建模由任意支持的草图轮廓及顺序特征组成：新建零件 → 草图 → 拉伸/旋转 → 切除/孔 → 后续特征。原先的底板接口保留为快捷工具。
 
-**本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 0.3.4注册 **84 个工具**（历史公开0.3.3有82个），新增受控恢复和回调状态（0.2.6 为81个）；`creo_loft` 已通过直接创建和已有零件追加验收并开放。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
+**本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 0.3.5注册 **84 个工具**（历史公开0.3.3有82个），新增受控恢复和回调状态（0.2.6 为81个）；`creo_loft` 已通过直接创建和已有零件追加验收并开放。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
 
-当前服务/源码版本为 **0.3.4**，包含受控模型恢复、固定回调注册及实时就绪预检。用户指定本版仍递增PATCH；BUG-001按用户决定关闭，卡死根因和未完成实机/WorkBuddy范围保留，FEAT-018/029继续验收中。见[0.3.4说明](docs/RELEASE_NOTES_0.3.4.md)与[本版检查](docs/validation/RELEASE-0.3.4.md)。历史[0.3.3](docs/RELEASE_NOTES_0.3.3.md)等说明保留原身份。
+当前服务/源码版本为 **0.3.5**，交付 BUG-054 实体切除材料守卫和 BUG-055 恢复 MCP 参数校验与诊断；DEV-033/034 已完成本机开发、实机及 WorkBuddy 已测范围验收。**BUG-056 通道约40秒静默掉线仍待核实**，M2恢复收尾未完成，FEAT-018/029完整范围继续验收。见[0.3.5说明](docs/RELEASE_NOTES_0.3.5.md)与[本版检查](docs/validation/RELEASE-0.3.5.md)；历史[0.3.4](docs/RELEASE_NOTES_0.3.4.md)及原验收身份保留。
 
 本版包含 [FEAT-019 自动启动](docs/work-items/FEAT-019.md)：后台检测、启动协调和建模就绪保护已实现；用户于 2026-10-13 接受 WorkBuddy / Creo 12.4 的自动启动、Toolkit 就绪及建模/保存重载验收，并于 2026-10-14 确认补充 Creo 12 已验证可用的说明。该专项未取得 Creo 10 实测结果；Codex 冷启动连接复测失败另列 [BUG-005](docs/work-items/BUG-005.md)。见 [原验收证据](docs/validation/FEAT-019.md)。
 
@@ -57,8 +57,8 @@ DEV-002 已开始分批迁移：更新检查实现位于 `src/creo_mechdog/`，�
 | --- | --- |
 | 零件与建模计划 | `creo_new_part`、`creo_execute_plan`：新建毫米零件，或对已有 MCP 零件逐步追加特征 |
 | 草图 | `creo_create_sketch`：直线、中心线、圆、圆弧、矩形、多段线、样条、椭圆；显式尺寸和约束；auto/autodim/coordinates 尺寸策略 |
-| 拉伸 | `creo_extrude`：实体增材、切除、贯穿切除、曲面、薄壁、正/反向、对称深度、新实体 |
-| 旋转 | `creo_revolve`：实体旋转、旋转切除、指定角度，使用草图中心线或外部轴；提供曲面、薄壁和对称角度分支 |
+| 拉伸 | `creo_extrude`：实体增材、切除、贯穿切除、曲面、薄壁、正/反向、对称深度、新实体；切除未去料（板外草图、方向/深度错误或已去除区域）时失败回滚，成功操作详情返回material_removed_mm3 |
+| 旋转 | `creo_revolve`：实体旋转、旋转切除、指定角度，使用草图中心线或外部轴；提供曲面、薄壁和对称角度分支；切除零去料同样失败回滚并返回material_removed_mm3 |
 | 孔 | `creo_hole`：原生直孔，平面定位，两条独立平面参考或共面直边及有符号偏置；边参考用放置面中心明确定位侧。通孔或指定深度盲孔，flip反转原生切削侧；无去料时失败回滚，成功操作详情返回孔轴及material_removed_mm3 |
 | 修饰特征 | `creo_round`、`creo_chamfer`、`creo_shell`：恒定半径圆角、等距倒角、恒定厚度抽壳；用查询得到的边/面 ID 选引用 |
 | 基准与重复 | `creo_datum_plane`、`creo_datum_axis`、`creo_dimension_pattern`：偏移/角度基准面、基准轴、一方向尺寸阵列 |

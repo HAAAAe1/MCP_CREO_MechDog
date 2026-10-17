@@ -30,3 +30,12 @@ native/third_party/** -text
 docs/validation/bug-001-repro-2026-10-16/g0_evidence.json -text
 docs/validation/bug-001-recovery-2026-10-17/*.json -text
 docs/validation/bug-001-hang-offline-2026-10-17/*.json -text
+
+# Preserve the four original 0.3.3 feedback reports byte for byte.
+docs/validation/feedback-0.3.3-2026-10-17/*.md -text
+
+# Preserve the original 0.3.4 feedback report byte for byte.
+docs/validation/feedback-0.3.4-2026-10-17/*.md -text
+
+# DEV-035: preserve the historical user plan as supplied.
+docs/DEV-026_0_3_2_三份反馈补录与_Creo_9_SDK_文档口径.md -text
