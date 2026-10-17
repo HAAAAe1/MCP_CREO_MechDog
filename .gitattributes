@@ -29,3 +29,4 @@ native/third_party/** -text
 # DEV-030: preserve the original G0 evidence SHA256 across checkouts.
 docs/validation/bug-001-repro-2026-10-16/g0_evidence.json -text
 docs/validation/bug-001-recovery-2026-10-17/*.json -text
+docs/validation/bug-001-hang-offline-2026-10-17/*.json -text
