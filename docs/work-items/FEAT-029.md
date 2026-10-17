@@ -135,3 +135,9 @@
 [外部报告](../validation/FEEDBACK-0.3.4-2026-10-17.md)在从未注册回调的 Creo 9 会话观察到 artifact_status=prepared、readiness=unknown、next_action=人工启动/注册，且有 protocol 3、身份与旧注册迁移提示，补本项状态可解释性的限定正例。没有首次加载、兼容升级、回退和直接放样成功证据，本项继续验收中。
 
 补充核对 creo_loft / creo_new_airfoil_blade 在接受建模前可取得的回调状态摘要、失败/未知原因及下一步；预检不能把 prepared 当 ready，不能隐式加载 DLL、代办 GUI 注册或用过期缓存保证运行成功，回调与种子路径的适用范围须分清。本轮未改预检/入队或安全加载策略。
+
+## 2026-10-17：0.3.4 readiness 双义观察（Creo 10）
+
+[0.3.4 / Creo 10 报告](../validation/FEEDBACK-0.3.4-CREO10-2026-10-17.md)确认已交付 `creo_callback_status` 的探测确定性与 prepared/ready 分离为正例（会话就绪后连查 3 次稳定），同时观察到 `readiness` 在"从未加载"与"已注册但无法查询"两种情形下同为 `unknown`，只能靠 `reason`（如 `no_runtime_identity_record`）区分，Agent 须解析 reason 才能判断是否继续提交放样。报告建议拆分 `not_loaded`（无运行时身份记录 = 可确定未加载）与 `unknown`（有记录但无法确认）枚举，或增加 `action_required` 布尔。
+
+该观察落在本卡范围第 2 点（至少表达就绪、未加载、版本不匹配和无法确认）之内，说明已交付实现的枚举语义尚未完全达到本卡自身验收范围，随生命周期/预检验收一并核对，不单独建卡。同报告在缺回调就绪路径实测直接放样约 9 秒快速失败且错误信息升级为完整状态对象（0.3.3 为 12 秒），作为本卡快速拒绝正例保留；反馈人无法在其 Creo 10 完成 GUI 注册安全确认，回调加载后的端到端直接放样仍未验证。
