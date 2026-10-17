@@ -1,0 +1,170 @@
+{
+  "work_item": "DEV-030",
+  "recorded_at": "2026-10-17T04:29:47.285528+00:00",
+  "workspace": "E:\\Projects\\MCP_CREO_MechDog",
+  "branch": "codex/feat-029-integration",
+  "base_commit": "3e27fa00f6613dcde9018cfd7faa1da6b4e82b5a",
+  "dirty": true,
+  "scope": "Documentation state and branch provenance sync only; preserve historical reports and originals byte-for-byte.",
+  "branch_tips": [
+    {
+      "branch": "codex/dev-030-track-feedback-plan",
+      "tip": "113c0bae61128dcc7c907830dfc90d4b5ed8dd2f",
+      "included_in_base": true
+    },
+    {
+      "branch": "codex/bug-001-unknown-recovery",
+      "tip": "bcd90abc3fb7a10a6b26d5b97c4b198483bc61e9",
+      "included_in_base": true
+    },
+    {
+      "branch": "codex/dev-030-e-drive-sync",
+      "tip": "209e37204de20ead423276aaf802032229800d8f",
+      "included_in_base": true
+    },
+    {
+      "branch": "codex/bug-001-feat-018-recovery",
+      "tip": "5628a33cbb8f442b4505c31c066b75fbc91017a3",
+      "included_in_base": true
+    },
+    {
+      "branch": "codex/feat-029-callback-lifecycle",
+      "tip": "879aebe71391865639f21ffcdad025725c27970f",
+      "included_in_base": true
+    }
+  ],
+  "protected_files": [
+    {
+      "path": "docs/validation/BUG-001-repro-2026-10-16.md",
+      "bytes": 5881,
+      "sha256": "f3613c716648f12d7bf574bfc9711a46b9a6e85dda57b2d7f83c4427fb779212",
+      "identical_to_base_git_blob": true,
+      "matches_historical_digest": true
+    },
+    {
+      "path": "docs/validation/BUG-001-repro-2026-10-16.json",
+      "bytes": 7003,
+      "sha256": "b2c3bf2ff05c1fb3224ac55b414f76a1dfda93acb5064bc66a2d4613ba232882",
+      "identical_to_base_git_blob": true,
+      "matches_historical_digest": true
+    },
+    {
+      "path": "docs/validation/bug-001-repro-2026-10-16/g0_driver.py",
+      "bytes": 26774,
+      "sha256": "c54c1c51b3cf32263a78db1a3b011f98d91a642c15474449d0b6350172ba04b0",
+      "identical_to_base_git_blob": true,
+      "matches_historical_digest": true
+    },
+    {
+      "path": "docs/validation/bug-001-repro-2026-10-16/g0_evidence.json",
+      "bytes": 115860,
+      "sha256": "5360e6b23c44da58ba3d4bc5237619036d9918cf3c5f1c08218999339752c5a4",
+      "identical_to_base_git_blob": true,
+      "matches_historical_digest": true
+    },
+    {
+      "path": "docs/validation/track-feedback-2026-10-16/track-modeling-rev2.txt",
+      "bytes": 41143,
+      "sha256": "1ec3872b0cd8cb92dd7c266c60d0839a3baa1f14371df53262c06706e610f9f9",
+      "identical_to_base_git_blob": true,
+      "matches_historical_digest": true
+    },
+    {
+      "path": "docs/validation/track-feedback-2026-10-16/creo10-0.3.2-track-feedback.md",
+      "bytes": 48998,
+      "sha256": "0c402c57dc9ab37c37c6d30ed890e9321f3d184559d5d382cac393dbe1704a9d",
+      "identical_to_base_git_blob": true,
+      "matches_historical_digest": true
+    },
+    {
+      "path": "docs/validation/build-feedback-0.3.3-2026-10-16/creo10-vcvars-callback-report.md",
+      "bytes": 9270,
+      "sha256": "121862b7403ccf97d721504ed36602f5598e8e7d80bb4db8c4b56e1fe7565179",
+      "identical_to_base_git_blob": true,
+      "matches_historical_digest": true
+    },
+    {
+      "path": "docs/validation/TRACK-FEEDBACK-2026-10-16.md",
+      "bytes": 12196,
+      "sha256": "2d8c9ba711aa2f5158adfadfe7a748e3103cd6fa4f5570598706b523a9bdeb0e",
+      "identical_to_base_git_blob": true,
+      "matches_historical_digest": null
+    },
+    {
+      "path": "docs/validation/FEEDBACK-0.3.3-BUILD.md",
+      "bytes": 7489,
+      "sha256": "8b154c886350b3b46e4d68c815b6eb9b9dc89bac54affc9507c0d9ea032f3235",
+      "identical_to_base_git_blob": true,
+      "matches_historical_digest": null
+    },
+    {
+      "path": "docs/validation/DEV-030-document-check.json",
+      "bytes": 8118,
+      "sha256": "47915321029a9a131945319b406dcfc319ce763088bd6c470058e47f8decb5f2",
+      "identical_to_base_git_blob": true,
+      "matches_historical_digest": null
+    },
+    {
+      "path": "docs/validation/DEV-030-build-feedback-sync-2026-10-16.json",
+      "bytes": 5235,
+      "sha256": "0dcf93f236799b6d6febc7ab4ac9beab04cbe62e6f9be469b37df43dce00a302",
+      "identical_to_base_git_blob": true,
+      "matches_historical_digest": null
+    },
+    {
+      "path": "docs/validation/track-feedback-2026-10-16/manifest.json",
+      "bytes": 1314,
+      "sha256": "c65373fce887c566b2f91b91da8fa031361cf7e84724522a5815493b7fa8030b",
+      "identical_to_base_git_blob": true,
+      "matches_historical_digest": null
+    },
+    {
+      "path": "docs/validation/build-feedback-0.3.3-2026-10-16/manifest.json",
+      "bytes": 993,
+      "sha256": "b4f635a3930449775b80a458946f31332e83ebdc455c80e858deca393a5e3fb4",
+      "identical_to_base_git_blob": true,
+      "matches_historical_digest": null
+    }
+  ],
+  "current_states": {
+    "DEV-030": "in development; G0 complete; recovery acceptance incomplete; FEAT-029 integrated on development branch",
+    "BUG-001": "acceptance in progress; native hang unresolved",
+    "FEAT-018": "implemented; full native and WorkBuddy acceptance incomplete",
+    "FEAT-029": "integrated via 9766e87; offline checks recorded previously; integrated native/WorkBuddy pending",
+    "DEV-019/DEV-021": "previous completed scope unchanged; new feedback requests remain unverified",
+    "DEV-027": "unverified remaining scope"
+  },
+  "authored_files": [
+    "docs/BACKLOG.md",
+    "docs/DEVELOPMENT.md",
+    "docs/work-items/DEV-030.md",
+    "docs/validation/DEV-030-branch-sync-2026-10-17.md",
+    "docs/validation/DEV-030-branch-sync-2026-10-17.json"
+  ],
+  "authored_markdown_sha256": {
+    "docs/BACKLOG.md": "a9686e506d0b650f9e678817392f091ec0a9522f23b389f117c0d34ba226332f",
+    "docs/DEVELOPMENT.md": "fe5f187590a9afda04df39393d9464e0b97df25f02ba2ae4b9deee8d0d22d592",
+    "docs/work-items/DEV-030.md": "f23a883088372c6f5d0a54e8cbb92aff16ec7b6f751759284d75fbb4088ac71a",
+    "docs/validation/DEV-030-branch-sync-2026-10-17.md": "ca8e5b461cb38c22382f3e4dfa2e2690141ec186e7b0f7dfa96cc5dc56bc1574"
+  },
+  "checks": {
+    "all_five_branch_tips_are_ancestors": true,
+    "protected_files_byte_identical": true,
+    "historical_source_digests_match": true,
+    "relative_links_checked": 149,
+    "missing_relative_links": [],
+    "ledger_ids": {
+      "docs/BACKLOG.md": 80,
+      "docs/BACKLOG_COMPLETED.md": 32
+    },
+    "unique_active_and_completed_ids": 112,
+    "git_diff_check": true
+  },
+  "not_run": [
+    "unit tests or compiler",
+    "Toolkit/MCP connection, modeling, fault injection or WorkBuddy",
+    "C-drive project checkout or mutation",
+    "version change, main merge, push or Release publication"
+  ],
+  "success": true
+}

@@ -1,0 +1,51 @@
+{
+  "work_item": "FEAT-029",
+  "action": "prepare",
+  "started_at": "2026-10-16T06:10:08.325729+00:00",
+  "baseline_payload": "ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86",
+  "process_restart_requested": false,
+  "setup": {
+    "protocol": 3,
+    "contract": "blend-selection-v3-ordered-curves-mm",
+    "command": "MechDogBlend_f0afa9773a482aa7836aec3f_7ffafcc9",
+    "resource_root": "E:\\Projects\\MCP_CREO_MechDog_Test",
+    "dll_sha256": "f0afa9773a482aa7836aec3f1676cb9f9df97e934c7a8222abb906cf0589ef61",
+    "loader_abi": 1,
+    "loader_fingerprint": "452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319",
+    "loader_sha256": "a4a75e71a47abd66e16cbd994e34e19ea67aba4abb7e7f3eccf2dd098e196fb9",
+    "loader_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_loader\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\loader.dll",
+    "module_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback\\f0afa9773a482aa7836aec3f1676cb9f9df97e934c7a8222abb906cf0589ef61\\callback.dll",
+    "ready_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_loader\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\callback_result.json",
+    "registry_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback_protk.dat",
+    "registry_generation_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_loader\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\protk.dat",
+    "registry_shortcut": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback_protk.dat",
+    "persistent_registration_config": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback.config.pro",
+    "setup": "In Creo Auxiliary Applications, register registry_file once and start it; review DLL prompts yourself. For persistence across Creo restarts, explicitly add the generated config snippet to your own loaded config.pro. After a payload upgrade, normally restart Creo and start the same registered application. Keep its registry_file unchanged. Legacy protocol-2 registration requires one explicit migration. A changed loader/SDK generation needs a fresh Creo startup reading the same persistent registry file; a session-only registration may need selecting that file again. MCP never changes security policy."
+  },
+  "native_source_sha256": "7500f24d69424f0afa1c027587e24c6e83af42bd953d32cdff28e9a49cf00075",
+  "native_worker_sha256": "839f70ab60f3c48ba8766702511e069e80d746e733e0e87682ee2ac9270fb1e0",
+  "protected": {
+    "registry_file": {
+      "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback_protk.dat",
+      "same_sha256": true,
+      "same_mtime": true
+    },
+    "module_file": {
+      "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback\\ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86\\callback.dll",
+      "same_sha256": true,
+      "same_mtime": true
+    },
+    "loader_file": {
+      "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_loader\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\loader.dll",
+      "same_sha256": true,
+      "same_mtime": true
+    }
+  },
+  "same_registry_file": true,
+  "same_loader": true,
+  "different_payload": true,
+  "success": true,
+  "finished_at": "2026-10-16T06:10:30.013746+00:00",
+  "capture_note": "Developer stage evidence; public status and terminal jobs retained, capabilities history/polls/native log text omitted where applicable.",
+  "original_report_sha256": "a45bdcff221664a8697782010b5d5aae48ccb32038a9ce0576d8d097c760a194"
+}

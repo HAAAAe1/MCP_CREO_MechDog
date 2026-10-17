@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-16",
+  "work_item": "DEV-030",
+  "original_name": "2026-10-16CREO10.0.0.0-0.3.3vcvars64env键集过严与回调目录无限累积.md",
+  "source_path": "C:\\Users\\Administrator\\Downloads\\2026-10-16CREO10.0.0.0-0.3.3vcvars64env键集过严与回调目录无限累积.md",
+  "archived_path": "docs/validation/build-feedback-0.3.3-2026-10-16/creo10-vcvars-callback-report.md",
+  "bytes": 9270,
+  "lines": 169,
+  "sha256": "121862b7403ccf97d721504ed36602f5598e8e7d80bb4db8c4b56e1fe7565179",
+  "byte_identical": true,
+  "reported_environment": {
+    "os": "Windows 10 x64",
+    "creo": "10.0.0.0",
+    "service": "0.3.3",
+    "python": "3.13 x64",
+    "visual_studio": "VS 2022 BuildTools 17.14.40 / tools 14.44.35207",
+    "windows_sdk": "10.0.26100.0"
+  },
+  "evidence_boundary": "External report only; no original build log, full environment dumps, two-build input/output sequence or job/model records supplied. This sync did not rerun compiler/CAD/recovery commands."
+}

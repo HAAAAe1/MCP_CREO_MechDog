@@ -23,6 +23,8 @@ line-length = 100
 force-exclude = true
 extend-exclude = [
     ".tmp", "build", "jobs", "models", "native/third_party",
+    # BUG-001: historical evidence is immutable, including archived Python drivers.
+    "docs/validation",
 ]
 
 [tool.ruff.lint]

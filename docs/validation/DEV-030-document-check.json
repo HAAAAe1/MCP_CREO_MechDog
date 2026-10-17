@@ -1,0 +1,149 @@
+{
+  "work_item": "DEV-030",
+  "recorded_at": "2026-10-16T13:31:28.829754+00:00",
+  "updated_at": "2026-10-16T15:05:00+00:00",
+  "branch": "codex/dev-030-track-feedback-plan",
+  "base_main": "9ee923c9f355e9446c064a175982d47478e1e9ab",
+  "dirty": true,
+  "scope": "Documentation, task planning and immutable source archive; one exact TXT source-package allowlist entry; root AGENTS.md module/generated-content/validation-protection notes sync. No modeling/runtime/configuration changes.",
+  "success": true,
+  "authored_markdown_files": 24,
+  "relative_links_checked": 280,
+  "tables_checked": 40,
+  "unique_ledger_ids": 112,
+  "new_ids": [
+    "BUG-049",
+    "BUG-050",
+    "BUG-051",
+    "BUG-052",
+    "BUG-053",
+    "FEAT-032",
+    "FEAT-033",
+    "DEV-030",
+    "DEV-031"
+  ],
+  "new_or_completed_task_cards": [
+    "BUG-001",
+    "FEAT-006",
+    "FEAT-008",
+    "FEAT-018",
+    "BUG-049",
+    "BUG-050",
+    "BUG-051",
+    "BUG-052",
+    "BUG-053",
+    "FEAT-032",
+    "FEAT-033",
+    "DEV-030",
+    "DEV-031"
+  ],
+  "immutable_sources": [
+    {
+      "original_name": "履带(节距86mm，63 节，总长213.3)_跨软件三维建模自然语言说明_rev2.txt",
+      "source_path": "C:\\Users\\Administrator\\Downloads\\履带(节距86mm，63 节，总长213.3)_跨软件三维建模自然语言说明_rev2.txt",
+      "archived_path": "docs/validation/track-feedback-2026-10-16/track-modeling-rev2.txt",
+      "bytes": 41143,
+      "lines": 341,
+      "sha256": "1ec3872b0cd8cb92dd7c266c60d0839a3baa1f14371df53262c06706e610f9f9",
+      "byte_identical": true
+    },
+    {
+      "original_name": "2026-10-16CREO10.0.0.0-0.3.2剖面轮廓重叠致切除创建失败.md",
+      "source_path": "C:\\Users\\Administrator\\Downloads\\2026-10-16CREO10.0.0.0-0.3.2剖面轮廓重叠致切除创建失败.md",
+      "archived_path": "docs/validation/track-feedback-2026-10-16/creo10-0.3.2-track-feedback.md",
+      "bytes": 48998,
+      "lines": 695,
+      "sha256": "0c402c57dc9ab37c37c6d30ed890e9321f3d184559d5d382cac393dbe1704a9d",
+      "byte_identical": true
+    }
+  ],
+  "document_fingerprints": {
+    "AGENTS.md": "f97a454925c6bee1dc2069f0e0eaf1f13e19e94c39aec3fea9ebeef390bc0a4b",
+    "docs/BACKLOG.md": "8052b3e70b2a9f86740cc873028b7c97446dd63bb36d7db858decc26ec308435",
+    "docs/BACKLOG_COMPLETED.md": "de4d6ae5ba5be51a19501421c3a5bc3249635fd66984c25d0163e42c9fab0eb0",
+    "docs/DEVELOPMENT.md": "dcd888231de82f8b15d20860829516b84196140162ec5fd0f58e810783ead605",
+    "docs/REFERENCE_SYNTAX.md": "81d8fc51b1787b87df14a4bb781b6fab0468cfd9953101b4158764c696c8403c",
+    "docs/validation/TRACK-FEEDBACK-2026-10-16.md": "1674ab19746a995dcb3bc8942af7e447fd65c5570cb746f547f6c385ec51d00c",
+    "docs/validation/track-feedback-2026-10-16/creo10-0.3.2-track-feedback.md": "0c402c57dc9ab37c37c6d30ed890e9321f3d184559d5d382cac393dbe1704a9d",
+    "docs/validation/track-feedback-2026-10-16/manifest.json": "c65373fce887c566b2f91b91da8fa031361cf7e84724522a5815493b7fa8030b",
+    "docs/validation/track-feedback-2026-10-16/track-modeling-rev2.txt": "1ec3872b0cd8cb92dd7c266c60d0839a3baa1f14371df53262c06706e610f9f9",
+    "docs/work-items/BUG-001.md": "dc04aca453ae1cf7b67948f0280728625572c2a11723726d5e014593950ce7df",
+    "docs/work-items/BUG-008.md": "d5df5d8df1e9347ab58e2fbf89e3c69db9fd37efe09f9d5147cb5202797837bc",
+    "docs/work-items/BUG-030.md": "0f6832e36fbfc788c8880f95b944d91734188347752a2f3d1bc7bc38d1e819c4",
+    "docs/work-items/BUG-031.md": "1267a6ee35a933f7e14a0e9b4437bfa3691be5fe9898035c505cea7e157b0768",
+    "docs/work-items/BUG-040.md": "4eecdd83c24247722635dc28b0ab1766a38a27a5564021ac36217f8dd6d21b2e",
+    "docs/work-items/BUG-049.md": "7d1bf4d599d2ac0f9b0421b3991e7ec0c0d729f32783825a691a740d1d4260ce",
+    "docs/work-items/BUG-050.md": "40bf991bc91ba18daa07b7e266b30476e8f7075401c69d663f1544f40f00968c",
+    "docs/work-items/BUG-051.md": "bed7e01d47c7706241d8906563a19de92f71624986f20936473d02367c4f6e3b",
+    "docs/work-items/BUG-052.md": "e5d6c4fcfe0eac08c8f0cbc5cb2efd1fb742c656d35b499337ee92ead87be594",
+    "docs/work-items/BUG-053.md": "3cfd710cd89144eb9e798219cbee659ca787046744f20c6be3d26a1200a6c43d",
+    "docs/work-items/DEV-027.md": "f25d0e073c280daed84f5e1899e6177bcea7889889222cd104ed291a77b2cc03",
+    "docs/work-items/DEV-030.md": "3cbf9642ce38b02f7dada636920ff5b9b56fdade598fda38012c3b1fc02af7f9",
+    "docs/work-items/DEV-031.md": "00c7f139f4dcfb04359aea091798a55ab0b5fdecdda8d83b7ac3d530f603c53c",
+    "docs/work-items/FEAT-006.md": "13252a0c62927dd4ef69f41ae7f4a01e3acb0b83dae7ce4ce057379c00abaa4e",
+    "docs/work-items/FEAT-008.md": "a8d240486a6890fee568046af2df5cde63a05818bc77b8b5fe391a41cc5d7227",
+    "docs/work-items/FEAT-018.md": "f69257e1f6dab07bc3ca39309d20507996d246163db5a9813c45c29304d17ed5",
+    "docs/work-items/FEAT-029.md": "56c1b9ef703222e631a6119e2cba11f852571cf5e81649a8306f3bd36e50f1cb",
+    "docs/work-items/FEAT-032.md": "4771ad4d8ff24da21e5fe53d17292f20158556a1f31ead2b82652d5006df34bc",
+    "docs/work-items/FEAT-033.md": "f599ada6d6cd5c8ae38ec912ed1aa492bfd27b642f2afc5f13ebfcb0718961d3",
+    "tools/package.py": "7114993f9e16df6a5c70f8cceb852e94dc0eeaac2cb944121a39a7a24be70194"
+  },
+  "post_fix_verification": {
+    "changes_after_initial_record": [
+      "docs/BACKLOG.md: merged BUG-049~053 rows into the 待核实缺陷 table and FEAT-032/033 rows into the 未来能力候选 table by removing the two blank lines that had split them into headerless table fragments.",
+      "AGENTS.md: applied the pending root-module (creo_startup.py), generated-content (seed_registry.json, toolkit.lock) and docs/validation byte-identical notes from the dev-028 working copy, replacing that uncommitted copy."
+    ],
+    "recheck_method": "Stdlib-only recheck over a declared list of 26 authored markdown files (all modified or newly added markdown in this batch plus AGENTS.md): every relative markdown link must resolve to an existing file; fingerprints recomputed as raw SHA256. Counter methodology differs from the initial tool, so relative_links_checked/tables_checked/unique_ledger_ids above are the initial record's values and are not compared.",
+    "recheck_result": {
+      "relative_links_resolved": "283/283, no broken links",
+      "fingerprint_mismatches": "none beyond the intentionally changed docs/BACKLOG.md and the added AGENTS.md",
+      "problems": []
+    }
+  },
+  "development_check": {
+    "work_item": "DEV-030",
+    "version": "0.3.3",
+    "timestamp_utc": "2026-10-16T13:30:14.465563+00:00",
+    "environment": {
+      "os": "Windows",
+      "python": "3.12.14"
+    },
+    "source": {
+      "commit": "9ee923c9f355e9446c064a175982d47478e1e9ab",
+      "dirty": true,
+      "checked_source_sha256": "78c125845b60dacff5b361f78b36b77d2150fa2853c630fc4a42cb9bfa4fca84"
+    },
+    "native_validation": "not_run",
+    "unit_tests": "not_run",
+    "success": true,
+    "style_summary": {
+      "lint_findings": 35,
+      "unformatted_files": 25,
+      "cpp_files_checked": 16,
+      "python_files_checked": 99
+    },
+    "tools": {
+      "ruff": "0.17.0",
+      "clang-format": "23.1.3"
+    },
+    "configuration": {
+      "pyproject.toml": "e447f3352a09d8674cba3893dd4b654d185be120a22202c61e9a6e489eb93c75",
+      ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+      "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc"
+    }
+  },
+  "source_package": {
+    "command": "python tools/package.py --output build/dev030-docs/<unique>/documentation-check-source.zip",
+    "crc_allowlist_archives_and_record_bytes_checked": true,
+    "release_artifact": false,
+    "final_zip_sha256_recorded_in": "ignored build/dev030-docs/package-verification.json"
+  },
+  "not_run": [
+    "Python unit tests (not required for documentation and exact archive allowlist change)",
+    "Creo/Toolkit/MCP modeling or recovery",
+    "WorkBuddy black-box acceptance",
+    "FEAT-029 merge/deployment",
+    "main merge, version change or Release publication"
+  ],
+  "implementation_state": "Source observations and task cards only. Runtime defects/roots remain unverified on current main."
+}

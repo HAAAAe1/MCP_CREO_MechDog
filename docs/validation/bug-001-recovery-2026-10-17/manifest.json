@@ -1,0 +1,52 @@
+{
+  "recorded_at": "2026-10-17T03:36:04.411408+00:00",
+  "branch": "codex/bug-001-feat-018-recovery",
+  "commit": "93b110123b09ea264e7e4070fe6aa2b445b150d5",
+  "dirty": true,
+  "overall": "acceptance_incomplete_creo_hang_unresolved",
+  "source_sha256_lf": {
+    "bridge.py": "9f31d2289a451c402f7f5554f07e1c9cd64353f1317414ce93fa89549a5ce359",
+    "generic_bridge.py": "8a6ab79d59a205f9d593cf5bf65882662cf9e17abc76eacb02b0350b18655bcf",
+    "server.py": "317796f28f31df1d80873a2bf0acd7f412b4415a765d761a118ce0247e4c09d5",
+    "capabilities.py": "0259d62175f61e672c637d2206e5a35125be3c3a60b633c2f272497469df0376",
+    "native/generic.cpp": "2baa4c9ed5ba170a612a819c2b6525b5bd4a9db676576fc215f139fc247b9a24",
+    "native/recovery_deadline.h": "29ae4c196fe9b7cd1254acb97b8458dba5f26dd4b12021ccf08bb507ad9f80b9",
+    "native/result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220",
+    "src/creo_mechdog/reconciliation.py": "229a56d57a9656f4047b51d3ad27307f7723cda2caa8ec3b1b60bcea197624be",
+    "src/creo_mechdog/recovery.py": "3478597d68764af0c351d8edb2e7c5e4245dca6bf9d0d0799b1a792aaddc982c",
+    "src/creo_mechdog/model_queries.py": "7156e56ee1dd8786d6a46a3ee3b4a064a8d25da886c430c48d419a38ed1d85d5",
+    "tools/test_model_reconciliation.py": "2e337fc10bd6ed08be8394567491f0d776bd6b480a0599f09a1d0afa8836ad30",
+    "tests/unit/test_reconciliation.py": "cc38d5645ebb74aa5ac96f3201008b2737534a85abaec24da17c5630111a9079"
+  },
+  "worker_sha256": "d8d0b793b0b611dc1100f1dc61f99f07304724c7b125a3ea1781f7fdc1610fc3",
+  "raw_files_sha256": {
+    "deadline.json": "20be7f7cb580f012baaf28322e0dce3c6a72eef4045942166c1337b05d9749eb",
+    "delivery.json": "c187bd1bdaef6873293d7fe68e960d34402dd0154615d470e1b9b07304e80cd8",
+    "deployment.json": "ce380bb34b03f7deab5c83ce6b29166ea7ed0529923dc194f55edd48e6a6be69",
+    "dev-check.json": "12c8c7edb05d748192e37a1ef98b399b02c1516d72ff92d45180a51cc4259608",
+    "mcp-metadata.json": "8f3adb7265376eef9b175e4205496a9674a5a3ec9322933c6225d8287fef0529",
+    "native-05.json": "dfb59dfe090c3a7ba508a52451021ec543dc7c3276fd04b90a027bad5bf88348",
+    "native-06.json": "edb7df33e188fc8558a04a80e64dbd0a6f4a234015ea52f7f32f00fbaacb70c4",
+    "unit-report.json": "3e29fffbeceb11ff8546a22ab7678f30cd2514ed4bdf15d32a71c7b224f19270"
+  },
+  "g0_unchanged": {
+    "docs/validation/BUG-001-repro-2026-10-16.md": "f3613c716648f12d7bf574bfc9711a46b9a6e85dda57b2d7f83c4427fb779212",
+    "docs/validation/BUG-001-repro-2026-10-16.json": "b2c3bf2ff05c1fb3224ac55b414f76a1dfda93acb5064bc66a2d4613ba232882",
+    "docs/validation/bug-001-repro-2026-10-16/g0_driver.py": "c54c1c51b3cf32263a78db1a3b011f98d91a642c15474449d0b6350172ba04b0",
+    "docs/validation/bug-001-repro-2026-10-16/g0_evidence.json": "5360e6b23c44da58ba3d4bc5237619036d9918cf3c5f1c08218999339752c5a4"
+  },
+  "latest_targeted_tests": {
+    "count": 21,
+    "success": true,
+    "includes_independent_process_metadata_resume": true,
+    "log_sha256": "7ee5910f3ca265d6261f8a6c2aa92913692dfd9ecc22363848311fa3a7295b93"
+  },
+  "not_verified": [
+    "final native regression after deadline extraction",
+    "62-operation normal control",
+    "four-action public MCP native acceptance",
+    "WorkBuddy acceptance",
+    "hang root cause",
+    "Creo 9/10"
+  ]
+}

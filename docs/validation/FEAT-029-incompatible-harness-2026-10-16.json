@@ -1,0 +1,896 @@
+{
+  "work_item": "FEAT-029",
+  "version": "0.3.2",
+  "phase": "rejected",
+  "started_at": "2026-10-16T05:53:17.437675+00:00",
+  "source": {
+    "commit": null,
+    "dirty": null,
+    "fingerprints": {
+      "tools/test_callback_modeling.py": "4fb0de732223301d20322848e98f11422da6ad29555d542a0d3d8d247426c8ca",
+      "native/blend_sync.cpp": "7b0895e246999e124459eb086128d00b94333e1a02ec99ab515c33700914bab0",
+      "bridge.py": "5639d0acdde9ad21c321dbc4b37c113182daf3b73ad0bf029fb8d1c7a86d524a"
+    }
+  },
+  "environment": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.14"
+  },
+  "calls": [
+    {
+      "tool": "creo_callback_status",
+      "input": {},
+      "at": "2026-10-16T05:53:25.162364+00:00",
+      "elapsed_seconds": 4.953000000001339,
+      "is_error": false,
+      "result": {
+        "readiness": "version_mismatch",
+        "registration_status": "unknown",
+        "runtime_readiness": "Call creo_callback_status for a live read-only probe",
+        "status_tool": "creo_callback_status",
+        "protocol": 3,
+        "contract": "blend-selection-v3-ordered-curves-mm",
+        "loader_abi": 1,
+        "loader_fingerprint": "452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319",
+        "loader_sha256": "a4a75e71a47abd66e16cbd994e34e19ea67aba4abb7e7f3eccf2dd098e196fb9",
+        "registry_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback_protk.dat",
+        "registry_generation_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_loader\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\protk.dat",
+        "registry_shortcut": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback_protk.dat",
+        "persistent_registration_config": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback.config.pro",
+        "loader_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_loader\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\loader.dll",
+        "module_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback\\ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86\\callback.dll",
+        "dll_sha256": "ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86",
+        "resource_root": "E:\\Projects\\MCP_CREO_MechDog_Test",
+        "artifact_status": "prepared",
+        "manual_setup_when_not_loaded": true,
+        "instruction": "Rebuild this worker and prepare a matching deployment; do not model",
+        "deployed": {
+          "contract": "blend-selection-v3-ordered-curves-mm",
+          "dll_sha256": "ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86",
+          "loader_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_loader\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\loader.dll",
+          "loader_sha256": "a4a75e71a47abd66e16cbd994e34e19ea67aba4abb7e7f3eccf2dd098e196fb9",
+          "module_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback\\ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86\\callback.dll",
+          "protocol": 3
+        },
+        "reason": "worker_or_artifact_incompatible",
+        "session": {
+          "connected": true,
+          "connection_state": "connected",
+          "disconnect_code": 0,
+          "toolkit_code": 0,
+          "worker_exit_code": 0
+        },
+        "checked_at": "2026-10-16T05:53:30.107666+00:00",
+        "snapshot": true,
+        "probe_budget_seconds": 9,
+        "service": {
+          "version": "0.3.2",
+          "resource_root": "E:\\Projects\\MCP_CREO_MechDog_Test",
+          "source_fingerprints_at_startup": {
+            "server.py": "d477e596b926d250cbfa775973c60c41d481555b68d8833c87e2e5ea0e00f851",
+            "bridge.py": "5639d0acdde9ad21c321dbc4b37c113182daf3b73ad0bf029fb8d1c7a86d524a",
+            "creo_startup.py": "7d803ee8c679da483080c9e3cda31b6cf276178383542a9b5e3fac82885c2a22",
+            "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
+            "src/creo_mechdog/paths.py": "389dca158e3a7d02337ca3a099a1872bf858e38cc8108d78172cff235256dff5",
+            "src/creo_mechdog/references.py": "584a6c6ae235e798d3a97e26c6af3c3509a518db2e7495d6cecd496dcfa1c640",
+            "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+            "src/creo_mechdog/blend_callback.py": "b7d46e47a7254b1fc4294bd78044e469dc37f17506bc2972e58e782dabad960c",
+            "src/creo_mechdog/recovery.py": "f64bc43164e7e75a51b7be1f29e152a5ad588a71c4f055f7cf549f92a4180e4f",
+            "src/creo_mechdog/startup_state.py": "5b482745c0dfd93fc2ec699a1071b6c6cac1bca17944e854941bef197cda9e4c",
+            "src/creo_mechdog/windows_boot.py": "4b3d521e3387eed0668317501e1ee6db7a81d32358c9fbd898c24957455bc6da",
+            "src/creo_mechdog/schema.py": "9cbd671d85d738ff9cc9dae4ebb2926034457aea71950e6d802cf7d825c2998d",
+            "src/creo_mechdog/profile_checks.py": "c160c3b2d800eb84b7aca2f7ddc4e7ce3e46e10498ce2cc799fafd7cfa83df24",
+            "src/creo_mechdog/airfoil.py": "5adbf9d2205239f02d4b974c7fee405c47c81b3cf6201e18966109ad1595d176",
+            "version.py": "c7c87fcb8c8bee5c2e0c0f81c9290849e844970c38bbd0b3c41e6f9e8a624cf3",
+            "generic_bridge.py": "c7cf24e280d2ab2ef1492b50b86b8923a9eafc433b5a28d9533209ad07a78eee",
+            "schema.py": "dfb81ba2a123612ac98fbe21993f24a85b778afb9b6d0b1ebcfece7acba97cdd",
+            "profile_checks.py": "6a06b4b215952e13adb182b2adb07539c28dabcaedd857b39381b0b1b57e5731",
+            "airfoil.py": "8897c9b792e0ef67b9ee3aaab03d4f473014ce2ae3894b74ddac5d7e83c250d6",
+            "native/worker.cpp": "37b3c8ef0d4cedd91adcf3d0dff03f41a33516c10f7d467ecfe62defc476bc7c",
+            "native/generic.cpp": "fecc7c9c0ec45b61c922f0fe745b935bdaf752633a537dd8afc558e461dcd48e",
+            "native/drawing.cpp": "d280916202fcb20c39cb30afa7b0fdf53460447596429dc1e5f9a005e4fbf3d3",
+            "native/result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220",
+            "native/blend_sync.cpp": "7b0895e246999e124459eb086128d00b94333e1a02ec99ab515c33700914bab0",
+            "native/blend_loader.cpp": "327dfdd9ecdf810d66877baba66b88fe98cb4f2d072b7de07367f45d20109008",
+            "native/blend_create.cpp": "e02624fa539313a16492bbadfc8ac35fdb5cef2b1f878799c23648667282adf7",
+            "native/callback_identity.h": "515b17a136afc22125b075f0d32e10ea106eb87b0ac19231e7f2958acdc38376",
+            "native/callback_api.h": "f911bd17afb6975843d53be13397ee7adb08c2272fa6148cadb38f0595e9d67a",
+            "native/callback_runtime.h": "69eeea35841b3a37ae73aaf0a73474f8f09f00e59c21c6ecf7c498f6f9cca6d1"
+          },
+          "source_changed_since_startup": false
+        }
+      }
+    }
+  ],
+  "jobs": [
+    {
+      "case": "protected_checkpoint",
+      "tool": "creo_execute_plan",
+      "input": {
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "sk_a",
+            "plane": "XY",
+            "offset": 0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "c_0",
+                "center": [
+                  0,
+                  0
+                ],
+                "radius": 10
+              }
+            ]
+          },
+          {
+            "op": "sketch",
+            "label": "sk_b",
+            "plane": "XY",
+            "offset": 25,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "c_1",
+                "center": [
+                  0,
+                  0
+                ],
+                "radius": 6
+              }
+            ]
+          }
+        ]
+      },
+      "terminal": {
+        "job_id": "7d780139d94f4f72ba6594899edeaa4f",
+        "kind": "generic",
+        "model_id": "4ba2c182888b4703bfe28e78d16a3eea",
+        "status": "succeeded",
+        "readonly": false,
+        "created_at": "2026-10-16T05:53:30.142590+00:00",
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "sk_a",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "c_0",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 10.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "sketch",
+            "label": "sk_b",
+            "plane": "XY",
+            "offset": 25.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "c_1",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 6.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          }
+        ],
+        "job_directory": "E:\\Projects\\MCP_CREO_MechDog_Test\\jobs\\7d780139d94f4f72ba6594899edeaa4f",
+        "output_directory": "E:\\Projects\\MCP_CREO_MechDog_Test\\jobs\\7d780139d94f4f72ba6594899edeaa4f\\output",
+        "message": "General feature plan completed",
+        "runner_identity": {
+          "pid": 22132,
+          "created": 134366036101713969,
+          "alive": true
+        },
+        "stage": "verified",
+        "started_at": "2026-10-16T05:53:30.439857+00:00",
+        "result": {
+          "aliases": {
+            "sk_a": {
+              "dimension_ids": {},
+              "entity_ids": {
+                "c_0": 5
+              },
+              "feature_id": 40,
+              "geometry": [
+                {
+                  "center": [
+                    0.0,
+                    0.0
+                  ],
+                  "construction": false,
+                  "name": "c_0",
+                  "radius": 10.0,
+                  "type": "circle"
+                }
+              ],
+              "normal": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "op": "sketch",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "section_normal_sign": 1,
+              "solver": {
+                "coordinate_scaling": false,
+                "final_units": "mm",
+                "requested": "auto",
+                "used": "autodim"
+              },
+              "u_axis": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "v_axis": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "sk_b": {
+              "dimension_ids": {},
+              "entity_ids": {
+                "c_1": 5
+              },
+              "feature_id": 49,
+              "geometry": [
+                {
+                  "center": [
+                    0.0,
+                    0.0
+                  ],
+                  "construction": false,
+                  "name": "c_1",
+                  "radius": 6.0,
+                  "type": "circle"
+                }
+              ],
+              "normal": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "op": "sketch",
+              "origin": [
+                0.0,
+                0.0,
+                25.0
+              ],
+              "section_normal_sign": 1,
+              "solver": {
+                "coordinate_scaling": false,
+                "final_units": "mm",
+                "requested": "auto",
+                "used": "autodim"
+              },
+              "u_axis": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "v_axis": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            }
+          },
+          "completion_stage": "result_delivery",
+          "connected": true,
+          "delivery_complete": true,
+          "disconnect_budget_seconds": 20.0,
+          "disconnect_code": 0,
+          "inspection": {
+            "bodies": [
+              {
+                "id": -5778,
+                "state": 3
+              }
+            ],
+            "datum_planes": [
+              {
+                "id": 2,
+                "normal": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "id": 4,
+                "normal": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "id": 6,
+                "normal": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "id": 42,
+                "normal": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "id": 48,
+                "normal": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  25.0
+                ]
+              },
+              {
+                "id": 51,
+                "normal": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  25.0
+                ]
+              }
+            ],
+            "edges": [],
+            "features": [
+              {
+                "dimensions": [],
+                "geometry_items": [
+                  {
+                    "id": 2,
+                    "type": 5
+                  }
+                ],
+                "id": 1,
+                "incomplete": false,
+                "name": "RIGHT",
+                "status": 0,
+                "type": 923,
+                "type_name": "datum_plane"
+              },
+              {
+                "dimensions": [],
+                "geometry_items": [
+                  {
+                    "id": 4,
+                    "type": 5
+                  }
+                ],
+                "id": 3,
+                "incomplete": false,
+                "name": "TOP",
+                "status": 0,
+                "type": 923,
+                "type_name": "datum_plane"
+              },
+              {
+                "dimensions": [],
+                "geometry_items": [
+                  {
+                    "id": 6,
+                    "type": 5
+                  }
+                ],
+                "id": 5,
+                "incomplete": false,
+                "name": "FRONT",
+                "status": 0,
+                "type": 923,
+                "type_name": "datum_plane"
+              },
+              {
+                "dimensions": [],
+                "geometry_items": [
+                  {
+                    "id": 8,
+                    "type": 25
+                  }
+                ],
+                "id": 7,
+                "incomplete": false,
+                "name": "PRT_CSYS_DEF",
+                "status": 0,
+                "type": 979,
+                "type_name": "other"
+              },
+              {
+                "dimensions": [],
+                "geometry_items": [
+                  {
+                    "id": 42,
+                    "type": 5
+                  }
+                ],
+                "id": 41,
+                "incomplete": false,
+                "name": "no_name",
+                "status": 0,
+                "type": 923,
+                "type_name": "datum_plane"
+              },
+              {
+                "dimensions": [
+                  {
+                    "id": 0,
+                    "relation_driven": false,
+                    "relation_query_code": 0,
+                    "symbol": "d0",
+                    "type": -1,
+                    "value": 0.0
+                  },
+                  {
+                    "id": 1,
+                    "relation_driven": false,
+                    "relation_query_code": 0,
+                    "symbol": "d1",
+                    "type": -1,
+                    "value": 0.0
+                  },
+                  {
+                    "id": 2,
+                    "relation_driven": false,
+                    "relation_query_code": 0,
+                    "symbol": "d2",
+                    "type": 4,
+                    "value": 20.0
+                  }
+                ],
+                "geometry_items": [
+                  {
+                    "id": 43,
+                    "type": 62
+                  },
+                  {
+                    "id": 44,
+                    "type": 25
+                  },
+                  {
+                    "id": 45,
+                    "type": 62
+                  },
+                  {
+                    "id": 46,
+                    "type": 62
+                  }
+                ],
+                "id": 40,
+                "incomplete": false,
+                "name": "SK_A",
+                "sketch_constraint_count": 3,
+                "sketch_dimensions": [
+                  {
+                    "id": 2,
+                    "type": 4,
+                    "value": 20.0
+                  }
+                ],
+                "status": 0,
+                "type": 949,
+                "type_name": "sketch_or_curve"
+              },
+              {
+                "dimensions": [
+                  {
+                    "id": 3,
+                    "relation_driven": false,
+                    "relation_query_code": 0,
+                    "symbol": "d3",
+                    "type": 9,
+                    "value": 25.0
+                  }
+                ],
+                "geometry_items": [
+                  {
+                    "id": 48,
+                    "type": 5
+                  }
+                ],
+                "id": 47,
+                "incomplete": false,
+                "name": "SK_B_PLANE",
+                "status": 0,
+                "type": 923,
+                "type_name": "datum_plane"
+              },
+              {
+                "dimensions": [],
+                "geometry_items": [
+                  {
+                    "id": 51,
+                    "type": 5
+                  }
+                ],
+                "id": 50,
+                "incomplete": false,
+                "name": "no_name",
+                "status": 0,
+                "type": 923,
+                "type_name": "datum_plane"
+              },
+              {
+                "dimensions": [
+                  {
+                    "id": 4,
+                    "relation_driven": false,
+                    "relation_query_code": 0,
+                    "symbol": "d4",
+                    "type": -1,
+                    "value": 0.0
+                  },
+                  {
+                    "id": 5,
+                    "relation_driven": false,
+                    "relation_query_code": 0,
+                    "symbol": "d5",
+                    "type": -1,
+                    "value": 0.0
+                  },
+                  {
+                    "id": 6,
+                    "relation_driven": false,
+                    "relation_query_code": 0,
+                    "symbol": "d6",
+                    "type": 4,
+                    "value": 12.0
+                  }
+                ],
+                "geometry_items": [
+                  {
+                    "id": 52,
+                    "type": 62
+                  },
+                  {
+                    "id": 53,
+                    "type": 25
+                  },
+                  {
+                    "id": 54,
+                    "type": 62
+                  },
+                  {
+                    "id": 55,
+                    "type": 62
+                  }
+                ],
+                "id": 49,
+                "incomplete": false,
+                "name": "SK_B",
+                "sketch_constraint_count": 3,
+                "sketch_dimensions": [
+                  {
+                    "id": 2,
+                    "type": 4,
+                    "value": 12.0
+                  }
+                ],
+                "status": 0,
+                "type": 949,
+                "type_name": "sketch_or_curve"
+              }
+            ],
+            "has_solid": false,
+            "healthy": true,
+            "inspection_available": true,
+            "inspection_source": "saved_reloaded",
+            "model_type": "part",
+            "parameters": {
+              "DESCRIPTION": {
+                "type": 51,
+                "value": ""
+              },
+              "MODELED_BY": {
+                "type": 51,
+                "value": ""
+              },
+              "PTC_MASTER_MATERIAL": {
+                "type": 51,
+                "value": "PTC_SYSTEM_MTRL_PROPS"
+              },
+              "PTC_MATERIAL_NAME": {
+                "type": 51,
+                "value": ""
+              },
+              "PTC_REPORTED_MATERIAL": {
+                "type": 51,
+                "value": ""
+              },
+              "PTC_UNITS_FORCE": {
+                "type": 51,
+                "value": "N"
+              },
+              "PTC_UNITS_LENGTH": {
+                "type": 51,
+                "value": "mm"
+              },
+              "PTC_UNITS_MASS": {
+                "type": 51,
+                "value": "tonne"
+              },
+              "PTC_UNITS_SYSTEM_TYPE": {
+                "type": 51,
+                "value": "Force length time (FLT)"
+              },
+              "PTC_UNITS_TEMPERATURE": {
+                "type": 51,
+                "value": "C"
+              },
+              "PTC_UNITS_TIME": {
+                "type": 51,
+                "value": "sec"
+              }
+            },
+            "surfaces": [],
+            "units": "mm",
+            "volume_mm3": null
+          },
+          "loft_checks": {
+            "after_reload": {},
+            "before_save": {},
+            "loaded": {}
+          },
+          "native_pid": 14304,
+          "operations": [
+            {
+              "label": "sk_a",
+              "op": "sketch",
+              "succeeded": true
+            },
+            {
+              "label": "sk_b",
+              "op": "sketch",
+              "succeeded": true
+            }
+          ],
+          "part_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\models\\4ba2c182888b4703bfe28e78d16a3eea\\output\\ai_part_4ba2c182888b.prt.2",
+          "preview_code": 0,
+          "preview_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\jobs\\7d780139d94f4f72ba6594899edeaa4f\\output\\preview.jpg",
+          "rollback_succeeded": false,
+          "saved_file_reloaded_and_verified": true,
+          "success": true,
+          "toolkit_code": 0,
+          "sha256": "c3d1bef182f675d2328cdcd5cda007c4e6bf83ee2684a9bcf820fc6f781e326f"
+        },
+        "revision": 1,
+        "finished_at": "2026-10-16T05:53:38.024890+00:00"
+      },
+      "job_id": "7d780139d94f4f72ba6594899edeaa4f",
+      "elapsed_seconds": 8.25,
+      "native_log_sha256": "9b5ce4f12235490a16ffc4dfff6b5c0052695ed73943901996541e15f2c6bec7"
+    },
+    {
+      "case": "creo_loft_preflight_rejected",
+      "tool": "creo_loft",
+      "input": {
+        "model_id": "4ba2c182888b4703bfe28e78d16a3eea",
+        "expected_revision": 1,
+        "label": "blend_probe",
+        "sections": [
+          "sk_a",
+          "sk_b"
+        ],
+        "interpolation": "straight"
+      },
+      "terminal": {
+        "job_id": "9cfd4ca2483a4226b65922ca389765c1",
+        "kind": "generic",
+        "model_id": "4ba2c182888b4703bfe28e78d16a3eea",
+        "status": "failed",
+        "readonly": false,
+        "created_at": "2026-10-16T05:53:38.443133+00:00",
+        "operations": [
+          {
+            "op": "loft",
+            "label": "blend_probe",
+            "sections": [
+              "sk_a",
+              "sk_b"
+            ],
+            "mode": "add",
+            "interpolation": "straight",
+            "new_body": false
+          }
+        ],
+        "job_directory": "E:\\Projects\\MCP_CREO_MechDog_Test\\jobs\\9cfd4ca2483a4226b65922ca389765c1",
+        "output_directory": "E:\\Projects\\MCP_CREO_MechDog_Test\\jobs\\9cfd4ca2483a4226b65922ca389765c1\\output",
+        "message": "BLEND_CALLBACK_SETUP_REQUIRED: {\"deployed\":{\"contract\":\"blend-selection-v3-ordered-curves-mm\",\"dll_sha256\":\"ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86\",\"loader_file\":\"E:\\\\Projects\\\\MCP_CREO_MechDog_Test\\\\build\\\\blend_loader\\\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\\\loader.dll\",\"loader_sha256\":\"a4a75e71a47abd66e16cbd994e34e19ea67aba4abb7e7f3eccf2dd098e196fb9\",\"module_file\":\"E:\\\\Projects\\\\MCP_CREO_MechDog_Test\\\\build\\\\blend_callback\\\\ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86\\\\callback.dll\",\"protocol\":3},\"instruction\":\"Rebuild this worker and prepare a matching deployment; do not model\",\"readiness\":\"version_mismatch\",\"reason\":\"worker_or_artifact_incompatible\",\"registration_status\":\"unknown\",\"registry_file\":\"E:\\\\Projects\\\\MCP_CREO_MechDog_Test\\\\build\\\\blend_callback_protk.dat\"}",
+        "runner_identity": {
+          "pid": 20792,
+          "created": 134366036184722899,
+          "alive": true
+        },
+        "stage": "executing_feature_plan",
+        "started_at": "2026-10-16T05:53:38.745199+00:00",
+        "result": {
+          "completion_stage": "result_delivery",
+          "connected": true,
+          "delivery_complete": true,
+          "disconnect_budget_seconds": 20.0,
+          "disconnect_code": 0,
+          "failed_operation_index": null,
+          "failed_stage": "callback_preflight",
+          "failed_toolkit_call": null,
+          "inspection": null,
+          "inspection_source": "unavailable",
+          "message": "BLEND_CALLBACK_SETUP_REQUIRED: {\"deployed\":{\"contract\":\"blend-selection-v3-ordered-curves-mm\",\"dll_sha256\":\"ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86\",\"loader_file\":\"E:\\\\Projects\\\\MCP_CREO_MechDog_Test\\\\build\\\\blend_loader\\\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\\\loader.dll\",\"loader_sha256\":\"a4a75e71a47abd66e16cbd994e34e19ea67aba4abb7e7f3eccf2dd098e196fb9\",\"module_file\":\"E:\\\\Projects\\\\MCP_CREO_MechDog_Test\\\\build\\\\blend_callback\\\\ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86\\\\callback.dll\",\"protocol\":3},\"instruction\":\"Rebuild this worker and prepare a matching deployment; do not model\",\"readiness\":\"version_mismatch\",\"reason\":\"worker_or_artifact_incompatible\",\"registration_status\":\"unknown\",\"registry_file\":\"E:\\\\Projects\\\\MCP_CREO_MechDog_Test\\\\build\\\\blend_callback_protk.dat\"}",
+          "model_unchanged": true,
+          "native_pid": 19168,
+          "rollback_succeeded": false,
+          "saved_file_reloaded_and_verified": false,
+          "success": false,
+          "toolkit_code": -1
+        },
+        "finished_at": "2026-10-16T05:53:43.920684+00:00",
+        "native_log_tail": "PHASE=connect\r\nconnect_creo(&process)=0\r\nPHASE=callback_preflight\r\nBLEND_CALLBACK_PREFLIGHT={\"deployed\":{\"contract\":\"blend-selection-v3-ordered-curves-mm\",\"dll_sha256\":\"ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86\",\"loader_file\":\"E:\\\\Projects\\\\MCP_CREO_MechDog_Test\\\\build\\\\blend_loader\\\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\\\loader.dll\",\"loader_sha256\":\"a4a75e71a47abd66e16cbd994e34e19ea67aba4abb7e7f3eccf2dd098e196fb9\",\"module_file\":\"E:\\\\Projects\\\\MCP_CREO_MechDog_Test\\\\build\\\\blend_callback\\\\ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86\\\\callback.dll\",\"protocol\":3},\"instruction\":\"Rebuild this worker and prepare a matching deployment; do not model\",\"readiness\":\"version_mismatch\",\"reason\":\"worker_or_artifact_incompatible\",\"registration_status\":\"unknown\",\"registry_file\":\"E:\\\\Projects\\\\MCP_CREO_MechDog_Test\\\\build\\\\blend_callback_protk.dat\"}\r\nBUILD_FAILED=BLEND_CALLBACK_SETUP_REQUIRED: {\"deployed\":{\"contract\":\"blend-selection-v3-ordered-curves-mm\",\"dll_sha256\":\"ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86\",\"loader_file\":\"E:\\\\Projects\\\\MCP_CREO_MechDog_Test\\\\build\\\\blend_loader\\\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\\\loader.dll\",\"loader_sha256\":\"a4a75e71a47abd66e16cbd994e34e19ea67aba4abb7e7f3eccf2dd098e196fb9\",\"module_file\":\"E:\\\\Projects\\\\MCP_CREO_MechDog_Test\\\\build\\\\blend_callback\\\\ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86\\\\callback.dll\",\"protocol\":3},\"instruction\":\"Rebuild this worker and prepare a matching deployment; do not model\",\"readiness\":\"version_mismatch\",\"reason\":\"worker_or_artifact_incompatible\",\"registration_status\":\"unknown\",\"registry_file\":\"E:\\\\Projects\\\\MCP_CREO_MechDog_Test\\\\build\\\\blend_callback_protk.dat\"}\r\nPHASE=disconnect\r\nDISCONNECT=0\r\nPHASE=result_delivery_complete\r\n"
+      },
+      "job_id": "9cfd4ca2483a4226b65922ca389765c1",
+      "elapsed_seconds": 5.563000000001921,
+      "native_log_sha256": "30cac092ddf012d348ae1c97ae8e205552f6df356870cdb08f3c58fac5ee5351"
+    }
+  ],
+  "success": false,
+  "busy_observed": false,
+  "scope": "Developer real stdio MCP; not WorkBuddy or GUI lifecycle acceptance",
+  "unverified": [
+    "WorkBuddy",
+    "Creo 10",
+    "GUI registration actions"
+  ],
+  "callback": {
+    "readiness": "version_mismatch",
+    "registration_status": "unknown",
+    "runtime_readiness": "Call creo_callback_status for a live read-only probe",
+    "status_tool": "creo_callback_status",
+    "protocol": 3,
+    "contract": "blend-selection-v3-ordered-curves-mm",
+    "loader_abi": 1,
+    "loader_fingerprint": "452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319",
+    "loader_sha256": "a4a75e71a47abd66e16cbd994e34e19ea67aba4abb7e7f3eccf2dd098e196fb9",
+    "registry_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback_protk.dat",
+    "registry_generation_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_loader\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\protk.dat",
+    "registry_shortcut": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback_protk.dat",
+    "persistent_registration_config": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback.config.pro",
+    "loader_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_loader\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\loader.dll",
+    "module_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback\\ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86\\callback.dll",
+    "dll_sha256": "ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86",
+    "resource_root": "E:\\Projects\\MCP_CREO_MechDog_Test",
+    "artifact_status": "prepared",
+    "manual_setup_when_not_loaded": true,
+    "instruction": "Rebuild this worker and prepare a matching deployment; do not model",
+    "deployed": {
+      "contract": "blend-selection-v3-ordered-curves-mm",
+      "dll_sha256": "ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86",
+      "loader_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_loader\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\loader.dll",
+      "loader_sha256": "a4a75e71a47abd66e16cbd994e34e19ea67aba4abb7e7f3eccf2dd098e196fb9",
+      "module_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback\\ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86\\callback.dll",
+      "protocol": 3
+    },
+    "reason": "worker_or_artifact_incompatible",
+    "session": {
+      "connected": true,
+      "connection_state": "connected",
+      "disconnect_code": 0,
+      "toolkit_code": 0,
+      "worker_exit_code": 0
+    },
+    "checked_at": "2026-10-16T05:53:30.107666+00:00",
+    "snapshot": true,
+    "probe_budget_seconds": 9,
+    "service": {
+      "version": "0.3.2",
+      "resource_root": "E:\\Projects\\MCP_CREO_MechDog_Test",
+      "source_fingerprints_at_startup": {
+        "server.py": "d477e596b926d250cbfa775973c60c41d481555b68d8833c87e2e5ea0e00f851",
+        "bridge.py": "5639d0acdde9ad21c321dbc4b37c113182daf3b73ad0bf029fb8d1c7a86d524a",
+        "creo_startup.py": "7d803ee8c679da483080c9e3cda31b6cf276178383542a9b5e3fac82885c2a22",
+        "src/creo_mechdog/__init__.py": "3507982a5ed099bfa44ecff2eae7447136f8eba24d2ffe9c59dad8379b022b70",
+        "src/creo_mechdog/paths.py": "389dca158e3a7d02337ca3a099a1872bf858e38cc8108d78172cff235256dff5",
+        "src/creo_mechdog/references.py": "584a6c6ae235e798d3a97e26c6af3c3509a518db2e7495d6cecd496dcfa1c640",
+        "src/creo_mechdog/update_check.py": "bc5aac8463b7952f75c952c605722676fe788f1bcc2f530853bd6aab8a263a81",
+        "src/creo_mechdog/blend_callback.py": "b7d46e47a7254b1fc4294bd78044e469dc37f17506bc2972e58e782dabad960c",
+        "src/creo_mechdog/recovery.py": "f64bc43164e7e75a51b7be1f29e152a5ad588a71c4f055f7cf549f92a4180e4f",
+        "src/creo_mechdog/startup_state.py": "5b482745c0dfd93fc2ec699a1071b6c6cac1bca17944e854941bef197cda9e4c",
+        "src/creo_mechdog/windows_boot.py": "4b3d521e3387eed0668317501e1ee6db7a81d32358c9fbd898c24957455bc6da",
+        "src/creo_mechdog/schema.py": "9cbd671d85d738ff9cc9dae4ebb2926034457aea71950e6d802cf7d825c2998d",
+        "src/creo_mechdog/profile_checks.py": "c160c3b2d800eb84b7aca2f7ddc4e7ce3e46e10498ce2cc799fafd7cfa83df24",
+        "src/creo_mechdog/airfoil.py": "5adbf9d2205239f02d4b974c7fee405c47c81b3cf6201e18966109ad1595d176",
+        "version.py": "c7c87fcb8c8bee5c2e0c0f81c9290849e844970c38bbd0b3c41e6f9e8a624cf3",
+        "generic_bridge.py": "c7cf24e280d2ab2ef1492b50b86b8923a9eafc433b5a28d9533209ad07a78eee",
+        "schema.py": "dfb81ba2a123612ac98fbe21993f24a85b778afb9b6d0b1ebcfece7acba97cdd",
+        "profile_checks.py": "6a06b4b215952e13adb182b2adb07539c28dabcaedd857b39381b0b1b57e5731",
+        "airfoil.py": "8897c9b792e0ef67b9ee3aaab03d4f473014ce2ae3894b74ddac5d7e83c250d6",
+        "native/worker.cpp": "37b3c8ef0d4cedd91adcf3d0dff03f41a33516c10f7d467ecfe62defc476bc7c",
+        "native/generic.cpp": "fecc7c9c0ec45b61c922f0fe745b935bdaf752633a537dd8afc558e461dcd48e",
+        "native/drawing.cpp": "d280916202fcb20c39cb30afa7b0fdf53460447596429dc1e5f9a005e4fbf3d3",
+        "native/result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220",
+        "native/blend_sync.cpp": "7b0895e246999e124459eb086128d00b94333e1a02ec99ab515c33700914bab0",
+        "native/blend_loader.cpp": "327dfdd9ecdf810d66877baba66b88fe98cb4f2d072b7de07367f45d20109008",
+        "native/blend_create.cpp": "e02624fa539313a16492bbadfc8ac35fdb5cef2b1f878799c23648667282adf7",
+        "native/callback_identity.h": "515b17a136afc22125b075f0d32e10ea106eb87b0ac19231e7f2958acdc38376",
+        "native/callback_api.h": "f911bd17afb6975843d53be13397ee7adb08c2272fa6148cadb38f0595e9d67a",
+        "native/callback_runtime.h": "69eeea35841b3a37ae73aaf0a73474f8f09f00e59c21c6ecf7c498f6f9cca6d1"
+      },
+      "source_changed_since_startup": false
+    }
+  },
+  "artifacts": {
+    "module_file": {
+      "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback\\ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86\\callback.dll",
+      "sha256": "ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86"
+    },
+    "loader_file": {
+      "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_loader\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\loader.dll",
+      "sha256": "a4a75e71a47abd66e16cbd994e34e19ea67aba4abb7e7f3eccf2dd098e196fb9"
+    },
+    "registry_file": {
+      "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback_protk.dat",
+      "sha256": "a420dfebdd23753f17b8bdd0aac17f59b99757e64b31ba659e904c234e1bb3e2"
+    }
+  },
+  "failure": "ExceptionGroup('unhandled errors in a TaskGroup', [ExceptionGroup('unhandled errors in a TaskGroup', [KeyError('revision')])])",
+  "writes_stopped_for_uncertain_outcome": false,
+  "finished_at": "2026-10-16T05:53:44.138011+00:00",
+  "capture_note": "Harness failed after a confirmed preflight rejection: failed job has no top-level revision field. Unchanged revision must be checked through inspect_model. Original worker restored."
+}

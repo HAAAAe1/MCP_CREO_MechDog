@@ -11,6 +11,7 @@ import math
 import msvcrt
 import os
 import re
+import shutil
 import stat
 import subprocess
 import sys
@@ -22,7 +23,7 @@ from pathlib import Path
 from typing import TextIO
 
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS
-from creo_mechdog.blend_callback import prepare_callback
+from creo_mechdog.blend_callback import callback_setup_status, prepare_callback, unknown_readiness
 from creo_mechdog.build_support import (
     compiler_setup_script,
     diagnose_build_failure,
@@ -546,6 +547,7 @@ def build_native() -> Path:
     build.mkdir(exist_ok=True)
     exe = build / "creo_worker.exe"
     blend_dll = build / "creo_blend_sync.dll"
+    loader_dll = build / "creo_blend_loader.dll"
     # Always refresh before checking the cached binary. The generator only writes
     # changed content, so upgrades and SDK changes cannot retain an obsolete map.
     with (build / "generate_constants.log").open("wb") as log:
@@ -581,12 +583,48 @@ def build_native() -> Path:
     digest.update(settings)
     abi.update(settings)
     callback = hashlib.sha256(b"MSVC17_MD_DLL_v1" + abi.digest())
-    for relative in ("native/blend_sync.cpp", "native/third_party/json.hpp"):
+    for relative in (
+        "native/blend_sync.cpp",
+        "native/callback_identity.h",
+        "native/callback_api.h",
+        "native/third_party/json.hpp",
+    ):
         source = ROOT / relative
         if source.is_file():
             callback.update(relative.encode() + source.read_bytes())
     callback_fingerprint = callback.hexdigest()
     callback_stamp = build / "blend_sync_build.json"
+    loader_digest = hashlib.sha256(b"MSVC17_MD_LOADER_v1" + abi.digest())
+    for relative in (
+        "native/blend_loader.cpp",
+        "native/callback_identity.h",
+        "native/callback_api.h",
+        "native/third_party/json.hpp",
+    ):
+        source = ROOT / relative
+        if source.is_file():
+            loader_digest.update(relative.encode() + source.read_bytes())
+    loader_fingerprint = loader_digest.hexdigest()
+    loader_stamp = build / "blend_loader_build.json"
+    cached_loader = read_json(loader_stamp) if loader_stamp.is_file() else {}
+    pinned_loader = build / "blend_loader" / loader_fingerprint / "loader.dll"
+    if (
+        cached_loader.get("fingerprint") == loader_fingerprint
+        and pinned_loader.is_file()
+        and hashlib.sha256(pinned_loader.read_bytes()).hexdigest() == cached_loader.get("sha256")
+        and (
+            not loader_dll.is_file()
+            or hashlib.sha256(loader_dll.read_bytes()).hexdigest() != cached_loader.get("sha256")
+        )
+    ):
+        # Recover the disposable build output from the verified immutable image;
+        # never relink or modify the registered loader for an unchanged generation.
+        shutil.copyfile(pinned_loader, loader_dll)
+    reuse_loader = (
+        loader_dll.is_file()
+        and cached_loader.get("fingerprint") == loader_fingerprint
+        and cached_loader.get("sha256") == hashlib.sha256(loader_dll.read_bytes()).hexdigest()
+    )
 
     def record_callback():
         callback_sha256 = hashlib.sha256(blend_dll.read_bytes()).hexdigest()
@@ -597,11 +635,24 @@ def build_native() -> Path:
                 "sha256": callback_sha256,
             },
         )
-        prepare_callback(build, callback_sha256)
+        write_json(
+            loader_stamp,
+            {
+                "fingerprint": loader_fingerprint,
+                "sha256": hashlib.sha256(loader_dll.read_bytes()).hexdigest(),
+            },
+        )
+        prepare_callback(build, callback_sha256, loader_fingerprint)
 
     fingerprint = digest.hexdigest()
     stamp = build / "source.sha256"
-    if exe.exists() and blend_dll.exists() and stamp.exists() and stamp.read_text() == fingerprint:
+    if (
+        exe.exists()
+        and blend_dll.exists()
+        and reuse_loader
+        and stamp.exists()
+        and stamp.read_text() == fingerprint
+    ):
         # Migrate a previously verified combined cache without rebuilding the
         # identical DLL. Changing unrelated worker code should not replace it.
         if not callback_stamp.exists():
@@ -611,7 +662,7 @@ def build_native() -> Path:
             cached.get("fingerprint") == callback_fingerprint
             and cached.get("sha256") == hashlib.sha256(blend_dll.read_bytes()).hexdigest()
         ):
-            prepare_callback(build, cached["sha256"])
+            prepare_callback(build, cached["sha256"], loader_fingerprint)
             return exe
     if not check_environment()["ready_to_build"]:
         raise RuntimeError("Creo SDK, template or MSVC is missing; call creo_check_environment")
@@ -636,7 +687,17 @@ def build_native() -> Path:
         else f'''
 cl /nologo /MD /EHsc /std:c++17 /W3 /DPRO_MACHINE=36 /DPRO_OS=4 /I"{sdk / "includes"}" /c "{ROOT / "native/blend_sync.cpp"}" /Fo"{build / "blend_sync.obj"}"
 if errorlevel 1 exit /b 2
-link /nologo /DLL /MACHINE:X64 /OUT:"{blend_dll}" "{build / "blend_sync.obj"}" {dll_libs} kernel32.lib user32.lib wsock32.lib advapi32.lib mpr.lib winspool.lib netapi32.lib psapi.lib gdi32.lib shell32.lib comdlg32.lib ole32.lib ws2_32.lib
+link /nologo /DLL /MACHINE:X64 /OUT:"{blend_dll}" "{build / "blend_sync.obj"}" kernel32.lib user32.lib wsock32.lib advapi32.lib mpr.lib winspool.lib netapi32.lib psapi.lib gdi32.lib shell32.lib comdlg32.lib ole32.lib ws2_32.lib
+if errorlevel 1 exit /b 3
+'''
+    )
+    loader_script = (
+        ""
+        if reuse_loader
+        else f'''
+cl /nologo /MD /EHsc /std:c++17 /W3 /DPRO_MACHINE=36 /DPRO_OS=4 /I"{sdk / "includes"}" /c "{ROOT / "native/blend_loader.cpp"}" /Fo"{build / "blend_loader.obj"}"
+if errorlevel 1 exit /b 2
+link /nologo /DLL /MACHINE:X64 /OUT:"{loader_dll}" "{build / "blend_loader.obj"}" {dll_libs} kernel32.lib user32.lib wsock32.lib advapi32.lib mpr.lib winspool.lib netapi32.lib psapi.lib gdi32.lib shell32.lib comdlg32.lib ole32.lib ws2_32.lib
 if errorlevel 1 exit /b 3
 '''
     )
@@ -652,6 +713,7 @@ if errorlevel 1 exit /b 2
 link /nologo /MACHINE:X64 /SUBSYSTEM:CONSOLE /OUT:"{exe}" "{build / "worker.obj"}" {libs} kernel32.lib user32.lib wsock32.lib advapi32.lib mpr.lib winspool.lib netapi32.lib psapi.lib gdi32.lib shell32.lib comdlg32.lib ole32.lib ws2_32.lib
 if errorlevel 1 exit /b 3
 {callback_script}
+{loader_script}
 exit /b 0
 ''',
         encoding="utf-8",
@@ -782,6 +844,69 @@ def _record_probe_result(result: subprocess.CompletedProcess) -> dict:
     return value
 
 
+def callback_status() -> dict:
+    """Nine-second read-only native probe; no build, DLL loading or GUI launch."""
+    build = ROOT / "build"
+    artifacts = callback_setup_status(build)
+    if artifacts["artifact_status"] != "prepared":
+        return {
+            **artifacts,
+            "reason": artifacts.get("reason", "artifacts_not_prepared"),
+            "checked_at": now(),
+            "snapshot": True,
+        }
+    exe = build / "creo_worker.exe"
+    if not exe.is_file():
+        return unknown_readiness(artifacts, "worker_unavailable")
+    try:
+        with toolkit_lock(operation="callback_status"):
+            result = subprocess.run(
+                [str(exe), "callback-status", "2"],
+                cwd=build,
+                env=native_environment(),
+                capture_output=True,
+                timeout=9,
+                creationflags=HIDDEN,
+            )
+            session = _record_probe_result(result)
+    except ToolkitBusy as exc:
+        return unknown_readiness(
+            artifacts, "channel_busy", session=exc.payload, probe_budget_seconds=9
+        )
+    except subprocess.TimeoutExpired:
+        record_channel_health(False, connection_state="callback_probe_timeout")
+        return unknown_readiness(artifacts, "probe_timeout", probe_budget_seconds=9)
+    except (OSError, RuntimeError) as exc:
+        return unknown_readiness(
+            artifacts, "probe_failed", probe_error=str(exc), probe_budget_seconds=9
+        )
+    native = session.pop("direct_blend_callback", None)
+    if not session.get("connected"):
+        return unknown_readiness(
+            artifacts,
+            session.get("connection_state", "connection_failed"),
+            session=session,
+            probe_budget_seconds=9,
+        )
+    if not isinstance(native, dict) or native.get("readiness") not in (
+        "ready",
+        "not_loaded",
+        "version_mismatch",
+        "unknown",
+    ):
+        return unknown_readiness(artifacts, "invalid_probe_result", session=session)
+    if callback_setup_status(build) != artifacts:
+        return unknown_readiness(artifacts, "deployment_changed_during_probe", session=session)
+    return {
+        **artifacts,
+        **native,
+        "session": session,
+        "checked_at": now(),
+        "snapshot": True,
+        "probe_budget_seconds": 9,
+    }
+
+
 def create_job(spec: dict) -> dict:
     with toolkit_lock(operation="submit_plate"):
         JOBS.mkdir(exist_ok=True)
@@ -827,6 +952,11 @@ def run_job(job_id: str) -> None:
     manifest = read_json(directory / "job.json")
     manifest.update(runner_identity=process_identity(os.getpid()), stage="waiting_for_channel")
     write_json(directory / "job.json", manifest)
+    if manifest.get("kind") == "reconciliation":
+        from creo_mechdog.reconciliation import run
+
+        run(job_id, manifest)
+        return
     if manifest.get("kind") == "generic":
         from generic_bridge import run_generic_job
 
@@ -941,6 +1071,10 @@ def get_job(job_id: str, detail: str = "full") -> dict:
     if not (directory / "job.json").exists():
         raise ValueError("Unknown job_id")
     manifest = read_json(directory / "job.json")
+    if manifest.get("kind") == "reconciliation":
+        from creo_mechdog.reconciliation import resume_committed
+
+        manifest = resume_committed(job_id) or manifest
     native_log = directory / "native.log"
     if native_log.exists():
         tail = native_log.read_bytes()[-8000:].decode("utf-8", errors="replace")
@@ -955,7 +1089,7 @@ def get_job(job_id: str, detail: str = "full") -> dict:
         ).total_seconds()
         timeout = (
             config().get("generic_timeout_seconds", 600)
-            if manifest.get("kind") == "generic"
+            if manifest.get("kind") in ("generic", "reconciliation")
             else config()["native_timeout_seconds"]
         )
         if age > 120 + 180 + timeout + 30:
@@ -1003,6 +1137,10 @@ def compact_job(manifest: dict) -> dict:
         "recovery_required",
         "recovery",
         "runner_identity",
+        "recovery_id",
+        "commit_pending",
+        "action",
+        "idempotency_key",
         "model_evidence_error",
     )
     summary = {key: manifest[key] for key in keys if key in manifest}
@@ -1012,12 +1150,14 @@ def compact_job(manifest: dict) -> dict:
     if result:
         result_keys = (
             "success",
+            "code",
             "toolkit_code",
             "message",
             "part_file",
             "sha256",
             "saved_file_reloaded_and_verified",
             "rollback_succeeded",
+            "model_unchanged",
             "rollback_message",
             "rollback_code",
             "preview_file",

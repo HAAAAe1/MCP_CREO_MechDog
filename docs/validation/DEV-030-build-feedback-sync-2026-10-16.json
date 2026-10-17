@@ -1,0 +1,84 @@
+{
+  "work_item": "DEV-030",
+  "recorded_at": "2026-10-16T15:15:22.291736+00:00",
+  "branch": "codex/bug-001-unknown-recovery",
+  "base_commit": "bcd90abc3fb7a10a6b26d5b97c4b198483bc61e9",
+  "dirty": true,
+  "scope": "Documentation and exact source archive only. Consume the user-completed BUG-001 G0 evidence without rerunning or changing it.",
+  "success": true,
+  "authored_markdown_files": 15,
+  "relative_links_checked": 276,
+  "table_groups_checked": 28,
+  "unique_ledger_ids": 112,
+  "new_work_item_ids": [],
+  "external_report": {
+    "date": "2026-10-16",
+    "work_item": "DEV-030",
+    "original_name": "2026-10-16CREO10.0.0.0-0.3.3vcvars64env键集过严与回调目录无限累积.md",
+    "source_path": "C:\\Users\\Administrator\\Downloads\\2026-10-16CREO10.0.0.0-0.3.3vcvars64env键集过严与回调目录无限累积.md",
+    "archived_path": "docs/validation/build-feedback-0.3.3-2026-10-16/creo10-vcvars-callback-report.md",
+    "bytes": 9270,
+    "lines": 169,
+    "sha256": "121862b7403ccf97d721504ed36602f5598e8e7d80bb4db8c4b56e1fe7565179",
+    "byte_identical": true,
+    "reported_environment": {
+      "os": "Windows 10 x64",
+      "creo": "10.0.0.0",
+      "service": "0.3.3",
+      "python": "3.13 x64",
+      "visual_studio": "VS 2022 BuildTools 17.14.40 / tools 14.44.35207",
+      "windows_sdk": "10.0.26100.0"
+    },
+    "evidence_boundary": "External report only; no original build log, full environment dumps, two-build input/output sequence or job/model records supplied. This sync did not rerun compiler/CAD/recovery commands."
+  },
+  "protected_g0_files_unchanged": {
+    "docs/validation/BUG-001-repro-2026-10-16.md": "f3613c716648f12d7bf574bfc9711a46b9a6e85dda57b2d7f83c4427fb779212",
+    "docs/validation/BUG-001-repro-2026-10-16.json": "b2c3bf2ff05c1fb3224ac55b414f76a1dfda93acb5064bc66a2d4613ba232882",
+    "docs/validation/bug-001-repro-2026-10-16/g0_driver.py": "c54c1c51b3cf32263a78db1a3b011f98d91a642c15474449d0b6350172ba04b0",
+    "docs/validation/bug-001-repro-2026-10-16/g0_evidence.json": "5360e6b23c44da58ba3d4bc5237619036d9918cf3c5f1c08218999339752c5a4"
+  },
+  "historical_track_sources_unchanged": true,
+  "current_states": {
+    "BUG-001": "P0; reproduced; repair design pending",
+    "FEAT-018": "P1; controlled recovery design first",
+    "FEAT-029": "existing branch delivery follows recovery; not merged in public 0.3.3",
+    "DEV-019": "completed original scope; new success-log request unverified",
+    "DEV-021": "completed original scope; external three-key build positive; extra-key request unimplemented",
+    "DEV-027": "unverified build/cache/reclamation hypotheses"
+  },
+  "document_sha256": {
+    "docs/BACKLOG.md": "015d1f62baeb1e61f290195706c20a13352356e687f02eaf4d05faed45676159",
+    "docs/COMPATIBILITY.md": "fd6d86ce0b960eaa422e7e176b894ecd078e78a57ce0ddc1cc9d2b7e1901cadf",
+    "docs/DEVELOPMENT.md": "e48bd35150163a4911dedb43aba8150f6215ec5f48ed3b16c7ac81bed548fe84",
+    "docs/INSTALL.md": "064ab2313f3008a29f8816ace0788b12421af700dbfda6a79d63d8c7149a74fb",
+    "docs/validation/FEEDBACK-0.3.3-BUILD.md": "8b154c886350b3b46e4d68c815b6eb9b9dc89bac54affc9507c0d9ea032f3235",
+    "docs/validation/TRACK-FEEDBACK-2026-10-16.md": "2d8c9ba711aa2f5158adfadfe7a748e3103cd6fa4f5570598706b523a9bdeb0e",
+    "docs/validation/build-feedback-0.3.3-2026-10-16/creo10-vcvars-callback-report.md": "121862b7403ccf97d721504ed36602f5598e8e7d80bb4db8c4b56e1fe7565179",
+    "docs/validation/build-feedback-0.3.3-2026-10-16/manifest.json": "b4f635a3930449775b80a458946f31332e83ebdc455c80e858deca393a5e3fb4",
+    "docs/work-items/BUG-001.md": "9e49176d441d65468aee1b80967f2e49f3feb6723c51730f46a9b093340466a7",
+    "docs/work-items/BUG-008.md": "c9c24978317c52b340f5f174f77158dcdfaeea610e7a6ffe8ba4b11a9ff16fdc",
+    "docs/work-items/DEV-019.md": "ac72c7c342830a0b3e7638ea018c312611295bf3e345c718807b5d2046292aa9",
+    "docs/work-items/DEV-021.md": "941eecc0c8010a214e1f54b6324a546abb568ccfa7c9d3d684a23c42ee907a11",
+    "docs/work-items/DEV-027.md": "79b1e6275ec9cee9c3612a713a1b546b5e9aafb7444a22de4cf61618a7dc34a6",
+    "docs/work-items/DEV-028.md": "3a8c1534bdca476e27e42ad3c34a4e83b1aa481cfc425a4c2816097975d888a3",
+    "docs/work-items/DEV-030.md": "3dce3765551e903c0ba65770f5fea8012161983561ccc16e27bc06a4a70ba151",
+    "docs/work-items/FEAT-018.md": "3917b6928b6a08aad1ff6a1f3eb8f32a79f6e5c7f93aebe2da38fe1a8ad6dfa9",
+    "docs/work-items/FEAT-029.md": "74e219fcdae4339d0208de1387b14ea40b040eea0d0413c9115dc6552436fbd8"
+  },
+  "checks": {
+    "links_anchors_tables": true,
+    "ledger_no_duplicate_ids": true,
+    "immutable_report_bytes": true,
+    "source_package_crc_all_changed_and_protected_bytes": true,
+    "version_runtime_and_packager_unchanged": true,
+    "git_diff_check": true
+  },
+  "package_details": "Final check-only archive path/SHA256 kept in ignored build/dev030-build-feedback/package-verification.json. This record is written before packing and checked byte-for-byte inside that archive.",
+  "not_run": [
+    "unit or compiler tests",
+    "MCP/Creo modeling, recovery or fault injection",
+    "external Windows 10/Creo 10 reproduction",
+    "directory cleanup, registration or cache changes",
+    "main merge, version change, Release publication"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "work_item": "BUG-001",
+  "version": "0.3.3",
+  "timestamp_utc": "2026-10-17T01:57:17.056352+00:00",
+  "environment": {
+    "os": "Windows",
+    "python": "3.12.14"
+  },
+  "source": {
+    "commit": "93b110123b09ea264e7e4070fe6aa2b445b150d5",
+    "dirty": true,
+    "checked_source_sha256": "97558c645f6352b8fad4bb31d4ac32fbeb46c590f2c76765361cbc8e8c225341"
+  },
+  "native_validation": "not_run",
+  "unit_tests": "passed",
+  "success": true,
+  "style_summary": {
+    "lint_findings": 35,
+    "unformatted_files": 25,
+    "cpp_files_checked": 17,
+    "python_files_checked": 102
+  },
+  "tools": {
+    "ruff": "0.17.0",
+    "clang-format": "23.1.3"
+  },
+  "configuration": {
+    "pyproject.toml": "4b786c9741c35ba69a3e27a08b686fbf2989821d4ab8d1daf00fe9889e09d0aa",
+    ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+    "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc"
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "work_item": "FEAT-029",
+  "timestamp": "2026-10-16T12:53:54.374292+08:00",
+  "status": "in_progress_pending_operator_restart_and_real_rpc_verification",
+  "source": {
+    "commit": "6a55119f5dc2c9b95fb3365c8073c354f83c7325",
+    "dirty": true,
+    "fingerprints": {
+      "native/blend_sync.cpp": "7b0895e246999e124459eb086128d00b94333e1a02ec99ab515c33700914bab0",
+      "native/blend_loader.cpp": "327dfdd9ecdf810d66877baba66b88fe98cb4f2d072b7de07367f45d20109008",
+      "native/callback_api.h": "f911bd17afb6975843d53be13397ee7adb08c2272fa6148cadb38f0595e9d67a",
+      "native/callback_runtime.h": "69eeea35841b3a37ae73aaf0a73474f8f09f00e59c21c6ecf7c498f6f9cca6d1",
+      "native/callback_identity.h": "515b17a136afc22125b075f0d32e10ea106eb87b0ac19231e7f2958acdc38376",
+      "native/blend_create.cpp": "e02624fa539313a16492bbadfc8ac35fdb5cef2b1f878799c23648667282adf7",
+      "native/worker.cpp": "37b3c8ef0d4cedd91adcf3d0dff03f41a33516c10f7d467ecfe62defc476bc7c",
+      "native/generic.cpp": "fecc7c9c0ec45b61c922f0fe745b935bdaf752633a537dd8afc558e461dcd48e",
+      "bridge.py": "5639d0acdde9ad21c321dbc4b37c113182daf3b73ad0bf029fb8d1c7a86d524a",
+      "server.py": "d477e596b926d250cbfa775973c60c41d481555b68d8833c87e2e5ea0e00f851",
+      "src/creo_mechdog/blend_callback.py": "b7d46e47a7254b1fc4294bd78044e469dc37f17506bc2972e58e782dabad960c",
+      "tools/test_callback_payload.py": "36d335c42db71cf62837174987912af048c5be0b192b2041d1d12512af0542f8",
+      "tools/test_callback_payload.cpp": "8bcddebd88d8787f6a47d108f50c5dca95fe01618ff5202c58a30ecbf87c01da"
+    }
+  },
+  "operator": {
+    "first_registration_start_and_security_confirmation": "confirmed by user",
+    "persistent_config_restart_and_original_entry": "requested, not yet confirmed"
+  },
+  "rpc_reports": {
+    "registered-codex": "FEAT-029-live-registered-codex-2026-10-16.json",
+    "registered-desktop": "FEAT-029-live-registered-desktop-2026-10-16.json",
+    "registered-desktop-label-fix": "FEAT-029-live-registered-desktop-label-fix-2026-10-16.json",
+    "standalone-abi": "FEAT-029-live-standalone-abi-2026-10-16.json"
+  },
+  "original_failure": {
+    "host": "Codex child",
+    "connected": false,
+    "toolkit_code": -4
+  },
+  "desktop_observation": {
+    "same_user_session_and_explorer_verified": true,
+    "connected": true,
+    "disconnect_code": 0,
+    "callback_toolkit_code": -3,
+    "callback_return": -8,
+    "sdk_error_names": [
+      "PRO_TK_USER_ABORT",
+      "PRO_TK_BAD_CONTEXT"
+    ],
+    "modeling_jobs_submitted": 0,
+    "workbuddy": false
+  },
+  "read_only_task_diagnostic": {
+    "calls": [
+      {
+        "alloc": 0,
+        "array_code": 0,
+        "callback": -8,
+        "count": 1,
+        "function": "MechDogBlendIdentity",
+        "output_count": 0,
+        "output_count_code": 0,
+        "set": 0,
+        "toolkit": -3
+      },
+      {
+        "alloc": 0,
+        "array_code": 0,
+        "callback": -2,
+        "count": 1,
+        "function": "MechDogBlendPrepare",
+        "output_count": 0,
+        "output_count_code": 0,
+        "set": 0,
+        "toolkit": -3
+      }
+    ],
+    "connect": 0,
+    "disconnect": 0,
+    "lookup": 0
+  },
+  "controlled_payload_change": {
+    "before_sha256": "191e32fe24842deef1a285d8f7eb07d8224ad3065e8fee708e7f2bbb233c43f2",
+    "after_sha256": "ea605dfd3e078c163d05a427bbfcacbdf1910ca63ee224de9d1eb35918e45b86",
+    "different_payload": true,
+    "same_loader": true,
+    "same_registration_path": true,
+    "protected_files": {
+      "module_file": {
+        "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback\\191e32fe24842deef1a285d8f7eb07d8224ad3065e8fee708e7f2bbb233c43f2\\callback.dll",
+        "same_sha256": true,
+        "same_mtime": true
+      },
+      "loader_file": {
+        "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_loader\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\loader.dll",
+        "same_sha256": true,
+        "same_mtime": true
+      },
+      "registry_file": {
+        "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback_protk.dat",
+        "same_sha256": true,
+        "same_mtime": true
+      }
+    },
+    "gui_no_reregistration_verified": false
+  },
+  "standalone_sdk_fixture": {
+    "passed": true,
+    "checks": 10,
+    "model_calls": "controlled fixtures, not Creo geometry",
+    "raw_report": "FEAT-029-live-standalone-abi-2026-10-16.json"
+  },
+  "unit_and_style": {
+    "passed": true,
+    "unit": {
+      "version": "0.3.2",
+      "timestamp": 1792126326.3433805,
+      "tests_run": 258,
+      "success": true,
+      "failures": 0,
+      "errors": 0
+    },
+    "raw_report": "FEAT-029-live-development-check-2026-10-16.json"
+  },
+  "not_verified": [
+    "new payload real RPC",
+    "original registration after Creo restart",
+    "successful direct and plan Blend with current implementation",
+    "seed controls",
+    "revision, geometry, rollback, save/reload in current implementation",
+    "full upgrade and rollback",
+    "multiple installation isolation in real sessions",
+    "WorkBuddy final acceptance",
+    "concurrency",
+    "Creo 10"
+  ]
+}

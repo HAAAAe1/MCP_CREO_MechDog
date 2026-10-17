@@ -1,0 +1,104 @@
+{
+  "work_item": "FEAT-029",
+  "timestamp_utc": "2026-10-16T08:20:12.123694+00:00",
+  "status": "completed_with_recorded_environment_and_coverage_boundaries",
+  "source": {
+    "commit": "6a55119f5dc2c9b95fb3365c8073c354f83c7325",
+    "dirty": true,
+    "candidate_native_source_sha256": "7500f24d69424f0afa1c027587e24c6e83af42bd953d32cdff28e9a49cf00075"
+  },
+  "primary_installation": {
+    "root": "E:\\Projects\\MCP_CREO_MechDog_Test",
+    "registry_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback_protk.dat",
+    "source_matches_candidate_native": true,
+    "note": "Explicit startup configuration repaired. Operator observed entry automatically present after desktop shortcut restart and started existing entry. Final payload live identity and 9 jobs passed. Further source-only guidance update kept DLL/loader/registry unchanged; same-session live identity and 4 jobs passed. Same-DLL restart branch also passed, new PID 19820 and 4 saved/reloaded jobs.",
+    "deployed_payload_sha256": "9346f9e0410a6b7f91b6c33db2b6be9b8e2f1e597e6d41c5fa0f774b6081e20e",
+    "latest_verified_probe": {
+      "readiness": "ready",
+      "phase": "same DLL after normal restart",
+      "report": "FEAT-029-same-dll-restarted-2026-10-16.json",
+      "process_id": 19820
+    },
+    "current_runtime_readiness": "ready in latest point-in-time live probe, then 4 successful saved/reloaded modeling jobs",
+    "last_verified_loaded_payload_sha256": "9346f9e0410a6b7f91b6c33db2b6be9b8e2f1e597e6d41c5fa0f774b6081e20e",
+    "loaded_payload_sha256": "9346f9e0410a6b7f91b6c33db2b6be9b8e2f1e597e6d41c5fa0f774b6081e20e",
+    "registration_persistence": {
+      "status": "passed_after_explicit_config_repair_for_desktop_shortcut",
+      "repair": "FEAT-029-persistent-config-repair-2026-10-16.json",
+      "post_repair_restart_verified": true,
+      "operator_report": "有主条目了。但状态未运行；主条目已启动",
+      "mcp_auto_launch_directory": "configured, cold launch not verified"
+    }
+  },
+  "development_checks": {
+    "unit": {
+      "version": "0.3.2",
+      "timestamp": 1792134544.9817119,
+      "tests_run": 258,
+      "success": true,
+      "failures": 0,
+      "errors": 0
+    },
+    "style_success": true,
+    "standalone_sdk_fixture_checks": 12,
+    "source_package_snapshot_verified": true,
+    "release_published": false,
+    "stopped_guidance_worker_update": "SDK builds and development checks passed; payload, loader and registry SHA256/mtime unchanged",
+    "source_package_snapshot_note": "419-file post-persistence source snapshot; final restart evidence and later documentation outside archive",
+    "persistence_guidance_update": "SDK build and 258 tests/style passed; immutable artifact hashes and mtimes unchanged"
+  },
+  "completed_developer_phases": {
+    "actual_full_restart_new_payload_live_identity": true,
+    "retained_original_registration": "Passed for observed desktop launch after explicit config.pro setup; earlier lost-entry failure and raw declarations retained",
+    "direct_suite_jobs": 43,
+    "plan_and_busy_query_jobs": 5,
+    "actual_incompatible_worker_protection_jobs": 5,
+    "restored_worker_direct_jobs": 4,
+    "workbuddy": "Independent current-deployment core scope passed; lifecycle/concurrent submissions not independently retested",
+    "old_loaded_deployment_mismatch_and_protection_jobs": 5,
+    "payload_deployment_rollback_ready_and_direct_jobs": 4,
+    "two_installations_live_ready_and_distinct_identity": true,
+    "stopped_app_does_not_reuse_old_identity": true,
+    "stopped_app_protection_jobs": 5,
+    "actual_full_restart_new_payload_live_identity_note": "Historical PID 25268, payload ea605d; does not verify persistence or final payload 9346f9",
+    "final_candidate_activation": true,
+    "final_candidate_direct_jobs": 4,
+    "final_candidate_plan_jobs": 5,
+    "stale_isolation_record_after_restart": "not_loaded / recorded_application_not_active, loaded null",
+    "same_dll_source_upgrade_in_original_session_direct_jobs": 4,
+    "same_dll_after_normal_restart_direct_jobs": 4
+  },
+  "second_installation": {
+    "root": "E:\\Projects\\MCP_CREO_MechDog_Isolation",
+    "before_registration_readiness": "unknown",
+    "reason": "no_runtime_identity_record",
+    "dedicated_venv_and_editable_package": true,
+    "operator_registration_and_start": "User confirmed registration; actual live identity and modeling verified",
+    "primary_entry_unchanged": true,
+    "after_registration_readiness": "ready",
+    "modeling_jobs": 4,
+    "operator_stop": "User reported stopped service; live public probe confirms registered app not active, not_loaded",
+    "stopped_protection_jobs": 5
+  },
+  "not_verified": [
+    "WorkBuddy independent lifecycle upgrade/restart/rollback/coexist matrix (developer real-machine coverage retained)",
+    "Parallel modeling and WorkBuddy parallel submissions/owner identification",
+    "MCP automatic launch actually reading callback config (directory configured only)",
+    "Creo 9/10 new callback lifecycle",
+    "Loaded legacy protocol-2 DLL migration",
+    "Real loader/SDK generation change",
+    "Hot rollback of already activated payload"
+  ],
+  "documentation_request": {
+    "work_item": "DEV-026",
+    "creo9_support_documentation": "completed; limited to third-party reported scenarios and known issues retained",
+    "validation": "DEV-026.json"
+  },
+  "independent_workbuddy": {
+    "report": "FEAT-029-WorkBuddy-report-2026-10-16.md",
+    "jobs": 12,
+    "successful": 11,
+    "expected_failed_rollback": 1,
+    "closure": "FEAT-029-closure-2026-10-16.json"
+  }
+}

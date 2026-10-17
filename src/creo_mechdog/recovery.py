@@ -115,6 +115,11 @@ def job_evidence(directory: Path, manifest: dict, model: dict | None = None) -> 
         except (OSError, ValueError, TypeError):
             result["native_checkpoint"] = {"readable": False}
     if model:
+        resolution = model.get("reconciliation")
+        result["resolution"] = resolution
+        result["model_currently_available"] = model.get("status") == "ready" and not (
+            model.get("pending_job") or model.get("recovery_pending")
+        )
         result["model"] = {
             key: model.get(key) for key in ("status", "revision", "pending_job", "last_job")
         }
