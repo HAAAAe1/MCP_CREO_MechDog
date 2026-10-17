@@ -811,7 +811,9 @@ async def creo_extrude(
     new_body: bool = False,
     thin: float | None = None,
 ) -> dict[str, Any]:
-    """Create native extrusion from a sketch label/ID. Supports protrusion, pocket, through cut, symmetric, surface and thin modes."""
+    """Create native extrusion from a sketch label/ID. Supports protrusion, pocket, through cut, symmetric, surface and thin modes.
+    A cut that removes no material (disjoint sketch, wrong direction or already-removed region) fails and rolls back;
+    a successful cut reports material_removed_mm3 in its operation details."""
     op = {
         "op": "extrude",
         "label": label,
@@ -840,7 +842,8 @@ async def creo_revolve(
     new_body: bool = False,
     thin: float | None = None,
 ) -> dict[str, Any]:
-    """Create native revolve/revolved cut from an arbitrary sketch, about its centerline or an external axis."""
+    """Create native revolve/revolved cut from an arbitrary sketch, about its centerline or an external axis.
+    A cut that removes no material fails and rolls back; a successful cut reports material_removed_mm3."""
     op = {
         "op": "revolve",
         "label": label,

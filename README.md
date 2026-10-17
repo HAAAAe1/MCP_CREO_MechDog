@@ -57,8 +57,8 @@ DEV-002 已开始分批迁移：更新检查实现位于 `src/creo_mechdog/`，�
 | --- | --- |
 | 零件与建模计划 | `creo_new_part`、`creo_execute_plan`：新建毫米零件，或对已有 MCP 零件逐步追加特征 |
 | 草图 | `creo_create_sketch`：直线、中心线、圆、圆弧、矩形、多段线、样条、椭圆；显式尺寸和约束；auto/autodim/coordinates 尺寸策略 |
-| 拉伸 | `creo_extrude`：实体增材、切除、贯穿切除、曲面、薄壁、正/反向、对称深度、新实体 |
-| 旋转 | `creo_revolve`：实体旋转、旋转切除、指定角度，使用草图中心线或外部轴；提供曲面、薄壁和对称角度分支 |
+| 拉伸 | `creo_extrude`：实体增材、切除、贯穿切除、曲面、薄壁、正/反向、对称深度、新实体；切除未去料（板外草图、方向/深度错误或已去除区域）时失败回滚，成功操作详情返回material_removed_mm3 |
+| 旋转 | `creo_revolve`：实体旋转、旋转切除、指定角度，使用草图中心线或外部轴；提供曲面、薄壁和对称角度分支；切除零去料同样失败回滚并返回material_removed_mm3 |
 | 孔 | `creo_hole`：原生直孔，平面定位，两条独立平面参考或共面直边及有符号偏置；边参考用放置面中心明确定位侧。通孔或指定深度盲孔，flip反转原生切削侧；无去料时失败回滚，成功操作详情返回孔轴及material_removed_mm3 |
 | 修饰特征 | `creo_round`、`creo_chamfer`、`creo_shell`：恒定半径圆角、等距倒角、恒定厚度抽壳；用查询得到的边/面 ID 选引用 |
 | 基准与重复 | `creo_datum_plane`、`creo_datum_axis`、`creo_dimension_pattern`：偏移/角度基准面、基准轴、一方向尺寸阵列 |
