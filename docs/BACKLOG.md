@@ -6,6 +6,8 @@
 
 ## 当前进展
 
+- 2026-10-17 新增 [BUG-056：Toolkit 通道验证通过后约 40 秒静默失效](work-items/BUG-056.md)（P1 待核实）。WorkBuddy 验收期间三次"验证通过→37～41 秒→`not_found_or_unreadable`/`connect_creo` -4/探测退出码 20"，Creo 进程存活、可重连、用户确认无手动操作；与 BUG-001 卡死区分不重开。先低风险间隔探测复现并取 Creo 侧证据，再排除许可证/多协调器/空闲超时等假设；不自动重连、不清保护。M2 的收尾受阻于此项。
+
 - 2026-10-17 [BUG-055 WorkBuddy 黑盒验收通过](validation/BUG-055-WorkBuddy-acceptance-2026-10-17.md)（受测 `26a3edd`，开发者只读核对逐项一致）：核心契约全部符合——schema 空值契约可见、M1 经省略字段完整闭环（abandoned/rev 0/幂等/原作业保留）、空串精确拒绝回显 `received ''`、字面 "null" 按 SDK 预解析接受、M2 恢复作业 unknown_outcome 时保护按契约保留未重放。**决定性证据：WorkBuddy 客户端实测把显式 JSON null 降级为空串**——外部报告根因链闭环（转换在客户端序列化层，旧代码误报 stale，修复后可观察且省略字段替代路径可用）。未取得：M2 最终终态与稳定通道下字面 null 对照（通道三次静默掉线 37–41 秒节奏、worker_exit_code=20，环境异常超本卡范围、不据此重开 BUG-001，是否另立条目待用户决定）、工具总数（capabilities 响应超 WorkBuddy 客户端上限）。[DEV-034](work-items/DEV-034.md) G0～G5 完成。
 
 - 2026-10-17 [DEV-034 G0～G4 完成](work-items/DEV-034.md)：服务端各层不存在 null→空串转换（受测 mcp 2.3.0 与 v0.3.4 锁定一致），空串产生与外部报告逐字一致的 stale 错误，字面 "null" 被 SDK 预解析为 null；按此确定契约（null/省略合法等价、空串/空白精确拒绝、非空 ID 精确匹配、stale 拆分报告实际值）完成最小修复并同步 schema 描述与 [MODEL_RECOVERY.md](MODEL_RECOVERY.md)。新增 `tests/unit/test_reconciliation_mcp.py` 真实 stdio 协议回归 6/6，全量单测 307/307，dev_check 通过；实机（Creo 12.4）自然失败模型经真实 MCP 显式 null apply 到 succeeded，空串实机协议得到精确输入错误。BUG-055 转"已修复，WorkBuddy 验收待执行"，[提示词](validation/BUG-055-WorkBuddy-test.md)已备；外部 Creo 9 环境未复测记为未验证；未升版、未合入 main。证据见 [BUG-055-fix-2026-10-17.md](validation/BUG-055-fix-2026-10-17.md)。
@@ -101,6 +103,7 @@
 | [BUG-053](work-items/BUG-053.md) | P1 | 待核实 | 未排期 | 大模型重复引用解析/全量枚举据报耗时552～644s、请求/日志MB级；先按阶段计时和调用计数建基线，再做有失效边界的复用，不跳过保存重载/保护验证。 |
 | [BUG-054](work-items/BUG-054.md) | P1 | 已完成（本机实机+WorkBuddy 黑盒） | 未排期 | 拉伸/旋转切除零去料曾静默成功。2026-10-17 在 0.3.4 复现并按 DEV-033 修复：cut 前后测体积，零去料抛错回滚（revision 不变、别名无残留），成功返回 material_removed_mm3；T01～T08 实机与 WorkBuddy 5 场景黑盒均通过，revolve 正反例纳入。外部 Creo 10/9、thin/装配/钣金 cut 未测；BUG-016 不随本项关闭。证据见[验收记录](validation/BUG-054-cut-material-2026-10-17.md)与[黑盒记录](validation/BUG-054-WorkBuddy-acceptance-2026-10-17.md)。 |
 | [BUG-055](work-items/BUG-055.md) | P1 | 已修复，WorkBuddy 核心验收通过 | 未排期 | 根因链闭环：WorkBuddy 实测客户端把显式 null 降级为空串（服务端回显 received ''），服务端各层无转换；修复后空串精确拒绝、省略字段替代路径端到端成功。M1 abandoned 闭环+幂等+历史保留全过；M2 终态与稳定通道字面 null 对照因通道静默掉线未取得（保护按契约保留），外部 Creo 9 未复测。 |
+| [BUG-056](work-items/BUG-056.md) | P1 | 待核实 | 未排期 | Toolkit 通道验证通过后约 37～41 秒静默失效（not_found_or_unreadable/connect_creo -4/探测退出码 20），Creo 存活可重连、用户确认非人为；与 BUG-001 卡死区分不重开。先间隔探测复现+Creo 侧取证，再排许可证/多协调器/空闲超时假设；不自动重连、不清保护、不加重试。 |
 
 ## 未来能力候选
 
