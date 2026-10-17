@@ -8,6 +8,7 @@
 
 | ID | 优先级 | 状态 | 目标版本 | 完成摘要与证据 |
 | --- | --- | --- | --- | --- |
+| [DEV-035](work-items/DEV-035.md) | P1 | 已完成（发布候选） | 0.3.5 | 用户指定统一交付DEV-033/BUG-054、DEV-034/BUG-055及反馈/BUG-056登记；两目录各307项单元/增量检查、84工具、SDK实际编译/6521常量、12项ABI、独立安装和9种子ZIP通过。已知通道问题和M2未取得范围保留；实际main/Release/四附件SHA256在[PR #10](https://github.com/wudahua/MCP_CREO_MechDog/pull/10)回填，见[验收](validation/RELEASE-0.3.5.md)。 |
 | [BUG-054](work-items/BUG-054.md) | P1 | 已完成（本机实机及WorkBuddy已测范围） | 0.3.5 | 拉伸/旋转切除零去料曾静默成功。2026-10-17 在 0.3.4 复现并按 DEV-033 修复：cut 前后测体积，零去料抛错回滚（revision 不变、别名无残留），成功返回 material_removed_mm3；T01～T08 实机与 WorkBuddy 5 场景黑盒均通过，revolve 正反例纳入。外部 Creo 10/9、thin/装配/钣金 cut 未测；BUG-016 不随本项关闭。证据见[验收记录](validation/BUG-054-cut-material-2026-10-17.md)与[黑盒记录](validation/BUG-054-WorkBuddy-acceptance-2026-10-17.md)。 |
 | [BUG-055](work-items/BUG-055.md) | P1 | 已完成（WorkBuddy核心范围，M2未完成） | 0.3.5 | 根因链闭环：WorkBuddy 实测客户端把显式 null 降级为空串（服务端回显 received ''），服务端各层无转换；修复后空串精确拒绝、省略字段替代路径端到端成功。M1 abandoned 闭环+幂等+历史保留全过；M2 终态与稳定通道字面 null 对照因通道静默掉线未取得（保护按契约保留），外部 Creo 9 未复测。 |
 | [DEV-033](work-items/DEV-033.md) | P1 | 已完成（本机实机及WorkBuddy已测范围） | 0.3.5 | 2026-10-17 按 G0～G5 执行 BUG-054：会话条件核对后复现、确定孔类一致契约、最小修复（native 守卫+docstring+compact 白名单+4 项单元回归）、实机 T01～T08 与 WorkBuddy 5 场景黑盒全通过（revolve 正反例纳入），台账/能力说明同步。未测边界（外部 Creo 10/9、thin/装配/钣金 cut）保留；未合入 main、未发布。 |
