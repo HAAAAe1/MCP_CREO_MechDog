@@ -35,11 +35,13 @@
   "mode":"apply",
   "action":"restore_baseline",
   "expected_revision":1,
-  "expected_pending_job_id":"<预检返回的pending_job，无则明确填null>",
+  "expected_pending_job_id":"<本次预检返回的pending_job；为null时发送JSON null或省略字段>",
   "evidence_token":"<本次预检令牌>",
   "idempotency_key":"operator_recovery_001"
 }
 ```
+
+`expected_pending_job_id` 契约：必须逐字等于本次预检返回的 `pending_job`。预检返回 null（无待定作业）时发送 JSON null 或省略该字段，两者等价；**不要发送空字符串 `""`**——空串/空白串会被作为请求缺陷精确拒绝（错误引用实际收到的值），不会与 null 混同，也不会被当作模型 revision 冲突。客户端确实无法发送 null 时优先省略字段；字面字符串 `"null"` 在当前 SDK 下会被预解析为 null，但不要依赖该行为。revision 与 pending 不匹配分别返回独立的 stale 错误并给出模型实际值。
 
 接受后只轮询返回的恢复 `job_id`，不重复提交原计划。同一幂等键与相同输入返回同一恢复任务；换动作或输入必须换键并重新预检。文件、部署、revision 或 reservation 改变会拒绝旧证据。busy 表示本次未获准，遵循其 blocking 字段，不假设排队。
 

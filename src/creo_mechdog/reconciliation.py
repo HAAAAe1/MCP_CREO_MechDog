@@ -511,8 +511,16 @@ def _validate_evidence(
         )
     snapshot = _snapshot(model_id)
     model = snapshot["model"]
-    if model["revision"] != revision or model.get("pending_job") != pending:
-        raise ValueError("Stale expected_revision or expected_pending_job_id")
+    if model["revision"] != revision:
+        raise ValueError(
+            f"Stale expected_revision: model revision is {model['revision']}, "
+            f"expected {revision}; inspect again"
+        )
+    if model.get("pending_job") != pending:
+        raise ValueError(
+            "Stale expected_pending_job_id: model pending_job is "
+            f"{model.get('pending_job')!r}, expected {pending!r}; inspect again"
+        )
     if _binding(snapshot) != _binding(record["snapshot"]):
         raise ValueError("Stale evidence: registry, files, deployment or process identity changed")
     action_state = _actions(snapshot, record["live"])[action]
@@ -536,6 +544,15 @@ def apply(
         or expected_revision < 0
     ):
         raise ValueError("Valid action and nonnegative expected_revision are required")
+    if expected_pending_job_id is not None and (
+        not isinstance(expected_pending_job_id, str)
+        or not bridge.JOB_ID.fullmatch(expected_pending_job_id)
+    ):
+        # An empty or malformed value is a request defect, never model staleness.
+        raise ValueError(
+            "expected_pending_job_id must be the pending job id returned by inspect, "
+            f"or null when inspect returned pending_job=null; received {expected_pending_job_id!r}"
+        )
     if not isinstance(idempotency_key, str) or not re.fullmatch(
         r"[A-Za-z0-9_-]{8,80}", idempotency_key
     ):
@@ -791,7 +808,9 @@ def reconcile(
         or idempotency_key is None
     ):
         raise ValueError(
-            "apply requires action, expected_revision, expected_pending_job_id, evidence_token and idempotency_key"
+            "apply requires action, expected_revision, evidence_token and idempotency_key; "
+            "expected_pending_job_id must equal inspect's pending_job "
+            "(null or omitted when inspect returned no pending job)"
         )
     return apply(
         model_id,

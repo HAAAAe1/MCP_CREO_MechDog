@@ -6,6 +6,10 @@
 
 ## 当前进展
 
+- 2026-10-17 [DEV-034 G0～G4 完成](work-items/DEV-034.md)：服务端各层不存在 null→空串转换（受测 mcp 2.3.0 与 v0.3.4 锁定一致），空串产生与外部报告逐字一致的 stale 错误，字面 "null" 被 SDK 预解析为 null；按此确定契约（null/省略合法等价、空串/空白精确拒绝、非空 ID 精确匹配、stale 拆分报告实际值）完成最小修复并同步 schema 描述与 [MODEL_RECOVERY.md](MODEL_RECOVERY.md)。新增 `tests/unit/test_reconciliation_mcp.py` 真实 stdio 协议回归 6/6，全量单测 307/307，dev_check 通过；实机（Creo 12.4）自然失败模型经真实 MCP 显式 null apply 到 succeeded，空串实机协议得到精确输入错误。BUG-055 转"已修复，WorkBuddy 验收待执行"，[提示词](validation/BUG-055-WorkBuddy-test.md)已备；外部 Creo 9 环境未复测记为未验证；未升版、未合入 main。证据见 [BUG-055-fix-2026-10-17.md](validation/BUG-055-fix-2026-10-17.md)。
+
+- 2026-10-17 根据用户最新修改后的台账，DEV-033/BUG-054 已完成实机及 WorkBuddy 验收；下一轮建立 [DEV-034：恢复工具 MCP 空值契约核实、修复与验收](work-items/DEV-034.md)，聚焦 P1 BUG-055。先以真实 stdio/独立客户端核对 null、省略及 stale 差异，再最小修复、授权保护回归和正式 MCP 恢复闭环；本轮仅建卡，BUG-055 保持待核实，目标版本未排期，FEAT-018/029 不随本卡关闭。
+
 - 2026-10-17 [BUG-054 WorkBuddy 黑盒验收通过](validation/BUG-054-WorkBuddy-acceptance-2026-10-17.md)：5 场景全部符合预期（有效切除 40π、板外/重复/revolve 无交集按契约失败且体积/revision/sha256 不变、失败后可继续编辑），开发者只读核对 11 个作业与本地记录逐项一致；含提示词场景 D 基准歧义说明与 `depth:1.0` 回显次要观察（未登记新条目）。[BUG-054](work-items/BUG-054.md) 三层证据链闭环、[DEV-033](work-items/DEV-033.md) G0～G5 完成；未测边界不变，未合入 main、未发布。本轮仅记录验收与核对，未连接 Creo、未改代码。
 
 - 2026-10-17 [0.3.4 / Creo 9 反馈补录](validation/FEEDBACK-0.3.4-2026-10-17.md)：新增 [BUG-055](work-items/BUG-055.md)（恢复 apply 的 MCP 可空参数/stale 拒绝差异，P1 待核实）。null 转空串仅为根因线索，需真实协议与独立客户端对照；inspect 和 callback_status 补限定正例。token 时效、入队前回调提示、别名/分页和新工具 MCP 冒烟沿用原条目，种子/筋/装配约束/round 不重复建卡。保留当前 BUG-054/DEV-033 的开发实机成果及剩余 WorkBuddy 范围；本轮仅同步文档，不连接 Creo，不重开 BUG-001。
@@ -94,7 +98,7 @@
 | [BUG-052](work-items/BUG-052.md) | P2 | 待核实 | 未排期 | 曲面 type 据报全为34；先分清对象类别/几何类别，再兼容输出真实几何类型与适用参数，不能仅凭 bbox 推断 SDK 错误。 |
 | [BUG-053](work-items/BUG-053.md) | P1 | 待核实 | 未排期 | 大模型重复引用解析/全量枚举据报耗时552～644s、请求/日志MB级；先按阶段计时和调用计数建基线，再做有失效边界的复用，不跳过保存重载/保护验证。 |
 | [BUG-054](work-items/BUG-054.md) | P1 | 已完成（本机实机+WorkBuddy 黑盒） | 未排期 | 拉伸/旋转切除零去料曾静默成功。2026-10-17 在 0.3.4 复现并按 DEV-033 修复：cut 前后测体积，零去料抛错回滚（revision 不变、别名无残留），成功返回 material_removed_mm3；T01～T08 实机与 WorkBuddy 5 场景黑盒均通过，revolve 正反例纳入。外部 Creo 10/9、thin/装配/钣金 cut 未测；BUG-016 不随本项关闭。证据见[验收记录](validation/BUG-054-cut-material-2026-10-17.md)与[黑盒记录](validation/BUG-054-WorkBuddy-acceptance-2026-10-17.md)。 |
-| [BUG-055](work-items/BUG-055.md) | P1 | 待核实 | 未排期 | 外部 0.3.4/Creo 9 恢复 inspect 正常，MCP apply 的 expected_pending_job_id=null 据报被 stale 拒绝、直接 Python 对照可用。先核对原始请求/schema、适配实际值及同次 token/revision/pending；null→空串尚未定位，不直接 truthiness 归一化放宽授权，补真实 stdio 和独立客户端对照。 |
+| [BUG-055](work-items/BUG-055.md) | P1 | 已修复，WorkBuddy 验收待执行 | 未排期 | DEV-034 核实：服务端（mcp 2.3.0 锁定栈）无 null→空串转换，空串即报告错误的成因；修复为空串/空白/畸形值精确输入错误+stale 拆分报告+schema/文档契约，保护未放宽。协议回归 6/6、全量 307/307、dev_check、实机 null apply 闭环均通过；外部 Creo 9 客户端行为未复测记未验证，WorkBuddy 提示词已备。 |
 
 ## 未来能力候选
 
@@ -147,6 +151,7 @@
 | ID | 优先级 | 状态 | 目标版本 | 范围与下一步 |
 | --- | --- | --- | --- | --- |
 | [DEV-030](work-items/DEV-030.md) | P1 | 开发中 | 未排期 | G0、任务卡/反馈、恢复和FEAT-029代码统一纳入DEV-032/0.3.4；BUG-001按用户决定关闭，FEAT-018/029保留未完成验收。后续G2底板/编辑、G3基础与性能、G4阵列/履带回归继续分期；DEV-019/021原完成状态保持。 |
+| [DEV-034](work-items/DEV-034.md) | P1 | G0～G4 完成，WorkBuddy 交接待执行 | 未排期 | G0/G1 定位（服务端无 null 转换、空串复现报告错误、字面 null 被 SDK 预解析）、G2 契约、G3 最小修复+真实 stdio 协议回归、G4 实机闭环已完成；剩余 WorkBuddy 黑盒与外部 Creo 9 复测或记未验证。发现的事实边界：会话同名残留模型触发 abandon owned 保护（正确行为）、journal 临时名在过深数据根逼近 260 字符路径上限。不升版、不合入、不发布。 |
 | [DEV-033](work-items/DEV-033.md) | P1 | 已完成 | 未排期 | 2026-10-17 按 G0～G5 执行 BUG-054：会话条件核对后复现、确定孔类一致契约、最小修复（native 守卫+docstring+compact 白名单+4 项单元回归）、实机 T01～T08 与 WorkBuddy 5 场景黑盒全通过（revolve 正反例纳入），台账/能力说明同步。未测边界（外部 Creo 10/9、thin/装配/钣金 cut）保留；未合入 main、未发布。 |
 | [DEV-031](work-items/DEV-031.md) | P2 | 待规划 | 未排期 | 履带纯文本输入规范化、最小件→63站→90凸台→性能/恢复综合回归；先澄清相位/闭合/近似与容差，报告体积−1.46%未达TXT±1%，本次不建模。 |
 | DEV-003 | P2 | 待规划 | 未排期 | C++ 执行上下文、接口和资源归属；受影响 SDK 构建及原生回归 |
