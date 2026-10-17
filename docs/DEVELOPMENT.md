@@ -2,7 +2,7 @@
 
 本项目按可交付的 Creo MCP 工具维护，采用功能条目驱动、短分支和分批整理。日常开发从 [统一台账](BACKLOG.md) 选择条目；新增工作先登记，复杂条目复制 [模板](templates/WORK_ITEM.md)。开发准入对小修复同样适用，内容可精简为几行。
 
-当前后续批次见[DEV-030分期任务卡](work-items/DEV-030.md)：[BUG-001 G0复现](validation/BUG-001-repro-2026-10-16.md)已确认当时0.3.3模型协调阻断，2026-10-17按[联合执行卡](work-items/BUG-001-FEAT-018-RECOVERY.md)完成恢复实现，284项单元及四动作部分实机通过；随后Creo卡死未定位，停止新的Toolkit调用，完整实机/WorkBuddy仍未完成，见[恢复验证记录](validation/BUG-001-recovery-2026-10-17.md)。用户随后要求先集成FEAT-029，现已纳入E盘开发分支，297项单元、SDK编译、载荷ABI及84工具离线检查通过，见[集成记录](validation/FEAT-029-integration-2026-10-17.md)。来源见[履带映射](validation/TRACK-FEEDBACK-2026-10-16.md)和[0.3.3构建/回调反馈](validation/FEEDBACK-0.3.3-BUILD.md)，历史分支与原件核对见[分支记录](validation/DEV-030-branch-sync-2026-10-17.md)。当前本机MCP只启用MCP_CREO_MechDog_dev指向E盘，未合入main或发布；单项状态以统一台账为准。
+当前服务/源码版本0.3.4，用户指定关闭BUG-001并将全部待合分支统一交付main，流程见[DEV-032](work-items/DEV-032.md)及[本版验收](validation/RELEASE-0.3.4.md)。BUG关闭保留未完成实机和卡死未定位事实；FEAT-018/029仍验收中。[DEV-030](work-items/DEV-030.md)的G2～G4继续分期。历史恢复及集成验证按原提交/指纹分别保留，本轮不新增Toolkit连接、故障注入或WorkBuddy。
 
 最新[BUG-001离线卡死核对](validation/BUG-001-hang-offline-2026-10-17.md)已确认Creo IPC初始化通信失败及同一12.4进程无响应关闭，底层诱因仍待定位。当前无Creo会话可验证，确认可操作前继续停止Toolkit连接/注入；此核对不替代实机/WorkBuddy验收。
 

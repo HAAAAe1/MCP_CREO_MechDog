@@ -1,8 +1,8 @@
 # 未知作业与受控模型恢复
 
-当前状态：开发实现已落地，验收中。本轮 Creo 卡死尚未定位，最终实机及 WorkBuddy 未完成，不能据此关闭 BUG-001/FEAT-018。见[本次验证记录](validation/BUG-001-recovery-2026-10-17.md)。本机开发联调只启用指向 E 盘的 `MCP_CREO_MechDog_dev`；这是客户端注册名，不是已发布版本号。
+当前状态：恢复实现纳入0.3.4；BUG-001按用户决定关闭，FEAT-018仍验收中。Creo卡死根因未定，完整实机及WorkBuddy未完成；关闭与发布不代表这些验证通过。见[本次验证记录](validation/BUG-001-recovery-2026-10-17.md)。本机开发联调只启用指向 E 盘的 `MCP_CREO_MechDog_dev`；这是客户端注册名，不是已发布版本号。
 
-适用于提供 `creo_reconcile_model` 的开发版本；公开 0.3.3 没有该工具。通过 `creo_capabilities` 确认实际部署，更新源码后构建执行器并重新连接 MCP，不能仅凭磁盘上的版本说明判断客户端已经加载新工具。
+适用于0.3.4提供的 `creo_reconcile_model`；历史公开0.3.3没有该工具。通过 `creo_capabilities` 确认实际部署，更新源码后构建执行器并重新连接 MCP，不能仅凭磁盘上的版本说明判断客户端已经加载新工具。
 
 超时或失联不证明建模没有发生。先保留原 `job_id`，用 `creo_get_job` 查证据；不要重交原计划、编辑 `model.json` 或删除 reservation。`creo_startup_status(retry=true)` 只复核通道，模型处置使用下述独立接口。
 

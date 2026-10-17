@@ -1,10 +1,10 @@
-# 常驻回调的固定注册、升级与预检（FEAT-029 功能分支）
+# 常驻回调的固定注册、升级与预检（0.3.4 / FEAT-029）
 
-日期：2026-10-17集成。原独立分支2026-10-16已按本机开发者生命周期与WorkBuddy核心场景通过，详见[原关闭记录](validation/FEAT-029-closure-2026-10-16.md)。当前E盘集成只完成离线/SDK编译验证，实机因卡死限制未复跑，见[本次记录](validation/FEAT-029-integration-2026-10-17.md)。此功能尚未发布，不属于公开0.3.3；本机只启用MCP_CREO_MechDog_dev，下述_Test路径属于历史证据，不能当成当前部署身份。
+日期：2026-10-17集成。原独立分支2026-10-16已按本机开发者生命周期与WorkBuddy核心场景通过，详见[原关闭记录](validation/FEAT-029-closure-2026-10-16.md)。当前E盘集成只完成离线/SDK编译验证，实机因卡死限制未复跑，见[本次记录](validation/FEAT-029-integration-2026-10-17.md)。此功能纳入0.3.4源码交付，不属于历史公开0.3.3；本机只启用MCP_CREO_MechDog_dev，下述_Test路径属于历史证据，不能当成当前部署身份。
 
 ## 固定安装入口
 
-保持同一个安装目录，注册入口始终是 `<安装目录>\build\blend_callback_protk.dat`。本轮验收固定使用 `E:\Projects\MCP_CREO_MechDog_Test\build\blend_callback_protk.dat`。不要把 `.codex\worktrees` 临时目录作为长期安装位置，也不要每次升级重新解压到另一个目录后声称原注册仍适用。
+保持同一个安装目录，注册入口始终是 `<安装目录>\build\blend_callback_protk.dat`。2026-10-16历史验收使用 `E:\Projects\MCP_CREO_MechDog_Test\build\blend_callback_protk.dat`；本机当前使用E盘MCP_CREO_MechDog的公开返回路径。不要把 `.codex\worktrees` 临时目录作为长期安装位置，也不要每次升级重新解压到另一个目录后声称原注册仍适用。
 
 1. 使用该安装的 Python 和服务，构建后查询 `creo_capabilities.direct_blend_callback`，核对 resource_root 与上述固定目录一致。
 2. 首次在 Creo“辅助应用程序”中选择 `registry_file`，手动启动并自行处理 DLL 提示。不要直接注册 `module_file` 回调载荷。

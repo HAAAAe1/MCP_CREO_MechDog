@@ -51,4 +51,4 @@ Agent 通过上述 MCP 工具即可查询和使用随包种子，无需读取本
 
 ## FEAT-029开发分支升级
 
-已集成固定注册入口、不可变引导/载荷及creo_callback_status，当前未发布。旧protocol 2需一次显式迁移，持久配置需实际加载config.pro；同一安装根的载荷升级按预检提示正常重启、手动启动同一注册。不要复制其他安装的DLL、metadata或会话记录作为就绪证明。模型/查询不自动加载或重启。步骤见[生命周期说明](CALLBACK_LIFECYCLE.md)，本轮集成实机未测边界见[记录](validation/FEAT-029-integration-2026-10-17.md)。
+已集成固定注册入口、不可变引导/载荷及creo_callback_status，纳入0.3.4。旧protocol 2需一次显式迁移，持久配置需实际加载config.pro；同一安装根的载荷升级按预检提示正常重启、手动启动同一注册。不要复制其他安装的DLL、metadata或会话记录作为就绪证明。模型/查询不自动加载或重启。步骤见[生命周期说明](CALLBACK_LIFECYCLE.md)，本轮集成实机未测边界见[记录](validation/FEAT-029-integration-2026-10-17.md)。

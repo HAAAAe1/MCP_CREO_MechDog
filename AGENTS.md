@@ -101,4 +101,4 @@ Windows CI 仅承担语言与单元检查；当前开发与发布的原生验收
 
 ## 本机开发联调补充（2026-10-17用户要求）
 
-本机所有Creo MCP联调只启用 `MCP_CREO_MechDog_dev` 并指向 `E:\Projects\MCP_CREO_MechDog`；旧C盘副本和test项禁用。发布默认服务标识仍为MCP_CREO_MechDog，本条是本机开发客户端约定。当前BUG-001实机回归出现Creo卡死，停止新的Toolkit连接/故障注入；先完成根因核对并确认会话可操作，不能擅自继续、结束Creo或清unknown保护。详见docs/validation/BUG-001-recovery-2026-10-17.md。
+本机所有Creo MCP联调只启用 `MCP_CREO_MechDog_dev` 并指向 `E:\Projects\MCP_CREO_MechDog`；旧C盘副本和test项禁用。发布默认服务标识仍为MCP_CREO_MechDog，本条是本机开发客户端约定。BUG-001于2026-10-17按用户决定关闭，但此前实机回归Creo卡死根因未定，继续停止新的Toolkit连接/故障注入；先完成根因核对并确认会话可操作，不能擅自继续、结束Creo或清unknown保护。详见docs/validation/BUG-001-recovery-2026-10-17.md。
