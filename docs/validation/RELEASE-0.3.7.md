@@ -18,7 +18,9 @@
 
 ## 附件与发布（回填）
 
-- 合并 main 提交：（回填）
-- v0.3.7 标签指向：（回填）
-- Release 链接：（回填）
-- 源码包 SHA256 / 种子包 SHA256：（回填）
+- 合并 main 提交：`f56a4cf`（直接提交，无 PR；含 README 勘误、0.3.6 回填入库、DEV-042 建卡、种子指纹链）
+- v0.3.7 标签指向：`f56a4cf`（远端 main 与标签同指）
+- Release 链接：https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.7（Pre-release 非草稿）
+- 源码包 SHA256：`9a0e5dca58284adf348455e013a529e7e82bfd2ea617bee8fd960a57058f4c00`（591 文件，远端下载核对一致）
+- 种子包 SHA256：`83328e263f2d256e99b8381052be78049a429f42a6222668f8c3f0254f10290a`（9 种子，仅清单版本标记变化；与 seeds.py expected_digest 一致，远端下载核对一致）
+- 本回填段按惯例不新增发布后主干提交，随下次开发提交入库。
