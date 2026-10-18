@@ -37,7 +37,24 @@ ROOT = Path(__file__).resolve().parent
 JOBS = ROOT / "jobs"
 HIDDEN = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
 JOB_ID = re.compile(r"[a-f0-9]{32}\Z")
-MODEL_NAME = re.compile(r"[a-z][a-z0-9_]{0,30}\Z")
+MODEL_NAME = re.compile(r"[a-z0-9][a-z0-9_]{0,30}\Z")
+MODEL_NAME_RULE = (
+    "model_name must be 1-31 characters of lowercase letters, digits and "
+    "underscores, starting with a letter or digit; uppercase input is normalized "
+    "to lowercase (BUG-069)"
+)
+
+
+def normalize_model_name(value: str) -> str:
+    """Validate and normalize a managed model name (see MODEL_NAME_RULE)."""
+    if not isinstance(value, str):
+        raise ValueError(MODEL_NAME_RULE)
+    normalized = value.lower()
+    if not MODEL_NAME.fullmatch(normalized):
+        raise ValueError(MODEL_NAME_RULE)
+    return normalized
+
+
 JSON_REPLACE_TIMEOUT = 1.0
 JSON_REPLACE_MAX_ATTEMPTS = 25
 
@@ -233,10 +250,8 @@ def validate_spec(
         raise ValueError("Supported size: length/width 1–1000 mm, thickness 0.1–1000 mm")
     if radius < 0 or radius >= min(length, width) / 2:
         raise ValueError("corner_radius must be >= 0 and less than half the shorter side")
-    if model_name is not None and not MODEL_NAME.fullmatch(model_name):
-        raise ValueError(
-            "model_name: lowercase letter followed by lowercase letters, digits or _, max 31 characters"
-        )
+    if model_name is not None:
+        model_name = normalize_model_name(model_name)
     if len(holes) > 50:
         raise ValueError("At most 50 through holes are supported")
     checked: list[dict] = []

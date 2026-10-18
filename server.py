@@ -317,8 +317,9 @@ async def creo_adopt_current_model(
     model_name: str | None = Field(
         default=None,
         description=(
-            "Apply only: managed copy name (lowercase letters/digits/underscores, max 31); "
-            "defaults to the inspect default_model_name and must not exist in the Creo session."
+            "Apply only: managed copy name (1-31 chars of lowercase letters/digits/underscores, "
+            "letter or digit first; uppercase input is normalized to lowercase); defaults to the "
+            "inspect default_model_name and must not exist in the Creo session."
         ),
     ),
     idempotency_key: str | None = Field(
@@ -464,7 +465,7 @@ async def creo_capabilities() -> dict[str, Any]:
 
 @mcp.tool(annotations=CREATE)
 async def creo_new_part(model_name: str | None = None) -> dict[str, Any]:
-    """Create a new metric native part with datum planes and coordinate system. Returns model_id and job_id."""
+    """Create a new metric native part with datum planes and coordinate system. Returns model_id and job_id. model_name: 1-31 chars of lowercase letters/digits/underscores, letter or digit first; uppercase input is normalized to lowercase."""
     return await invoke(general.submit, [], None, model_name)
 
 

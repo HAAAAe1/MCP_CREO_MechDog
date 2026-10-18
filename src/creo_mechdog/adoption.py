@@ -284,11 +284,8 @@ def apply(
         raise ValueError(
             "idempotency_key must contain 8-80 letters, digits, underscores or hyphens"
         )
-    if model_name is not None and not bridge.MODEL_NAME.fullmatch(model_name):
-        raise ValueError(
-            "model_name must start with a lowercase letter and contain only lowercase letters, "
-            "digits and underscores (max 31 characters)"
-        )
+    if model_name is not None:
+        model_name = bridge.normalize_model_name(model_name)
     arguments = {
         "model_id": model_id,
         "evidence_token": evidence_token,

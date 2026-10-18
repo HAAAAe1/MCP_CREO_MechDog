@@ -172,8 +172,8 @@ def submit(
         if new:
             if model_type not in ("part", "sheetmetal", "assembly", "drawing"):
                 raise ValueError("Unsupported model_type")
-            if model_name is not None and not bridge.MODEL_NAME.fullmatch(model_name):
-                raise ValueError("Invalid model_name")
+            if model_name is not None:
+                model_name = bridge.normalize_model_name(model_name)
             model_id = uuid.uuid4().hex
             path = model_path(model_id)
             model = {
