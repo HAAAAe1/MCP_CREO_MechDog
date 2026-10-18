@@ -48,6 +48,22 @@ class BlendCallbackSetupTests(unittest.TestCase):
         )
         self.assertEqual(boot["resource_root"], str(self.build.parent.resolve()))
 
+    def test_setup_instruction_leads_with_one_time_entry(self):
+        # FEAT-029 guidance: the first sentence must be the actionable one-time
+        # registration entry (registry file, DLL prompt, persistence, ready gate).
+        result = self.prepare(self.build, self.digest)
+        setup = result["setup"]
+        self.assertTrue(
+            setup.startswith("One-time setup: in Creo Auxiliary Applications register"),
+            setup[:80],
+        )
+        self.assertIn("blend_callback_protk.dat", setup)
+        self.assertIn("review the DLL prompt", setup)
+        self.assertIn("never loaded automatically", setup)
+        self.assertIn("only readiness=ready", setup)
+        self.assertIn("need no callback", setup)
+        self.assertIn("MCP never changes security policy", setup)
+
     def test_repeat_prepare_preserves_loaded_binary_and_ready_state(self):
         first = self.prepare(self.build, self.digest)
         dll = Path(first["module_file"])

@@ -171,20 +171,34 @@ static J callback_runtime_status(const std::filesystem::path &build,
                 "read the same registry_file on restart; a session-only registration may need "
                 "refreshing from that fixed file. Query again before modeling.";
         } else {
-            status["readiness"] = recorded && !identity_failed ? "not_loaded" : "unknown";
+            // not_loaded is provable for both a never-loaded generation and a
+            // registered-but-inactive one; only failed identity evidence keeps
+            // the unconfirmable unknown state (0.3.4 dual-meaning feedback).
+            status["readiness"] = identity_failed ? "unknown" : "not_loaded";
             status["reason"] = identity_failed ? "live_identity_unavailable"
                                : recorded      ? "recorded_application_not_active"
                                                : "no_runtime_identity_record";
             status["next_action"] = "start_or_register_application_manually";
-            status["instruction"] =
-                "GUI registration cannot be queried. If this generation is already registered, "
-                "start it in Auxiliary Applications; otherwise register registry_file once and "
-                "review its DLL prompt. If this loader was previously stopped or startup failed, "
-                "normally restart Creo before starting it again. Legacy protocol-2 registrations "
-                "require migration. If the entry disappears after restart, fix its persistent "
-                "config.pro registry reference once; the generated config snippet is not loaded "
-                "automatically. A listed entry that is not running needs manual Start. Query "
-                "again before modeling.";
+            if (identity_failed)
+                status["instruction"] =
+                    "The loaded state cannot be confirmed (probe or record failure). Preserve "
+                    "unknown jobs and models, normally restart Creo, then query again before "
+                    "modeling.";
+            else if (recorded)
+                status["instruction"] =
+                    "The registered callback generation is not running: start it in Creo "
+                    "Auxiliary Applications. If it was stopped or its entry is missing, "
+                    "normally restart Creo first, then Start it. Query again before modeling.";
+            else
+                status["instruction"] =
+                    "One-time setup: in Creo Auxiliary Applications register \"" +
+                    setup.at("registry_file").get<std::string>() +
+                    "\", Start it once and review its DLL prompt yourself. To keep the entry "
+                    "across Creo restarts, merge the protkdat line from "
+                    "\"build/blend_callback.config.pro\" into the config.pro your Creo "
+                    "actually loads; the generated snippet is never loaded automatically. "
+                    "Query creo_callback_status again before modeling; only readiness=ready "
+                    "allows a direct Blend.";
         }
     } catch (const std::exception &error) {
         status["readiness"] = "unknown";

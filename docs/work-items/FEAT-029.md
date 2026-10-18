@@ -149,3 +149,15 @@
 “脚本化注册、写 config.pro 自动启动”仅收录为待评估建议，须核对正式支持方式、用户设置影响及加载验证；本卡既有不隐式加载 DLL、不改安全策略和不覆盖已加载产物的边界不变。先补清晰的一次性设置指引，区分生成/注册/启动/当前会话已就绪，并明确种子替代适用范围。是否引入显式可选设置入口须另作方案，不在本次执行写配置或注册。
 
 复用本卡 P1 / 验收中；纳入首次安装与加载后的两个放样入口、保存重载、失败回滚及可见状态验收。报告中的种子近似球体并非精确球体，不能替代直接放样或旋转验收。2026-10-18 本轮只登记，未改实现、配置或发起 Toolkit 连接。
+
+## 2026-10-18：指引置前与 readiness 语义拆分实现（问题 5 反馈处置）
+
+用户确认方案 A（指引+状态语义修复；脚本化注册/写 config.pro 维持卡内"另作方案"边界，本轮不执行）：
+
+1. **readiness 拆分**（native/callback_runtime.h，关闭 2026-10-17 节登记的双义缺口）：`not_loaded` 现覆盖"可确定未加载"两种情形——`no_runtime_identity_record`（首次从未加载，反馈者状态）与 `recorded_application_not_active`（已注册未运行）；`unknown` 仅剩 `live_identity_unavailable`（记录损坏/句柄/应答异常，无法确认）。枚举集合不变（bridge.py 校验与既有协议兼容），Agent 无须解析 reason 即可区分"去注册/启动"与"保守等待"。
+2. **instruction 按 reason 分三支重组，首行即操作入口**：首次分支嵌入实际 `registry_file` 绝对路径（注册→Start→DLL 确认→config.pro 持久化→readiness=ready 门槛）；已注册未运行分支指向 Auxiliary Applications 启动；无法确认分支保护 unknown 任务。`next_action` 不变。
+3. **指引置前**：README 安装节新增「直接混合（Blend）的一次性回调设置」小节（5 步、`build\blend_callback_protk.dat` 路径示例、config.pro 持久化片段、delay_start 手动 Start、种子放样免回调）；docs/INSTALL.md 段落同步链接；`blend_callback.py` setup 文本与 `creo_callback_status` docstring 同口径。
+
+验证：单测 17 项全过（新增 setup 文本首行/路径/边界句断言）；本机 Creo 12.4 实机（stdio 直连新服务实例）：`creo_callback_status` 返回 `readiness=not_loaded, reason=no_runtime_identity_record`，instruction 首行含实际注册文件路径——正是反馈者所需的一条查询定位入口。`tools/dev_check.py` 通过（指纹 12c6a82f…）、`tools/test_general.py` GENERAL_CORE_SUCCESS=1。详见[验证记录](../validation/FEAT-029-guidance-2026-10-18.md)。
+
+未完成（保持验收中）：脚本化注册/自动启动待方案（本轮按用户选择不做）；实机加载后 ready 分支、升级/回退/并存生命周期矩阵、WorkBuddy 黑盒、Creo 13 外部环境未测。

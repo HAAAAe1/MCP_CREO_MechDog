@@ -105,18 +105,21 @@ def prepare_callback(build: Path, dll_sha256: str, loader_fingerprint: str) -> d
         "registry_shortcut": str((build / REGISTRY_FILENAME).resolve()),
         "persistent_registration_config": str((build / "blend_callback.config.pro").resolve()),
         "setup": (
-            "In Creo Auxiliary Applications, register registry_file once and start it; "
-            "review DLL prompts yourself. For persistence across Creo restarts, explicitly "
-            "add the generated config snippet to your own loaded config.pro. The snippet is "
-            "not automatically loaded. If the entry disappears after restart, fix that "
-            "persistent configuration once; repeatedly selecting the dat file is temporary. "
-            "An existing entry that is not running needs manual Start (delay_start true). "
-            "After a payload upgrade, normally restart Creo "
-            "and start the same registered application. Keep its registry_file unchanged. "
-            "Legacy protocol-2 registration requires one explicit migration. A changed "
-            "loader/SDK generation needs a fresh Creo startup reading the same persistent "
-            "registry file; a session-only registration may need selecting that file again. "
-            "MCP never changes security policy."
+            "One-time setup: in Creo Auxiliary Applications register registry_file "
+            "(build/blend_callback_protk.dat), Start it once and review the DLL prompt "
+            "yourself. For persistence across Creo restarts, merge the protkdat line from "
+            "build/blend_callback.config.pro into the config.pro your Creo actually loads; "
+            "the snippet is never loaded automatically. If the entry disappears after "
+            "restart, fix that persistent configuration once; repeatedly selecting the dat "
+            "file is temporary. An existing entry that is not running needs manual Start "
+            "(delay_start true). After a payload upgrade, normally restart Creo and start "
+            "the same registered application; keep its registry_file unchanged. Legacy "
+            "protocol-2 registration requires one explicit migration. A changed loader/SDK "
+            "generation needs a fresh Creo startup reading the same persistent registry "
+            "file; a session-only registration may need selecting that file again. Query "
+            "creo_callback_status before a direct Blend; only readiness=ready allows it "
+            "(seed lofts via creo_new_loft_part need no callback). MCP never changes "
+            "security policy."
         ),
     }
     bootstrap_file = directory / "callback_bootstrap.json"

@@ -184,7 +184,7 @@ async def creo_session_status() -> dict[str, Any]:
 
 @mcp.tool(annotations=READ)
 async def creo_callback_status() -> dict[str, Any]:
-    """Read resident Blend readiness without building, loading a DLL, launching Creo or changing models. The native probe has a 9-second budget and verifies a fresh nonce, module/loader hashes, protocol, command and resource root. Returns ready/not_loaded/version_mismatch/unknown with identities, checked_at and next steps. GUI registration stays unknown; busy, unreachable and timeout never imply unregistered. Old protocol-2 registration requires a one-time migration; stable loader upgrades normally require a Creo restart and starting the same registration. Do not replay unknown_outcome."""
+    """Read resident Blend readiness without building, loading a DLL, launching Creo or changing models. The native probe has a 9-second budget and verifies a fresh nonce, module/loader hashes, protocol, command and resource root. Returns ready/not_loaded/version_mismatch/unknown with identities, checked_at and next steps. not_loaded is provable (never loaded, or registered but not running) and its instruction leads with the one-time registration entry; unknown means the loaded state cannot be confirmed. GUI registration stays unknown; busy, unreachable and timeout never imply unregistered. Old protocol-2 registration requires a one-time migration; stable loader upgrades normally require a Creo restart and starting the same registration. Do not replay unknown_outcome."""
     state = startup.status()
     if state.get("coordinator_running"):
         return unknown_readiness(

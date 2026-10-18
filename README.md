@@ -51,6 +51,18 @@ DEV-002 已开始分批迁移：更新检查实现位于 `src/creo_mechdog/`，�
 
 脚本不修改全局客户端配置。完整安装与排错说明见 [docs/INSTALL.md](docs/INSTALL.md)；GitHub 源码发布步骤见 [docs/PUBLISH_GITHUB.md](docs/PUBLISH_GITHUB.md)。GitHub 仓库用于分发源码，服务在使用者的电脑运行。
 
+### 直接混合（Blend）的一次性回调设置
+
+`creo_loft` / 计划内 `loft`（直接混合）依赖一个常驻回调 DLL，须由使用者完成一次正式注册；未就绪时建模前会被明确拒绝（`BLEND_CALLBACK_SETUP_REQUIRED`）。**新建种子放样（`creo_new_loft_part`、`creo_new_airfoil_blade`）不需要此回调**。一次性步骤：
+
+1. 构建后在 `build\blend_callback_setup.json` 或 `creo_callback_status` 返回中确认 `registry_file`（固定入口 `<安装目录>\build\blend_callback_protk.dat`）。
+2. 在 Creo 的「辅助应用程序」（Auxiliary Applications）对话框注册该 `registry_file` 一次，手动启动它并亲自确认 DLL 安全提示；不要直接注册 `module_file`。
+3. 跨 Creo 重启保持条目：把 `build\blend_callback.config.pro` 中的 `protkdat <注册文件绝对路径>` 一行合入实际加载的 config.pro（生成片段不会被自动读取）。
+4. 正常重启 Creo 后条目应自动出现（`delay_start true` 仍需手动 Start）。
+5. 查询 `creo_callback_status`：`readiness=ready` 才提交直接混合；`not_loaded`（可确定未加载，含首次）的 `instruction` 首行即注册入口，`unknown` 表示无法确认，保守处理。
+
+MCP 不会代为注册、加载 DLL 或修改 Creo 安全策略。完整流程、升级/回退与限制见 [生命周期说明](docs/CALLBACK_LIFECYCLE.md)。
+
 ## 建模能力
 
 | 类别 | 工具及能力 |

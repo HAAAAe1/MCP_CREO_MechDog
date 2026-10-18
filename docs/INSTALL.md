@@ -79,7 +79,7 @@ $compilerEnv = @{ INCLUDE = $env:INCLUDE; LIB = $env:LIB; PATH = $env:PATH }
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 10.0.0.0'
 ```
 
-脚本保留已有本机配置中的额外选项，创建项目内的 Python 虚拟环境及客户端配置，再安装锁定依赖、更新本机 SDK 常量并编译执行器。同步混合回调 DLL 独立校验缓存，只有自身源码、ABI/SDK、构建参数或 DLL 内容改变才重建。BUG-007开发版在build/blend_callback中生成按DLL哈希分开的初始化副本和protk.dat；所有策略下，直接Blend前由使用者通过Creo辅助应用程序完成一次初始化，PROMPT下的安全确认也在该阶段完成，否则建模任务明确拒绝。注册文件路径由creo_capabilities.direct_blend_callback返回，构建副本存在不代表DLL已加载；MCP不修改Creo安全策略，NEVER策略由管理员处理。新建种子放样不需要该回调。每次构建先按当前 SDK 更新常量，并将 SDK 头文件内容计入缓存指纹；源码、配置及头文件都不变时复用现有二进制。不需要把 Creo 安装到示例路径；不修改 PTC 安装目录或全局 AI 客户端配置。
+脚本保留已有本机配置中的额外选项，创建项目内的 Python 虚拟环境及客户端配置，再安装锁定依赖、更新本机 SDK 常量并编译执行器。同步混合回调 DLL 独立校验缓存，只有自身源码、ABI/SDK、构建参数或 DLL 内容改变才重建。BUG-007开发版在build/blend_callback中生成按DLL哈希分开的初始化副本和protk.dat；所有策略下，直接Blend前由使用者通过Creo辅助应用程序完成一次初始化，PROMPT下的安全确认也在该阶段完成，否则建模任务明确拒绝。一次性注册步骤（含固定入口 `<安装目录>\build\blend_callback_protk.dat` 与 config.pro 持久化）见 README「直接混合（Blend）的一次性回调设置」小节与[生命周期说明](CALLBACK_LIFECYCLE.md)；`creo_callback_status` 的 `not_loaded` 状态 instruction 首行即注册入口。注册文件路径由creo_capabilities.direct_blend_callback返回，构建副本存在不代表DLL已加载；MCP不修改Creo安全策略，NEVER策略由管理员处理。新建种子放样不需要该回调。每次构建先按当前 SDK 更新常量，并将 SDK 头文件内容计入缓存指纹；源码、配置及头文件都不变时复用现有二进制。不需要把 Creo 安装到示例路径；不修改 PTC 安装目录或全局 AI 客户端配置。
 
 安装中断会输出 `INSTALL_INCOMPLETE`、失败阶段、已完成步骤和重跑方法。修复错误后在同一目录重跑相同安装命令即可，不必删除 `.venv`、模型或任务。`client-config.json` 提前生成便于接入与诊断；它存在不代表依赖、原生执行器或许可验证已完成。
 
