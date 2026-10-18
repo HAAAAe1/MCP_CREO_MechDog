@@ -46,3 +46,11 @@ capabilities compact/full/section、逐工具包装与互斥示例继续按实�
 [新反馈](../validation/FEEDBACK-0.3.4-2026-10-17.md)补恢复可空参数经真实 MCP 的契约核对（缺陷归 BUG-055），以及 dump_feature_tree 的别名 h34 可用、原生名 H34 不匹配；与 FEAT-006 共同明确可接受的引用类型/大小写及错误指引，不直接开放模糊名称匹配。
 
 list_models 的 complete=false / next_cursor 为报告方实际分页正例，说明书需强调第一页不等于全量、按游标继续查询；未取得全部预算边界证据，不据此关闭整项。支持文案应按具体环境/功能分支标已测、外部失败或未知，种子生产版本及失败根因未核实前不把报告建议写成确定事实。
+
+## 2026-10-18：revolve.sketch 与 loft.sections 的引用差异
+
+[0.3.7 外部反馈](../validation/FEEDBACK-0.3.7-CREO13-2026-10-18.md)（[原件](../validation/feedback-0.3.7-creo13-2026-10-18/report.md)问题 1 附带说明）称 revolve 的 sketch 标签字符串可解析，整数 feature_id=40 报 `Unknown feature label: 40`，job `2dea38904e644da7819bda098a424ab6`。该 job 在原件的旋转失败列表也出现，具体请求待核对；本项不把引用失败算成原生创建失败。
+
+补入逐工具引用支持矩阵：分别核对独立 revolve、计划 revolve 的标签/整数/数字字符串，与 loft.sections 的已声明支持对照。loft 的整数兼容范围归 [BUG-028](BUG-028.md)，不能自动扩展为全部 sketch 参数契约。先明确现有支持，选择准确的字段说明/校验错误，或在身份解析无歧义时提供兼容整数引用；不直接把数字字符串一律解释成标签或 ID。
+
+验收应覆盖合法标签、整数、数字字符串、未知 ID 和不存在标签；文档/schema/错误提示一致。若只支持标签，拒绝须说明使用标签及查询方式；若新增整数支持，须验证实际选中特征、几何、revision、失败回滚与保存重载，覆盖真实 MCP 两入口。状态仍为待规划，本次未改接口或复测；旋转创建 -1 另见 [BUG-067](BUG-067.md)，命名规则另见 [BUG-069](BUG-069.md)。

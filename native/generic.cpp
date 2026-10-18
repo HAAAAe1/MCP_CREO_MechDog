@@ -912,6 +912,25 @@ static void sketch(const J &op) {
     if (op.contains("profile"))
         aliases[op["label"].get<std::string>()]["airfoil"] = op["profile"];
 }
+// ProFeatureWithoptionsCreate reports an invalid section only as a bare code;
+// Toolkit validation stays authoritative, so explain the likely causes here
+// instead of duplicating the check.
+static std::string section_create_failure(const J &op, bool revolve, ProError error) {
+    std::string m = revolve ? "Revolve" : "Extrude";
+    m += " feature creation failed (ProFeatureWithoptionsCreate=" + std::to_string(error) + ")";
+    if (revolve) {
+        m += ". The closed profile must lie entirely on one side of the revolve axis and must "
+             "not cross it; entities may touch the axis. The sketch must contain a centerline, "
+             "or an explicit axis must be supplied, and the profile must be closed.";
+    } else {
+        m += ". The profile must form a valid closed section.";
+    }
+    if (op["sketch"].is_string())
+        m += " Sketch: '" + op["sketch"].get<std::string>() + "'.";
+    if (!last_feature_errors.empty())
+        m += " Element errors: " + last_feature_errors + ".";
+    return m;
+}
 static J extrude_or_revolve(const J &op, bool revolve) {
     ProFeature sketch_f = feature(op.at("sketch"));
     bool cut = op.value("mode", "add") == "cut";
@@ -974,7 +993,15 @@ static J extrude_or_revolve(const J &op, bool revolve) {
         if (op.value("depth_type", "blind") != "through_all")
             real(to, PRO_E_EXT_DEPTH_TO_VALUE, op.at("depth"));
     }
-    ProFeature f = create(root);
+    ProFeature f = {};
+    try {
+        f = create(root);
+    } catch (ProError error) {
+        ProElementFree(&root);
+        if (last_toolkit_error != "ProFeatureWithoptionsCreate")
+            throw;
+        throw std::runtime_error(section_create_failure(op, revolve, error));
+    }
     CK(ProElementFree(&root));
     remember(op, f);
     J details = J::object();

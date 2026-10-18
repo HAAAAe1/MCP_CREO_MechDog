@@ -67,6 +67,7 @@ static void log(const char *fmt, ...) {
     fflush(board_log);
 }
 static std::string last_toolkit_error;
+static std::string last_feature_errors;
 static void check(ProError e, const char *op) {
     log("%s=%d\n", op, e);
     if (e != PRO_TK_NO_ERROR) {
@@ -122,9 +123,16 @@ static ProElement get(ProElement root, std::initializer_list<int> ids) {
     return result;
 }
 static void errors(const ProErrorlist &es) {
-    for (int i = 0; i < es.error_number; i++)
+    last_feature_errors.clear();
+    for (int i = 0; i < es.error_number; i++) {
         log("feature_error element=%d type=%d error=%d\n", es.error_list[i].err_item_id,
             es.error_list[i].err_item_type, es.error_list[i].error);
+        if (i)
+            last_feature_errors += "; ";
+        last_feature_errors += "element=" + std::to_string(es.error_list[i].err_item_id) +
+                               " type=" + std::to_string(es.error_list[i].err_item_type) +
+                               " error=" + std::to_string(es.error_list[i].error);
+    }
 }
 static ProFeature create(ProElement root, ProFeatureCreateOptions opt = PRO_FEAT_CR_NO_OPTS) {
     ProModelitem mi;
