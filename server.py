@@ -288,7 +288,7 @@ async def creo_reconcile_model(
         description="Apply only: unique 8-80 letters, digits, underscores or hyphens.",
     ),
 ) -> dict[str, Any]:
-    """Inspect uncertain owned models without requiring Creo. live=true performs a bounded read-only session preflight. Apply an explicitly selected available action with the returned token, revision, pending_job (null when absent) and a unique 8–80 character idempotency_key. Poll its independent recovery job; never replay the original plan. restore_baseline keeps revision; accept_saved/live increments once; abandon_new preserves files and archives the model. accept_live requires live preflight. Unsupported/unproven ownership is rejected; no Creo restart or user file deletion."""
+    """Inspect uncertain owned models without requiring Creo. live=true performs a bounded read-only session preflight. Apply an explicitly selected available action with the returned token, revision, pending_job (null when absent) and a unique 8–80 character idempotency_key. Poll its independent recovery job; never replay the original plan. Execution failures expose reason and failure_phase: before_native refusals release only their own recovery reservation under the channel lock; native_worker_started means dispatch may have begun and unknown_outcome protection remains. restore_baseline keeps revision; accept_saved/live increments once; abandon_new preserves files and archives the model. accept_live requires live preflight. Unsupported/unproven ownership is rejected; no Creo restart or user file deletion."""
     return await invoke(
         reconcile,
         model_id,

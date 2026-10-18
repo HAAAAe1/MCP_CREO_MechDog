@@ -167,6 +167,8 @@ Toolkit 操作共用一个通道，提交时忙碌会立即拒绝；响应保持
 
 `creo_inspect_model` 返回最近已验证的保存快照，snapshot明确不代表实时状态；人工在 Creo 修改后，用 `creo_refresh_model` 获取实况。实时查询不会替换已保存模型的基线，也不会保存或接受人工修改。已有模型修改前会检测模型与记录是否一致；因任务失败或人工修改而不一致时，不应盲目重复提交。失败作业的 inspection 仅在恢复并验证成功时代表恢复模型；失败中间状态另列 failure_inspection，无法取得真实状态时为 null。
 
+DEV-040 开发分支补充恢复失败阶段与原因：执行器派发前的证据校验拒绝返回 `failed` / `before_native`，在锁内仅释放本次恢复占位；原生执行器可能已开始时仍为 `unknown_outcome` 并保留保护。原生会话指纹拒绝发生在连接之后，不能因消息含 refused 就自动重试。见[恢复契约](docs/MODEL_RECOVERY.md)和[本次离线证据](docs/validation/DEV-040-offline-2026-10-18.md)，WorkBuddy 验收尚未执行。
+
 `creo_loft.sections` 和计划中 `op="loft"` 支持草图标签、整数feature_id，以及为客户端兼容接受的纯十进制数字字符串；例如 `[40,"49"]` 归一化为整数ID。归一化后的重复引用被拒绝，不影响其他参数的字符串语义。原生几何与公开客户端验收范围仍分别记录。
 
 现有 MCP 零件任务失败，会尝试从任务开始前的保存文件恢复；只有 `rollback_succeeded` 确认成功才能继续。版本号不随失败增加。辅助进程崩溃、超时或结果不能确认时标记 `unknown_outcome`，保留现场供检查。新零件失败可能留下本任务的部分模型。
