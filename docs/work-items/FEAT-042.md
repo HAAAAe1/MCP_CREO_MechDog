@@ -37,3 +37,13 @@
 ## 实现与证据
 
 2026-10-18 仅登记需求，未选择或新增接口，未接管、保存或修改任何 Creo 模型。后续证据记录方案决策、实际版本、提交/dirty、源码指纹、SDK/运行环境、命令、原件保护结果和未测范围。
+
+## 2026-10-18：受管副本方案实现（creo_adopt_current_model）
+
+方案决策（用户当日确认）：**受管副本**——`ProMdlnameCopy` 复制当前会话模型为受管对象，保存到新 `models/<id>/output/` 并按既有保存闭环验证；用户磁盘原件与会话中原模型不修改、不擦除、不改名。首批类型 **独立 part + sheetmetal**（mm 主单位、无外部依赖、无不健康特征），assembly/drawing/非 mm/带依赖明确拒绝。身份依据 origin 路径 + 磁盘 sha256 + live inspection 全量比对 + 会话指纹，显示名仅尽力展示（不因 [BUG-070](BUG-070.md) 乱码阻塞）。
+
+实现：`native/generic.cpp` 新增 `adopt_native`（inspect/apply 两 action；apply 复核会话指纹/origin/类型/live 快照后 `ProMdlnameCopy` → `ProMdlnameBackup` → erase/load/regenerate → `verify_recovery`，`recovery_dependency_free` 参数化为 `dependency_free(ProMdl)`）；`src/creo_mechdog/adoption.py`（inspect 建 adopt_pending 登记 + evidence token，apply 幂等提交 kind=adoption job，失败按 unknown_outcome 保护并用 reconcile abandon_new 收尾；同源重复接管在 inspect/apply 双层拒绝并指向已有 model_id）；`bridge.py` run_job/get_job 分发；`server.py` 注册 `creo_adopt_current_model`（85 个工具）；`capabilities.py` model_adoption family。未放宽任何既有保护（origin 前缀、checkpointless 拒绝、依赖/单位检查原样保留）。
+
+验证：单测 `tests/unit/test_adoption.py` 9 用例（MCP stdio 协议 + 业务规则补丁模式）；全量 375 单测过（三处工具数断言 84→85 同步）；`tools/dev_check.py` 通过（指纹 70114af0…）；本机 Creo 12.4.0.0/SDK/许可实机 `tools/test_adoption.py --current` 全链路（详见 [验证记录](../validation/FEAT-042-adoption-2026-10-18.md)）：inspect 身份/哈希正确、apply 复制 8 特征体积 4523.893421169301 逐位一致、原件 sha256 前后不变、接管后 execute_plan 编辑凸台保存重载 verified、同源重复接管冲突拒绝。
+
+状态更新：待规划 → 已完成（本机）；未测范围与外部环境见验证记录。

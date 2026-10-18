@@ -162,7 +162,7 @@ revision 是模型修改版本号；保存重载是保存后重新打开检查�
 | [FEAT-039](work-items/FEAT-039.md) | P1 | 待规划 | 未排期 | 纯曲面链路算子：surface_trim（keep_side）、quilt_merge（返回 closed）、boundary_blend（G1）、quilt_offset，加面积与最小壁厚查询。可乐瓶任务书纯曲面法 8 步中 5 步无对应工具，链路不可执行。按反馈 MVR 顺序推进：先补 ProTrim.h 枚举 15 个常量进 constants.inc（低层立刻可用）→ surface_trim → quilt_merge（PRO_FEAT_MERGE 常量已齐、只差封装，性价比最高）→ loft 曲面模式（FEAT-009 联动）→ boundary_blend → quilt_offset → 检测查询；做到前三步即成"修剪+缝合+实体化"最小闭环。外部已提供 STL 回归基准。每个算子先定引用格式与返回字段，capabilities 同步登记。 |
 | [FEAT-040](work-items/FEAT-040.md) | P2 | 待规划 | 未排期 | 变半径圆角与收尾控制。恒定半径 round 在两端收敛于近切点的边上几何无解（外部两个 job：10 边与单边 R2 均失败回滚），爪谷过渡只能留锐边。候选：variable_radius/半径表、stop_at_reference/extend_to_surface；失败带冲突边 id 与最小可行半径（诊断归 FEAT-006 联动）。先确认 SDK 支持度再定字段，恒定半径行为与回滚契约不变，与 FEAT-039 验收用例联动。 |
 | [FEAT-041](work-items/FEAT-041.md) | P3 | 待规划 | 未排期 | 交付与预览体验：creo_new_part 增加可选输出目录（现固定落 models/<id>/output/，交付需手工复制）；预览/导出视角可选（view bottom/front/top + orthographic，现固定 3/4 视角，验收仰视只能自行导 STL 渲染）。仅新增可选参数，默认行为不变；输出目录不引入任意写路径。 |
-| [FEAT-042](work-items/FEAT-042.md) | P1 | 待规划 | 未排期 | 提供显式接管用户已打开模型的受控流程，当前 reconcile 的 Unsupported/unproven ownership 是既有保护。先设计模型身份/选择、原件或副本、未保存修改、快照与初始 revision、原子登记、重复请求和后续编辑/恢复；候选 adopt_current_model 尚未选型。首批评估独立 part，复杂类型/外部依赖不预先承诺；不通过放宽保护直接接管。 |
+| [FEAT-042](work-items/FEAT-042.md) | P1 | 已完成 | 未排期 | 显式接管用户已打开模型的受控入口 `creo_adopt_current_model`（受管副本形态）：inspect 只读探针登记身份证据（origin+sha256+live inspection+会话指纹，显示名不参与身份），apply 幂等复制当前会话状态到新受管模型并走完整保存验证闭环；原件不动，同源重复接管明确拒绝指向已有 model_id，失败按 unknown_outcome 保护并用 reconcile abandon_new 收尾。首批独立 part/sheetmetal，非 mm/带依赖/不健康特征拒绝；未放宽任何既有保护。2026-10-18 本机 12.4 实机全链路通过（含接管后编辑保存重载与原件不变证明）；Creo 13 外部环境与"未保存修改"场景未测，见验证记录。 |
 
 ## 工程整理
 

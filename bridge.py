@@ -957,6 +957,11 @@ def run_job(job_id: str) -> None:
 
         run(job_id, manifest)
         return
+    if manifest.get("kind") == "adoption":
+        from creo_mechdog.adoption import run
+
+        run(job_id, manifest)
+        return
     if manifest.get("kind") == "generic":
         from generic_bridge import run_generic_job
 
@@ -1089,7 +1094,7 @@ def get_job(job_id: str, detail: str = "full") -> dict:
         ).total_seconds()
         timeout = (
             config().get("generic_timeout_seconds", 600)
-            if manifest.get("kind") in ("generic", "reconciliation")
+            if manifest.get("kind") in ("generic", "reconciliation", "adoption")
             else config()["native_timeout_seconds"]
         )
         if age > 120 + 180 + timeout + 30:

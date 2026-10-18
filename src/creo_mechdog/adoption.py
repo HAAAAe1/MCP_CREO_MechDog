@@ -1,0 +1,581 @@
+"""Explicit adoption of the user's current Creo model as a managed copy.
+
+The source model and its file are never modified, erased or renamed: adoption
+copies the current in-memory state into a new managed output directory and
+verifies the copy exactly like any other save. Identity comes from the session
+model origin, the on-disk file hash and a live inspection snapshot; display
+names are never trusted as identity.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import re
+import shutil
+import subprocess
+import sys
+import time
+import uuid
+from pathlib import Path
+
+import bridge
+import generic_bridge as general
+from creo_mechdog.model_queries import inspection_summary
+from creo_mechdog.reconciliation import identity, owned_file
+
+SUPPORTED_TYPES = ("part", "sheetmetal")
+TOKEN_SECONDS = 600
+WORKER_SECONDS = 115
+
+
+class AdoptionRefused(ValueError):
+    """An adoption evidence check failed at a known execution boundary."""
+
+    def __init__(self, reason: str, message: str):
+        super().__init__(message)
+        self.reason = reason
+
+
+def digest(value: object) -> str:
+    return hashlib.sha256(
+        json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+
+
+def _read(file: Path) -> dict | None:
+    if file.is_file() and file.stat().st_size > 16 * 1024 * 1024:
+        raise ValueError("Adoption metadata exceeds the 16 MiB read budget")
+    return bridge.read_json(file) if file.is_file() else None
+
+
+def _directory(model_id: str) -> Path:
+    directory = general.model_path(model_id) / "adoption"
+    if directory.is_symlink() or directory.is_junction():
+        raise ValueError("Adoption directory cannot be a link")
+    directory.mkdir(exist_ok=True)
+    return directory
+
+
+def _journal(model_id: str, key: str) -> Path:
+    return _directory(model_id) / f"intent-{digest(key)}.json"
+
+
+def _native_request(model: dict, choice: dict) -> dict:
+    return {
+        "new": False,
+        "model": model,
+        "operations": [],
+        "readonly": True,
+        "template_file": "",
+        "components": {},
+        "adoption": choice,
+    }
+
+
+def _native(directory: Path, manifest: dict) -> dict:
+    manifest["worker_started"] = False
+    exe = bridge.build_native()
+    manifest.update(stage="adopting_native_model", status="running")
+    bridge.write_json(directory / "job.json", manifest, durable=True)
+    with (directory / "worker.log").open("wb") as log:
+        manifest["worker_started"] = True
+        bridge.write_json(directory / "job.json", manifest, durable=True)
+        proc = subprocess.run(
+            [str(exe), "generic", str(directory)],
+            cwd=directory,
+            env=bridge.native_environment(),
+            stdout=log,
+            stderr=subprocess.STDOUT,
+            timeout=WORKER_SECONDS,
+            creationflags=bridge.HIDDEN,
+        )
+    result = _read(directory / "native_result.json")
+    if result:
+        manifest["result"] = result
+    if (
+        not result
+        or result.get("delivery_complete") is not True
+        or result.get("disconnect_code") != 0
+    ):
+        raise RuntimeError(
+            "Adoption outcome is unconfirmed; reservation retained; inspect native checkpoint"
+        )
+    if proc.returncode != 0 or not result.get("success"):
+        raise RuntimeError(result.get("message", "Native adoption failed; reservation retained"))
+    return result
+
+
+def _origin_conflict(origin: Path, exclude: str | None = None) -> dict | None:
+    """One managed identity per source file; a second adoption is a clear refusal."""
+    try:
+        resolved = origin.resolve()
+    except OSError:
+        return None
+    if not general.MODELS.is_dir():
+        return None
+    for directory in sorted(general.MODELS.iterdir()):
+        if exclude and directory.name == exclude:
+            continue
+        model = _read(directory / "model.json")
+        if not model:
+            continue
+        output = model.get("output_directory")
+        if output:
+            try:
+                output_path = Path(output).resolve()
+            except OSError:
+                output_path = None
+            if output_path and (resolved.parent == output_path or output_path in resolved.parents):
+                return {
+                    "model_id": model["model_id"],
+                    "status": model.get("status"),
+                    "reason": "managed_output",
+                    "message": (
+                        "The current model already belongs to this service; "
+                        f"use model_id {model['model_id']} instead of adopting it again"
+                    ),
+                }
+        adopted = model.get("adopted_from") or {}
+        if adopted.get("origin"):
+            try:
+                same = Path(adopted["origin"]).resolve() == resolved
+            except OSError:
+                same = False
+            # A dangling inspect that was never applied does not block a fresh
+            # adoption; resolve it later with creo_reconcile_model abandon_new.
+            blocking = model.get("status") == "ready" or model.get("pending_job")
+            if same and blocking:
+                return {
+                    "model_id": model["model_id"],
+                    "status": model.get("status"),
+                    "reason": "already_adopted",
+                    "message": (
+                        "This source file was already adopted; "
+                        f"continue with model_id {model['model_id']}"
+                    ),
+                }
+    return None
+
+
+def _refusal_reason(live: dict) -> str | None:
+    if live.get("model_type") not in SUPPORTED_TYPES:
+        return "Only independent part or sheetmetal models can be adopted"
+    if not live.get("millimeter_units"):
+        return "Adoption requires millimeter model units"
+    if not live.get("dependency_free"):
+        return "External dependencies require separate ownership verification"
+    if not live.get("healthy"):
+        return "The model has failed, suppressed or incomplete features"
+    return None
+
+
+def inspect() -> dict:
+    """Read-only preflight that records adoptable identity evidence for the current model."""
+    model_id = uuid.uuid4().hex
+    path = general.model_path(model_id)
+    model = {
+        "model_id": model_id,
+        "model_name": f"adopt_{model_id[:8]}",
+        "revision": 0,
+        "created_at": bridge.now(),
+        "status": "adopt_pending",
+        "aliases": {},
+        "model_type": "part",
+        "output_directory": str(path / "output"),
+        "part_file": None,
+    }
+    try:
+        (path / "output").mkdir(parents=True)
+        bridge.write_json(path / "model.json", model, durable=True)
+        with bridge.toolkit_lock(operation="adoption_preflight"):
+            manifest = {
+                "job_id": uuid.uuid4().hex,
+                "kind": "adoption_preflight",
+                "model_id": model_id,
+                "status": "running",
+                "created_at": bridge.now(),
+            }
+            probe = bridge.job_path(manifest["job_id"])
+            (probe / "output").mkdir(parents=True)
+            bridge.write_json(probe / "request.json", _native_request(model, {"action": "inspect"}))
+            try:
+                live = _native(probe, manifest)["live"]
+            finally:
+                manifest["finished_at"] = bridge.now()
+                bridge.write_json(probe / "job.json", manifest, durable=True)
+    except Exception:
+        # A failed preflight leaves no half-registered model behind.
+        shutil.rmtree(path, ignore_errors=True)
+        raise
+    file = identity(Path(live["origin"]))
+    conflict = _origin_conflict(Path(live["origin"]))
+    reason = conflict["message"] if conflict else _refusal_reason(live)
+    # Record the pending source claim before publishing the token so a second
+    # inspect of the same file sees the conflict immediately.
+    model = {
+        **model,
+        "model_type": live["model_type"],
+        "adopted_from": {
+            "origin": file["path"],
+            "origin_sha256": file["sha256"],
+            "state": "pending",
+            "inspected_at": bridge.now(),
+        },
+    }
+    bridge.write_json(path / "model.json", model, durable=True)
+    token = uuid.uuid4().hex
+    record = {"live": live, "file": file, "model": model, "created": time.time(), "token": token}
+    bridge.write_json(_directory(model_id) / f"evidence-{token}.json", record)
+    visible = {key: value for key, value in live.items() if key != "inspection"}
+    visible["inspection"] = inspection_summary(live["inspection"])
+    return {
+        "model_id": model_id,
+        "status": model["status"],
+        "available": reason is None,
+        "reason": reason,
+        "conflict": conflict,
+        "current_model": visible,
+        "file": file,
+        "default_model_name": model["model_name"],
+        "evidence_token": token,
+        "expires_in_seconds": TOKEN_SECONDS,
+        "contract": (
+            "apply copies the current session state (including unsaved changes) into a managed "
+            "model; the source model and its file are never modified"
+        ),
+    }
+
+
+def _validate_evidence(model_id: str, evidence_token: str) -> tuple[dict, dict]:
+    if not bridge.JOB_ID.fullmatch(evidence_token or ""):
+        raise ValueError("Invalid evidence_token")
+    model = general.model_info(model_id)
+    if model.get("status") != "adopt_pending":
+        raise ValueError(
+            f"Model status is {model.get('status')!r}; only adopt_pending models can be applied"
+        )
+    if model.get("pending_job"):
+        raise bridge.ToolkitBusy(
+            "Adoption already has a pending job",
+            holder={"job_id": model["pending_job"], "model_id": model_id, "operation": "adoption"},
+        )
+    record = _read(_directory(model_id) / f"evidence-{evidence_token}.json")
+    if not record or time.time() - record["created"] > TOKEN_SECONDS:
+        raise ValueError("Evidence token is missing or expired; inspect again")
+    if record["model"]["model_id"] != model_id or record["model"]["status"] != "adopt_pending":
+        raise ValueError("Evidence token does not belong to this adopt-pending model")
+    if identity(Path(record["file"]["path"])) != record["file"]:
+        raise ValueError("Source file changed since inspect; inspect again")
+    conflict = _origin_conflict(Path(record["file"]["path"]), exclude=model_id)
+    if conflict:
+        raise ValueError(conflict["message"])
+    return model, record
+
+
+def apply(
+    model_id: str, evidence_token: str, model_name: str | None = None, idempotency_key: str = ""
+) -> dict:
+    if not bridge.JOB_ID.fullmatch(model_id or ""):
+        raise ValueError("Invalid model_id")
+    if not isinstance(idempotency_key, str) or not re.fullmatch(
+        r"[A-Za-z0-9_-]{8,80}", idempotency_key
+    ):
+        raise ValueError(
+            "idempotency_key must contain 8-80 letters, digits, underscores or hyphens"
+        )
+    if model_name is not None and not bridge.MODEL_NAME.fullmatch(model_name):
+        raise ValueError(
+            "model_name must start with a lowercase letter and contain only lowercase letters, "
+            "digits and underscores (max 31 characters)"
+        )
+    arguments = {
+        "model_id": model_id,
+        "evidence_token": evidence_token,
+        "model_name": model_name,
+        "idempotency_key": idempotency_key,
+    }
+    file = _journal(model_id, idempotency_key)
+    existing = _read(file)
+    if existing:
+        if existing["arguments"] != arguments:
+            raise ValueError("Idempotency key already belongs to another adoption request")
+        resume_committed(existing["job_id"])
+        return bridge.get_job(existing["job_id"], "compact")
+    launch_error = None
+    manifest = None
+    directory = None
+    try:
+        with bridge.toolkit_lock(operation="submit_adoption", model_id=model_id):
+            if file.exists():
+                raise bridge.ToolkitBusy("Adoption request was concurrently accepted; poll its job")
+            model, record = _validate_evidence(model_id, evidence_token)
+            chosen = model_name or model["model_name"]
+            model = {**model, "model_name": chosen}
+            job_id = uuid.uuid4().hex
+            directory = bridge.job_path(job_id)
+            (directory / "output").mkdir(parents=True)
+            choice = {
+                "action": "apply",
+                "origin": record["file"]["path"],
+                "origin_sha256": record["file"]["sha256"],
+                "session_fingerprint": record["live"]["session_fingerprint"],
+                "live_inspection": record["live"]["inspection"],
+            }
+            if record["live"].get("display_name"):
+                choice["display_name"] = record["live"]["display_name"]
+            manifest = {
+                "job_id": job_id,
+                "kind": "adoption",
+                "model_id": model_id,
+                "status": "queued",
+                "idempotency_key": idempotency_key,
+                "created_at": bridge.now(),
+                "stage": "intent_persisted",
+                "revision": model["revision"],
+                "message": "Adoption accepted; poll this job_id",
+            }
+            bridge.write_json(
+                directory / "request.json", _native_request(model, choice), durable=True
+            )
+            bridge.write_json(directory / "job.json", manifest, durable=True)
+            bridge.write_json(
+                file,
+                {
+                    "state": "intent",
+                    "model_id": model_id,
+                    "job_id": job_id,
+                    "arguments": arguments,
+                    "evidence": {"live": _summary_only(record), "file": record["file"]},
+                    "created_at": bridge.now(),
+                },
+                durable=True,
+            )
+            reserved = general.model_info(model_id)
+            reserved["model_name"] = chosen
+            reserved["pending_job"] = job_id
+            bridge.write_json(general.model_path(model_id) / "model.json", reserved, durable=True)
+            with (directory / "runner.log").open("ab") as log:
+                try:
+                    subprocess.Popen(
+                        [sys.executable, str(bridge.ROOT / "bridge.py"), "run-job", job_id],
+                        cwd=bridge.ROOT,
+                        stdin=subprocess.DEVNULL,
+                        stdout=log,
+                        stderr=subprocess.STDOUT,
+                        creationflags=bridge.HIDDEN,
+                        close_fds=True,
+                    )
+                except OSError as error:
+                    _record_failure(job_id, manifest, file, error, locked=True)
+                    launch_error = error
+            if launch_error is None:
+                return manifest
+    except Exception as error:
+        if launch_error is None:
+            raise
+        manifest["channel_finalization_error"] = str(error)
+    bridge.write_json(directory / "job.json", manifest, durable=True)
+    raise launch_error
+
+
+def _summary_only(record: dict) -> dict:
+    live = {key: value for key, value in record["live"].items() if key != "inspection"}
+    live["inspection"] = inspection_summary(record["live"]["inspection"])
+    return live
+
+
+def _finish(record: dict) -> dict:
+    """Materialize a durable commit; never invoke Toolkit or overwrite later edits."""
+    model = general.model_info(record["model_id"])
+    after = record["model_after"]
+    if model.get("pending_job") == record["job_id"] or model.get("status") == "adopt_pending":
+        if (
+            identity(bridge.job_path(record["job_id"]) / "native_result.json")
+            != record["result_identity"]
+        ):
+            raise ValueError("Committed native evidence changed; keep adoption protection")
+        bridge.write_json(
+            general.model_path(record["model_id"]) / "model.json", after, durable=True
+        )
+    elif model.get("adopted_from", {}).get("adoption_id") != record["job_id"]:
+        raise ValueError("Committed adoption conflicts with current registry; preserve audit")
+    return record["job_after"]
+
+
+def resume_committed(job_id: str) -> dict | None:
+    """Polling may finish a committed metadata transaction, never native execution."""
+    manifest = bridge.read_json(bridge.job_path(job_id) / "job.json")
+    if manifest.get("kind") != "adoption" or manifest.get("status") == "succeeded":
+        return None
+    record = _read(_journal(manifest["model_id"], manifest["idempotency_key"]))
+    if not record or record.get("state") != "committed":
+        return None
+    try:
+        with bridge.toolkit_lock(
+            operation="finish_adoption_commit", job_id=job_id, model_id=manifest["model_id"]
+        ):
+            terminal = _finish(record)
+    except bridge.ToolkitBusy:
+        return {
+            **manifest,
+            "commit_pending": True,
+            "message": "Durable adoption commit awaits metadata materialization; poll this job",
+        }
+    except (OSError, ValueError) as error:
+        return {
+            **manifest,
+            "status": "unknown_outcome",
+            "commit_pending": True,
+            "recovery_required": True,
+            "message": str(error),
+        }
+    bridge.write_json(bridge.job_path(job_id) / "job.json", terminal, durable=True)
+    return terminal
+
+
+def run(job_id: str, manifest: dict) -> None:
+    directory = bridge.job_path(job_id)
+    file = _journal(manifest["model_id"], manifest["idempotency_key"])
+    failure_recorded = False
+    try:
+        with bridge.toolkit_lock(
+            operation="adoption_apply", job_id=job_id, model_id=manifest["model_id"]
+        ):
+            try:
+                manifest = _run_locked(job_id, manifest, file)
+            except Exception as error:
+                if not _record_failure(job_id, manifest, file, error, locked=True):
+                    return
+                failure_recorded = True
+    except Exception as error:
+        if failure_recorded:
+            manifest["channel_finalization_error"] = str(error)
+        elif not _record_failure(job_id, manifest, file, error, locked=False):
+            return
+    bridge.write_json(directory / "job.json", manifest, durable=True)
+
+
+def _run_locked(job_id: str, manifest: dict, file: Path) -> dict:
+    intent = bridge.read_json(file)
+    if intent.get("state") == "committed":
+        return _finish(intent)
+    directory = bridge.job_path(job_id)
+    bridge.build_native()
+    current = general.model_info(manifest["model_id"])
+    if current.get("pending_job") != job_id or current.get("status") != "adopt_pending":
+        raise AdoptionRefused(
+            "reservation_changed", "Adoption reservation no longer belongs to this intent"
+        )
+    request = bridge.read_json(directory / "request.json")
+    result = _native(directory, manifest)
+    current = general.model_info(manifest["model_id"])
+    if current.get("pending_job") != job_id:
+        raise AdoptionRefused("reservation_changed", "Adoption reservation changed during apply")
+    after = {**current}
+    file_identity = identity(owned_file(after, result["part_file"]))
+    result["sha256"] = file_identity["sha256"]
+    after.update(
+        status="ready",
+        revision=1,
+        part_file=result["part_file"],
+        part_sha256=file_identity["sha256"],
+        inspection=result["inspection"],
+        aliases=result.get("aliases", {}),
+        pending_job=None,
+        updated_at=bridge.now(),
+        adopted_from={
+            **current.get("adopted_from", {}),
+            "adoption_id": job_id,
+            "state": "completed",
+            "source_display_name": request["adoption"].get("display_name"),
+            "adopted_at": bridge.now(),
+        },
+    )
+    manifest.update(
+        status="succeeded",
+        stage="adoption_committed",
+        result=result,
+        revision=after["revision"],
+        finished_at=bridge.now(),
+        message="Adoption committed as a managed copy; the source model was never modified",
+    )
+    intent.update(
+        state="verified",
+        model_after=after,
+        job_after=manifest,
+        result_identity=identity(directory / "native_result.json"),
+        request=request,
+    )
+    bridge.write_json(file, intent, durable=True)
+    intent["state"] = "committed"  # Durable decision precedes materialization.
+    bridge.write_json(file, intent, durable=True)
+    _finish(intent)
+    return manifest
+
+
+def _record_failure(
+    job_id: str, manifest: dict, file: Path, error: Exception, *, locked: bool
+) -> bool:
+    # A committed decision is recoverable by polling; do not replace it.
+    persisted = _read(file) or {}
+    if persisted.get("state") == "committed":
+        return False
+    started = bool(manifest.get("worker_started"))
+    refused = isinstance(error, AdoptionRefused) and not started
+    manifest.update(
+        status="unknown_outcome" if started else "failed",
+        stage="adoption_refused" if refused else "adoption_unconfirmed",
+        reason=error.reason
+        if isinstance(error, AdoptionRefused)
+        else "native_outcome_unconfirmed"
+        if started
+        else "adoption_execution_failed",
+        failure_phase="native_worker_started"
+        if started
+        else "before_native"
+        if locked
+        else "channel_admission",
+        message=str(error),
+        recovery_required=True,
+        recovery_pending_released=False,
+        finished_at=bridge.now(),
+    )
+    if started:
+        manifest["message"] += (
+            "; native worker dispatch began and may have started; "
+            "adoption outcome is not confirmed; protection retained; "
+            "resolve with creo_reconcile_model abandon_new once the worker has stopped"
+        )
+    elif locked:
+        try:
+            model = general.model_info(manifest["model_id"])
+            if model.get("pending_job") == job_id:
+                model["pending_job"] = None
+                bridge.write_json(
+                    general.model_path(manifest["model_id"]) / "model.json", model, durable=True
+                )
+                manifest["recovery_pending_released"] = True
+        except (OSError, ValueError) as cleanup_error:
+            manifest["recovery_pending_cleanup_error"] = str(cleanup_error)
+    if isinstance(error, bridge.ToolkitBusy):
+        manifest["busy"] = error.payload
+    return True
+
+
+def adopt(
+    mode: str = "inspect",
+    model_id: str | None = None,
+    evidence_token: str | None = None,
+    model_name: str | None = None,
+    idempotency_key: str | None = None,
+) -> dict:
+    if mode == "inspect":
+        if any(
+            value is not None for value in (model_id, evidence_token, model_name, idempotency_key)
+        ):
+            raise ValueError("Inspect takes no parameters; apply requires the inspect results")
+        return inspect()
+    if mode != "apply" or not model_id or not evidence_token or not idempotency_key:
+        raise ValueError("apply requires model_id, evidence_token and idempotency_key")
+    return apply(model_id, evidence_token, model_name, idempotency_key)

@@ -22,6 +22,7 @@ import generic_bridge as general
 import seeds
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS, families
 from creo_mechdog import update_check
+from creo_mechdog.adoption import adopt
 from creo_mechdog.blend_callback import callback_setup_status, unknown_readiness
 from creo_mechdog.paths import SOURCE_PATHS
 from creo_mechdog.reconciliation import reconcile
@@ -62,6 +63,7 @@ _SOURCE_NAMES = (
     "seeds.py",
     "src/creo_mechdog/recovery.py",
     "src/creo_mechdog/reconciliation.py",
+    "src/creo_mechdog/adoption.py",
     "src/creo_mechdog/model_queries.py",
     "src/creo_mechdog/startup_state.py",
     "src/creo_mechdog/windows_boot.py",
@@ -300,6 +302,32 @@ async def creo_reconcile_model(
         evidence_token,
         idempotency_key,
     )
+
+
+@mcp.tool(annotations=CREATE)
+async def creo_adopt_current_model(
+    mode: Literal["inspect", "apply"] = "inspect",
+    model_id: str | None = Field(
+        default=None,
+        description="Apply only: the adopt_pending model_id returned by inspect.",
+    ),
+    evidence_token: str | None = Field(
+        default=None, description="Apply only: the evidence_token returned by inspect."
+    ),
+    model_name: str | None = Field(
+        default=None,
+        description=(
+            "Apply only: managed copy name (lowercase letters/digits/underscores, max 31); "
+            "defaults to the inspect default_model_name and must not exist in the Creo session."
+        ),
+    ),
+    idempotency_key: str | None = Field(
+        default=None,
+        description="Apply only: unique 8-80 letters, digits, underscores or hyphens.",
+    ),
+) -> dict[str, Any]:
+    """Adopt the user's currently opened Creo model as a managed copy (FEAT-042 contract). inspect runs a read-only preflight on the current window model and returns identity evidence (origin, file hash, live inspection summary), an adopt_pending model_id and an evidence_token. apply requires that token plus a unique idempotency_key and copies the current session state (including unsaved changes) into a new managed model; the source model and its file are never modified, erased or renamed. Supported: independent part/sheetmetal with millimeter units, no external dependencies and no failed/suppressed features; identity is proven by origin path, file sha256 and live inspection, never by display name. Poll the returned job via creo_get_job; a failed adoption leaves the registry clean or resolvable with creo_reconcile_model abandon_new. Source files already managed or adopted are refused with the existing model_id."""
+    return await invoke(adopt, mode, model_id, evidence_token, model_name, idempotency_key)
 
 
 @mcp.tool(annotations=READ)

@@ -1972,12 +1972,12 @@ static std::string recovery_session_fingerprint() {
     return std::to_string(std::hash<std::string>{}(std::string(value)));
 }
 
-static bool recovery_dependency_free() {
-    CK(ProMdlDependenciesCleanup(board));
+static bool dependency_free(ProMdl mdl) {
+    CK(ProMdlDependenciesCleanup(mdl));
     ProMdlnameShortdata *names = nullptr;
     ProMdlfileType *types = nullptr;
     int count = 0;
-    ProError code = ProMdlDependenciesDataList(board, &names, &types, &count);
+    ProError code = ProMdlDependenciesDataList(mdl, &names, &types, &count);
     if (names)
         ProArrayFree((ProArray *)&names);
     if (types)
@@ -1986,6 +1986,18 @@ static bool recovery_dependency_free() {
         return true;
     check(code, "RecoveryDependencies");
     return count == 0;
+}
+
+static bool recovery_dependency_free() {
+    return dependency_free(board);
+}
+
+static bool millimeter_units(ProMdl mdl) {
+    ProUnitsystem us;
+    ProUnititem unit;
+    CK(ProMdlPrincipalunitsystemGet(mdl, &us));
+    CK(ProUnitsystemUnitGet(&us, PRO_UNITTYPE_LENGTH, &unit));
+    return !wcscmp(unit.name, L"mm");
 }
 
 static void reconcile_native(const J &request, J &report) {
@@ -2103,6 +2115,115 @@ static void reconcile_native(const J &request, J &report) {
                    {"part_file", utf8(saved)}});
 }
 
+// Explicit adoption of the user's current window model as a managed copy. The
+// source model is never erased, saved or renamed; adoption copies the in-memory
+// state into this job's output directory and verifies the copy like any save.
+static void adopt_native(const J &request, J &report) {
+    const J &choice = request.at("adoption");
+    const std::string action = choice.at("action");
+    const std::string session = recovery_session_fingerprint();
+    if (choice.contains("session_fingerprint") && choice["session_fingerprint"] != session)
+        throw std::runtime_error("Adoption refused: Creo session changed since recorded evidence");
+    ProMdl current = nullptr;
+    CK(ProMdlCurrentGet(&current));
+    ProMdlType kind = PRO_MDL_PART;
+    CK(ProMdlTypeGet(current, &kind));
+    if (kind != PRO_MDL_PART)
+        throw std::runtime_error(
+            "Adoption refused: only part or sheetmetal models can be adopted; assemblies and "
+            "drawings keep their own ownership");
+    ProPath origin;
+    CK(ProMdlOriginGet(current, origin));
+    std::wstring origin_text = origin;
+    if (choice.contains("origin") &&
+        _wcsicmp(wide(choice.at("origin").get<std::string>()).c_str(), origin_text.c_str()))
+        throw std::runtime_error(
+            "Adoption refused: the current model is not the inspected model; inspect again");
+    board = current; // Borrow the handle read-only, exactly like reconciliation inspect.
+    J live = inspection(false);
+    bool millimeters = millimeter_units(board);
+    bool dependency_clean = dependency_free(board);
+    std::string model_type = live.value("model_type", "part");
+    bool supported = model_type == "part" || model_type == "sheetmetal";
+    ProName display;
+    ProError name_code = ProMdlNameGet(current, display);
+    report["live"] = {{"origin", utf8(origin_text)},
+                      {"model_type", model_type},
+                      {"healthy", live.at("healthy")},
+                      {"feature_count", live.at("features").size()},
+                      {"volume_mm3", live.contains("volume_mm3") ? live["volume_mm3"] : J(nullptr)},
+                      {"millimeter_units", millimeters},
+                      {"dependency_free", dependency_clean},
+                      {"session_fingerprint", session},
+                      {"inspection", live}};
+    if (name_code == PRO_TK_NO_ERROR)
+        report["live"]["display_name"] = utf8(display);
+    if (action == "inspect") {
+        board = nullptr;
+        report["success"] = true;
+        return;
+    }
+    if (action != "apply")
+        throw std::runtime_error("Unknown adoption action");
+    if (choice.contains("live_inspection"))
+        verify_recovery(choice.at("live_inspection"), live);
+    board = nullptr; // The user's model is never the managed target again past this point.
+    if (!supported)
+        throw std::runtime_error(
+            "Adoption refused: only independent part or sheetmetal models are supported");
+    if (!millimeters)
+        throw std::runtime_error("Adoption refused: millimeter model units are required");
+    if (!dependency_clean)
+        throw std::runtime_error(
+            "Adoption refused: external dependencies require separate ownership verification");
+    ProName adopted;
+    wcscpy_s(adopted, model_name.c_str());
+    ProMdl clash = nullptr;
+    ProError found = ProMdlInit(adopted, PRO_MDL_PART, &clash);
+    if (found == PRO_TK_NO_ERROR)
+        throw std::runtime_error(
+            "Adoption refused: the managed model name already exists in this Creo session");
+    if (found != PRO_TK_E_NOT_FOUND)
+        check(found, "CheckAdoptedName");
+    CK(ProMdlnameCopy(current, adopted, &board));
+    if (!millimeter_units(board))
+        throw std::runtime_error("Adoption refused: copied model units are not millimeter");
+    if (!dependency_free(board))
+        throw std::runtime_error(
+            "Adoption refused: the copied model carries external dependencies");
+    CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
+    J before = inspection();
+    generic_stage("adoption_save_and_reload");
+    ProPath destination;
+    path(destination, folder);
+    CK(ProMdlnameBackup(board, destination));
+    std::wstring saved = latest_model_file(); // Only select the output of this adoption save.
+    CK(ProMdlErase(board));
+    board = nullptr;
+    ProPath file;
+    path(file, saved);
+    CK(ProMdlFiletypeLoad(file, PRO_MDLFILE_UNUSED, PRO_B_FALSE, &board));
+    CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
+    J after = inspection();
+    verify_recovery(before, after);
+    after["inspection_source"] = "adoption_verified";
+    after["inspection_available"] = true;
+    CK(ProMdlDisplay(board));
+    int window = -1;
+    if (!ProMdlWindowGet(board, &window)) {
+        ProWindowCurrentSet(window);
+        ProWindowRefit(window);
+        ProWindowRepaint(window);
+        ProWindowActivate(window);
+    }
+    report.update({{"success", true},
+                   {"saved_file_reloaded_and_verified", true},
+                   {"inspection", after},
+                   {"aliases", J::object()},
+                   {"part_file", utf8(saved)},
+                   {"adopted", true}});
+}
+
 static int run_generic(const std::wstring &job) {
     generic_job = job;
     generic_phase = "loading_request";
@@ -2159,6 +2280,9 @@ static int run_generic(const std::wstring &job) {
         if (request.contains("reconciliation")) {
             generic_stage("recovery_" + request["reconciliation"]["action"].get<std::string>());
             reconcile_native(request, report);
+        } else if (request.contains("adoption")) {
+            generic_stage("adoption_" + request["adoption"]["action"].get<std::string>());
+            adopt_native(request, report);
         } else {
             // Recovery has its own evidence-bound path. Check callback readiness
             // only for a normal plan that will create a direct Blend.

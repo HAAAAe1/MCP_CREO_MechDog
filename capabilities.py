@@ -103,6 +103,22 @@ def families() -> dict:
             "original_plan_replay": False,
             "inspect_requires_creo": False,
         },
+        "model_adoption": {
+            "enabled": True,
+            "tool": "creo_adopt_current_model",
+            "actions": ["inspect", "apply"],
+            "scope": (
+                "Explicit managed-copy adoption of the user's current window model; the source "
+                "model and its file are never modified; identity from origin path, file sha256 "
+                "and live inspection, never display names"
+            ),
+            "supported": "independent part/sheetmetal, millimeter units, no external dependencies, healthy features",
+            "limits": (
+                "assembly/drawing, non-millimeter units, dependent or unhealthy models are "
+                "refused; each source file adopts at most once; failed adoption resolves via "
+                "creo_reconcile_model abandon_new"
+            ),
+        },
         "seed_library": {
             "enabled": True,
             "scope": "MIT native seeds bundled with source; SHA256 validation, local registration and automatic count/mode selection",
