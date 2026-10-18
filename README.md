@@ -1,12 +1,12 @@
-# MCP_CREO_MechDog 0.3.7
+# MCP_CREO_MechDog 0.4.0
 
 开发维护从 [开发入口](docs/DEVELOPMENT.md) 和 [统一功能台账](docs/BACKLOG.md) 开始。每项工作先定义验收；语言与单元检查、Creo 实机验收分别记录。项目采用渐进布局整理，当前支持环境见 [兼容矩阵](docs/COMPATIBILITY.md)。
 
 本地 Windows MCP 服务，按需启动或连接 Creo Parametric 9 / 10 / 12，通过官方 C/C++ Toolkit 创建、查询和修改**原生参数化特征**。当前开发与发布按本机 Creo 12.4.0.0 的改动范围验收；Creo 10 不再要求独立复测，Creo 9 与 Toolkit 9 已纳入支持/要求范围，[BUG-033](docs/work-items/BUG-033.md) 编译探测修复已实现。本机无 Creo 9 SDK，Creo 9 实机编译与建模运行时均未验收，其他环境收到具体测试反馈后再跟进。历史证据、具体功能与未测范围见 [兼容矩阵](docs/COMPATIBILITY.md)。建模由任意支持的草图轮廓及顺序特征组成：新建零件 → 草图 → 拉伸/旋转 → 切除/孔 → 后续特征。原先的底板接口保留为快捷工具。
 
-**本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 0.3.6 注册 **84 个工具**（0.3.3 为 82 个）；受控恢复、回调状态、实体切除材料守卫与恢复 MCP 参数校验均已交付，`creo_loft` 已通过直接创建和已有零件追加验收并开放。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
+**本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 0.4.0 注册 **85 个工具**（0.3.6 为 84 个，新增 `creo_adopt_current_model`）；受控恢复、回调状态、实体切除材料守卫与恢复 MCP 参数校验均已交付，`creo_loft` 已通过直接创建和已有零件追加验收并开放。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
 
-当前服务/源码版本为 **0.3.7**（文档版：补齐 README 版本段与 0.3.6 交付回填记录，功能交付与 0.3.6 一致）。0.3.6 交付 BUG-059 恢复执行前拒绝确定性化（`reason`/`failure_phase`，锁内仅释放自身占位）与 BUG-057 随版隔离诊断脚本 `tools/reproduce_toolkit_lock.py`；无原生 C++ 改动。BUG-056 通道掉线已定位为跨批次遗留 nmsd 并按核实结论关闭；BUG-057（外部并发锁 Errno 13，待原环境用随版脚本取证）与 BUG-058（外部 Creo 9 通道 -11）开放中，FEAT-018/029 完整范围继续验收。见[0.3.6 说明](docs/RELEASE_NOTES_0.3.6.md)与[其检查](docs/validation/RELEASE-0.3.6.md)、[0.3.7 说明](docs/RELEASE_NOTES_0.3.7.md)；历史[0.3.5](docs/RELEASE_NOTES_0.3.5.md)、[0.3.4](docs/RELEASE_NOTES_0.3.4.md)及原验收身份保留。
+当前服务/源码版本为 **0.4.0**（MINOR：新增接管能力与多处修复）。0.4.0 交付：FEAT-042 `creo_adopt_current_model` 显式接管用户当前模型为受管副本（inspect/apply 两阶段，part/钣金，原件不动）；BUG-069 模型名放宽数字开头并统一小写规范化；BUG-070 会话模型名乱码修复（deprecated ProMdlNameGet 栈残留→ProMdlMdlnameGet）；BUG-067 旋转/拉伸创建失败报错补跨轴提示与元素错误透传；BUG-068 草图约束引用参考点修复；BUG-050 coordinates 构造中心线按无限轴处理并去重共享顶点尺寸；DEV-042/BUG-019 圆角/倒角 radius/distance 别名与 size 回显一致；FEAT-029 回调一次性设置指引置前并拆分 not_loaded/unknown 语义（生命周期继续验收中）。0.3.7 反馈（Creo 13）五项全部闭环，外部 Creo 13 环境未测。见[0.4.0 说明](docs/RELEASE_NOTES_0.4.0.md)；历史[0.3.7](docs/RELEASE_NOTES_0.3.7.md)、[0.3.6](docs/RELEASE_NOTES_0.3.6.md)、[0.3.5](docs/RELEASE_NOTES_0.3.5.md)及原验收身份保留。
 
 本版包含 [FEAT-019 自动启动](docs/work-items/FEAT-019.md)：后台检测、启动协调和建模就绪保护已实现；用户于 2026-10-13 接受 WorkBuddy / Creo 12.4 的自动启动、Toolkit 就绪及建模/保存重载验收，并于 2026-10-14 确认补充 Creo 12 已验证可用的说明。该专项未取得 Creo 10 实测结果；Codex 冷启动连接复测失败另列 [BUG-005](docs/work-items/BUG-005.md)。见 [原验收证据](docs/validation/FEAT-019.md)。
 

@@ -251,3 +251,13 @@ FEAT-018 补 token 时效/重新 inspect 指引，FEAT-029 补状态查询正例
 [原问题快照](待完善功能清单.md)与[未来建议快照](NEXT_STEPS_025.md)保留原日期和编号；固定 ID 对照见[历史来源索引](BACKLOG_COMPLETED.md#历史来源索引)。
 
 </details>
+
+## 2026-10-18：0.4.0 随版归档（0.3.7 / Creo 13 反馈五项闭环）
+
+随 0.4.0 合入 main 归档；台账状态与证据详见各行验证记录与 [RELEASE_NOTES_0.4.0.md](RELEASE_NOTES_0.4.0.md)。BUG-050（主线成因已修复）、BUG-019、FEAT-029 保持验收中，仍在主台账。
+
+| [BUG-067](work-items/BUG-067.md) | P1 | 已完成 | 未排期 | 2026-10-18 本机 Creo 12.4 经公开 MCP 接口复现定性：两例报告输入（上半圆+竖直轴、31 点折线半圆+竖直轴）均为**非法跨轴旋转截面**，同码复现 -1 且回滚成功；合法画法（轴与直径边界重合，r=5 半圆）得精确球 500π/3、参数可编辑、保存重载通过——**非 Creo 13 元素树不兼容**。产品缺陷"拒绝但不解释"已修复：元素级错误可回传，旋转/拉伸创建失败带跨轴/中心线/闭合提示与草图标签，保护行为不变；dev_check 与 test_general 回归通过。Creo 13 合法输入复测留外部条件，不据此宣称该版本已支持；整数引用报错归 FEAT-008。证据见[复现与修复记录](validation/BUG-067-repro-2026-10-18.md)。 |
+| [BUG-068](work-items/BUG-068.md) | P1 | 已完成 | 未排期 | 2026-10-18 本机 Creo 12.4 经公开 MCP 接口复现同码 -2（弧圆心在原点的原报告同款几何）并隔离定位：约束引用固定传 pnt={0,0}，与弧圆心重合时端点参考方位角退化（atan2(0,0)）→ BAD_INPUTS；与 Creo 版本、Intent Manager、名称解析均无关。已修复：按引用类型计算实体上的真实参考点 + idx_pnt=PRO_VALUE_UNUSED（含圆/弧 WHOLE 引用修正），sketch 与 populate_profile 两处共用；约束语义与模式分派不变。回归：复现/对照全过、test_sketch_stability 扩至 8 用例、BUG-067 合法旋转不回归。Creo 13 复测留外部条件。证据见[复现与修复记录](validation/BUG-068-BUG-050-repro-2026-10-18.md)。 |
+| [BUG-069](work-items/BUG-069.md) | P3 | 已完成 | 未排期 | 模型命名放宽（用户确认方案）：正则 [a-z0-9][a-z0-9_]{0,30} 允许数字开头，大写输入统一 normalize_model_name 规范化为小写并回显实际名，错误信息含完整规则；plate/generic submit/adopt 三校验点统一。001/PRT001/prt001 实测全部可用（001.prt.2 保存重载 verified），会话大小写碰撞仍拒绝，特征 label 规则不变。2026-10-18 本机 12.4 验证；Creo 13 未测。关联 BUG-070、FEAT-042。 |
+| [BUG-070](work-items/BUG-070.md) | P2 | 已完成 | 未排期 | 会话探针 current_model 乱码（▩名0001）根因为 deprecated ProMdlNameGet 失败不写缓冲+ProName 未初始化（本机 hex dump 定案 native 层）；已改用继任 ProMdlMdlnameGet+零初始化+返回值检查并新增 name_read_code 诊断字段。2026-10-18 本机 12.4 探针与 MCP 双层复验返回干净可读名；Creo 13 外部环境未测。关联 BUG-069、FEAT-042。 |
+| [FEAT-042](work-items/FEAT-042.md) | P1 | 已完成 | 未排期 | 显式接管用户已打开模型的受控入口 `creo_adopt_current_model`（受管副本形态）：inspect 只读探针登记身份证据（origin+sha256+live inspection+会话指纹，显示名不参与身份），apply 幂等复制当前会话状态到新受管模型并走完整保存验证闭环；原件不动，同源重复接管明确拒绝指向已有 model_id，失败按 unknown_outcome 保护并用 reconcile abandon_new 收尾。首批独立 part/sheetmetal，非 mm/带依赖/不健康特征拒绝；未放宽任何既有保护。2026-10-18 本机 12.4 实机全链路通过（含接管后编辑保存重载与原件不变证明）；Creo 13 外部环境与"未保存修改"场景未测，见验证记录。 |

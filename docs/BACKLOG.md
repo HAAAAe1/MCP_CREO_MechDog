@@ -24,7 +24,7 @@
 | 待规划 | 47 | 功能、接口和工程改进还需明确方案 |
 | 观察中 | 2 | 旧来源保留，出现新证据后再主动调查 |
 
-共 101 项：99 项在当前工作清单，2 项为历史观察。本轮新增 BUG-067～070 与 FEAT-042（待复现 +3、待核实 +1、待规划 +1），按当前明细行重算并纠正原汇总多计的 1 项待开发；既有任务状态未变。同日 BUG-067 完成本机复现定性（两例为非法跨轴截面，非 Creo 13 元素树不兼容）并修复报错可读性，状态改为已完成，明细行保留在原分节。分类基线见 [DEV-039](work-items/DEV-039.md)；DEV-040 与 BUG-059 已按阶段范围移入完成档案，BUG-057/058 未关闭。钣金、曲面与能力边界反馈分别登记 BUG-060～066、FEAT-039～041，并扩展 BUG-049/050。[DEV-042](work-items/DEV-042.md) 已完成 BUG-019 开发与实机对照，BUG-019 现为验收中，仍待 MCP 服务重启后的 WorkBuddy 别名/冲突与 compact 回显复核。
+共 96 项：94 项在当前工作清单，2 项为历史观察。2026-10-18 0.3.7 / Creo 13 反馈五项全部闭环并随 0.4.0 交付 main：BUG-067（非法跨轴截面定性+报错可读性）、BUG-068（约束参考点修复）、BUG-069（命名放宽+小写规范化）、BUG-070（会话模型名乱码修复）、FEAT-042（creo_adopt_current_model 受管副本接管），已完成卡移入[完成档案](BACKLOG_COMPLETED.md)；BUG-050 主线成因已修复保持验收中（原 Creo 10 切线链输入未取得），BUG-019 与 FEAT-029 同为验收中。分类基线见 [DEV-039](work-items/DEV-039.md)；BUG-057/058 未关闭。钣金、曲面与能力边界反馈分别登记 BUG-060～066、FEAT-039～041。
 
 - BUG、FEAT、DEV 的原 ID 保留，不因分类重命名或重复立卡。优先级与目标版本沿用原登记；观察项的原优先级不代表当前排期。P0 仍用于通道长时间不可用、会话损坏或无法恢复等紧急问题。
 - 收到失败报告不等于根因已确认；参数不同、输入不适用或未测试也不直接算缺陷。完成项移入档案，部分通过则列清剩余范围。执行过程写入任务卡或验证记录，主台账只更新当前安排。
@@ -51,9 +51,6 @@ revision 是模型修改版本号；保存重载是保存后重新打开检查�
 
 | ID | 优先级 | 状态 | 目标版本 | 问题与下一步 |
 | --- | --- | --- | --- | --- |
-| [BUG-067](work-items/BUG-067.md) | P1 | 已完成 | 未排期 | 2026-10-18 本机 Creo 12.4 经公开 MCP 接口复现定性：两例报告输入（上半圆+竖直轴、31 点折线半圆+竖直轴）均为**非法跨轴旋转截面**，同码复现 -1 且回滚成功；合法画法（轴与直径边界重合，r=5 半圆）得精确球 500π/3、参数可编辑、保存重载通过——**非 Creo 13 元素树不兼容**。产品缺陷"拒绝但不解释"已修复：元素级错误可回传，旋转/拉伸创建失败带跨轴/中心线/闭合提示与草图标签，保护行为不变；dev_check 与 test_general 回归通过。Creo 13 合法输入复测留外部条件，不据此宣称该版本已支持；整数引用报错归 FEAT-008。证据见[复现与修复记录](validation/BUG-067-repro-2026-10-18.md)。 |
-| [BUG-068](work-items/BUG-068.md) | P1 | 已完成 | 未排期 | 2026-10-18 本机 Creo 12.4 经公开 MCP 接口复现同码 -2（弧圆心在原点的原报告同款几何）并隔离定位：约束引用固定传 pnt={0,0}，与弧圆心重合时端点参考方位角退化（atan2(0,0)）→ BAD_INPUTS；与 Creo 版本、Intent Manager、名称解析均无关。已修复：按引用类型计算实体上的真实参考点 + idx_pnt=PRO_VALUE_UNUSED（含圆/弧 WHOLE 引用修正），sketch 与 populate_profile 两处共用；约束语义与模式分派不变。回归：复现/对照全过、test_sketch_stability 扩至 8 用例、BUG-067 合法旋转不回归。Creo 13 复测留外部条件。证据见[复现与修复记录](validation/BUG-068-BUG-050-repro-2026-10-18.md)。 |
-| [BUG-070](work-items/BUG-070.md) | P2 | 已完成 | 未排期 | 会话探针 current_model 乱码（▩名0001）根因为 deprecated ProMdlNameGet 失败不写缓冲+ProName 未初始化（本机 hex dump 定案 native 层）；已改用继任 ProMdlMdlnameGet+零初始化+返回值检查并新增 name_read_code 诊断字段。2026-10-18 本机 12.4 探针与 MCP 双层复验返回干净可读名；Creo 13 外部环境未测。关联 BUG-069、FEAT-042。 |
 | [BUG-057](work-items/BUG-057.md) | P1 | 待复现 | 未排期 | 外部 Windows 10 19045 / Python 3.13.14 并发准入连续 3 次报 open 的 Errno 13。本机 Windows 11 26100 / Python 3.12.14 原恢复单测连续 10 轮通过；离线文件竞争未复现。当前锁文件本来常驻；受控对照区分字节锁 busy、sharing violation 和 delete-pending，尚不能证明原失败根因。DEV-040 新增纯文件诊断入口供原环境复核，暂不改共享属性、不加重试；详见[本次证据](validation/DEV-040-offline-2026-10-18.md)。 |
 | [BUG-058](work-items/BUG-058.md) | P1 | 待复现 | 未排期 | 外部 Creo 9 通道 -11、无主窗口进程与自动 retry 超时仍待实机定位。DEV-040 静态核对已确认 inventory 不读窗口状态，匹配旧进程存在时不启动替代会话，等待提示只有通用对话框指引；launch_attempt 是实际 launch 预留计数，外部连增需补时序证据。无自动结束 Creo 路径，launcher 也无可用来安全清理的进程归属证明。本轮不改协调器、指引或进程，不据此重开 BUG-056，见[离线记录](validation/DEV-040-offline-2026-10-18.md)。 |
 | [BUG-062](work-items/BUG-062.md) | P1 | 待复现 | 未排期 | 外部 Creo 10 实机（job 085e56a7…）：update_sketch_geometry 对含 centerline 的回转草图两条路都失败——不传 centerline 报"必须保留每个命名实体"、传入又被 schema 拒绝（允许列表无 centerline），而 create_sketch 明确要求 revolve 含 centerline，矛盾确定，回转类草图天生不可就地编辑，外部被迫整模重建两遍（约 12 个 job）。先本机复现两条拒绝路径并核对允许集合，再在"centerline 加入支持类型"与"preserve_unlisted 未列出实体保留"两个反馈建议中选最小方案；不借机放宽命名实体保护语义。 |
@@ -85,7 +82,6 @@ revision 是模型修改版本号；保存重载是保存后重新打开检查�
 
 | ID | 优先级 | 状态 | 目标版本 | 问题与下一步 |
 | --- | --- | --- | --- | --- |
-| [BUG-069](work-items/BUG-069.md) | P3 | 已完成 | 未排期 | 模型命名放宽（用户确认方案）：正则 [a-z0-9][a-z0-9_]{0,30} 允许数字开头，大写输入统一 normalize_model_name 规范化为小写并回显实际名，错误信息含完整规则；plate/generic submit/adopt 三校验点统一。001/PRT001/prt001 实测全部可用（001.prt.2 保存重载 verified），会话大小写碰撞仍拒绝，特征 label 规则不变。2026-10-18 本机 12.4 验证；Creo 13 未测。关联 BUG-070、FEAT-042。 |
 | BUG-012 | P1 | 待核实 | 未排期 | transform 失败后，几何和 revision 没变，模型却被标为 failed；0.3.1 还有成功作业返回 rollback_succeeded=false，履带报告也出现同样误读。0.3.5/Creo 10 实机再现：新建零件失败（自交轮廓）时 inspection=null、rollback_succeeded=false 并残留 failed/revision 0 的登记与 .prt.1——新件无检查点可回滚是事实，但 false 易被误读为"回滚失败"，反馈建议改 null/not_applicable；另守卫触发时作业级 toolkit_code=-1 属异常路径汇总码（disconnect_code=0、通道健康），建议与真实 Toolkit 故障区分。需要分别说明回滚未尝试、成功、失败和无法确认时的含义，以及模型还能否使用，并检查保存点和旧字段兼容性。false 本身不能证明模型损坏，unknown_outcome 保护也不能直接清除。关联 BUG-001/FEAT-018。 |
 | BUG-016 | P2 | 待核实 | 未排期 | solidify(cut) 用 z=30、positive 侧的基准面裁剪 z=20..40 的实体后，体积和 bbox 未变，却显示特征成功。先查清 side、pull_direction 和引用是否适用，再对比两侧裁剪并检查重载。应区分允许不改材料的操作、无效输入和真正切除，不能把所有零变化都判失败。 |
 | BUG-018 | P2 | 待核实 | 未排期 | 旧报告中 export/dump_tree/update_sketch_geometry 的结果重复；0.3.1 和 0.3.2 的失败计划又只返回 null 或空 operations。每个请求应对应一条带序号的结果，说明已执行、已回滚、失败、未执行或结果未知，并带上文件、特征和参数。0.3.5 钣金回归中 5 次失败计划仍均返回空 operations 数组，调用方无法知道哪些已成功、只能整批重发。核对成功及失败时的数量、顺序和失败位置；operation_outcomes 的接口建议仍待评估，不能据此自动重跑后半段。关联 FEAT-006。 |
@@ -162,7 +158,6 @@ revision 是模型修改版本号；保存重载是保存后重新打开检查�
 | [FEAT-039](work-items/FEAT-039.md) | P1 | 待规划 | 未排期 | 纯曲面链路算子：surface_trim（keep_side）、quilt_merge（返回 closed）、boundary_blend（G1）、quilt_offset，加面积与最小壁厚查询。可乐瓶任务书纯曲面法 8 步中 5 步无对应工具，链路不可执行。按反馈 MVR 顺序推进：先补 ProTrim.h 枚举 15 个常量进 constants.inc（低层立刻可用）→ surface_trim → quilt_merge（PRO_FEAT_MERGE 常量已齐、只差封装，性价比最高）→ loft 曲面模式（FEAT-009 联动）→ boundary_blend → quilt_offset → 检测查询；做到前三步即成"修剪+缝合+实体化"最小闭环。外部已提供 STL 回归基准。每个算子先定引用格式与返回字段，capabilities 同步登记。 |
 | [FEAT-040](work-items/FEAT-040.md) | P2 | 待规划 | 未排期 | 变半径圆角与收尾控制。恒定半径 round 在两端收敛于近切点的边上几何无解（外部两个 job：10 边与单边 R2 均失败回滚），爪谷过渡只能留锐边。候选：variable_radius/半径表、stop_at_reference/extend_to_surface；失败带冲突边 id 与最小可行半径（诊断归 FEAT-006 联动）。先确认 SDK 支持度再定字段，恒定半径行为与回滚契约不变，与 FEAT-039 验收用例联动。 |
 | [FEAT-041](work-items/FEAT-041.md) | P3 | 待规划 | 未排期 | 交付与预览体验：creo_new_part 增加可选输出目录（现固定落 models/<id>/output/，交付需手工复制）；预览/导出视角可选（view bottom/front/top + orthographic，现固定 3/4 视角，验收仰视只能自行导 STL 渲染）。仅新增可选参数，默认行为不变；输出目录不引入任意写路径。 |
-| [FEAT-042](work-items/FEAT-042.md) | P1 | 已完成 | 未排期 | 显式接管用户已打开模型的受控入口 `creo_adopt_current_model`（受管副本形态）：inspect 只读探针登记身份证据（origin+sha256+live inspection+会话指纹，显示名不参与身份），apply 幂等复制当前会话状态到新受管模型并走完整保存验证闭环；原件不动，同源重复接管明确拒绝指向已有 model_id，失败按 unknown_outcome 保护并用 reconcile abandon_new 收尾。首批独立 part/sheetmetal，非 mm/带依赖/不健康特征拒绝；未放宽任何既有保护。2026-10-18 本机 12.4 实机全链路通过（含接管后编辑保存重载与原件不变证明）；Creo 13 外部环境与"未保存修改"场景未测，见验证记录。 |
 
 ## 工程整理
 
