@@ -19,7 +19,7 @@
 | Windows x64 / Creo 10.0.0.0 / Python 3.12 / VS 2022 | 历史实测环境；功能按已有范围声明，后续按反馈跟进 | [0.2.5 逐项记录](PROGRESS_025.md)、[增量证据](validation_increment_025.json)、`capabilities.py` 中的限制；历史其他套件各自保留日期 | DEV-001 仅验证开发检查与单元，未重跑原生套件；不作为当前验收门槛 |
 | Windows x64 / Creo 12.4.0.0 / 匹配 SDK | 已验证可用，功能按已测范围声明 | [BUG-002 验证](validation/BUG-002.md)：登记并发轮询下新建、参数修改、保存重载、失败回滚和 stale revision；[FEAT-019 WorkBuddy 报告](validation/FEAT-019-WorkBuddy-report.md)：自动启动、Toolkit 就绪、草图/拉伸、尺寸驱动、倒角、保存重载与导出 | 上述专项实测通过；发布时另一次冷启动复测失败，保留 BUG-005；两截面种子等其他分支仍由 BUG-004、DEV-005、DEV-006 核实 |
 | Windows x64 / Creo 12 其他维护版本 / 匹配 SDK | 需目标机验证 | 当前成功记录限定 12.4.0.0，其他维护版本没有独立实机证据 | 未逐版验收 |
-| Windows x64 / Creo 9.0.0.0 / 匹配 Toolkit 9 | 已纳入支持/要求范围，编译探测已支持 | [BUG-033](work-items/BUG-033.md) 的常量存在/缺失夹具已通过，修复与安装闭环见 [DEV-028](work-items/DEV-028.md)；第三方 [Creo 9 SDK 编译反馈](validation/2026-10-15_CREO_0.3.0_旧版ToolkitSDK原生编译失败.md) 与 [0.3.2 报告](validation/FEEDBACK-0.3.2.md) 保留原环境结论 | 本机无 Creo 9 SDK，Creo 9 实机编译及运行时未验收，不外推为已通过 |
+| Windows x64 / Creo 9.0.0.0 / 匹配 Toolkit 9 | 已纳入支持/要求范围，编译探测已支持 | [BUG-033](work-items/BUG-033.md) 的常量存在/缺失夹具已通过，修复与安装闭环见 [DEV-028](work-items/DEV-028.md)；第三方 [Creo 9 SDK 编译反馈](validation/2026-10-15_CREO_0.3.0_旧版ToolkitSDK原生编译失败.md) 与 [0.3.2 报告](validation/FEEDBACK-0.3.2.md) 保留原环境结论 | 本机无 Creo 9 SDK；0.3.5 外部环境编译与安装已通过（见 2026-10-18 补录），其中 1 个单元测试失败登记 [BUG-057](work-items/BUG-057.md)；建模运行时仍未验收，不外推为已通过 |
 | 其他 Creo、SDK 或操作系统 | 尚未承诺 | 单元检查与安装成功不能推导原生兼容 | 未验收 |
 
 安装要求保留匹配 SDK、公制模板、MSVC x64 和许可。升级 SDK 或维护版本后要按本机环境重新构建与验证。后续矩阵按工具家族、具体参数分支、环境、源码、命令和结果细化；“接口存在”“已测代表用例”和“全部参数覆盖”分别记录。
@@ -57,3 +57,17 @@ BUG-001/FEAT-018 已实现正式协调与普通写保护，284项单元及四动
 ## 2026-10-17：0.3.5 已测范围与已知通道问题
 
 BUG-054/DEV-033的本机Creo12.4实体extrude/revolve cut开发、保存重载/回滚及WorkBuddy已测场景通过；BUG-055/DEV-034的真实stdio、MCP恢复正例及WorkBuddy核心契约通过。M2终态与稳定通道下对照未取得，BUG-056仍为P1待核实，FEAT-018/029完整恢复/生命周期未完成。外部Creo9与Creo10未据本版重新复测，种子/筋等历史失败来源保持。本轮只补离线/SDK/安装与分发检查，见[0.3.5验收](validation/RELEASE-0.3.5.md)。
+
+## 2026-10-18：0.3.5 外部 Creo 9 SDK 反馈补录
+
+[外部反馈](validation/FEEDBACK-0.3.5-2026-10-17.md)（Windows 10 19045 / Python 3.13.14 / MSVC 19.44.35229 + Windows SDK 10.0.26100 / Creo 9.0.0.0 Toolkit SDK）首次提供 Creo 9 SDK 实机编译证据：`bridge.py build` 一次通过，`constants.inc` 探针宏 0 个（BUG-033 修复行为正确），安装后 84 工具、9 个种子 SHA256 校验通过。307 个单元测试 306 通过，唯一失败为并发准入测试报 `PermissionError [Errno 13]`，已登记 [BUG-057](work-items/BUG-057.md)。该失败为单元测试，与 Creo 版本无关；本次未连接 Creo 会话，切除守卫、恢复 MCP 的实机行为及全部建模运行时仍未验收，种子哈希校验也不代表 Creo 9 可加载（BUG-034 的 -16 保持）。
+
+## 2026-10-18：0.3.5 外部 Creo 9 实机与 Creo 10 反馈补录
+
+[Creo 10 反馈](validation/FEEDBACK-0.3.5-CREO10-2026-10-18.md)（Windows 10 / VS2022 BuildTools 14.44 / Python 3.13）按"停止新的 Toolkit 连接"约束未连实机：源码/种子包 sha256 与发布说明双一致，覆盖 546 文件零真实差异，编译经三键 `vcvars64_env` 一次成功；**文件层实证 0.3.4→0.3.5 升级（含 worker 重编）完全不触碰回调注册**（protk.dat、exec_file、loader 指纹/sha、两个 DLL 大小、payload 指纹均未变），补上"每次重编译注册失效已解决"的升级场景一环；cut 守卫仅读码核对一致，未实机。vcvars64_env 三键限制第三次未修（DEV-030），payload 目录保持 6 个未新增但清理机制仍不存在（DEV-027）；实机建模、cut 行为、恢复契约、回调加载与通道稳定性全部未验证，不作通过结论。该反馈引用的发布说明"BUG-056 未修"已被当日后续 DEV-036 调查取代（nmsd 根因、复测通过、关闭归档）。
+
+[Creo 9 实机反馈](validation/FEEDBACK-0.3.5-CREO9-2026-10-18.md)（9.0.0.0 / release 41 / stdio）：**BUG-054 切除守卫与 BUG-055 恢复契约（含 restore_baseline 与三条空值路径）实机验收通过**，数值精确（去料 π×5²×10、revision/体积保持），补齐两卡外部 Creo 9 未测项；孔、参数、关系、工程图 PDF、翼型、UDF、种子清单与运行身份指纹核对全部通过。通道稳定性出现新现象：上一请求成功约 33 秒后 `connect_creo` 返回 **-11**，Creo 进程存活但无主窗口，自动重连不能自愈，人工结束残留进程后恢复——与已关闭 BUG-056（nmsd 层 -4）为不同层失败，登记 [BUG-058](work-items/BUG-058.md)；恢复执行前拒绝被标 `unknown_outcome` 的问题登记 [BUG-059](work-items/BUG-059.md)。历史未修项第六轮确认：种子加载仍 -16（BUG-034）、筋材料侧仍失败（BUG-017）、loft 仍需人工注册（FEAT-029）、component_constraints 仍不求解（BUG-036）、round 参数名仍未统一（BUG-019）；这些不因上述通过项而改变范围。
+
+## 2026-10-18：0.3.5 外部 Creo 10 实机验收补录
+
+[Creo 10 实机反馈](validation/FEEDBACK-0.3.5-CREO10-2026-10-18-2.md)（10.0.0.0 / release_numeric=42 / Python 3.13 / connected=true）为实机验收（8 个作业、5 个新建诊断零件，全部 job_id 可复查）：**BUG-054 切除守卫 6/6 用例通过**（合法/部分重叠/revolve 合法数值精确，板外/管外/hole 板外三例守卫触发且回滚、revision 保持、不落盘、体积逐位不变，失败后可继续编辑），同轮复测 BUG-022 hole 守卫与 BUG-013 `list_models` 分页闭环；已关闭的 BUG-056 现象在本轮 8 作业约 8 分钟连续建模中未复现（仅数据点，不改变其 nmsd 根因结论）。既有交付物未受影响：齿轮泵 11 零件与装配 revision=7 未变，18 实例变换抽样与 0.3.3 读回值逐位一致无漂移。未修项按既有条目补证据：**弧方向静默主弧（FEAT-034，第三次报告，实机对照 142.699 vs 1428.097 mm³ 相差 10 倍且零警告）**、自交轮廓无结构化诊断（FEAT-006）、组件清单丢 label（FEAT-023）、旋转仅欧拉角且 BUG-045 角度方向再确认（FEAT-012/BUG-045）、hole 无沉孔锥孔（FEAT-035）、revolve 轴不回显（FEAT-008）、新件 rollback_succeeded=false 误读（BUG-012）。本轮通过项不外推为该环境其他工具或参数分支已验收。
