@@ -395,8 +395,47 @@ class HoleOp(StrictModel):
 class RoundOp(StrictModel):
     op: Literal["round", "chamfer"]
     label: Label
-    size: Positive
+    size: Annotated[
+        Positive | None,
+        Field(
+            default=None,
+            description="Constant fillet radius or chamfer leg distance in mm; "
+            "round also accepts the radius alias and chamfer the distance alias",
+        ),
+    ]
+    radius: Annotated[
+        Positive | None,
+        Field(
+            default=None,
+            exclude=True,
+            description="Alias for size when op=round (mm); rejected when size is also given",
+        ),
+    ]
+    distance: Annotated[
+        Positive | None,
+        Field(
+            default=None,
+            exclude=True,
+            description="Alias for size when op=chamfer (mm); rejected when size is also given",
+        ),
+    ]
     references: Annotated[list[dict[str, Any]], Field(min_length=1, max_length=100)]
+
+    @model_validator(mode="after")
+    def resolve_size(self):
+        # Standalone-tool compatibility: round accepts radius and chamfer accepts
+        # distance as an alias for size. Aliases are excluded from serialization,
+        # so the native request always carries a single size field.
+        alias, other = ("radius", "distance") if self.op == "round" else ("distance", "radius")
+        if getattr(self, other) is not None:
+            raise ValueError(f"op '{self.op}' does not accept '{other}'; use '{alias}' or 'size'")
+        if self.size is not None and getattr(self, alias) is not None:
+            raise ValueError(f"Provide either '{alias}' or 'size' for op '{self.op}', not both")
+        if self.size is None:
+            if getattr(self, alias) is None:
+                raise ValueError(f"Provide 'size' or '{alias}' for op '{self.op}'")
+            self.size = getattr(self, alias)
+        return self
 
 
 class PlaneOp(StrictModel):

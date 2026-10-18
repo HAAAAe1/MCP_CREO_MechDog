@@ -515,6 +515,9 @@ async def creo_execute_plan(
     Sketch/extrude/revolve and later features reference earlier feature labels.
     Existing models require expected_revision. Stops at first error; existing models
     roll back to their saved checkpoint. assertions supports require_solid and volume_mm3.
+    round/chamfer use `size` (mm); as a standalone-tool alias they also accept
+    radius (round) or distance (chamfer), but providing the alias together with
+    size is rejected instead of silently preferring one.
     """
     return await invoke(
         general.submit,
@@ -924,7 +927,12 @@ async def creo_round(
         ),
     ],
 ) -> dict[str, Any]:
-    """Create a native constant-radius fillet on edges or face pairs. Each set is {edge:reference} or {surfaces:[reference,reference]}."""
+    """Create a native constant-radius fillet on edges or face pairs. Each set is {edge:reference} or {surfaces:[reference,reference]}.
+
+    radius is in mm and maps to the plan-operation field `size` (op="round"):
+    the submitted job echoes it as operations[].size, and the finished job's
+    result.operations[].size repeats the value the native feature applied.
+    """
     return await invoke(
         general.submit,
         [{"op": "round", "label": label, "size": radius, "references": references}],
@@ -947,7 +955,12 @@ async def creo_chamfer(
         ),
     ],
 ) -> dict[str, Any]:
-    """Create equal-distance native chamfer sets on explicit edges or face pairs."""
+    """Create equal-distance native chamfer sets on explicit edges or face pairs.
+
+    distance is in mm and maps to the plan-operation field `size` (op="chamfer"):
+    the submitted job echoes it as operations[].size, and the finished job's
+    result.operations[].size repeats the value the native feature applied.
+    """
     return await invoke(
         general.submit,
         [{"op": "chamfer", "label": label, "size": distance, "references": references}],

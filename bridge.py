@@ -1188,6 +1188,7 @@ def compact_job(manifest: dict) -> dict:
                     "op",
                     "label",
                     "succeeded",
+                    "size",
                     "file",
                     "feature_id",
                     "material_removed_mm3",

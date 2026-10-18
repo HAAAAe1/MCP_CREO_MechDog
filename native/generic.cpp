@@ -1203,7 +1203,7 @@ static void curve_collection(ProElement element, const J &refs) {
     CK(ProElementCollectionSet(element, coll));
     CK(ProCollectionFree(&coll));
 }
-static void generic_round(const J &op, bool chamfer) {
+static J generic_round(const J &op, bool chamfer) {
     ProElement root = node(nullptr, PRO_E_FEATURE_TREE);
     integer(root, PRO_E_FEATURE_TYPE, chamfer ? PRO_FEAT_CHAMFER : PRO_FEAT_ROUND);
     text(root, PRO_E_STD_FEATURE_NAME, wide(op.at("label")).c_str());
@@ -1244,6 +1244,8 @@ static void generic_round(const J &op, bool chamfer) {
     ProFeature f = create(root);
     CK(ProElementFree(&root));
     remember(op, f);
+    // Echo the applied leg value so callers can compare it with their input.
+    return {{"size", op.at("size")}};
 }
 static void generic_shell(const J &op) {
     ProElement root = node(nullptr, PRO_E_FEATURE_TREE);
@@ -1595,7 +1597,7 @@ static void execute_operation(const J &op) {
     else if (kind == "hole")
         details = generic_hole(op);
     else if (kind == "round" || kind == "chamfer")
-        generic_round(op, kind == "chamfer");
+        details = generic_round(op, kind == "chamfer");
     else if (kind == "shell")
         generic_shell(op);
     else if (kind == "dimension_pattern")
