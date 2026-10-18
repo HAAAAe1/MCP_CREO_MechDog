@@ -170,13 +170,11 @@ def _refusal_reason(live: dict) -> str | None:
     return None
 
 
-def inspect() -> dict:
-    """Read-only preflight that records adoptable identity evidence for the current model."""
-    model_id = uuid.uuid4().hex
+def _new_model(model_id: str, model_name: str | None = None) -> dict:
     path = general.model_path(model_id)
-    model = {
+    return {
         "model_id": model_id,
-        "model_name": f"adopt_{model_id[:8]}",
+        "model_name": model_name or f"adopt_{model_id[:8]}",
         "revision": 0,
         "created_at": bridge.now(),
         "status": "adopt_pending",
@@ -185,9 +183,53 @@ def inspect() -> dict:
         "output_directory": str(path / "output"),
         "part_file": None,
     }
+
+
+def _evidence(model: dict, live: dict, file: dict, *, snapshot: bool = False) -> dict:
+    token = uuid.uuid4().hex
+    record = {
+        "live": live,
+        "file": file,
+        "model": model,
+        "created": time.time(),
+        "token": token,
+        "snapshot": snapshot,
+    }
+    bridge.write_json(
+        _directory(model["model_id"]) / f"evidence-{token}.json", record, durable=True
+    )
+    return {
+        "model_id": model["model_id"],
+        "status": model["status"],
+        "available": True,
+        "reason": None,
+        "conflict": None,
+        "current_model": _summary_only(record),
+        "file": file,
+        "default_model_name": model["model_name"],
+        "evidence_token": token,
+        "expires_in_seconds": TOKEN_SECONDS,
+        "source_kind": "session_snapshot" if snapshot else "file",
+        "contract": (
+            "apply confirms the frozen prepared snapshot; later source edits are excluded"
+            if snapshot
+            else "apply copies the inspected current session state; the source is untouched"
+        ),
+    }
+
+
+def inspect(model_id: str | None = None) -> dict:
+    """Inspect the current source, or renew evidence for an existing frozen snapshot."""
+    if model_id is not None:
+        with bridge.toolkit_lock(operation="inspect_adoption_snapshot", model_id=model_id):
+            model = general.model_info(model_id)
+            snapshot = _prepared(model)
+            return _evidence(model, snapshot["live"], snapshot["file"], snapshot=True)
+    model_id = uuid.uuid4().hex
+    path = general.model_path(model_id)
+    model = _new_model(model_id)
     try:
         (path / "output").mkdir(parents=True)
-        bridge.write_json(path / "model.json", model, durable=True)
         with bridge.toolkit_lock(operation="adoption_preflight"):
             manifest = {
                 "job_id": uuid.uuid4().hex,
@@ -201,50 +243,70 @@ def inspect() -> dict:
             bridge.write_json(probe / "request.json", _native_request(model, {"action": "inspect"}))
             try:
                 live = _native(probe, manifest)["live"]
+                manifest["status"] = "succeeded"
+            except Exception:
+                manifest["status"] = "failed"
+                raise
             finally:
                 manifest["finished_at"] = bridge.now()
                 bridge.write_json(probe / "job.json", manifest, durable=True)
+            # Keep identity checks and token publication inside the cleanup boundary
+            # and the same channel lock (BUG-071).
+            origin = live.get("origin")
+            reason = _refusal_reason(live)
+            if not isinstance(origin, str):
+                raise ValueError("Source origin could not be determined; no adoption accepted")
+            file = identity(Path(origin)) if origin else None
+            conflict = _origin_conflict(Path(origin), exclude=model_id) if origin else None
+            reason = conflict["message"] if conflict else reason
+            if reason or not origin:
+                shutil.rmtree(path)
+                return {
+                    "available": False,
+                    "reason": reason or "snapshot_required: use mode=prepare",
+                    "available_modes": [] if reason else ["prepare"],
+                    "conflict": conflict,
+                    "current_model": _summary_only({"live": live}),
+                    "file": file,
+                    "source_kind": "file" if origin else "session_only",
+                    "model_id": None,
+                    "evidence_token": None,
+                }
+            model.update(
+                model_type=live["model_type"],
+                adopted_from={
+                    "origin": file["path"],
+                    "origin_sha256": file["sha256"],
+                    "source_kind": "file",
+                    "state": "pending",
+                    "inspected_at": bridge.now(),
+                },
+            )
+            evidence = _evidence(model, live, file)
+            # Publish the registry last: source/hash/token failures cannot leave
+            # a visible model even if cleanup of staging files is unavailable.
+            bridge.write_json(path / "model.json", model, durable=True)
+            return evidence
     except Exception:
-        # A failed preflight leaves no half-registered model behind.
+        # This path never mutates the source. Do not leave a registration without
+        # published evidence, including on hashing/conflict/token-write failures.
         shutil.rmtree(path, ignore_errors=True)
         raise
-    file = identity(Path(live["origin"]))
-    conflict = _origin_conflict(Path(live["origin"]))
-    reason = conflict["message"] if conflict else _refusal_reason(live)
-    # Record the pending source claim before publishing the token so a second
-    # inspect of the same file sees the conflict immediately.
-    model = {
-        **model,
-        "model_type": live["model_type"],
-        "adopted_from": {
-            "origin": file["path"],
-            "origin_sha256": file["sha256"],
-            "state": "pending",
-            "inspected_at": bridge.now(),
-        },
-    }
-    bridge.write_json(path / "model.json", model, durable=True)
-    token = uuid.uuid4().hex
-    record = {"live": live, "file": file, "model": model, "created": time.time(), "token": token}
-    bridge.write_json(_directory(model_id) / f"evidence-{token}.json", record)
-    visible = {key: value for key, value in live.items() if key != "inspection"}
-    visible["inspection"] = inspection_summary(live["inspection"])
-    return {
-        "model_id": model_id,
-        "status": model["status"],
-        "available": reason is None,
-        "reason": reason,
-        "conflict": conflict,
-        "current_model": visible,
-        "file": file,
-        "default_model_name": model["model_name"],
-        "evidence_token": token,
-        "expires_in_seconds": TOKEN_SECONDS,
-        "contract": (
-            "apply copies the current session state (including unsaved changes) into a managed "
-            "model; the source model and its file are never modified"
-        ),
-    }
+
+
+def _prepared(model: dict) -> dict:
+    if (
+        model.get("status") != "adopt_pending"
+        or model.get("pending_job")
+        or model.get("recovery_pending")
+    ):
+        raise ValueError("Prepared snapshot is not available; poll its job or reconcile first")
+    snapshot = model.get("prepared_snapshot")
+    if not snapshot:
+        raise ValueError("This model has no prepared snapshot")
+    if identity(owned_file(model, snapshot["file"]["path"])) != snapshot["file"]:
+        raise ValueError("Prepared snapshot changed; preserve evidence and prepare a new snapshot")
+    return snapshot
 
 
 def _validate_evidence(model_id: str, evidence_token: str) -> tuple[dict, dict]:
@@ -265,6 +327,13 @@ def _validate_evidence(model_id: str, evidence_token: str) -> tuple[dict, dict]:
         raise ValueError("Evidence token is missing or expired; inspect again")
     if record["model"]["model_id"] != model_id or record["model"]["status"] != "adopt_pending":
         raise ValueError("Evidence token does not belong to this adopt-pending model")
+    if record.get("snapshot"):
+        snapshot = _prepared(model)
+        if record["file"] != snapshot["file"]:
+            raise ValueError("Evidence does not belong to the prepared snapshot")
+        return model, record
+    if _refusal_reason(record["live"]):
+        raise ValueError("Source preflight refused adoption")
     if identity(Path(record["file"]["path"])) != record["file"]:
         raise ValueError("Source file changed since inspect; inspect again")
     conflict = _origin_conflict(Path(record["file"]["path"]), exclude=model_id)
@@ -273,17 +342,100 @@ def _validate_evidence(model_id: str, evidence_token: str) -> tuple[dict, dict]:
     return model, record
 
 
+def _key(value: str) -> None:
+    if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9_-]{8,80}", value):
+        raise ValueError(
+            "idempotency_key must contain 8-80 letters, digits, underscores or hyphens"
+        )
+
+
+def prepare(model_name: str | None, idempotency_key: str) -> dict:
+    """Freeze a never-saved current model once; only apply can publish it as ready."""
+    _key(idempotency_key)
+    if model_name is not None:
+        model_name = bridge.normalize_model_name(model_name)
+    # The key deterministically locates the durable intent even when the caller
+    # lost the initial response. It is unrelated to the source object's identity.
+    model_id = digest([str(general.MODELS.resolve()), "prepare", idempotency_key])[:32]
+    path = general.model_path(model_id)
+    file = path / "adoption" / f"intent-{digest(idempotency_key)}.json"
+    arguments = {"mode": "prepare", "model_name": model_name, "idempotency_key": idempotency_key}
+    with bridge.toolkit_lock(operation="submit_adoption_prepare", model_id=model_id):
+        existing = _read(file)
+        if existing:
+            if existing["arguments"] != arguments:
+                raise ValueError("Idempotency key already belongs to another adoption request")
+            return bridge.get_job(existing["job_id"], "compact")
+        if path.exists():
+            raise ValueError(
+                f"Incomplete preparation exists; inspect/reconcile model_id {model_id}"
+            )
+        model = _new_model(model_id, model_name)
+        job_id = uuid.uuid4().hex
+        directory = bridge.job_path(job_id)
+        manifest = {
+            "job_id": job_id,
+            "kind": "adoption",
+            "adoption_action": "prepare",
+            "model_id": model_id,
+            "status": "queued",
+            "revision": 0,
+            "idempotency_key": idempotency_key,
+            "created_at": bridge.now(),
+            "stage": "snapshot_intent_persisted",
+            "message": "Snapshot preparation accepted; poll this job_id",
+        }
+        try:
+            (path / "output").mkdir(parents=True)
+            bridge.write_json(path / "model.json", model, durable=True)
+            (directory / "output").mkdir(parents=True)
+            bridge.write_json(
+                directory / "request.json",
+                _native_request(model, {"action": "prepare"}),
+                durable=True,
+            )
+            bridge.write_json(directory / "job.json", manifest, durable=True)
+            bridge.write_json(
+                file if file.parent.exists() else _journal(model_id, idempotency_key),
+                {
+                    "state": "intent",
+                    "model_id": model_id,
+                    "job_id": job_id,
+                    "arguments": arguments,
+                    "created_at": bridge.now(),
+                },
+                durable=True,
+            )
+            model.update(pending_job=job_id, last_job=job_id)
+            bridge.write_json(path / "model.json", model, durable=True)
+            with (directory / "runner.log").open("ab") as log:
+                subprocess.Popen(
+                    [sys.executable, str(bridge.ROOT / "bridge.py"), "run-job", job_id],
+                    cwd=bridge.ROOT,
+                    stdin=subprocess.DEVNULL,
+                    stdout=log,
+                    stderr=subprocess.STDOUT,
+                    creationflags=bridge.HIDDEN,
+                    close_fds=True,
+                )
+        except Exception as error:
+            # No native execution was launched by a failed Popen. Keep an audited
+            # failed job usable by abandon_new; never publish ready without proof.
+            if (directory / "job.json").is_file():
+                _record_failure(job_id, manifest, file, error, locked=True)
+                bridge.write_json(directory / "job.json", manifest, durable=True)
+            else:
+                shutil.rmtree(path, ignore_errors=True)
+            raise
+        return manifest
+
+
 def apply(
     model_id: str, evidence_token: str, model_name: str | None = None, idempotency_key: str = ""
 ) -> dict:
     if not bridge.JOB_ID.fullmatch(model_id or ""):
         raise ValueError("Invalid model_id")
-    if not isinstance(idempotency_key, str) or not re.fullmatch(
-        r"[A-Za-z0-9_-]{8,80}", idempotency_key
-    ):
-        raise ValueError(
-            "idempotency_key must contain 8-80 letters, digits, underscores or hyphens"
-        )
+    _key(idempotency_key)
     if model_name is not None:
         model_name = bridge.normalize_model_name(model_name)
     arguments = {
@@ -308,6 +460,10 @@ def apply(
                 raise bridge.ToolkitBusy("Adoption request was concurrently accepted; poll its job")
             model, record = _validate_evidence(model_id, evidence_token)
             chosen = model_name or model["model_name"]
+            if record.get("snapshot") and chosen != model["model_name"]:
+                raise ValueError(
+                    "A prepared snapshot cannot be renamed; use its prepared model_name"
+                )
             model = {**model, "model_name": chosen}
             job_id = uuid.uuid4().hex
             directory = bridge.job_path(job_id)
@@ -319,6 +475,13 @@ def apply(
                 "session_fingerprint": record["live"]["session_fingerprint"],
                 "live_inspection": record["live"]["inspection"],
             }
+            if record.get("snapshot"):
+                choice = {
+                    "action": "confirm_snapshot",
+                    "source_file": record["file"]["path"],
+                    "source_identity": record["file"],
+                    "source_inspection": model["prepared_snapshot"]["inspection"],
+                }
             if record["live"].get("display_name"):
                 choice["display_name"] = record["live"]["display_name"]
             manifest = {
@@ -351,6 +514,7 @@ def apply(
             reserved = general.model_info(model_id)
             reserved["model_name"] = chosen
             reserved["pending_job"] = job_id
+            reserved["last_job"] = job_id
             bridge.write_json(general.model_path(model_id) / "model.json", reserved, durable=True)
             with (directory / "runner.log").open("ab") as log:
                 try:
@@ -386,16 +550,25 @@ def _finish(record: dict) -> dict:
     """Materialize a durable commit; never invoke Toolkit or overwrite later edits."""
     model = general.model_info(record["model_id"])
     after = record["model_after"]
-    if model.get("pending_job") == record["job_id"] or model.get("status") == "adopt_pending":
+    if model.get("pending_job") == record["job_id"]:
         if (
             identity(bridge.job_path(record["job_id"]) / "native_result.json")
             != record["result_identity"]
         ):
             raise ValueError("Committed native evidence changed; keep adoption protection")
+        expected_output = record.get("output_identity")
+        if (
+            expected_output
+            and identity(owned_file(after, expected_output["path"])) != expected_output
+        ):
+            raise ValueError("Committed snapshot file changed; keep adoption protection")
         bridge.write_json(
             general.model_path(record["model_id"]) / "model.json", after, durable=True
         )
-    elif model.get("adopted_from", {}).get("adoption_id") != record["job_id"]:
+    elif (
+        model.get("adopted_from", {}).get("adoption_id") != record["job_id"]
+        and model.get("prepared_snapshot", {}).get("prepare_job_id") != record["job_id"]
+    ):
         raise ValueError("Committed adoption conflicts with current registry; preserve audit")
     return record["job_after"]
 
@@ -465,12 +638,33 @@ def _run_locked(job_id: str, manifest: dict, file: Path) -> dict:
             "reservation_changed", "Adoption reservation no longer belongs to this intent"
         )
     request = bridge.read_json(directory / "request.json")
+    if request["adoption"]["action"] == "apply":
+        expected_source = intent["evidence"]["file"]
+        if identity(Path(expected_source["path"])) != expected_source:
+            raise AdoptionRefused("source_changed", "Source file changed before native dispatch")
+    if request["adoption"]["action"] == "confirm_snapshot":
+        expected = request["adoption"]["source_identity"]
+        if identity(owned_file(current, expected["path"])) != expected:
+            raise AdoptionRefused(
+                "snapshot_changed", "Prepared snapshot changed before native dispatch"
+            )
     result = _native(directory, manifest)
     current = general.model_info(manifest["model_id"])
     if current.get("pending_job") != job_id:
         raise AdoptionRefused("reservation_changed", "Adoption reservation changed during apply")
+    if result.get("saved_file_reloaded_and_verified") is not True:
+        raise RuntimeError("Native snapshot lacks save/reload verification; protection retained")
+    if request["adoption"]["action"] == "prepare":
+        return _commit_prepared(job_id, manifest, file, intent, current, result)
     after = {**current}
     file_identity = identity(owned_file(after, result["part_file"]))
+    if (
+        request["adoption"]["action"] == "confirm_snapshot"
+        and file_identity != request["adoption"]["source_identity"]
+    ):
+        raise RuntimeError(
+            "Prepared snapshot file changed during confirmation; protection retained"
+        )
     result["sha256"] = file_identity["sha256"]
     after.update(
         status="ready",
@@ -502,10 +696,65 @@ def _run_locked(job_id: str, manifest: dict, file: Path) -> dict:
         model_after=after,
         job_after=manifest,
         result_identity=identity(directory / "native_result.json"),
+        output_identity=file_identity,
         request=request,
     )
     bridge.write_json(file, intent, durable=True)
     intent["state"] = "committed"  # Durable decision precedes materialization.
+    bridge.write_json(file, intent, durable=True)
+    _finish(intent)
+    return manifest
+
+
+def _commit_prepared(
+    job_id: str, manifest: dict, file: Path, intent: dict, current: dict, result: dict
+) -> dict:
+    live = result["live"]
+    if live.get("origin") != "" or _refusal_reason(live):
+        raise RuntimeError("Native preparation did not prove a healthy never-saved source")
+    snapshot_file = identity(owned_file(current, result["part_file"]))
+    snapshot = {
+        "prepare_job_id": job_id,
+        "file": snapshot_file,
+        "live": live,
+        "inspection": result["inspection"],
+        "aliases": result.get("aliases", {}),
+    }
+    after = {
+        **current,
+        "model_type": live["model_type"],
+        "prepared_snapshot": snapshot,
+        "pending_job": None,
+        "revision": 0,
+        "last_job": job_id,
+        "updated_at": bridge.now(),
+        "adopted_from": {
+            "source_kind": "session_snapshot",
+            "origin": None,
+            "source_display_name": live.get("display_name"),
+            "state": "prepared",
+        },
+    }
+    evidence = _evidence(after, live, snapshot_file, snapshot=True)
+    # Keep the native evidence immutable; the public token belongs to the
+    # metadata transaction and is also retained in compact polling responses.
+    manifest.update(
+        status="succeeded",
+        stage="snapshot_prepared",
+        revision=0,
+        result={**result, "adoption": evidence},
+        finished_at=bridge.now(),
+        message="Frozen snapshot prepared; review evidence then apply or abandon_new",
+    )
+    intent.update(
+        state="verified",
+        model_after=after,
+        job_after=manifest,
+        result_identity=identity(bridge.job_path(job_id) / "native_result.json"),
+        output_identity=snapshot_file,
+    )
+    bridge.write_json(file, intent, durable=True)
+    intent["state"] = "committed"
     bridge.write_json(file, intent, durable=True)
     _finish(intent)
     return manifest
@@ -549,6 +798,7 @@ def _record_failure(
             model = general.model_info(manifest["model_id"])
             if model.get("pending_job") == job_id:
                 model["pending_job"] = None
+                model["last_job"] = job_id
                 bridge.write_json(
                     general.model_path(manifest["model_id"]) / "model.json", model, durable=True
                 )
@@ -568,11 +818,15 @@ def adopt(
     idempotency_key: str | None = None,
 ) -> dict:
     if mode == "inspect":
-        if any(
-            value is not None for value in (model_id, evidence_token, model_name, idempotency_key)
-        ):
+        if any(value is not None for value in (evidence_token, model_name, idempotency_key)):
             raise ValueError("Inspect takes no parameters; apply requires the inspect results")
-        return inspect()
+        return inspect(model_id)
+    if mode == "prepare":
+        if model_id is not None or evidence_token is not None or not idempotency_key:
+            raise ValueError(
+                "prepare requires idempotency_key, optional model_name; no model_id/token"
+            )
+        return prepare(model_name, idempotency_key)
     if mode != "apply" or not model_id or not evidence_token or not idempotency_key:
         raise ValueError("apply requires model_id, evidence_token and idempotency_key")
     return apply(model_id, evidence_token, model_name, idempotency_key)

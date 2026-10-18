@@ -102,6 +102,9 @@ def model_summary(model: dict[str, Any]) -> dict[str, Any]:
         "mutation_pending": bool(model.get("pending_job") or model.get("recovery_pending")),
     }
     result["detail_available"] = True
+    source = model.get("adopted_from")
+    result["adopted"] = bool(source and source.get("state") == "completed")
+    result["source_kind"] = (source or {}).get("source_kind", "file" if source else "created")
     return result
 
 

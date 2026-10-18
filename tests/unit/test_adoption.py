@@ -74,11 +74,15 @@ def synthetic_native(job_directory: Path, manifest: dict) -> dict:
         {"pid": 2147483645, "created": 14},
     )
     result = {"connected": True, "delivery_complete": True, "disconnect_code": 0}
-    if choice.get("action") == "inspect":
+    if choice.get("action") in ("inspect", "prepare") and not request["model"][
+        "model_name"
+    ].startswith("fail"):
         result.update(
             success=True,
             live={
-                "origin": str(bridge.ROOT / "user_parts" / "001.prt"),
+                "origin": ""
+                if choice["action"] == "prepare"
+                else str(bridge.ROOT / "user_parts" / "001.prt"),
                 "model_type": "part",
                 "healthy": True,
                 "millimeter_units": True,
@@ -87,6 +91,16 @@ def synthetic_native(job_directory: Path, manifest: dict) -> dict:
                 "inspection": INSPECTION,
             },
         )
+        if choice["action"] == "prepare":
+            model = request["model"]
+            part = Path(model["output_directory"]) / f"{model['model_name']}.prt.1"
+            part.write_bytes(b"frozen never-saved source state")
+            result.update(
+                saved_file_reloaded_and_verified=True,
+                inspection=INSPECTION,
+                aliases={},
+                part_file=str(part),
+            )
     elif request["model"]["model_name"].startswith("fail"):
         result.update(
             success=False,
@@ -99,7 +113,10 @@ def synthetic_native(job_directory: Path, manifest: dict) -> dict:
     else:
         model = request["model"]
         part = Path(model["output_directory"]) / f"{model['model_name']}.prt.1"
-        part.write_bytes(f"adopted managed copy {model['model_name']}".encode())
+        if choice.get("action") == "confirm_snapshot":
+            part = Path(choice["source_file"])
+        else:
+            part.write_bytes(f"adopted managed copy {model['model_name']}".encode())
         result.update(
             success=True,
             saved_file_reloaded_and_verified=True,
@@ -114,6 +131,8 @@ def synthetic_native(job_directory: Path, manifest: dict) -> dict:
 
 def child_serve(directory: Path) -> None:
     import server
+    from creo_mechdog import session_models
+    from tests.unit.test_session_models import synthetic_inventory
 
     bridge.ROOT = directory
     bridge.JOBS = directory / "jobs"
@@ -147,6 +166,7 @@ def child_serve(directory: Path) -> None:
             patch.object(bridge, "build_native", return_value=directory / "worker.exe")
         )
         stack.enter_context(patch.object(adoption, "_native", side_effect=synthetic_native))
+        stack.enter_context(patch.object(session_models, "_probe", side_effect=synthetic_inventory))
         # reconcile inspect (used by the failure-path test) binds deployment
         # identity against repository files that do not exist in the data root.
         stack.enter_context(
@@ -239,6 +259,7 @@ class AdoptionMcpContract(unittest.IsolatedAsyncioTestCase):
         """Each MCP test adopts the same fixture source from a clean registry."""
         import shutil
 
+        self.source_file().write_bytes(b"fixture user part bytes 001")
         for child in (self.directory / "models").iterdir():
             shutil.rmtree(child, ignore_errors=True)
 
@@ -253,7 +274,59 @@ class AdoptionMcpContract(unittest.IsolatedAsyncioTestCase):
             schema = json.dumps(tool.input_schema)
         self.assertIn("inspect", schema)
         self.assertIn("apply", schema)
+        self.assertIn("prepare", schema)
         self.assertIn("idempotency_key", schema)
+
+    async def test_prepare_renew_confirm_and_replay_over_stdio(self):
+        self.reset_registry()
+        async with self.client() as client:
+            args = {
+                "mode": "prepare",
+                "model_name": "001_snapshot",
+                "idempotency_key": "prepare_snapshot_once",
+            }
+            submitted = await self.call(client, "creo_adopt_current_model", args)
+            prepared = await self.poll(client, submitted["job_id"])
+            self.assertEqual(prepared["status"], "succeeded", prepared)
+            self.assertEqual(prepared["stage"], "snapshot_prepared")
+            evidence = prepared["result"]["adoption"]
+            mid = evidence["model_id"]
+            model = self.model_file(mid)
+            self.assertEqual(
+                (model["status"], model["revision"], model["part_file"]), ("adopt_pending", 0, None)
+            )
+            renewed = await self.call(
+                client, "creo_adopt_current_model", {"mode": "inspect", "model_id": mid}
+            )
+            self.assertNotEqual(renewed["evidence_token"], evidence["evidence_token"])
+            self.assertEqual(renewed["file"], evidence["file"])
+            # The external source changes after freezing; confirmation only uses
+            # the stored snapshot, not the now-changed current source fixture.
+            self.source_file().write_bytes(b"changed after prepare")
+            applied = await self.call(
+                client,
+                "creo_adopt_current_model",
+                {
+                    "mode": "apply",
+                    "model_id": mid,
+                    "evidence_token": renewed["evidence_token"],
+                    "idempotency_key": "confirm_snapshot_once",
+                },
+            )
+            result = await self.poll(client, applied["job_id"])
+            self.assertEqual(result["status"], "succeeded", result)
+            after = self.model_file(mid)
+            self.assertEqual((after["status"], after["revision"]), ("ready", 1))
+            self.assertEqual(
+                Path(after["part_file"]).read_bytes(), b"frozen never-saved source state"
+            )
+            replay = await self.call(client, "creo_adopt_current_model", args)
+            self.assertEqual(replay["job_id"], submitted["job_id"])
+            self.assertEqual(self.model_file(mid)["revision"], 1)
+            listing = await self.call(client, "creo_list_models", {})
+            self.assertTrue(listing["models"][0]["adopted"])
+            self.assertEqual(listing["models"][0]["source_kind"], "session_snapshot")
+            self.source_file().write_bytes(b"fixture user part bytes 001")
 
     async def test_inspect_apply_idempotent_replay_and_managed_copy(self):
         self.reset_registry()
@@ -384,6 +457,14 @@ class AdoptionMcpContract(unittest.IsolatedAsyncioTestCase):
             after = self.model_file(model_id)
             self.assertEqual(after["status"], "adopt_pending")
             self.assertEqual(after["pending_job"], created["job_id"])
+            # Terminal publication precedes process exit. Wait for the fixture
+            # runner to stop before taking recovery evidence across that boundary.
+            runner = result.get("runner_identity")
+            for _ in range(30):
+                if runner and rec._stopped(runner)["stopped"]:
+                    break
+                await asyncio.sleep(0.1)
+            self.assertTrue(runner and rec._stopped(runner)["stopped"])
             # The failed registration resolves through the existing recovery tool
             # once the runner/worker can be proven stopped.
             for _ in range(20):
@@ -464,6 +545,232 @@ class AdoptionBusinessRules(unittest.TestCase):
             evidence = adoption.inspect()
         self.assertFalse(evidence["available"])
         self.assertIn("part or sheetmetal", evidence["reason"])
+
+    def test_inspect_hash_conflict_and_token_failures_leave_no_registration(self):
+        real_write = adoption.bridge.write_json
+
+        def fail_token(file, value, **kwargs):
+            if file.name.startswith("evidence-"):
+                raise OSError("synthetic token write failure")
+            return real_write(file, value, **kwargs)
+
+        for name, replacement in (
+            (
+                "identity",
+                patch.object(
+                    adoption, "identity", side_effect=PermissionError("synthetic hash failure")
+                ),
+            ),
+            (
+                "conflict",
+                patch.object(
+                    adoption, "_origin_conflict", side_effect=OSError("synthetic scan failure")
+                ),
+            ),
+            ("token", patch.object(adoption.bridge, "write_json", side_effect=fail_token)),
+        ):
+            with self.subTest(stage=name), replacement:
+                with self.assertRaises(OSError):
+                    adoption.inspect()
+            self.assertEqual(list(general.MODELS.glob("*/model.json")), [])
+
+    def test_empty_origin_inspect_requires_prepare_without_hashing_directory(self):
+        def no_origin(directory, manifest):
+            result = synthetic_native(directory, manifest)
+            result["live"]["origin"] = ""
+            return result
+
+        with (
+            patch.object(adoption, "_native", side_effect=no_origin),
+            patch.object(adoption, "identity") as hashing,
+        ):
+            result = adoption.inspect()
+        self.assertFalse(result["available"])
+        self.assertEqual(result["available_modes"], ["prepare"])
+        self.assertIsNone(result["model_id"])
+        hashing.assert_not_called()
+        self.assertEqual(list(general.MODELS.glob("*/model.json")), [])
+
+    def test_missing_nonempty_origin_is_not_downgraded_to_unsaved(self):
+        (self.directory / "user_parts" / "001.prt").unlink()
+        with self.assertRaises(FileNotFoundError):
+            adoption.inspect()
+        self.assertEqual(list(general.MODELS.glob("*/model.json")), [])
+
+    def prepare_snapshot(self, key="prepare_business_once", name=None):
+        with patch.object(adoption.subprocess, "Popen"):
+            job = adoption.prepare(name, key)
+        bridge.run_job(job["job_id"])
+        result = bridge.get_job(job["job_id"], "compact")
+        self.assertEqual(result["status"], "succeeded", result)
+        return job, result["result"]["adoption"]
+
+    def test_snapshot_tamper_blocks_renewal_and_apply(self):
+        _, evidence = self.prepare_snapshot()
+        Path(evidence["file"]["path"]).write_bytes(b"changed staged snapshot")
+        with self.assertRaisesRegex(ValueError, "snapshot changed"):
+            adoption.inspect(evidence["model_id"])
+        with self.assertRaisesRegex(ValueError, "snapshot changed"):
+            adoption.apply(
+                evidence["model_id"], evidence["evidence_token"], None, "confirm_tampered"
+            )
+
+    def test_snapshot_expiry_renewal_never_repeats_native_and_name_is_frozen(self):
+        _, evidence = self.prepare_snapshot()
+        mid = evidence["model_id"]
+        path = general.model_path(mid) / "adoption" / f"evidence-{evidence['evidence_token']}.json"
+        record = bridge.read_json(path)
+        record["created"] -= adoption.TOKEN_SECONDS + 1
+        _write(path, record)
+        with self.assertRaisesRegex(ValueError, "expired"):
+            adoption.apply(mid, evidence["evidence_token"], None, "confirm_expired")
+        with patch.object(
+            adoption, "_native", side_effect=AssertionError("renewal must not call native")
+        ):
+            renewed = adoption.inspect(mid)
+        with self.assertRaisesRegex(ValueError, "cannot be renamed"):
+            adoption.apply(mid, renewed["evidence_token"], "different_name", "confirm_renamed")
+
+    def test_snapshot_only_allows_confirm_or_abandon_and_ordinary_submit_is_refused(self):
+        _, evidence = self.prepare_snapshot()
+        mid = evidence["model_id"]
+        with self.assertRaisesRegex(ValueError, "not ready"):
+            general.submit([{"op": "regenerate"}], mid, None, 0)
+        snapshot = {
+            "model": self.model_json(mid),
+            "owners": [{"stopped": True}],
+            "baseline": {"verified": True},
+            "candidate": {"identity": {"path": evidence["file"]["path"]}},
+        }
+        actions = rec._actions(
+            snapshot,
+            {
+                "loaded": True,
+                "owned": True,
+                "inspection": {"healthy": True},
+                "millimeter_units": True,
+                "dependency_free": True,
+            },
+        )
+        self.assertTrue(actions["abandon_new"]["available"])
+        for action in ("accept_saved", "accept_live", "restore_baseline"):
+            self.assertFalse(actions[action]["available"])
+
+    def test_prepare_same_key_different_arguments_is_refused(self):
+        job, _ = self.prepare_snapshot(name="frozen_name")
+        replay = adoption.prepare("FROZEN_NAME", "prepare_business_once")
+        self.assertEqual(replay["job_id"], job["job_id"])
+        with self.assertRaisesRegex(ValueError, "another adoption request"):
+            adoption.prepare("another_name", "prepare_business_once")
+
+    def test_prepare_native_failure_stays_protected_and_replay_does_not_rerun(self):
+        with patch.object(adoption.subprocess, "Popen"):
+            job = adoption.prepare("fail_prepared", "prepare_fail_once")
+        bridge.run_job(job["job_id"])
+        result = bridge.get_job(job["job_id"], "compact")
+        self.assertEqual(result["status"], "unknown_outcome")
+        self.assertEqual(self.model_json(job["model_id"])["pending_job"], job["job_id"])
+        with patch.object(adoption, "_native", side_effect=AssertionError("no replay")):
+            replay = adoption.prepare("fail_prepared", "prepare_fail_once")
+        self.assertEqual(replay["job_id"], job["job_id"])
+
+    def test_durable_prepare_commit_finishes_by_polling_without_native_replay(self):
+        with patch.object(adoption.subprocess, "Popen"):
+            job = adoption.prepare(None, "prepare_commit_once")
+        with patch.object(
+            adoption, "_finish", side_effect=OSError("synthetic registry materialization failure")
+        ):
+            bridge.run_job(job["job_id"])
+        with patch.object(adoption, "_native", side_effect=AssertionError("no native replay")):
+            result = bridge.get_job(job["job_id"], "compact")
+        self.assertEqual(result["status"], "succeeded", result)
+        self.assertIsNone(self.model_json(job["model_id"])["pending_job"])
+
+    def test_prepare_real_thread_admission_returns_busy_without_second_job(self):
+        import threading
+
+        entered, release = threading.Event(), threading.Event()
+        outcomes = []
+
+        def hold_spawn(*args, **kwargs):
+            entered.set()
+            if not release.wait(5):
+                raise RuntimeError("test barrier timed out")
+
+        def first():
+            try:
+                outcomes.append(adoption.prepare(None, "prepare_thread_first"))
+            except Exception as error:
+                outcomes.append(error)
+
+        with patch.object(adoption.subprocess, "Popen", side_effect=hold_spawn):
+            thread = threading.Thread(target=first)
+            thread.start()
+            try:
+                self.assertTrue(entered.wait(5))
+                with self.assertRaises(bridge.ToolkitBusy):
+                    adoption.prepare(None, "prepare_thread_second")
+            finally:
+                release.set()
+                thread.join(5)
+        self.assertEqual(len(outcomes), 1)
+        self.assertIsInstance(outcomes[0], dict, outcomes)
+        self.assertEqual(len(list(general.MODELS.glob("*/model.json"))), 1)
+
+    def test_source_change_after_admission_refuses_before_native(self):
+        evidence = adoption.inspect()
+        with patch.object(adoption.subprocess, "Popen"):
+            job = adoption.apply(
+                evidence["model_id"], evidence["evidence_token"], None, "admitted_source_changes"
+            )
+        (self.directory / "user_parts" / "001.prt").write_bytes(b"changed after admission")
+        with patch.object(adoption, "_native", side_effect=AssertionError("no native execution")):
+            bridge.run_job(job["job_id"])
+        result = bridge.get_job(job["job_id"], "compact")
+        self.assertEqual((result["status"], result["failure_phase"]), ("failed", "before_native"))
+        self.assertIsNone(self.model_json(evidence["model_id"])["pending_job"])
+
+    def test_launch_failure_keeps_auditable_failed_prepare_and_replay_is_stable(self):
+        with patch.object(
+            adoption.subprocess, "Popen", side_effect=OSError("synthetic launch failure")
+        ):
+            with self.assertRaisesRegex(OSError, "launch failure"):
+                adoption.prepare(None, "prepare_launch_failure")
+        result = adoption.prepare(None, "prepare_launch_failure")
+        self.assertEqual((result["status"], result["failure_phase"]), ("failed", "before_native"))
+        model = self.model_json(result["model_id"])
+        self.assertEqual(model["last_job"], result["job_id"])
+        self.assertIsNone(model["pending_job"])
+
+    def test_prepared_file_change_after_admission_is_refused_before_worker(self):
+        _, evidence = self.prepare_snapshot()
+        with patch.object(adoption.subprocess, "Popen"):
+            job = adoption.apply(
+                evidence["model_id"],
+                evidence["evidence_token"],
+                None,
+                "snapshot_changes_after_admit",
+            )
+        Path(evidence["file"]["path"]).write_bytes(b"changed after admission")
+        with patch.object(adoption, "_native", side_effect=AssertionError("no native execution")):
+            bridge.run_job(job["job_id"])
+        result = bridge.get_job(job["job_id"], "compact")
+        self.assertEqual((result["status"], result["reason"]), ("failed", "snapshot_changed"))
+        self.assertEqual(self.model_json(evidence["model_id"])["revision"], 0)
+
+    def test_old_prepare_commit_replay_cannot_revert_later_model_edits(self):
+        job, evidence = self.prepare_snapshot()
+        mid = evidence["model_id"]
+        model = self.model_json(mid)
+        model.update(status="ready", revision=7, pending_job=None)
+        bridge.write_json(general.model_path(mid) / "model.json", model)
+        manifest = bridge.read_json(bridge.job_path(job["job_id"]) / "job.json")
+        manifest["status"] = "running"  # Simulate a lost terminal publication.
+        bridge.write_json(bridge.job_path(job["job_id"]) / "job.json", manifest)
+        with patch.object(adoption, "_native", side_effect=AssertionError("no native replay")):
+            result = bridge.get_job(job["job_id"], "compact")
+        self.assertEqual(result["status"], "succeeded")
+        self.assertEqual(self.model_json(mid)["revision"], 7)
 
 
 if __name__ == "__main__":

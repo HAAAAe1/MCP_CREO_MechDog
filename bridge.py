@@ -1095,6 +1095,10 @@ def get_job(job_id: str, detail: str = "full") -> dict:
         from creo_mechdog.reconciliation import resume_committed
 
         manifest = resume_committed(job_id) or manifest
+    elif manifest.get("kind") == "adoption":
+        from creo_mechdog.adoption import resume_committed
+
+        manifest = resume_committed(job_id) or manifest
     native_log = directory / "native.log"
     if native_log.exists():
         tail = native_log.read_bytes()[-8000:].decode("utf-8", errors="replace")
@@ -1166,6 +1170,7 @@ def compact_job(manifest: dict) -> dict:
         "commit_pending",
         "action",
         "idempotency_key",
+        "adoption_action",
         "model_evidence_error",
     )
     summary = {key: manifest[key] for key in keys if key in manifest}
@@ -1196,6 +1201,8 @@ def compact_job(manifest: dict) -> dict:
             "failed_toolkit_call",
             "failed_operation_index",
             "inspection_source",
+            "adoption",
+            "adopted",
         )
         native = {key: result[key] for key in result_keys if key in result}
         from creo_mechdog.model_queries import inspection_summary

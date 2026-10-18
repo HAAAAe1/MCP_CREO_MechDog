@@ -38,6 +38,7 @@ from creo_mechdog.schema import (
     SketchDimension,
     SketchOp,
 )
+from creo_mechdog.session_models import list_session_models
 from version import VERSION
 
 logging.basicConfig(level=logging.WARNING)
@@ -64,6 +65,7 @@ _SOURCE_NAMES = (
     "src/creo_mechdog/recovery.py",
     "src/creo_mechdog/reconciliation.py",
     "src/creo_mechdog/adoption.py",
+    "src/creo_mechdog/session_models.py",
     "src/creo_mechdog/model_queries.py",
     "src/creo_mechdog/startup_state.py",
     "src/creo_mechdog/windows_boot.py",
@@ -306,10 +308,10 @@ async def creo_reconcile_model(
 
 @mcp.tool(annotations=CREATE)
 async def creo_adopt_current_model(
-    mode: Literal["inspect", "apply"] = "inspect",
+    mode: Literal["inspect", "prepare", "apply"] = "inspect",
     model_id: str | None = Field(
         default=None,
-        description="Apply only: the adopt_pending model_id returned by inspect.",
+        description="Apply: pending model_id. Inspect with model_id renews prepared-snapshot evidence without copying.",
     ),
     evidence_token: str | None = Field(
         default=None, description="Apply only: the evidence_token returned by inspect."
@@ -317,18 +319,26 @@ async def creo_adopt_current_model(
     model_name: str | None = Field(
         default=None,
         description=(
-            "Apply only: managed copy name (1-31 chars of lowercase letters/digits/underscores, "
+            "Prepare or file-source apply: managed copy name (1-31 chars of lowercase letters/digits/underscores, "
             "letter or digit first; uppercase input is normalized to lowercase); defaults to the "
             "inspect default_model_name and must not exist in the Creo session."
         ),
     ),
     idempotency_key: str | None = Field(
         default=None,
-        description="Apply only: unique 8-80 letters, digits, underscores or hyphens.",
+        description="Prepare/apply: unique 8-80 letters, digits, underscores or hyphens; use different keys for the two steps.",
     ),
 ) -> dict[str, Any]:
-    """Adopt the user's currently opened Creo model as a managed copy (FEAT-042 contract). inspect runs a read-only preflight on the current window model and returns identity evidence (origin, file hash, live inspection summary), an adopt_pending model_id and an evidence_token. apply requires that token plus a unique idempotency_key and copies the current session state (including unsaved changes) into a new managed model; the source model and its file are never modified, erased or renamed. Supported: independent part/sheetmetal with millimeter units, no external dependencies and no failed/suppressed features; identity is proven by origin path, file sha256 and live inspection, never by display name. Poll the returned job via creo_get_job; a failed adoption leaves the registry clean or resolvable with creo_reconcile_model abandon_new. Source files already managed or adopted are refused with the existing model_id."""
+    """Explicitly adopt the current window model as a managed copy; the original is never saved, erased or renamed. File sources use read-only inspect then evidence-bound apply. A never-saved model requires prepare with an idempotency_key: poll its job and review result.adoption, then apply that model_id/evidence_token with a new key. prepare freezes a copy at native execution time without switching the current window; status stays adopt_pending/revision=0. Confirmation adopts that frozen snapshot at revision=1, displays the managed copy and excludes later edits to the original. inspect(model_id=...) renews ten-minute snapshot evidence without copying. Same-key replay never repeats native execution. Supported: healthy independent part/sheetmetal, millimeters, no external dependencies. Poll accepted jobs only; uncertain outcomes keep protection and resolve through reconcile abandon_new. Upgrade source code then restart the MCP connector and verify runtime identity/tool list before using new modes."""
     return await invoke(adopt, mode, model_id, evidence_token, model_name, idempotency_key)
+
+
+@mcp.tool(annotations=READ)
+async def creo_list_session_models(
+    limit: int = Field(default=20, ge=1, le=50), cursor: str | None = None
+) -> dict[str, Any]:
+    """List models already in the connected Creo session without loading, saving, activating or adopting them. Returns names/types/current model, origin, has_saved_origin, modified and proven managed IDs; unknown fields are null with query codes. First page uses the single Toolkit channel (busy rejects immediately); cursor pages read the same frozen ten-minute snapshot. Integer session IDs are transient discovery hints, never adoption identities. Partial type queries report complete=false. Switch to the desired model in Creo before adopting it."""
+    return await invoke(list_session_models, limit, cursor)
 
 
 @mcp.tool(annotations=READ)

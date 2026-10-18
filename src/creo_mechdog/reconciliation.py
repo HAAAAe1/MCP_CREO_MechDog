@@ -178,6 +178,7 @@ def _deployment(deadline: float) -> str:
         "server.py",
         "version.py",
         "src/creo_mechdog/reconciliation.py",
+        "src/creo_mechdog/adoption.py",
         "native/generic.cpp",
         "native/result_delivery.h",
         "native/recovery_deadline.h",
@@ -301,6 +302,11 @@ def _actions(snapshot: dict, live: dict | None) -> dict:
         and live.get("dependency_free"),
         "abandon_new": not model.get("part_file") and model.get("revision") == 0,
     }
+    if model.get("status") == "adopt_pending":
+        # Adoption requires explicit confirmation, not recovery acceptance of
+        # its saved candidate (including an uncertain partially prepared copy).
+        for action in ("restore_baseline", "accept_saved", "accept_live"):
+            conditions[action] = False
     return {
         action: {
             "available": bool(stopped and supported and ok and model.get("status") != "abandoned"),

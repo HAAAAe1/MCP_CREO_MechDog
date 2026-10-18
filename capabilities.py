@@ -106,7 +106,9 @@ def families() -> dict:
         "model_adoption": {
             "enabled": True,
             "tool": "creo_adopt_current_model",
-            "actions": ["inspect", "apply"],
+            "actions": ["inspect", "prepare", "apply"],
+            "never_saved_models": "Explicit prepare freezes a verified snapshot; apply confirms it. Later source edits are excluded.",
+            "snapshot_evidence_renewal": "inspect(model_id=...) without copying; 600-second tokens",
             "scope": (
                 "Explicit managed-copy adoption of the user's current window model; the source "
                 "model and its file are never modified; identity from origin path, file sha256 "
@@ -118,6 +120,14 @@ def families() -> dict:
                 "refused; each source file adopts at most once; failed adoption resolves via "
                 "creo_reconcile_model abandon_new"
             ),
+        },
+        "session_models": {
+            "enabled": True,
+            "tool": "creo_list_session_models",
+            "scope": "Read-only session inventory, frozen pagination, unknown fields are null",
+            "limit": {"default": 20, "maximum": 50, "page_bytes": 32768},
+            "automatic_activation": False,
+            "automatic_adoption": False,
         },
         "seed_library": {
             "enabled": True,

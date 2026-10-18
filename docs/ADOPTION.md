@@ -1,0 +1,49 @@
+# 继续编辑 Creo 中的现有模型
+
+本页对应 FEAT-042 第二阶段与 FEAT-043，属于未发布开发分支。0.4.0 Release 的85工具和历史验收保持原范围；本分支为86工具，增加会话枚举及无盘快照流程。
+
+## 升级与发现
+
+等待已受理任务结束，更新安装后重启客户端中的目标 MCP 连接器。调用 `creo_capabilities` 核对实际运行版本、`runtime.server_entry`、`runtime.code_root`、启动源码指纹及 `source_changed_since_startup=false`，并确认工具清单含 `creo_list_session_models`、接管 mode 含 `prepare`。版本仍为0.4.0不足以区分本开发源码与正式附件。发现来源变化时重启连接器；只修改配置不会替换已运行进程。
+
+`creo_list_models` 返回本服务登记的模型；`creo_list_session_models` 返回已在 Creo 会话中的模型。后者默认20条、最多50条、每页32KiB，同一cursor读取十分钟内同次快照。返回名称/类型、`is_current`、`origin`、`has_saved_origin`、`modified`、可证明的 `model_id` 和原文件对应的 `adopted_copy_model_id`。无法确认的值为null，`query_codes` 保留原始诊断；`complete=false` 或 `truncated=true` 表示覆盖不完整。临时 `session_model_id` 仅用于发现，不作为永久身份。
+
+枚举不自动打开或切换模型。请先在 Creo 激活目标窗口，再执行下面的接管流程。
+
+## 已有保存文件的模型
+
+调用 `creo_adopt_current_model`，省略mode即只读inspect。`available=true` 时检查返回的来源路径、哈希、类型及几何摘要；使用返回的model_id、evidence_token以及新的8～80字符幂等键执行apply：
+
+```json
+{"mode":"apply","model_id":"<inspect返回值>","evidence_token":"<inspect返回值>","idempotency_key":"adopt_saved_20261018"}
+```
+
+有文件但包含未保存修改的模型走同一流程，复制目标为inspect核对过的live状态。来源文件消失或不可读时明确失败，不能把该情况当作从未保存。
+
+## 从未保存的新模型
+
+inspect返回 `available=false`、`available_modes=["prepare"]`，没有可用model_id或令牌。准备步骤会创建受管副本，请显式调用：
+
+```json
+{"mode":"prepare","model_name":"managed_001","idempotency_key":"prepare_001_20261018"}
+```
+
+只轮询返回的 `job_id`。成功时stage为 `snapshot_prepared`，`result.adoption` 包含快照摘要、文件哈希、model_id和十分钟证据令牌。此时模型仍为 `adopt_pending`、revision=0。prepare复制的是原生步骤开始执行时的当前窗口模型，不保存、改名或擦除原模型，完成后保留原窗口。
+
+检查快照后确认：
+
+```json
+{"mode":"apply","model_id":"<result.adoption.model_id>","evidence_token":"<result.adoption.evidence_token>","idempotency_key":"confirm_001_20261018"}
+```
+
+确认后ready/revision=1，显示受管副本，可通过inspect取得真实特征/面/边引用后继续建模。确认使用已冻结快照，prepare之后对原模型的修改不会进入副本。确认不能更改已准备的副本名称。
+
+令牌过期后使用 `{"mode":"inspect","model_id":"<快照ID>"}` 重新核验并续签，不再次复制。快照被改写则拒绝续签/确认。相同prepare幂等键返回原任务，参数不同拒绝；不同键代表显式创建另一份独立快照，不按名称推断原模型所有权。
+
+## 失败与范围
+
+首批支持独立part/钣金、毫米单位、无外部依赖、无失败/抑制/不完整特征。装配、工程图等类型明确拒绝。普通受管模型的origin、检查点、revision及unknown保护保持有效。
+
+未确认模型不能普通建模或通过accept_saved/live绕过确认。需要放弃时使用 `creo_reconcile_model` 的inspect→`abandon_new`，保留文件和审计。派发后结果不确定则保持保护，先查询原job，不重交建模计划、不修改登记或清锁。单一Toolkit通道busy立即拒绝，受理后只轮询。
+
+本轮实测范围见[第二阶段记录](work-items/FEAT-042.md)；Creo13外部环境未验收。开发者检查与[WorkBuddy黑盒场景](WORKBUDDY_ADOPTION.md)分别留证。

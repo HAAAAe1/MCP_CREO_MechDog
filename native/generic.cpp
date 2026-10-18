@@ -2118,9 +2118,136 @@ static void reconcile_native(const J &request, J &report) {
 // Explicit adoption of the user's current window model as a managed copy. The
 // source model is never erased, saved or renamed; adoption copies the in-memory
 // state into this job's output directory and verifies the copy like any save.
+static void display_adopted_model() {
+    CK(ProMdlDisplay(board));
+    int window = -1;
+    CK(ProMdlWindowGet(board, &window));
+    CK(ProWindowCurrentSet(window));
+    CK(ProWindowRefit(window));
+    CK(ProWindowRepaint(window));
+    CK(ProWindowActivate(window));
+}
+
+static void confirm_adoption_snapshot(const J &choice, J &report) {
+    std::wstring saved = wide(choice.at("source_file"));
+    auto candidate = std::filesystem::path(saved).lexically_normal();
+    auto output = std::filesystem::path(folder).lexically_normal();
+    if (!candidate.is_absolute() || _wcsicmp(candidate.parent_path().c_str(), output.c_str()) ||
+        candidate.filename().wstring().find(model_name + L".prt.") != 0)
+        throw std::runtime_error("Prepared snapshot is outside its owned output");
+    ProMdlName name = {};
+    wcscpy_s(name, model_name.c_str());
+    ProError found = ProMdlInit(name, PRO_MDL_PART, &board);
+    if (found == PRO_TK_NO_ERROR) {
+        ProPath origin = {};
+        CK(ProMdlOriginGet(board, origin));
+        if (_wcsicmp(origin, saved.c_str()))
+            throw std::runtime_error("Prepared snapshot name conflicts with another session model");
+        // Refuse rather than discard manual changes to the staged copy.
+        verify_recovery(choice.at("source_inspection"), inspection(false));
+        CK(ProMdlErase(board));
+        board = nullptr;
+    } else if (found != PRO_TK_E_NOT_FOUND)
+        check(found, "FindPreparedSnapshot");
+    ProPath file;
+    path(file, saved);
+    CK(ProMdlFiletypeLoad(file, PRO_MDLFILE_UNUSED, PRO_B_FALSE, &board));
+    CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
+    if (!millimeter_units(board) || !dependency_free(board))
+        throw std::runtime_error("Prepared snapshot units or dependencies changed");
+    J after = inspection();
+    verify_recovery(choice.at("source_inspection"), after);
+    after["inspection_source"] = "adoption_snapshot_verified";
+    after["inspection_available"] = true;
+    display_adopted_model();
+    report.update({{"success", true},
+                   {"saved_file_reloaded_and_verified", true},
+                   {"inspection", after},
+                   {"aliases", J::object()},
+                   {"part_file", utf8(saved)},
+                   {"adopted", true}});
+}
+
+static void session_models_native(J &report) {
+    ProMdl current = nullptr;
+    ProError current_code = ProMdlCurrentGet(&current);
+    J models = J::array(), errors = J::array();
+    const std::pair<ProMdlType, const char *> types[] = {{PRO_MDL_PART, "part"},
+                                                         {PRO_MDL_ASSEMBLY, "assembly"},
+                                                         {PRO_MDL_DRAWING, "drawing"},
+                                                         {PRO_MDL_3DSECTION, "section3d"},
+                                                         {PRO_MDL_2DSECTION, "section2d"},
+                                                         {PRO_MDL_LAYOUT, "notebook"},
+                                                         {PRO_MDL_DWGFORM, "drawing_format"},
+                                                         {PRO_MDL_MFG, "manufacturing"},
+                                                         {PRO_MDL_REPORT, "report"},
+                                                         {PRO_MDL_MARKUP, "markup"},
+                                                         {PRO_MDL_DIAGRAM, "diagram"}};
+    bool truncated = false;
+    for (const auto &entry : types) {
+        ProMdl *list = nullptr;
+        int count = 0;
+        ProError listed = ProSessionMdlList(entry.first, &list, &count);
+        if (listed != PRO_TK_NO_ERROR && listed != PRO_TK_E_NOT_FOUND) {
+            errors.push_back({{"model_type", entry.second}, {"code", listed}});
+        } else if (listed == PRO_TK_NO_ERROR) {
+            try {
+                for (int i = 0; i < count; ++i) {
+                    if (models.size() >= 4096) {
+                        truncated = true;
+                        break;
+                    }
+                    ProMdlName name = {};
+                    ProPath origin = {};
+                    ProBoolean modified = PRO_B_FALSE;
+                    int id = -1;
+                    ProError nc = ProMdlMdlnameGet(list[i], name);
+                    ProError oc = ProMdlOriginGet(list[i], origin);
+                    ProError mc = ProMdlModificationVerify(list[i], &modified);
+                    ProError ic = ProMdlIdGet(list[i], &id);
+                    J item = {{"name", nc ? J(nullptr) : J(utf8(name))},
+                              {"model_type", entry.second},
+                              {"is_current", current_code ? J(nullptr) : J(list[i] == current)},
+                              {"origin", oc ? J(nullptr) : J(utf8(origin))},
+                              {"has_saved_origin", oc ? J(nullptr) : J(origin[0] != 0)},
+                              {"modified", mc ? J(nullptr) : J(modified == PRO_B_TRUE)},
+                              {"session_model_id", ic ? J(nullptr) : J(id)},
+                              {"query_codes",
+                               {{"name", nc}, {"origin", oc}, {"modified", mc}, {"id", ic}}}};
+                    if (entry.first == PRO_MDL_PART) {
+                        ProMdlsubtype subtype;
+                        ProError sc = ProMdlSubtypeGet(list[i], &subtype);
+                        item["query_codes"]["subtype"] = sc;
+                        if (!sc && subtype == PROMDLSTYPE_PART_SHEETMETAL)
+                            item["model_type"] = "sheetmetal";
+                    }
+                    models.push_back(item);
+                }
+            } catch (...) {
+                if (list)
+                    ProArrayFree((ProArray *)&list);
+                throw;
+            }
+        }
+        if (list)
+            CK(ProArrayFree((ProArray *)&list));
+    }
+    report.update({{"success", true},
+                   {"models", models},
+                   {"type_errors", errors},
+                   {"complete", errors.empty() && !truncated},
+                   {"truncated", truncated},
+                   {"current_model_code", current_code}});
+}
+
 static void adopt_native(const J &request, J &report) {
     const J &choice = request.at("adoption");
     const std::string action = choice.at("action");
+    if (action == "confirm_snapshot") {
+        confirm_adoption_snapshot(choice, report);
+        return;
+    }
+    bool preparing = action == "prepare";
     const std::string session = recovery_session_fingerprint();
     if (choice.contains("session_fingerprint") && choice["session_fingerprint"] != session)
         throw std::runtime_error("Adoption refused: Creo session changed since recorded evidence");
@@ -2132,7 +2259,7 @@ static void adopt_native(const J &request, J &report) {
         throw std::runtime_error(
             "Adoption refused: only part or sheetmetal models can be adopted; assemblies and "
             "drawings keep their own ownership");
-    ProPath origin;
+    ProPath origin = {};
     CK(ProMdlOriginGet(current, origin));
     std::wstring origin_text = origin;
     if (choice.contains("origin") &&
@@ -2145,8 +2272,8 @@ static void adopt_native(const J &request, J &report) {
     bool dependency_clean = dependency_free(board);
     std::string model_type = live.value("model_type", "part");
     bool supported = model_type == "part" || model_type == "sheetmetal";
-    ProName display;
-    ProError name_code = ProMdlNameGet(current, display);
+    ProMdlName display = {};
+    ProError name_code = ProMdlMdlnameGet(current, display);
     report["live"] = {{"origin", utf8(origin_text)},
                       {"model_type", model_type},
                       {"healthy", live.at("healthy")},
@@ -2163,11 +2290,20 @@ static void adopt_native(const J &request, J &report) {
         report["success"] = true;
         return;
     }
-    if (action != "apply")
+    if (action != "apply" && !preparing)
         throw std::runtime_error("Unknown adoption action");
     if (choice.contains("live_inspection"))
         verify_recovery(choice.at("live_inspection"), live);
     board = nullptr; // The user's model is never the managed target again past this point.
+    if (preparing && !origin_text.empty())
+        throw std::runtime_error(
+            "prepare requires a never-saved model; use inspect/apply for a file source");
+    if (!preparing && origin_text.empty())
+        throw std::runtime_error(
+            "Never-saved model requires explicit prepare, then confirm its frozen snapshot");
+    if (!live.value("healthy", false))
+        throw std::runtime_error(
+            "Adoption refused: source has failed, suppressed or incomplete features");
     if (!supported)
         throw std::runtime_error(
             "Adoption refused: only independent part or sheetmetal models are supported");
@@ -2176,6 +2312,23 @@ static void adopt_native(const J &request, J &report) {
     if (!dependency_clean)
         throw std::runtime_error(
             "Adoption refused: external dependencies require separate ownership verification");
+    struct WindowRestore {
+        int window = -1;
+        ~WindowRestore() {
+            if (window >= 0) {
+                ProError selected = ProWindowCurrentSet(window);
+                ProError activated = ProWindowActivate(window);
+                log("ADOPTION_WINDOW_RESTORE=%d,%d\n", selected, activated);
+            }
+        }
+    } window_restore;
+    int original_window = -1;
+    if (preparing) {
+        CK(ProWindowCurrentGet(&original_window));
+        if (original_window < 0)
+            throw std::runtime_error("Snapshot preparation requires a current model window");
+        window_restore.window = original_window;
+    }
     ProName adopted;
     wcscpy_s(adopted, model_name.c_str());
     ProMdl clash = nullptr;
@@ -2193,6 +2346,7 @@ static void adopt_native(const J &request, J &report) {
             "Adoption refused: the copied model carries external dependencies");
     CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
     J before = inspection();
+    verify_recovery(live, before); // Prove the copy includes the live source state.
     generic_stage("adoption_save_and_reload");
     ProPath destination;
     path(destination, folder);
@@ -2208,14 +2362,12 @@ static void adopt_native(const J &request, J &report) {
     verify_recovery(before, after);
     after["inspection_source"] = "adoption_verified";
     after["inspection_available"] = true;
-    CK(ProMdlDisplay(board));
-    int window = -1;
-    if (!ProMdlWindowGet(board, &window)) {
-        ProWindowCurrentSet(window);
-        ProWindowRefit(window);
-        ProWindowRepaint(window);
-        ProWindowActivate(window);
-    }
+    if (preparing) {
+        CK(ProWindowCurrentSet(original_window));
+        CK(ProWindowActivate(original_window));
+        window_restore.window = -1;
+    } else
+        display_adopted_model();
     report.update({{"success", true},
                    {"saved_file_reloaded_and_verified", true},
                    {"inspection", after},
@@ -2280,6 +2432,9 @@ static int run_generic(const std::wstring &job) {
         if (request.contains("reconciliation")) {
             generic_stage("recovery_" + request["reconciliation"]["action"].get<std::string>());
             reconcile_native(request, report);
+        } else if (request.contains("session_models")) {
+            generic_stage("list_session_models");
+            session_models_native(report);
         } else if (request.contains("adoption")) {
             generic_stage("adoption_" + request["adoption"]["action"].get<std::string>());
             adopt_native(request, report);

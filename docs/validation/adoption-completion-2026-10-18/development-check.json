@@ -1,0 +1,32 @@
+{
+  "work_item": null,
+  "version": "0.4.0",
+  "timestamp_utc": "2026-10-18T14:56:11.511699+00:00",
+  "environment": {
+    "os": "Windows",
+    "python": "3.12.14"
+  },
+  "source": {
+    "commit": "0ed68f4425f28683829f60fffda08b255d517e3e",
+    "dirty": true,
+    "checked_source_sha256": "2fa8dce69f60e9fa88f4cf565828bc17c5b58ebbfecb7aa45f74bb68d18ab6eb"
+  },
+  "native_validation": "not_run",
+  "unit_tests": "passed",
+  "success": true,
+  "style_summary": {
+    "lint_findings": 31,
+    "unformatted_files": 22,
+    "cpp_files_checked": 21,
+    "python_files_checked": 120
+  },
+  "tools": {
+    "ruff": "0.17.0",
+    "clang-format": "23.1.3"
+  },
+  "configuration": {
+    "pyproject.toml": "4b786c9741c35ba69a3e27a08b686fbf2989821d4ab8d1daf00fe9889e09d0aa",
+    ".clang-format": "b084ba4a767e8fede2f3d47e7dfb3ae120528cb76fceb113ce27e3dd7e0a77a0",
+    "requirements-dev.txt": "f325c41a3f7288bd4dfb08310276c9790b1ca5fcafc9bd68704559b64ec5decc"
+  }
+}
