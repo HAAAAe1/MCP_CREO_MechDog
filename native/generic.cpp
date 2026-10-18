@@ -624,6 +624,57 @@ static ProSectionPointType point_type(const std::string &s) {
            : s == "center" ? PRO_ENT_CENTER
                            : PRO_ENT_WHOLE;
 }
+// Constraint references need a real location on the referenced entity; the
+// section origin degenerates with arcs centered there (BUG-068) and idx_pnt
+// must stay unused for non-spline entities per the Toolkit contract.
+static ProSelection selected(ProSection section, int id, ProSectionPointType type) {
+    Pro2dEntdef *def = nullptr;
+    CK(ProSectionEntityGet(section, id, &def));
+    Pro2dPnt p;
+    bool have = false;
+    if (def->type == PRO_2D_LINE || def->type == PRO_2D_CENTER_LINE) {
+        auto line = (Pro2dLinedef *)def;
+        if (type == PRO_ENT_END) {
+            p[0] = line->end2[0];
+            p[1] = line->end2[1];
+        } else if (type == PRO_ENT_START) {
+            p[0] = line->end1[0];
+            p[1] = line->end1[1];
+        } else {
+            p[0] = (line->end1[0] + line->end2[0]) / 2;
+            p[1] = (line->end1[1] + line->end2[1]) / 2;
+        }
+        have = true;
+    } else if (def->type == PRO_2D_CIRCLE) {
+        auto circle = (Pro2dCircledef *)def;
+        if (type == PRO_ENT_CENTER) {
+            p[0] = circle->center[0];
+            p[1] = circle->center[1];
+        } else {
+            p[0] = circle->center[0] + circle->radius;
+            p[1] = circle->center[1];
+        }
+        have = true;
+    } else if (def->type == PRO_2D_ARC) {
+        auto arc = (Pro2dArcdef *)def;
+        if (type == PRO_ENT_START || type == PRO_ENT_END) {
+            double a = type == PRO_ENT_START ? arc->start_angle : arc->end_angle;
+            p[0] = arc->center[0] + arc->radius * cos(a);
+            p[1] = arc->center[1] + arc->radius * sin(a);
+        } else if (type == PRO_ENT_CENTER) {
+            p[0] = arc->center[0];
+            p[1] = arc->center[1];
+        } else {
+            double a = (arc->start_angle + arc->end_angle) / 2;
+            p[0] = arc->center[0] + arc->radius * cos(a);
+            p[1] = arc->center[1] + arc->radius * sin(a);
+        }
+        have = true;
+    }
+    ProSelection s = nullptr;
+    CK(ProSectionEntityGetSelected(section, id, type, have ? p : nullptr, PRO_VALUE_UNUSED, &s));
+    return s;
+}
 static void redefine(ProFeature *f, ProElement root) {
     ProFeatureCreateOptions *options = nullptr;
     CK(ProArrayAlloc(1, sizeof(ProFeatureCreateOptions), 1, (ProArray *)&options));
@@ -811,10 +862,8 @@ static void sketch(const J &op) {
         for (auto c : op["constraints"]) {
             std::vector<ProSelection> refs;
             for (auto r : c["refs"]) {
-                ProSelection s;
-                Pro2dPnt p = {0, 0};
-                CK(ProSectionEntityGetSelected(section, entities.at(r["entity"].get<std::string>()),
-                                               point_type(r.value("point", "whole")), p, 0, &s));
+                ProSelection s = selected(section, entities.at(r["entity"].get<std::string>()),
+                                          point_type(r.value("point", "whole")));
                 refs.push_back(s);
             }
             int cid;
@@ -1542,10 +1591,8 @@ static J populate_profile(ProSection section, const J &op) {
         for (auto c : op["constraints"]) {
             std::vector<ProSelection> refs;
             for (auto r : c["refs"]) {
-                ProSelection s;
-                Pro2dPnt p = {0, 0};
-                CK(ProSectionEntityGetSelected(section, entities.at(r["entity"].get<std::string>()),
-                                               point_type(r.value("point", "whole")), p, 0, &s));
+                ProSelection s = selected(section, entities.at(r["entity"].get<std::string>()),
+                                          point_type(r.value("point", "whole")));
                 refs.push_back(s);
             }
             int cid;
