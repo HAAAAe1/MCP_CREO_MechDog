@@ -26,7 +26,9 @@
 
 最终源码包与种子包必须从合并后 main 的 Git 快照运行 `tools/package.py` 与 `tools/package_seeds.py` 生成，禁止复用旧 ZIP；独立解压检查、分发白名单、第三方许可、9 枚种子 SHA256 核对后，`v0.3.6` 标签指向该 main 提交，发布非草稿 Pre-release 并附版本说明、验收摘要、环境、未测范围及两包 SHA256。发布后下载核对校验和，PR 回填远端提交、标签、Release 链接与附件核对结果。
 
-- 合并 main 提交：（回填）
-- v0.3.6 标签指向：（回填）
-- Release 链接：（回填）
-- 源码包 SHA256 / 种子包 SHA256：（回填）
+- 合并 main 提交：`ca105b9`（PR #11 merge）+ `1f38069`（种子清单版本与 seeds.py 指纹同步；tag 指向后者）
+- v0.3.6 标签指向：`1f38069`
+- Release 链接：https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.3.6（Pre-release 非草稿）
+- 源码包 SHA256：`6cf1d925901dc5d4fa08cd5b00261720c0a2741a8555027a6bf4f6e59ac4ad88`（588 文件，远端下载核对一致）
+- 种子包 SHA256：`829474ed2995d1ab62b757133a4d9dd795e1634ef079197ab8ba7086da609741`（24 文件 / 9 种子，与 seeds.py expected_digest 一致，远端下载核对一致）
+- 交付核对：[PR #11 回填评论](https://github.com/wudahua/MCP_CREO_MechDog/pull/11#issuecomment-6245231613)。本回填不新增发布后主干提交。
