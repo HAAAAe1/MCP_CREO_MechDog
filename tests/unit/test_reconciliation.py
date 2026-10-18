@@ -8,6 +8,7 @@ import sys
 import tempfile
 import threading
 import unittest
+from contextlib import contextmanager
 from pathlib import Path
 from unittest.mock import patch
 
@@ -214,8 +215,288 @@ class Reconciliation(unittest.TestCase):
         with patch.object(rec, "_native") as worker:
             bridge.run_job(created["job_id"])
         worker.assert_not_called()
-        self.assertEqual(general.model_info(self.mid)["pending_job"], self.original)
-        self.assertEqual(bridge.get_job(created["job_id"])["status"], "failed")
+        model = general.model_info(self.mid)
+        self.assertEqual(model["pending_job"], self.original)
+        self.assertIsNone(model["recovery_pending"])
+        self.assertEqual((model["status"], model["revision"]), ("unknown_outcome", 1))
+        result = bridge.get_job(created["job_id"], "compact")
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["stage"], "reconciliation_refused")
+        self.assertEqual(result["reason"], "source_changed")
+        self.assertEqual(result["failure_phase"], "before_native")
+        self.assertTrue(result["recovery_pending_released"])
+
+    def test_session_selection_refusal_clears_only_its_reservation_and_replays_failure(self):
+        original = (bridge.job_path(self.original) / "job.json").read_bytes()
+        created, args = self.prepare()
+        with (
+            patch.object(bridge, "config", return_value={"creo_session_id": "changed"}),
+            patch.object(rec, "_native") as worker,
+        ):
+            bridge.run_job(created["job_id"])
+        worker.assert_not_called()
+        result = bridge.get_job(created["job_id"], "compact")
+        self.assertEqual(result["reason"], "session_selection_changed")
+        self.assertEqual(result["failure_phase"], "before_native")
+        self.assertTrue(result["recovery_pending_released"])
+        with patch.object(bridge.subprocess, "Popen") as runner:
+            duplicate = rec.apply(*args)
+        runner.assert_not_called()
+        self.assertEqual(duplicate["job_id"], created["job_id"])
+        self.assertEqual(duplicate["status"], "failed")
+        self.assertEqual(duplicate["reason"], result["reason"])
+        self.assertIsNone(general.model_info(self.mid)["recovery_pending"])
+        self.assertEqual(original, (bridge.job_path(self.original) / "job.json").read_bytes())
+
+    def test_before_native_refusal_does_not_release_replacement_reservation(self):
+        created, _ = self.prepare()
+        model = general.model_info(self.mid)
+        model["recovery_pending"] = "c" * 32
+        bridge.write_json(general.model_path(self.mid) / "model.json", model)
+        with patch.object(rec, "_native") as worker:
+            bridge.run_job(created["job_id"])
+        worker.assert_not_called()
+        result = bridge.get_job(created["job_id"])
+        self.assertEqual(result["reason"], "reservation_changed")
+        self.assertFalse(result["recovery_pending_released"])
+        self.assertEqual(general.model_info(self.mid)["recovery_pending"], "c" * 32)
+
+    def test_before_native_cleanup_failure_preserves_protection_and_reports_error(self):
+        created, _ = self.prepare()
+        real_write = bridge.write_json
+
+        def refuse_cleanup(file, value, **kwargs):
+            if file.name == "model.json" and value.get("recovery_pending") is None:
+                raise PermissionError("Injected recovery reservation write denial")
+            return real_write(file, value, **kwargs)
+
+        with (
+            patch.object(bridge, "config", return_value={"creo_session_id": "changed"}),
+            patch.object(bridge, "write_json", side_effect=refuse_cleanup),
+            patch.object(rec, "_native") as worker,
+        ):
+            bridge.run_job(created["job_id"])
+        worker.assert_not_called()
+        result = bridge.get_job(created["job_id"], "compact")
+        self.assertEqual(result["status"], "failed")
+        self.assertFalse(result["recovery_pending_released"])
+        self.assertIn("write denial", result["recovery_pending_cleanup_error"])
+        self.assertEqual(general.model_info(self.mid)["recovery_pending"], created["job_id"])
+
+    def test_refusal_cleanup_is_locked_and_terminal_is_published_after_release(self):
+        created, _ = self.prepare()
+        real_write = bridge.write_json
+        observed = []
+
+        def observe(file, value, **kwargs):
+            if file.name == "model.json" and value.get("recovery_pending") is None:
+                with self.assertRaises(bridge.ToolkitBusy):
+                    with bridge.toolkit_lock(operation="probe_cleanup_lock"):
+                        self.fail("Recovery cleanup was outside the channel lock")
+                observed.append("cleanup_locked")
+            if file.name == "job.json" and value.get("finished_at"):
+                with bridge.toolkit_lock(operation="probe_terminal_release"):
+                    observed.append("terminal_after_release")
+            return real_write(file, value, **kwargs)
+
+        with (
+            patch.object(bridge, "config", return_value={"creo_session_id": "changed"}),
+            patch.object(bridge, "write_json", side_effect=observe),
+        ):
+            self.execute(created)
+        self.assertEqual(observed, ["cleanup_locked", "terminal_after_release"])
+
+    def test_runner_launch_failure_releases_only_own_reservation_and_stays_idempotent(self):
+        evidence = rec.inspect(self.mid)
+        args = (
+            self.mid,
+            "restore_baseline",
+            1,
+            self.original,
+            evidence["evidence_token"],
+            "failed_runner_key",
+        )
+        real_write = bridge.write_json
+        observed = []
+
+        def observe(file, value, **kwargs):
+            if file.name == "model.json" and value.get("recovery_pending") is None:
+                with self.assertRaises(bridge.ToolkitBusy):
+                    with bridge.toolkit_lock(operation="probe_launch_cleanup_lock"):
+                        self.fail("Launch failure cleanup was outside the channel lock")
+                observed.append("cleanup_locked")
+            if file.name == "job.json" and value.get("finished_at"):
+                with bridge.toolkit_lock(operation="probe_launch_terminal_release"):
+                    observed.append("terminal_after_release")
+            return real_write(file, value, **kwargs)
+
+        with (
+            patch.object(bridge.subprocess, "Popen", side_effect=OSError("runner denied")),
+            patch.object(bridge, "write_json", side_effect=observe),
+        ):
+            with self.assertRaisesRegex(OSError, "runner denied"):
+                rec.apply(*args)
+        self.assertEqual(observed, ["cleanup_locked", "terminal_after_release"])
+        model = general.model_info(self.mid)
+        self.assertIsNone(model["recovery_pending"])
+        self.assertEqual(model["pending_job"], self.original)
+        with patch.object(bridge.subprocess, "Popen") as runner:
+            duplicate = rec.apply(*args)
+        runner.assert_not_called()
+        self.assertEqual(duplicate["status"], "failed")
+        self.assertEqual(duplicate["reason"], "runner_start_failed")
+        self.assertTrue(duplicate["recovery_pending_released"])
+
+    def test_channel_finalization_error_does_not_replace_refusal_or_cleanup_result(self):
+        created, _ = self.prepare()
+        real_lock = bridge.toolkit_lock
+
+        @contextmanager
+        def finalization_failure(**kwargs):
+            with real_lock(**kwargs):
+                yield
+            raise OSError("Injected channel finalization failure")
+
+        with (
+            patch.object(bridge, "toolkit_lock", side_effect=finalization_failure),
+            patch.object(bridge, "config", return_value={"creo_session_id": "changed"}),
+            patch.object(rec, "_native") as worker,
+        ):
+            bridge.run_job(created["job_id"])
+        worker.assert_not_called()
+        result = bridge.get_job(created["job_id"], "compact")
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["reason"], "session_selection_changed")
+        self.assertEqual(result["failure_phase"], "before_native")
+        self.assertTrue(result["recovery_pending_released"])
+        self.assertIn("finalization failure", result["channel_finalization_error"])
+        self.assertIsNone(general.model_info(self.mid)["recovery_pending"])
+
+    def test_runner_launch_and_channel_finalization_failures_publish_original_failure(self):
+        evidence = rec.inspect(self.mid)
+        args = (
+            self.mid,
+            "restore_baseline",
+            1,
+            self.original,
+            evidence["evidence_token"],
+            "failed_runner_and_channel_key",
+        )
+        launch_error = OSError("Injected runner launch failure")
+        real_lock, real_write = bridge.toolkit_lock, bridge.write_json
+        terminal_after_release = []
+
+        @contextmanager
+        def finalization_failure(**kwargs):
+            with real_lock(**kwargs):
+                yield
+            raise OSError("Injected submission channel finalization failure")
+
+        def observe(file, value, **kwargs):
+            if file.name == "job.json" and value.get("finished_at"):
+                with real_lock(operation="probe_combined_failure_release"):
+                    terminal_after_release.append(True)
+            return real_write(file, value, **kwargs)
+
+        with (
+            patch.object(bridge, "toolkit_lock", side_effect=finalization_failure),
+            patch.object(bridge.subprocess, "Popen", side_effect=launch_error),
+            patch.object(bridge, "write_json", side_effect=observe),
+        ):
+            with self.assertRaises(OSError) as raised:
+                rec.apply(*args)
+        self.assertIs(raised.exception, launch_error)
+        self.assertEqual(terminal_after_release, [True])
+        model = general.model_info(self.mid)
+        self.assertIsNone(model["recovery_pending"])
+        self.assertEqual(model["pending_job"], self.original)
+        with patch.object(bridge.subprocess, "Popen") as runner:
+            result = rec.apply(*args)
+        runner.assert_not_called()
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["stage"], "reconciliation_refused")
+        self.assertEqual(result["reason"], "runner_start_failed")
+        self.assertEqual(result["failure_phase"], "before_native")
+        self.assertEqual(result["message"], str(launch_error))
+        self.assertTrue(result["recovery_pending_released"])
+        self.assertIn("finalization failure", result["channel_finalization_error"])
+
+    def test_runner_channel_admission_failure_keeps_unlocked_reservation(self):
+        created, _ = self.prepare()
+        with bridge.toolkit_lock(operation="other_job", job_id="c" * 32):
+            with patch.object(rec, "_native") as worker:
+                bridge.run_job(created["job_id"])
+        worker.assert_not_called()
+        result = bridge.get_job(created["job_id"], "compact")
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["failure_phase"], "channel_admission")
+        self.assertFalse(result["recovery_pending_released"])
+        self.assertEqual(result["busy"]["blocking_job_id"], "c" * 32)
+        self.assertEqual(general.model_info(self.mid)["recovery_pending"], created["job_id"])
+
+    def test_delivered_native_session_refusal_keeps_unknown_and_original_message(self):
+        created, _ = self.prepare()
+        message = "Recovery refused: Creo session changed since recorded evidence"
+
+        def refuse(command, **kwargs):
+            # Native report substitution only: the real _native dispatch and
+            # delivery checks still execute, without starting a worker/Toolkit.
+            bridge.write_json(
+                bridge.job_path(created["job_id"]) / "native_result.json",
+                {
+                    "success": False,
+                    "connected": True,
+                    "delivery_complete": True,
+                    "disconnect_code": 0,
+                    "failed_stage": "recovery_restore_baseline",
+                    "message": message,
+                },
+            )
+            return subprocess.CompletedProcess(command, 1)
+
+        with (
+            patch.object(rec.subprocess, "run", side_effect=refuse) as dispatch,
+            patch.object(bridge, "native_environment", return_value={}),
+        ):
+            bridge.run_job(created["job_id"])
+        self.assertEqual(dispatch.call_count, 1)
+        result = bridge.get_job(created["job_id"], "compact")
+        self.assertEqual(result["status"], "unknown_outcome")
+        self.assertEqual(result["failure_phase"], "native_worker_started")
+        self.assertEqual(result["reason"], "native_outcome_unconfirmed")
+        self.assertEqual(result["result"]["failed_stage"], "recovery_restore_baseline")
+        self.assertEqual(result["result"]["message"], message)
+        self.assertIn(message, result["message"])
+        self.assertIn("may have started", result["message"])
+        self.assertFalse(result["recovery_pending_released"])
+        self.assertEqual(general.model_info(self.mid)["recovery_pending"], created["job_id"])
+
+    def test_post_native_evidence_refusal_remains_unknown(self):
+        created, _ = self.prepare()
+        with patch.object(
+            rec,
+            "_check_execution",
+            side_effect=[None, rec.RecoveryRefused("deployment_changed", "deployment changed")],
+        ):
+            result = self.execute(created)
+        self.assertEqual(result["status"], "unknown_outcome")
+        self.assertEqual(result["stage"], "reconciliation_unconfirmed")
+        self.assertEqual(result["reason"], "deployment_changed")
+        self.assertEqual(result["failure_phase"], "native_worker_started")
+        self.assertFalse(result["recovery_pending_released"])
+        self.assertEqual(general.model_info(self.mid)["recovery_pending"], created["job_id"])
+
+    def test_failed_native_dispatch_is_still_possibly_started(self):
+        created, _ = self.prepare()
+        with (
+            patch.object(rec.subprocess, "run", side_effect=PermissionError("dispatch denied")),
+            patch.object(bridge, "native_environment", return_value={}),
+        ):
+            bridge.run_job(created["job_id"])
+        result = bridge.get_job(created["job_id"])
+        self.assertEqual(result["status"], "unknown_outcome")
+        self.assertEqual(result["failure_phase"], "native_worker_started")
+        self.assertEqual(general.model_info(self.mid)["recovery_pending"], created["job_id"])
 
     def test_recovery_timeout_keeps_both_reservations(self):
         created, _ = self.prepare()
@@ -358,6 +639,7 @@ print(json.dumps(bridge.get_job(sys.argv[2])))
 
     def test_token_expires_and_duplicate_key_cannot_change_action(self):
         evidence = rec.inspect(self.mid)
+        jobs_before = set(bridge.JOBS.iterdir())
         with patch.object(rec.time, "time", return_value=10**12):
             with self.assertRaisesRegex(ValueError, "expired"):
                 rec.apply(
@@ -368,6 +650,9 @@ print(json.dumps(bridge.get_job(sys.argv[2])))
                     evidence["evidence_token"],
                     "expired_key",
                 )
+        self.assertEqual(rec.TOKEN_SECONDS, 600)
+        self.assertEqual(set(bridge.JOBS.iterdir()), jobs_before)
+        self.assertIsNone(general.model_info(self.mid).get("recovery_pending"))
         created, args = self.prepare()
         altered = list(args)
         altered[1] = "accept_saved"

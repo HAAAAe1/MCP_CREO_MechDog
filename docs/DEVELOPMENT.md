@@ -2,13 +2,15 @@
 
 本项目按可交付的 Creo MCP 工具维护，采用功能条目驱动、短分支和分批整理。日常开发从 [统一台账](BACKLOG.md) 选择条目；新增工作先登记，复杂条目复制 [模板](templates/WORK_ITEM.md)。开发准入对小修复同样适用，内容可精简为几行。
 
-当前服务/源码版本0.3.5，用户要求通过[DEV-035](work-items/DEV-035.md)统一交付main和Release；DEV-033/BUG-054、DEV-034/BUG-055按本机及WorkBuddy已测核心范围完成。M2终态未取得、BUG-056通道掉线待核实和FEAT-018/029完整验收保持，见[本版记录](validation/RELEASE-0.3.5.md)。本次发布不新增Toolkit连接或故障注入。
+当前服务/源码版本为0.3.5，已由[DEV-035](work-items/DEV-035.md)交付。DEV-033/BUG-054、DEV-034/BUG-055按各自已测范围完成；后续DEV-036已补齐M2收尾和稳定通道空值对照，BUG-056已关闭。原[0.3.5发布记录](validation/RELEASE-0.3.5.md)保留发布当时的未测事实，FEAT-018/029的完整验收仍未结束。
 
-最新[BUG-001离线卡死核对](validation/BUG-001-hang-offline-2026-10-17.md)已确认Creo IPC初始化通信失败及同一12.4进程无响应关闭，底层诱因仍待定位。当前无Creo会话可验证，确认可操作前继续停止Toolkit连接/注入；此核对不替代实机/WorkBuddy验收。
+2026-10-17的[BUG-001离线卡死核对](validation/BUG-001-hang-offline-2026-10-17.md)记录了IPC初始化失败及同一12.4进程无响应关闭；当时无会话可验证，底层诱因未定。后续DEV-036的成功范围另记，不代替旧卡死根因结论；当前联调仍按根级规范核对条件，本轮台账分类不解除连接/注入限制。
 
-当前优先核实[BUG-056](work-items/BUG-056.md)的通道静默掉线，原有DEV-030后续分期保持。DEV-034真实MCP和WorkBuddy证据已经记录，不再按未开发任务重复实施；完整恢复和回调生命周期边界仍在原卡跟踪。
+[DEV-036](work-items/DEV-036.md) 四轮闭环并已归档（[核实记录](validation/BUG-056-DEV-036-investigation-2026-10-17.md)、[WorkBuddy 验收](validation/DEV-036-WorkBuddy-acceptance-2026-10-17.md)）：BUG-056 定位为跨批次遗留nmsd（名字服务）侧会话信息失效、服务侧无缺陷，用户处置环境后复测通过并按用户确认关闭；M2 经 live 取证 abandon_new 收尾；WorkBuddy 黑盒（新字段/稳定性/MCP 建模/空值协议含字面 "null" 完整终态/M2 确认）全部通过。后续通道同机 -4 永久失效按核实记录的取证顺序排查（WMI 进程身份→IsHungAppWindow→单次 30 秒判别探测→trail）。FEAT-018/029 完整验收与 M2 外的 unknown 保护维持原状；DEV-036 的改动尚未合入 main，合入时按发布规则另行交付。
 
 ## 每次开发的顺序
+
+主台账按[DEV-039](work-items/DEV-039.md)重新分类：有失败报告待复现、输入/规则待核实、已确认待开发、剩余验收、功能/工程规划和历史观察分别列出。[DEV-040](work-items/DEV-040.md)已完成本机诊断与 Python/MCP 修复阶段：[BUG-059](work-items/BUG-059.md) 修复执行前自身占位悬挂并澄清原生拒绝阶段，隔离 WorkBuddy 契约验收通过；BUG-057 本机未复现，原环境定位独立保留；BUG-058 仅静态核对。见[收尾复核](validation/DEV-040-closeout-review-2026-10-18.md)，真实 Creo 恢复/并发未测，未合入/发布。观察项收到新证据再转回调查，不列作当前发布阻断；分类本身不是测试或修复结论。
 
 1. 明确条目 ID、问题或目标、包含与排除的范围、验收命令、预期结果、目标环境。报告中的问题先复现，区分现象与推测根因。
 2. 检查工作区和现有条目；从可交付的 `main` 建立短分支，如 `codex/bug-002-registry-write`。一个分支围绕一个条目或一组明确相关的条目。

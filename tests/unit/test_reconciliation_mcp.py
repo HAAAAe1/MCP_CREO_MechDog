@@ -1,4 +1,4 @@
-"""DEV-034/BUG-055: nullable reconcile arguments over the real stdio MCP protocol.
+"""DEV-034/BUG-055 and DEV-040: recovery over the real stdio MCP protocol.
 
 Every case drives the actual tool registration, published schema and stdio
 transport; the business layer is never called directly. The fixture substitutes
@@ -10,6 +10,9 @@ processes:
 - the recovery runner replaces ``reconciliation._native`` with a synthetic
   native result, so this file never connects Toolkit, builds or opens Creo.
 
+The DEV-040 configuration-change case additionally substitutes the runner's
+runtime selection to exercise the real Python evidence refusal before _native.
+
 All jobs/models/locks live in a temporary data root; the repository's own
 toolkit.lock, config and history are never touched.
 """
@@ -18,7 +21,6 @@ import argparse
 import asyncio
 import hashlib
 import json
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -115,8 +117,7 @@ def _model(
     _write(directory / "models" / model_id / "model.json", model)
 
 
-def prepare_root() -> Path:
-    directory = Path(tempfile.mkdtemp(prefix="dev034_protocol_"))
+def prepare_root(directory: Path) -> Path:
     (directory / "jobs").mkdir()
     (directory / "models").mkdir()
     _write(
@@ -132,12 +133,26 @@ def prepare_root() -> Path:
 def synthetic_native(job_directory: Path, manifest: dict) -> dict:
     """Fixture replacement for reconciliation._native; labeled substitution."""
     request = bridge.read_json(job_directory / "request.json")
+    if request["model"]["model_name"] == "dev040_selection_refused":
+        raise AssertionError("Python evidence refusal must precede the native boundary")
     choice = request.get("reconciliation", {})
     manifest["worker_started"] = False
     manifest.update(stage="reconciling_native_model", status="running")
     bridge.write_json(job_directory / "job.json", manifest, durable=True)
     manifest["worker_started"] = True
     bridge.write_json(job_directory / "job.json", manifest, durable=True)
+    if request["model"]["model_name"] == "dev040_native_refused":
+        result = {
+            "success": False,
+            "connected": True,
+            "delivery_complete": True,
+            "disconnect_code": 0,
+            "failed_stage": "recovery_restore_baseline",
+            "message": "Recovery refused: Creo session changed since recorded evidence",
+        }
+        bridge.write_json(job_directory / "native_result.json", result)
+        manifest["result"] = result
+        raise RuntimeError(result["message"])
     result = {
         "success": True,
         "delivery_complete": True,
@@ -199,6 +214,18 @@ def child_run_job(directory: Path, job_id: str) -> None:
             patch.object(bridge, "build_native", return_value=directory / "worker.exe")
         )
         stack.enter_context(patch.object(rec, "_native", side_effect=synthetic_native))
+        request = bridge.read_json(bridge.job_path(job_id) / "request.json")
+        if request["model"]["model_name"] == "dev040_selection_refused":
+            stack.enter_context(
+                patch.object(
+                    bridge,
+                    "config",
+                    return_value={
+                        "creo_root": "C:\\dev034-fixture-creo",
+                        "creo_session_id": "dev040-changed-selection",
+                    },
+                )
+            )
         bridge.run_job(job_id)
 
 
@@ -219,7 +246,8 @@ class ReconcileMcpContract(unittest.IsolatedAsyncioTestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.directory = prepare_root()
+        cls.temporary = tempfile.TemporaryDirectory(prefix="dev040_protocol_")
+        cls.directory = prepare_root(Path(cls.temporary.name))
         # N*: no pending job (mirror of the reported failed model shape).
         _model(cls.directory, "a" * 32, "dev034_null_pending", revision=0, status="failed")
         _model(cls.directory, "c" * 32, "dev034_null_omitted", revision=0, status="failed")
@@ -310,12 +338,25 @@ class ReconcileMcpContract(unittest.IsolatedAsyncioTestCase):
             baseline=True,
             pending=True,
         )
+        for model_id, name in (
+            ("0" * 32, "dev040_selection_refused"),
+            ("b" * 32, "dev040_native_refused"),
+        ):
+            _model(
+                cls.directory,
+                model_id,
+                name,
+                revision=1,
+                status="unknown_outcome",
+                baseline=True,
+                pending=True,
+            )
 
     @classmethod
     def tearDownClass(cls):
         for survivor in ("toolkit.lock", "toolkit-owner.lock"):
             (cls.directory / survivor).unlink(missing_ok=True)
-        shutil.rmtree(cls.directory, ignore_errors=True)
+        cls.temporary.cleanup()
 
     def client(self):
         from mcp import Client
@@ -607,6 +648,82 @@ class ReconcileMcpContract(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(duplicate["status"], "succeeded")
             text = await self.error_text(client, {**arguments, "action": "accept_saved"})
             self.assertIn("another recovery request", text)
+
+    async def test_dev040_before_native_refusal_and_compact_idempotent_replay(self):
+        model_id = "0" * 32
+        original = self.directory / "jobs" / job_id_for(model_id) / "job.json"
+        original_bytes = original.read_bytes()
+        async with self.client() as client:
+            evidence = await self.inspect_model(client, model_id)
+            arguments = self.apply_arguments(
+                model_id,
+                evidence,
+                "dev040_selection_refusal",
+                "restore_baseline",
+                evidence["pending_job"],
+            )
+            created = await self.call(client, "creo_reconcile_model", arguments)
+            result = await self.poll(client, created["job_id"])
+            self.assertEqual(result["status"], "failed", result)
+            self.assertEqual(result["stage"], "reconciliation_refused")
+            self.assertEqual(result["reason"], "session_selection_changed")
+            self.assertEqual(result["failure_phase"], "before_native")
+            self.assertTrue(result["recovery_pending_released"])
+            self.assertIn(
+                "Creo session selection changed after recovery admission", result["message"]
+            )
+            duplicate = await self.call(client, "creo_reconcile_model", arguments)
+            for key in (
+                "job_id",
+                "status",
+                "stage",
+                "reason",
+                "failure_phase",
+                "recovery_pending_released",
+            ):
+                self.assertEqual(duplicate[key], result[key])
+            after = await self.inspect_model(client, model_id)
+            self.assertEqual(after["status"], "unknown_outcome")
+            self.assertEqual(after["revision"], evidence["revision"])
+            self.assertEqual(after["pending_job"], evidence["pending_job"])
+            self.assertIsNone(after["recovery_pending"])
+        self.assertEqual(original.read_bytes(), original_bytes)
+        self.assertFalse(
+            (self.directory / "jobs" / created["job_id"] / "native_result.json").exists()
+        )
+
+    async def test_dev040_native_refusal_retains_unknown_and_compact_phase(self):
+        model_id = "b" * 32
+        async with self.client() as client:
+            evidence = await self.inspect_model(client, model_id)
+            arguments = self.apply_arguments(
+                model_id,
+                evidence,
+                "dev040_native_refusal",
+                "restore_baseline",
+                evidence["pending_job"],
+            )
+            created = await self.call(client, "creo_reconcile_model", arguments)
+            result = await self.poll(client, created["job_id"])
+            self.assertEqual(result["status"], "unknown_outcome", result)
+            self.assertEqual(result["stage"], "reconciliation_unconfirmed")
+            self.assertEqual(result["reason"], "native_outcome_unconfirmed")
+            self.assertEqual(result["failure_phase"], "native_worker_started")
+            self.assertFalse(result["recovery_pending_released"])
+            self.assertEqual(result["result"]["failed_stage"], "recovery_restore_baseline")
+            self.assertEqual(
+                result["result"]["message"],
+                "Recovery refused: Creo session changed since recorded evidence",
+            )
+            self.assertIn("may have started", result["message"])
+            duplicate = await self.call(client, "creo_reconcile_model", arguments)
+            self.assertEqual(duplicate["job_id"], result["job_id"])
+            self.assertEqual(duplicate["failure_phase"], result["failure_phase"])
+            self.assertEqual(duplicate["reason"], result["reason"])
+            after = await self.inspect_model(client, model_id)
+            self.assertEqual(after["recovery_pending"], created["job_id"])
+            self.assertEqual(after["pending_job"], evidence["pending_job"])
+            self.assertEqual(after["revision"], evidence["revision"])
 
 
 if __name__ == "__main__":

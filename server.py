@@ -176,7 +176,7 @@ async def creo_check_environment() -> dict[str, Any]:
 
 @mcp.tool(annotations=READ)
 async def creo_session_status() -> dict[str, Any]:
-    """Check the configured/unique Creo session through Toolkit (9 second probe budget, no rebuild). Busy returns its occupying job; probe_timeout returns recovery guidance. During startup return its snapshot promptly. connected=true requires verification; ambiguous/stale session selections never fall back to a random session."""
+    """Check the configured/unique Creo session through Toolkit (9 second probe budget, no rebuild). Busy returns its occupying job; probe_timeout returns recovery guidance. During startup return its snapshot promptly. connected=true requires verification; ambiguous/stale session selections never fall back to a random session. Includes a read-only creo_process_snapshot (pid/name/created_at/matches) so a failed probe can distinguish a dead IPC endpoint from an exited Creo process."""
     return await invoke(startup.session_status)
 
 
@@ -288,7 +288,7 @@ async def creo_reconcile_model(
         description="Apply only: unique 8-80 letters, digits, underscores or hyphens.",
     ),
 ) -> dict[str, Any]:
-    """Inspect uncertain owned models without requiring Creo. live=true performs a bounded read-only session preflight. Apply an explicitly selected available action with the returned token, revision, pending_job (null when absent) and a unique 8–80 character idempotency_key. Poll its independent recovery job; never replay the original plan. restore_baseline keeps revision; accept_saved/live increments once; abandon_new preserves files and archives the model. accept_live requires live preflight. Unsupported/unproven ownership is rejected; no Creo restart or user file deletion."""
+    """Inspect uncertain owned models without requiring Creo. live=true performs a bounded read-only session preflight. Apply an explicitly selected available action with the returned token, revision, pending_job (null when absent) and a unique 8–80 character idempotency_key. Poll its independent recovery job; never replay the original plan. Execution failures expose reason and failure_phase: before_native refusals release only their own recovery reservation under the channel lock; native_worker_started means dispatch may have begun and unknown_outcome protection remains. restore_baseline keeps revision; accept_saved/live increments once; abandon_new preserves files and archives the model. accept_live requires live preflight. Unsupported/unproven ownership is rejected; no Creo restart or user file deletion."""
     return await invoke(
         reconcile,
         model_id,

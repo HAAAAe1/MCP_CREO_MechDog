@@ -24,6 +24,14 @@ SNAPSHOT_SECONDS = 12
 MAX_FILE_BYTES = 1024**3
 
 
+class RecoveryRefused(ValueError):
+    """A recovery evidence check failed at a known execution boundary."""
+
+    def __init__(self, reason: str, message: str):
+        super().__init__(message)
+        self.reason = reason
+
+
 def digest(value: object) -> str:
     return hashlib.sha256(
         json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
@@ -574,185 +582,248 @@ def apply(
             raise ValueError("Idempotency key already belongs to another recovery request")
         resume_committed(existing["job_id"])
         return bridge.get_job(existing["job_id"], "compact")
-    with bridge.toolkit_lock(operation="submit_reconciliation", model_id=model_id):
-        # Check again under the one cross-process admission lock.
-        if file.exists():
-            raise bridge.ToolkitBusy(
-                "Recovery request was concurrently accepted; poll its recovery job"
-            )
-        record = _validate_evidence(
-            model_id, evidence_token, expected_revision, expected_pending_job_id, action
-        )
-        model = record["snapshot"]["model"]
-        job_id = uuid.uuid4().hex
-        directory = bridge.job_path(job_id)
-        (directory / "output").mkdir(parents=True)
-        choice = {"action": action}
-        session = (record.get("live") or {}).get("session_fingerprint")
-        if not session:
-            session = next(
-                (
-                    owner["worker"].get("recorded", {}).get("session_fingerprint")
-                    for owner in record["snapshot"]["owners"]
-                    if owner["worker"].get("recorded", {}).get("session_fingerprint")
-                ),
-                None,
-            )
-        if session:
-            choice["session_fingerprint"] = session
-        if action == "restore_baseline":
-            choice.update(source_file=model["part_file"], source_inspection=model["inspection"])
-        elif action == "accept_saved":
-            candidate = record["snapshot"]["candidate"]
-            choice.update(
-                source_file=candidate["identity"]["path"], source_inspection=candidate["inspection"]
-            )
-            model = {**model, "aliases": candidate["aliases"]}
-        elif action == "accept_live":
-            choice["live_inspection"] = record["live"]["inspection"]
-        manifest = {
-            "job_id": job_id,
-            "recovery_id": job_id,
-            "kind": "reconciliation",
-            "model_id": model_id,
-            "status": "queued",
-            "action": action,
-            "idempotency_key": idempotency_key,
-            "created_at": bridge.now(),
-            "stage": "intent_persisted",
-            "revision": model["revision"],
-            "message": "Recovery accepted; poll this job_id; original plan will not be replayed",
-        }
-        request = _native_request(model, choice)
-        intent = {
-            "state": "intent",
-            "model_id": model_id,
-            "job_id": job_id,
-            "arguments": arguments,
-            "evidence": record,
-            "created_at": bridge.now(),
-        }
-        bridge.write_json(directory / "request.json", request, durable=True)
-        bridge.write_json(directory / "job.json", manifest, durable=True)
-        bridge.write_json(file, intent, durable=True)
-        reserved = general.model_info(model_id)
-        reserved["recovery_pending"] = job_id  # Original pending_job remains unchanged.
-        bridge.write_json(general.model_path(model_id) / "model.json", reserved, durable=True)
-        try:
-            with (directory / "runner.log").open("ab") as log:
-                subprocess.Popen(
-                    [sys.executable, str(bridge.ROOT / "bridge.py"), "run-job", job_id],
-                    cwd=bridge.ROOT,
-                    stdin=subprocess.DEVNULL,
-                    stdout=log,
-                    stderr=subprocess.STDOUT,
-                    creationflags=bridge.HIDDEN,
-                    close_fds=True,
+    launch_error = None
+    try:
+        with bridge.toolkit_lock(operation="submit_reconciliation", model_id=model_id):
+            # Check again under the one cross-process admission lock.
+            if file.exists():
+                raise bridge.ToolkitBusy(
+                    "Recovery request was concurrently accepted; poll its recovery job"
                 )
-        except Exception as error:
-            manifest.update(
-                status="failed",
-                message=str(error),
-                recovery_required=True,
-                finished_at=bridge.now(),
+            record = _validate_evidence(
+                model_id, evidence_token, expected_revision, expected_pending_job_id, action
             )
+            model = record["snapshot"]["model"]
+            job_id = uuid.uuid4().hex
+            directory = bridge.job_path(job_id)
+            (directory / "output").mkdir(parents=True)
+            choice = {"action": action}
+            session = (record.get("live") or {}).get("session_fingerprint")
+            if not session:
+                session = next(
+                    (
+                        owner["worker"].get("recorded", {}).get("session_fingerprint")
+                        for owner in record["snapshot"]["owners"]
+                        if owner["worker"].get("recorded", {}).get("session_fingerprint")
+                    ),
+                    None,
+                )
+            if session:
+                choice["session_fingerprint"] = session
+            if action == "restore_baseline":
+                choice.update(source_file=model["part_file"], source_inspection=model["inspection"])
+            elif action == "accept_saved":
+                candidate = record["snapshot"]["candidate"]
+                choice.update(
+                    source_file=candidate["identity"]["path"],
+                    source_inspection=candidate["inspection"],
+                )
+                model = {**model, "aliases": candidate["aliases"]}
+            elif action == "accept_live":
+                choice["live_inspection"] = record["live"]["inspection"]
+            manifest = {
+                "job_id": job_id,
+                "recovery_id": job_id,
+                "kind": "reconciliation",
+                "model_id": model_id,
+                "status": "queued",
+                "action": action,
+                "idempotency_key": idempotency_key,
+                "created_at": bridge.now(),
+                "stage": "intent_persisted",
+                "revision": model["revision"],
+                "message": "Recovery accepted; poll this job_id; original plan will not be replayed",
+            }
+            request = _native_request(model, choice)
+            intent = {
+                "state": "intent",
+                "model_id": model_id,
+                "job_id": job_id,
+                "arguments": arguments,
+                "evidence": record,
+                "created_at": bridge.now(),
+            }
+            bridge.write_json(directory / "request.json", request, durable=True)
             bridge.write_json(directory / "job.json", manifest, durable=True)
+            bridge.write_json(file, intent, durable=True)
+            reserved = general.model_info(model_id)
+            reserved["recovery_pending"] = job_id  # Original pending_job remains unchanged.
+            bridge.write_json(general.model_path(model_id) / "model.json", reserved, durable=True)
+            try:
+                with (directory / "runner.log").open("ab") as log:
+                    subprocess.Popen(
+                        [sys.executable, str(bridge.ROOT / "bridge.py"), "run-job", job_id],
+                        cwd=bridge.ROOT,
+                        stdin=subprocess.DEVNULL,
+                        stdout=log,
+                        stderr=subprocess.STDOUT,
+                        creationflags=bridge.HIDDEN,
+                        close_fds=True,
+                    )
+            except Exception as error:
+                _record_failure(
+                    job_id,
+                    manifest,
+                    file,
+                    RecoveryRefused("runner_start_failed", str(error)),
+                    locked=True,
+                )
+                launch_error = error
+            if launch_error is None:
+                return manifest
+    except Exception as error:
+        if launch_error is None:
             raise
-        return manifest
+        manifest["channel_finalization_error"] = str(error)
+    bridge.write_json(directory / "job.json", manifest, durable=True)
+    raise launch_error
 
 
 def run(job_id: str, manifest: dict) -> None:
     directory = bridge.job_path(job_id)
     file = _journal(manifest["model_id"], manifest["idempotency_key"])
     intent = bridge.read_json(file)
+    failure_recorded = False
     try:
         with bridge.toolkit_lock(
             operation="reconcile_model", job_id=job_id, model_id=manifest["model_id"]
         ):
-            if intent["state"] == "committed":
-                manifest = _finish(intent)
-            else:
-                # Revalidate every byte after admission, ignoring only our reservation.
-                old = intent["evidence"]["snapshot"]
-                bridge.build_native()
-                current_model = general.model_info(manifest["model_id"])
-                if current_model.get("recovery_pending") != job_id:
-                    raise ValueError("Recovery reservation no longer belongs to this intent")
-                # Reconstruct using original job set, not this active runner.
-                _check_execution(intent, current_model)
-                result = _native(directory, manifest)
-                _check_execution(intent, current_model)
-                request = bridge.read_json(directory / "request.json")
-                after = {**current_model}
-                action = manifest["action"]
-                source = None
-                if action != "abandon_new":
-                    if not result.get("saved_file_reloaded_and_verified"):
-                        raise ValueError("Recovery did not verify a saved/reloaded native model")
-                    source = identity(owned_file(after, result["part_file"]))
-                    result["sha256"] = source["sha256"]
-                    if action == "restore_baseline" and source != old["baseline"]["identity"]:
-                        raise ValueError("Baseline file changed during recovery")
-                    after.update(
-                        status="ready",
-                        part_file=result["part_file"],
-                        part_sha256=source["sha256"],
-                        inspection=result["inspection"],
-                        aliases=result["aliases"],
-                        updated_at=bridge.now(),
-                    )
-                    if action != "restore_baseline":
-                        after["revision"] += 1
-                else:
-                    after.update(status="abandoned", abandoned_at=bridge.now())
-                after.update(
-                    pending_job=None,
-                    recovery_pending=None,
-                    reconciliation={
-                        "recovery_id": job_id,
-                        "action": action,
-                        "original_job_id": current_model.get("pending_job")
-                        or current_model.get("last_job"),
-                        "original_plan_completion_confirmed": False,
-                        "source_identity": source,
-                        "resolved_at": bridge.now(),
-                    },
-                )
-                manifest.update(
-                    status="succeeded",
-                    stage="reconciliation_committed",
-                    result=result,
-                    revision=after["revision"],
-                    finished_at=bridge.now(),
-                    message="Explicit recovery committed; original job history preserved",
-                )
-                intent.update(
-                    state="verified",
-                    model_after=after,
-                    job_after=manifest,
-                    result_identity=identity(directory / "native_result.json"),
-                    request=request,
-                )
-                bridge.write_json(file, intent, durable=True)
-                intent["state"] = "committed"  # Durable decision precedes materialization.
-                bridge.write_json(file, intent, durable=True)
-                _finish(intent)
+            try:
+                manifest = _run_locked(job_id, manifest, intent, file)
+            except Exception as error:
+                if not _record_failure(job_id, manifest, file, error, locked=True):
+                    return
+                failure_recorded = True
     except Exception as error:
-        # A committed decision is recoverable by polling; do not replace it with
-        # a contradictory failure or release protection before materialization.
-        persisted = _read(file) or {}
-        if persisted.get("state") == "committed":
+        if failure_recorded:
+            manifest["channel_finalization_error"] = str(error)
+        elif not _record_failure(job_id, manifest, file, error, locked=False):
             return
-        manifest.update(
-            status="unknown_outcome" if manifest.get("worker_started") else "failed",
-            stage="reconciliation_unconfirmed",
-            message=str(error),
-            recovery_required=True,
-            finished_at=bridge.now(),
-        )
-        if isinstance(error, bridge.ToolkitBusy):
-            manifest["busy"] = error.payload
     bridge.write_json(directory / "job.json", manifest, durable=True)
+
+
+def _run_locked(job_id: str, manifest: dict, intent: dict, file: Path) -> dict:
+    if intent["state"] == "committed":
+        return _finish(intent)
+    directory = bridge.job_path(job_id)
+    # Revalidate every byte after admission, ignoring only our reservation.
+    old = intent["evidence"]["snapshot"]
+    bridge.build_native()
+    current_model = general.model_info(manifest["model_id"])
+    if current_model.get("recovery_pending") != job_id:
+        raise RecoveryRefused(
+            "reservation_changed", "Recovery reservation no longer belongs to this intent"
+        )
+    # Reconstruct using original job set, not this active runner.
+    _check_execution(intent, current_model)
+    result = _native(directory, manifest)
+    _check_execution(intent, current_model)
+    request = bridge.read_json(directory / "request.json")
+    after = {**current_model}
+    action = manifest["action"]
+    source = None
+    if action != "abandon_new":
+        if not result.get("saved_file_reloaded_and_verified"):
+            raise ValueError("Recovery did not verify a saved/reloaded native model")
+        source = identity(owned_file(after, result["part_file"]))
+        result["sha256"] = source["sha256"]
+        if action == "restore_baseline" and source != old["baseline"]["identity"]:
+            raise ValueError("Baseline file changed during recovery")
+        after.update(
+            status="ready",
+            part_file=result["part_file"],
+            part_sha256=source["sha256"],
+            inspection=result["inspection"],
+            aliases=result["aliases"],
+            updated_at=bridge.now(),
+        )
+        if action != "restore_baseline":
+            after["revision"] += 1
+    else:
+        after.update(status="abandoned", abandoned_at=bridge.now())
+    after.update(
+        pending_job=None,
+        recovery_pending=None,
+        reconciliation={
+            "recovery_id": job_id,
+            "action": action,
+            "original_job_id": current_model.get("pending_job") or current_model.get("last_job"),
+            "original_plan_completion_confirmed": False,
+            "source_identity": source,
+            "resolved_at": bridge.now(),
+        },
+    )
+    manifest.update(
+        status="succeeded",
+        stage="reconciliation_committed",
+        result=result,
+        revision=after["revision"],
+        finished_at=bridge.now(),
+        message="Explicit recovery committed; original job history preserved",
+    )
+    intent.update(
+        state="verified",
+        model_after=after,
+        job_after=manifest,
+        result_identity=identity(directory / "native_result.json"),
+        request=request,
+    )
+    bridge.write_json(file, intent, durable=True)
+    intent["state"] = "committed"  # Durable decision precedes materialization.
+    bridge.write_json(file, intent, durable=True)
+    _finish(intent)
+    return manifest
+
+
+def _record_failure(
+    job_id: str, manifest: dict, file: Path, error: Exception, *, locked: bool
+) -> bool:
+    # A committed decision is recoverable by polling; do not replace it with
+    # a contradictory failure or release protection before materialization.
+    persisted = _read(file) or {}
+    if persisted.get("state") == "committed":
+        return False
+    started = bool(manifest.get("worker_started"))
+    refused = isinstance(error, RecoveryRefused) and not started
+    manifest.update(
+        status="unknown_outcome" if started else "failed",
+        stage="reconciliation_refused" if refused else "reconciliation_unconfirmed",
+        reason=error.reason
+        if isinstance(error, RecoveryRefused)
+        else "native_outcome_unconfirmed"
+        if started
+        else "recovery_execution_failed",
+        failure_phase="native_worker_started"
+        if started
+        else "before_native"
+        if locked
+        else "channel_admission",
+        message=str(error),
+        recovery_required=True,
+        recovery_pending_released=False,
+        finished_at=bridge.now(),
+    )
+    if started:
+        manifest["message"] += (
+            "; native worker dispatch began and may have started; "
+            "recovery action outcome is not confirmed; protection retained"
+        )
+    elif locked:
+        try:
+            model = general.model_info(manifest["model_id"])
+            if model.get("recovery_pending") == job_id:
+                model["recovery_pending"] = None
+                bridge.write_json(
+                    general.model_path(manifest["model_id"]) / "model.json", model, durable=True
+                )
+                manifest["recovery_pending_released"] = True
+        except (OSError, ValueError) as cleanup_error:
+            # The failed attempt never authorizes clearing another reservation,
+            # and a failed cleanup must remain visible for operator inspection.
+            manifest["recovery_pending_cleanup_error"] = str(cleanup_error)
+    if isinstance(error, bridge.ToolkitBusy):
+        manifest["busy"] = error.payload
+    return True
 
 
 def _check_execution(intent: dict, current: dict) -> None:
@@ -763,27 +834,38 @@ def _check_execution(intent: dict, current: dict) -> None:
     expected = {**original["model"]}
     expected.pop("recovery_pending", None)
     if normalized != expected:
-        raise ValueError("Model changed after recovery admission")
+        raise RecoveryRefused("model_changed", "Model changed after recovery admission")
     if _deployment(time.monotonic() + SNAPSHOT_SECONDS) != original["deployment"]:
-        raise ValueError("Deployment changed after recovery admission; inspect again")
+        raise RecoveryRefused(
+            "deployment_changed", "Deployment changed after recovery admission; inspect again"
+        )
     if (
         digest({key: bridge.config().get(key) for key in ("creo_root", "creo_session_id")})
         != original["runtime_selection"]
     ):
-        raise ValueError("Creo session selection changed after recovery admission")
+        raise RecoveryRefused(
+            "session_selection_changed", "Creo session selection changed after recovery admission"
+        )
     for file in original["files"]:
         if identity(Path(file["path"])) != file:
-            raise ValueError("Original job evidence changed after admission")
+            raise RecoveryRefused(
+                "job_evidence_changed", "Original job evidence changed after admission"
+            )
     for owner in original["owners"]:
         if not _owners(owner["job_id"])["stopped"]:
-            raise ValueError("Original worker is active or cannot be proven stopped")
+            raise RecoveryRefused(
+                "original_worker_unconfirmed",
+                "Original worker is active or cannot be proven stopped",
+            )
     for source in (original.get("baseline"), original.get("candidate")):
         if (
             source
             and source.get("identity")
             and identity(Path(source["identity"]["path"])) != source["identity"]
         ):
-            raise ValueError("Selected source changed after recovery admission")
+            raise RecoveryRefused(
+                "source_changed", "Selected source changed after recovery admission"
+            )
 
 
 def reconcile(

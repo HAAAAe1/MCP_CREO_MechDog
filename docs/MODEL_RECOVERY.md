@@ -49,6 +49,21 @@
 
 恢复作业必须 `succeeded`；除 abandon 外还须 `saved_file_reloaded_and_verified=true`。核对处置动作、revision、保存文件与摘要、原生特征/尺寸/参数/体积，再用最新 revision 继续正常编辑。原未知作业仍保持原历史；其 recovery.resolution 和模型 reconciliation 记录此次独立处置，不能把 accept 解释为原计划剩余操作已执行。
 
-恢复再次失败或不确定时保留原 pending 及 recovery_pending，不自动重跑原生动作。登记采用持久化提交决策：决定提交前中断须重新核对；决定提交后查询可仅补全元数据，不再次推进 revision。即使通道已经空闲，也不能据此解除模型保护。
+开发分支 DEV-040 按实际失败阶段记录终态；`creo_get_job(detail="compact")` 和同参幂等重放均保留 `reason`、`failure_phase`、`recovery_pending_released`，不能仅凭消息中出现 “refused” 判断是否已进入原生阶段：
+
+| 阶段 | 返回与保护 |
+| --- | --- |
+| apply 准入校验 | 过期/缺失 token、stale revision/pending 等直接拒绝；不创建恢复作业或预留。token 仍在准入时按 600 秒校验，不刷新或延长 |
+| `failure_phase="before_native"` | 原生派发前证据/配置校验拒绝为 `failed / reconciliation_refused`，附稳定 `reason`；在通道锁内只清除此作业自己的 `recovery_pending`，释放通道后发布终态。恢复 runner 启动失败同样处理 |
+| `failure_phase="channel_admission"` | 已接受的 runner 未取得通道，作业 `failed`，保留 busy 信息与预留；未取得锁时不能修改保护，不自动重试或排队 |
+| `failure_phase="native_worker_started"` | 已进入原生派发，worker **可能已开工**；仍为 `unknown_outcome / reconciliation_unconfirmed`，保留原 pending 及 recovery_pending。该字段沿用派发前持久化的标记，不证明进程实际启动或修改了模型 |
+
+Python 侧的 `reason="session_selection_changed"` 表示准入后配置中的 Creo 会话选择发生变化，在 `_native` 前拒绝。原生消息 `Recovery refused: Creo session changed since recorded evidence` 则发生在 worker 已连接 Creo、读取会话指纹后，在恢复模型查找/擦除/加载前比较指纹；当前原生协议没有结构化的“恢复动作未开始且模型未修改”证明，因此保守保留 unknown 与保护，并通过 `result.failed_stage`、原始 `result.message` 及失败阶段说明判定位置。不得将这两种会话变化混为同一分支，也不得按消息文本清保护。
+
+其他确定性证据拒绝的 `reason` 包括 `reservation_changed`、`model_changed`、`deployment_changed`、`job_evidence_changed`、`original_worker_unconfirmed`、`source_changed`；runner 启动失败为 `runner_start_failed`。同样的证据检查若在原生派发后失败，仍按 `native_worker_started` 保留 unknown。真正超时、派发异常或交付未确认也保留保护，通常返回 `reason="native_outcome_unconfirmed"`。
+
+`recovery_pending_released=true` 只表示本次失败恢复任务的预留已清除，不表示原任务被恢复：原 `pending_job`、unknown 状态、revision 和历史不变，`recovery_required` 仍可为 true。清理失败时 `recovery_pending_released=false` 并给出 `recovery_pending_cleanup_error`；锁收尾异常另列 `channel_finalization_error`，不覆盖此前拒绝原因或清理结果。只轮询并核对返回证据，不手工清保护。同一幂等键继续返回原失败作业；确需再次处置时先重新预检并使用新键。
+
+登记采用持久化提交决策：决定提交前中断须重新核对；决定提交后查询可仅补全元数据，不再次推进 revision。即使通道已经空闲，也不能据此解除模型保护。原生动作不自动重跑。
 
 单文件摘要采用流式读取，最多 1 GiB/8 秒，持久化快照预算 12 秒；超过预算准确拒绝。原生恢复/实时预检阶段 90 秒、断开 20 秒、Python 外层 115 秒，仅约束此次执行器，不终止 Creo。构建沿用既有有界流程。新旧版本、开发者注入与 WorkBuddy 黑盒的实测边界见联合任务卡及本次验证记录。

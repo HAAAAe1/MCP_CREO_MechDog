@@ -1,0 +1,29 @@
+{
+  "model_name": "dev040_recovery_baseline",
+  "model_type": "part",
+  "operations": [
+    {
+      "op": "sketch",
+      "label": "base_profile",
+      "plane": "XY",
+      "entities": [
+        {
+          "type": "rectangle",
+          "name": "outline",
+          "min": [0, 0],
+          "max": [20, 10]
+        }
+      ]
+    },
+    {
+      "op": "extrude",
+      "label": "base_solid",
+      "sketch": "base_profile",
+      "depth": 5
+    }
+  ],
+  "assertions": {
+    "require_solid": true,
+    "volume_mm3": 1000
+  }
+}
