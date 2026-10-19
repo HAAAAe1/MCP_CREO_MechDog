@@ -1,6 +1,7 @@
 // Composable Creo feature operations, using the installed Creo 10 Toolkit.
 #include "third_party/json.hpp"
 #include "recovery_deadline.h"
+#include "inspection_units.h"
 #include <memory>
 #include <map>
 #include <set>
@@ -348,9 +349,19 @@ static J inspection(bool require_healthy = true) {
         for (auto f : gfeatures)
             if (f["type"].get<int>() == PRO_FEAT_COMPONENT)
                 solid = true;
-    J result = {{"features", gfeatures}, {"surfaces", gsurfaces}, {"edges", gedges},
-                {"bodies", bodies},      {"healthy", healthy},    {"units", "mm"},
-                {"has_solid", solid},    {"volume_mm3", nullptr}};
+    auto length_units = inspect_length_units(board);
+    // Coordinates/dimensions retain model units. Do not label native in^3 as mm^3.
+    J units = length_units.code || !length_units.length.name[0] ? J(nullptr)
+                                                                : J(utf8(length_units.length.name));
+    J result = {{"features", gfeatures},
+                {"surfaces", gsurfaces},
+                {"edges", gedges},
+                {"bodies", bodies},
+                {"healthy", healthy},
+                {"units", units},
+                {"units_query_code", length_units.code},
+                {"has_solid", solid},
+                {"volume_mm3", nullptr}};
     result["model_type"] = isasm ? "assembly" : "part";
     if (isasm)
         result["components"] = assembly_inspection();
@@ -364,8 +375,11 @@ static J inspection(bool require_healthy = true) {
         ProError e = ProSolidMassPropertyWithDensityGet((ProSolid)board, nullptr,
                                                         PRO_MP_DENS_USE_ALWAYS, 1, &mp);
         result["volume_query_code"] = e;
-        if (!e)
-            result["volume_mm3"] = mp.volume;
+        if (!e) {
+            auto volume = length_units.volume_mm3(mp.volume);
+            if (volume)
+                result["volume_mm3"] = *volume;
+        }
     }
     planes.clear();
     CK(ProSolidFeatVisit((ProSolid)board, datum_cb, nullptr, nullptr));
@@ -2268,7 +2282,7 @@ static void adopt_native(const J &request, J &report) {
             "Adoption refused: the current model is not the inspected model; inspect again");
     board = current; // Borrow the handle read-only, exactly like reconciliation inspect.
     J live = inspection(false);
-    bool millimeters = millimeter_units(board);
+    bool millimeters = live["units"] == "mm";
     bool dependency_clean = dependency_free(board);
     std::string model_type = live.value("model_type", "part");
     bool supported = model_type == "part" || model_type == "sheetmetal";
@@ -2373,7 +2387,7 @@ static void adopt_native(const J &request, J &report) {
                    {"inspection", after},
                    {"aliases", J::object()},
                    {"part_file", utf8(saved)},
-                   {"adopted", true}});
+                   {"adopted", !preparing}});
 }
 
 static int run_generic(const std::wstring &job) {

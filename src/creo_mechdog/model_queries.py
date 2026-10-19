@@ -57,6 +57,7 @@ def inspection_summary(inspection: Any) -> dict[str, Any]:
                 "healthy",
                 "has_solid",
                 "units",
+                "units_query_code",
                 "model_type",
                 "volume_mm3",
                 "volume_query_code",

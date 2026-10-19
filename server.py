@@ -81,6 +81,7 @@ _SOURCE_NAMES = (
     "native/geometry.cpp",
     "tools/generate_constants.py",
     "native/generic.cpp",
+    "native/inspection_units.h",
     "native/drawing.cpp",
     "native/result_delivery.h",
     "native/recovery_deadline.h",

@@ -46,6 +46,17 @@ def model(count=3):
 
 
 class ModelQueryTests(unittest.TestCase):
+    def test_unit_query_diagnostics_and_unknown_volume_are_not_replaced_in_summary(self):
+        for units, code, volume in (("mm", 0, 123), ("in", 0, None), (None, -2, None)):
+            with self.subTest(units=units):
+                state = {"units": units, "units_query_code": code, "volume_mm3": volume}
+                before = copy.deepcopy(state)
+                summary = inspection_summary(state)
+                self.assertEqual(summary["units"], units)
+                self.assertEqual(summary["units_query_code"], code)
+                self.assertEqual(summary["volume_mm3"], volume)
+                self.assertEqual(state, before)
+
     def test_new_failed_model_does_not_claim_verified_saved_snapshot(self):
         source = model()
         source.update(status="failed", revision=0, inspection=None, part_file=None)

@@ -28,7 +28,7 @@ inspect返回 `available=false`、`available_modes=["prepare"]`，没有可用mo
 {"mode":"prepare","model_name":"managed_001","idempotency_key":"prepare_001_20261018"}
 ```
 
-只轮询返回的 `job_id`。成功时stage为 `snapshot_prepared`，`result.adoption` 包含快照摘要、文件哈希、model_id和十分钟证据令牌。此时模型仍为 `adopt_pending`、revision=0。prepare复制的是原生步骤开始执行时的当前窗口模型，不保存、改名或擦除原模型，完成后保留原窗口。
+只轮询返回的 `job_id`。成功时stage为 `snapshot_prepared`，`result.adoption` 包含快照摘要、文件哈希、model_id和十分钟证据令牌。此时任务result.adopted=false，模型仍为 `adopt_pending`、revision=0；只有确认apply提交后才为adopted=true。prepare复制的是原生步骤开始执行时的当前窗口模型，不保存、改名或擦除原模型，完成后保留原窗口。
 
 检查快照后确认：
 
@@ -48,7 +48,7 @@ inspect返回 `available=false`、`available_modes=["prepare"]`，没有可用mo
 
 首批支持独立part/钣金、毫米单位、无外部依赖、无失败/抑制/不完整特征。装配、工程图等类型明确拒绝。普通受管模型的origin、检查点、revision及unknown保护保持有效。
 
-当前开发部署的非毫米来源inspect已验证明确拒绝，但该拒绝载荷仍可能把原生单位体积误标为volume_mm3、嵌套units固定为mm，见[BUG-072](work-items/BUG-072.md)。millimeter_units=false时不要把这些几何数值用于毫米断言；拒绝通过不代表单位摘要已经修复。该缺陷待修正和重新部署复验，不扩大非毫米接管支持。
+[BUG-072](work-items/BUG-072.md)已在开发源码修正，尚待重启部署后的实机复验：inspection.units为查询到的模型长度单位，未知时为null，units_query_code保留查询诊断；只有确认毫米且数值有限时才提供volume_mm3。非毫米/未知单位的两层volume_mm3均为null，volume_query_code=0不代表已换算成mm³。坐标、半径等仍采用所示模型长度单位，不扩大非毫米接管支持。旧连接器可能仍返回原生体积误标mm³，需按本页入口核对启动身份后再采用新语义。
 
 未确认模型不能普通建模或通过accept_saved/live绕过确认。需要放弃时使用 `creo_reconcile_model` 的inspect→`abandon_new`，保留文件和审计。派发后结果不确定则保持保护，先查询原job，不重交建模计划、不修改登记或清锁。单一Toolkit通道busy立即拒绝，受理后只轮询。
 

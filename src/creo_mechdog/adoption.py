@@ -742,7 +742,7 @@ def _commit_prepared(
         status="succeeded",
         stage="snapshot_prepared",
         revision=0,
-        result={**result, "adoption": evidence},
+        result={**result, "adopted": False, "adoption": evidence},
         finished_at=bridge.now(),
         message="Frozen snapshot prepared; review evidence then apply or abandon_new",
     )

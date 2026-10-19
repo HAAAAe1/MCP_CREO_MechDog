@@ -19,3 +19,12 @@
 8. 支持类型外、非毫米、带外部依赖、不健康模型应明确拒绝。若能够实际并行调用，再测试并发；busy应含blocking字段、不排队、不自动重试。无法并行就写并发未验证。
 
 报告逐项记录工具、完整输入、job_id/model_id、终态、revision、几何/参数、保存重载、回滚与原始错误。区分通过、失败、阻断、未验证。内部文件占用、临时文件清理、哈希实现和登记原子性不纳入黑盒通过结论。Creo12.4的结果不外推Creo13或其他环境。
+
+## 2026-10-19字段修正复验
+
+先等待已受理任务结束，由操作者重启指向E盘开发目录的MCP连接器，保留Creo及所有原件。WorkBuddy仅用公开接口记录版本、实际路径、启动源码指纹及source_changed_since_startup=false；确认指纹清单含native/inspection_units.h。未重启、工具缺失或身份仍变化则报告阻断，不用源码/Git/配置补证。
+
+1. 在Creo切到已保存的WB_REJECT_INCH，重新枚举并记录受管列表基线；接管只读inspect仍应available=false、millimeter_units=false，无ID/令牌/副本/登记。嵌套inspection.units应为实际英寸长度单位标识，不能是mm；units_query_code=0。两层volume_mm3都应null，volume_query_code=0仅表示SDK体积查询成功，不表示该量已换算成mm³。不得执行prepare/apply或转换原件单位；核对来源、modified、当前窗口、会话数量与受管列表不变。
+2. 待操作者切到仍无盘且无受管关联的独立WB_UNSAVED_03，再创建新prepare任务（新副本名与新幂等键），只轮询该job。预期任务result.adopted=false、adoption.status=adopt_pending、revision=0，compact/full查询和模型列表adopted一致为false。原件仍当前且无来源。显式apply后预期result.adopted=true、ready/revision1及保存重载verified；再重放原prepare键，仍返回原prepare任务及adopted=false，不将历史准备任务改成确认成功，也不回退当前ready登记。
+
+这两项是修正后新增的公开复验，不将修正前的成功或内部隔离SDK/stdio检查算作本轮实机通过。单位查询失败/NaN等内部故障注入只由开发者隔离验证，WorkBuddy不能为此运行本地脚本。真实再生失败、原件关闭、快照改写和实际并发保留各自未验证状态。

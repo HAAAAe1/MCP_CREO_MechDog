@@ -35,6 +35,8 @@ INSPECTION = {
     "datum_planes": [],
     "parameters": {},
     "volume_mm3": 10,
+    "units": "mm",
+    "units_query_code": 0,
     "model_type": "part",
 }
 
@@ -89,8 +91,17 @@ def synthetic_native(job_directory: Path, manifest: dict) -> dict:
                 "dependency_free": True,
                 "session_fingerprint": "feat042-fixture-session",
                 "inspection": INSPECTION,
+                "volume_mm3": INSPECTION["volume_mm3"],
             },
         )
+        units_fixture = bridge.ROOT / "inspection_units.json"
+        if units_fixture.exists():
+            unit_state = bridge.read_json(units_fixture)
+            result["live"].update(
+                millimeter_units=unit_state["units"] == "mm",
+                volume_mm3=unit_state["volume_mm3"],
+                inspection={**INSPECTION, **unit_state},
+            )
         if choice["action"] == "prepare":
             model = request["model"]
             part = Path(model["output_directory"]) / f"{model['model_name']}.prt.1"
@@ -100,6 +111,7 @@ def synthetic_native(job_directory: Path, manifest: dict) -> dict:
                 inspection=INSPECTION,
                 aliases={},
                 part_file=str(part),
+                adopted=True,  # Exercise compatibility with an old native worker.
             )
     elif request["model"]["model_name"].startswith("fail"):
         result.update(
@@ -123,6 +135,7 @@ def synthetic_native(job_directory: Path, manifest: dict) -> dict:
             inspection=INSPECTION,
             aliases={},
             part_file=str(part),
+            adopted=True,
             message="synthetic adoption fixture; no Toolkit call",
         )
     bridge.write_json(job_directory / "native_result.json", result)
@@ -289,6 +302,13 @@ class AdoptionMcpContract(unittest.IsolatedAsyncioTestCase):
             prepared = await self.poll(client, submitted["job_id"])
             self.assertEqual(prepared["status"], "succeeded", prepared)
             self.assertEqual(prepared["stage"], "snapshot_prepared")
+            self.assertIs(prepared["result"]["adopted"], False)
+            full = await self.call(
+                client, "creo_get_job", {"job_id": submitted["job_id"], "detail": "full"}
+            )
+            self.assertIs(full["result"]["adopted"], False)
+            pending_list = await self.call(client, "creo_list_models", {})
+            self.assertIs(pending_list["models"][0]["adopted"], False)
             evidence = prepared["result"]["adoption"]
             mid = evidence["model_id"]
             model = self.model_file(mid)
@@ -315,6 +335,7 @@ class AdoptionMcpContract(unittest.IsolatedAsyncioTestCase):
             )
             result = await self.poll(client, applied["job_id"])
             self.assertEqual(result["status"], "succeeded", result)
+            self.assertIs(result["result"]["adopted"], True)
             after = self.model_file(mid)
             self.assertEqual((after["status"], after["revision"]), ("ready", 1))
             self.assertEqual(
@@ -322,11 +343,41 @@ class AdoptionMcpContract(unittest.IsolatedAsyncioTestCase):
             )
             replay = await self.call(client, "creo_adopt_current_model", args)
             self.assertEqual(replay["job_id"], submitted["job_id"])
+            self.assertIs(replay["result"]["adopted"], False)
             self.assertEqual(self.model_file(mid)["revision"], 1)
             listing = await self.call(client, "creo_list_models", {})
             self.assertTrue(listing["models"][0]["adopted"])
             self.assertEqual(listing["models"][0]["source_kind"], "session_snapshot")
             self.source_file().write_bytes(b"fixture user part bytes 001")
+
+    async def test_length_unit_and_unavailable_volume_survive_stdio_preflight(self):
+        fixture = self.directory / "inspection_units.json"
+        try:
+            async with self.client() as client:
+                for units, code, volume in (("mm", 0, 10), ("in", 0, None), (None, -2, None)):
+                    with self.subTest(units=units):
+                        self.reset_registry()
+                        _write(
+                            fixture,
+                            {"units": units, "units_query_code": code, "volume_mm3": volume},
+                        )
+                        evidence = await self.call(client, "creo_adopt_current_model", {})
+                        live = evidence["current_model"]
+                        self.assertEqual(live["inspection"]["units"], units)
+                        self.assertEqual(live["inspection"]["units_query_code"], code)
+                        self.assertEqual(live["inspection"]["volume_mm3"], volume)
+                        self.assertEqual(live["volume_mm3"], volume)
+                        self.assertEqual(evidence["available"], units == "mm")
+                        if units != "mm":
+                            self.assertIn("millimeter", evidence["reason"])
+                            self.assertIsNone(evidence["model_id"])
+                            self.assertIsNone(evidence["evidence_token"])
+                            self.assertEqual(list(self.directory.glob("models/*/model.json")), [])
+                        self.assertEqual(
+                            self.source_file().read_bytes(), b"fixture user part bytes 001"
+                        )
+        finally:
+            fixture.unlink(missing_ok=True)
 
     async def test_inspect_apply_idempotent_replay_and_managed_copy(self):
         self.reset_registry()
@@ -614,6 +665,17 @@ class AdoptionBusinessRules(unittest.TestCase):
             adoption.apply(
                 evidence["model_id"], evidence["evidence_token"], None, "confirm_tampered"
             )
+
+    def test_prepare_public_result_is_unadopted_without_rewriting_native_evidence(self):
+        job, evidence = self.prepare_snapshot()
+        native = bridge.read_json(bridge.job_path(job["job_id"]) / "native_result.json")
+        self.assertIs(native["adopted"], True)
+        for detail in ("compact", "full"):
+            result = bridge.get_job(job["job_id"], detail)
+            self.assertIs(result["result"]["adopted"], False)
+            self.assertEqual(result["result"]["adoption"]["status"], "adopt_pending")
+            self.assertEqual(result["revision"], 0)
+        self.assertEqual(self.model_json(evidence["model_id"])["adopted_from"]["state"], "prepared")
 
     def test_snapshot_expiry_renewal_never_repeats_native_and_name_is_frozen(self):
         _, evidence = self.prepare_snapshot()

@@ -62,3 +62,5 @@ list_models 的 complete=false / next_cursor 为报告方实际分页正例，�
 同报告观察session_model_id在part/assembly间重复，不能单独当身份键；query_codes.subtype只在part/sheetmetal分支出现。FEAT-043及接管说明已澄清临时发现ID与按实际查询输出诊断的边界，0是查询成功码而非modified值；这两点不直接登记为实现缺陷。真正的未知业务字段仍按既定null语义处理，不把缺失诊断等同于查询失败。
 
 同日后续非毫米inspect则返回结构化available=false/reason，而assembly为工具级错误，两种不可接管形式的兼容与稳定原因分类继续归本卡；本轮两种保护均有通过报告。非毫米载荷内units="mm"及未换算volume_mm3是独立真实摘要缺陷，已登记[BUG-072](BUG-072.md)，不混作本卡错误格式问题。
+
+后续外部依赖及含抑制特征的健康拒绝亦通过；健康理由合并failed/suppressed/incomplete，没有公开逐特征原因。若后续增加细粒度诊断，保持稳定原因分类与原错误兼容，不能从feature_count=9推断具体DTM1状态，也不能据抑制用例判真实再生失败已验收。当前仅补改进线索，不新增同义条目或扩大本卡首批范围。

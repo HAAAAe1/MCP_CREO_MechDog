@@ -323,3 +323,34 @@ WorkBuddy未执行prepare/apply或恢复DTM1。拒绝后报告受管列表哈希
 | 真实连接器升级、重启前后身份与能力变化 | 未验证 | 文档/模拟检查已实施，当前没有公开前后对照材料 |
 
 当前没有新的活动素材阻断；此前不合格001及GUI不可操作的历史阻断已留在当时记录，不抹去也不继续当成当前阻断。FEAT-042/043/022保持验收中；BUG-072与prepare字段修正完成后需取得新的部署及公开复验证据，现有通过结果仅对应当时运行实现。
+
+## 同日后续：字段修正实现与开发者隔离验证（尚未公开复验）
+
+在上述黑盒矩阵形成后，开发者沿用FEAT-042修正prepare任务顶层adopted，并实施BUG-072。准备阶段原生结果adopted=false；Python发布准备任务时亦显式设false，兼容旧worker仍返回true的边界，同时保留native_result原件与其哈希。确认apply仍为true；历史prepare任务重放不改成已确认，也不回退当前模型登记。
+
+新增native/inspection_units.h查询模型主单位系及长度单位，保留失败码。inspection.units为实际长度单位名或null，units_query_code传入公开摘要；模型坐标、半径等不改数值含义。只有确认mm且数值有限时才填写volume_mm3；英寸、其他单位、查询失败或非有限值为null，不作未经验证的单位换算。来源准入复用同次单位证据，非毫米/未知仍无接管ID/令牌。该头文件同时进入服务启动指纹清单。
+
+开发验证基于分支codex/feat-042-adoption-completion、HEAD `89b64006835877e54d6448d2551d1db65a62084b` 加本轮dirty改动，Windows x64/Python3.12.14；原生构建使用本机Creo12.4.0.0匹配SDK及MSVC环境。此次没有接管/建模实机调用、保存重载或故障注入，不把SDK编译或隔离函数检查写成几何成功。
+
+| 验证 | 结果 | 边界 |
+| --- | --- | --- |
+| python -m unittest tests.unit.test_adoption tests.unit.test_model_queries -v | 39项通过 | 真实stdio MCP传输，原生边界为隔离夹具；覆盖prepare compact/full/list/replay的false、apply的true，以及mm/in/未知单位摘要与拒绝 |
+| python tools/test_inspection_units.py | 8例通过 | 使用真实SDK声明、替代两个只读SDK查询函数；mm数值保持、NaN/Infinity、in/cm/空名、主单位查询失败及长度单位查询失败，无Creo连接 |
+| python bridge.py build | 退出0 | 匹配12.4 SDK执行器构建，不是实机运行 |
+| 首轮python tools/dev_check.py | 406项中3项身份检查失败 | 开发者在该轮运行期间补改server启动指纹清单，使已导入身份与磁盘变化，失败记录保留build/bug072_validation/development_check-first.json及unit_test_report-first.json；不加入语言基线、不算通过 |
+| 固定源码后python tools/dev_check.py --work-item BUG-072 | 406项、0失败、0错误；统一检查通过 | 报告build/development_check.json、build/unit_test_report.json；完整输出build/bug072_validation/development_check-final.log |
+
+最终统一检查开始时间2026-10-19T10:54:32.582843Z，受测源码指纹 `8ae73167a72539b130022a517e097965ddaab6ee4d6780b12b6e17fee9dd27a4`；语言基线未改。新执行器SHA256 `d281eb74a57030079a680734b81583d9f26ae33b3fecddaca06651749154aedb`；隔离SDK头ProMdlUnits.h SHA256 `bd1a5341ff1206a11143628733dcbec16cfb85ad1dfebeba6a2da794a5de712e`。生成物/SDK/本机日志不加入源码提交。
+
+开发者另通过已连接E盘dev服务只读creo_capabilities核对：version=0.4.0、server_entry=E:\Projects\MCP_CREO_MechDog\server.py、code_root=E:\Projects\MCP_CREO_MechDog，source_changed_since_startup=true。启动清单仍缺新头文件，server.py启动哈希为f7be390151b159b1e9044973c21b20f0f8ead8d829d47ea952cdc9be27b2a3f2；磁盘新server.py哈希为0486ee924197a11998cee3065a6578f555f9e66918bd6123931505d1f36c1866。此为开发者公开读取的当前实例证据，不补填此前WorkBuddy第1步的环境结论，也没有重启连接器。
+
+供重启后逐文件核对的归一化LF哈希：
+
+| 文件 | SHA256 |
+| --- | --- |
+| src/creo_mechdog/adoption.py | c0ce3d5908f3a6404ddc4c52d7f982b3ec34e96d7161a23e1f2460f3025798ef |
+| src/creo_mechdog/model_queries.py | e3766ce628f567d76a88b702a0e1b5f27f218164514147520c674bb32ba34550 |
+| native/generic.cpp | acd5ea9a29ad84f2e390b37a6d32343ef671568500b3f91157cae3da23f4c00b |
+| native/inspection_units.h | e6696e10cad9ce6b45be8b09b3acd265d889eabb9f818907b33e92e1e56b85d8 |
+
+开发者仅通过Creo UI激活已有WB_REJECT_INCH窗口，未编辑/保存/关原件。待操作者重启WorkBuddy的E盘dev MCP连接器后，按[字段复验提示](../WORKBUDDY_ADOPTION.md#2026-10-19字段修正复验)先核对部署身份并检查英寸摘要，再切无盘来源验证新prepare/apply字段。BUG-072转验收中；FEAT-042/043/022未关闭。旧失败载荷及上方矩阵按当时事实保留，不能把本轮代码实现写成修正后WorkBuddy通过；未合入main或发布。

@@ -92,11 +92,12 @@ print(json.dumps({name: [importlib.import_module(name).__file__,
                 shutil.copy2(ROOT / name, destination)
             with patch.object(server, "_CODE_ROOT", root):
                 self.assertEqual(server._source_fingerprints(), server._LOADED_FINGERPRINTS)
-                for module in HELPERS:
-                    name = f"src/creo_mechdog/{module}.py"
+                names = [f"src/creo_mechdog/{module}.py" for module in HELPERS]
+                names.append("native/inspection_units.h")
+                for name in names:
                     self.assertIn(name, server._SOURCE_NAMES)
                     original = (root / name).read_bytes()
-                    (root / name).write_bytes(original + b"\n# changed implementation\n")
+                    (root / name).write_bytes(original + b"\n")
                     runtime = asyncio.run(server.creo_capabilities())["runtime"]
                     self.assertTrue(runtime["source_changed_since_startup"])
                     self.assertEqual(
