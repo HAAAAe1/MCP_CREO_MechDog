@@ -93,3 +93,26 @@ WorkBuddy 报告 prepare 任务 `result.adopted=true`，同时 `result.adoption.
 用户告知误将 `wb_unsaved_03` 保存，该件不再作为从未保存来源使用。开发者保留已保存文件，另经Creo UI新建独立零件 `WB_UNSAVED_03_RETRY`，使用 `mmns_part_solid_abs` 模板；FRONT（XY）草绘明确设置30.00×20.00 mm，实体拉伸10.00 mm，体积工具实际测得 **6000.00 mm³**。本次没有执行保存或MCP纳管，测量浮窗已关闭、选择已清除，新件保持当前。
 
 本轮开始时系统没有xtop进程或Creo窗口，经已安装Creo12.4应用入口重新启动；未操作Toolkit连接或清除保护。后续WorkBuddy应重新确认当前会话，并通过枚举核对新名称、无保存来源和无受管关联，使用新的幂等键及本次返回的model_id继续放弃快照验收。此处仅记录替代素材的UI准备，不声明abandon_new通过。
+
+## 同日后续：放弃快照通过
+
+用户转贴的WorkBuddy报告将来源名称记为 `WB_UNSAVED_03`，枚举显示origin空、has_saved_origin=false、modified=true、当前、无受管关联，session_model_id=524288、session_fingerprint=9090761655684717328、total=1；当前来源inspect读到体积5999.999999999999 mm³、8特征/6面/12边。此前UI曾准备同尺寸的RETRY件，本报告未含名称变化的过程，不将两者静默视为同一身份；本次验收身份以本报告的会话证据和新job/model为准。
+
+- prepare输入：`{"mode":"prepare","model_name":"wb_managed_03","idempotency_key":"adopt-prep-20261019-03"}`；job `b7293ef8c6224cfbb47688b288a8699e`、model `37377d420244b91612bc5671164b5e60`。终态succeeded/snapshot_prepared/adopt_pending/revision=0，报告完成时间部分为08:08:39.799276Z。快照SHA256 `f2fdbdbed026ea28e0ebc71baa31e3a00aff622929370102915ccda059c67c75`、87615字节、体积约6000，保存重载verified。
+- reconcile inspect：pending_job=null、original_job_id为上述prepare job、候选哈希一致；runner pid=23032与worker pid=12220均stopped=true。仅abandon_new可用，restore_baseline/accept_saved/accept_live均不可用。
+- 第一次apply将expected_pending_job_id显式null传入后，服务错误回显received ''，拒绝空串；省略该可选参数后成功。该现象与[BUG-055](../work-items/BUG-055.md)已记录的WorkBuddy空值序列化行为一致，不据此认定服务新出现null转空串或放宽空串校验。当前报告未提供原始传输包，转换位置本次未独立重验。
+- 成功apply使用action=abandon_new、上述model、expected_revision=0、inspect令牌、幂等键reconcile-abandon-20261019-03；job/recovery_id `2782a9e2b93f4ae98621add9d6ff8b5e`，succeeded/reconciliation_committed/revision=0，报告完成时间部分08:09:02.279000Z。success=true、saved_file_reloaded_and_verified=false、rollback_succeeded=false；放弃未执行保存重载或回滚，两个false不作为失败或对应动作验收通过。
+- 后续creo_inspect_model返回abandoned/revision=0/adopted=false/part_file=null；对账保留recovery_id、action、original_job_id、original_plan_completion_confirmed=false及resolved_at。shell与regenerate均被Model is not ready保护拒绝。
+- 会话total=1，仅原件WB_UNSAVED_03仍当前、origin空、modified=true、model_id=null；受管副本已从会话移除。放弃、后续编辑保护与原件保留有公开通过报告。磁盘快照文件仍保留及完整审计文件内容未在本段通过公开接口证明，不从会话移除推断文件删除或保留。
+
+关闭原件、外部clean/dirty/钣金、拒绝矩阵、快照改写拒绝、真实多页与实际并发等仍待完成。FEAT-042/043继续验收中；prepare的adopted语义问题仍待统一，运行源码本轮尚未更改。
+
+## 同日后续：外部clean与钣金素材已保存
+
+开发者通过Creo12.4 UI将当前WB_UNSAVED_03保存独立副本为WB_EXT_CLEAN；原件未执行保存、改名或擦除。副本保存到工程目录外 `E:\CreoAcceptance\2026-10-19\wb_ext_clean.prt.1`，再通过文件打开载入；Creo体积工具实际测得 **6000.00 mm³**。未执行MCP创建或纳管，后续由WorkBuddy核对origin、modified与受管关联后执行已有文件inspect→apply。
+
+另经UI新建独立钣金件WB_EXT_SHEET，选择 `mmns_part_sheetmetal_abs` 模板，FRONT草绘40.00×30.00 mm矩形，以钣金平面壁生成厚度2.00 mm基板；体积工具实际测得 **2400.00 mm³**。保存到 `E:\CreoAcceptance\2026-10-19\wb_ext_sheet.prt.1`。没有使用MCP建模/接管，不据模板及GUI状态代替公开接口的类型、健康、毫米与依赖检查。
+
+文件只读核验（开发者证据，不属于WorkBuddy黑盒）：clean为86171字节、SHA256 `8d4429d73fe721e5bf62df97a0efef15a9b4588310731d5eec9b19183cd18ba7`；sheet为119555字节、SHA256 `1ca82d8106fdf347ba7a1cf186c2a9ce5ad0d714c2a0e3b1594be74c0553f2d2`。时钟核对为2026-10-19 08:26:30 UTC（北京时间16:26:30）。两份PRT均在仓库外，不加入提交；已有未跟踪examples/wb_unsaved_03.prt.1保留原样，不纳入交付。
+
+收起测量浮窗后以WB_EXT_CLEAN为当前模型。外部clean、钣金接管本轮尚无WorkBuddy执行结果；dirty尺寸/参数/新增特征素材尚未制作，不能声明对应矩阵通过。
