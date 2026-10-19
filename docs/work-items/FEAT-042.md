@@ -14,6 +14,8 @@
 
 来源：[0.3.7 / Creo 13 反馈补录](../validation/FEEDBACK-0.3.7-CREO13-2026-10-18.md)第 2 项；[原件](../validation/feedback-0.3.7-creo13-2026-10-18/report.md)问题 2。关联 [FEAT-018](FEAT-018.md)（受管模型恢复）、[FEAT-019](FEAT-019.md)（自动启动边界，不接管未保存模型）、[BUG-070](BUG-070.md)（模型名称可信性）、[BUG-069](BUG-069.md)（名称与身份）。
 
+2026-10-19晚连接器重启后（部署指纹与补录一致）完成prepare/apply字段实机复验：无盘WB_FIELDS_UNSAVED（40×30草绘特征已由GUI精确改尺）inspect提示prepare；prepare（job `4e68bcfc…`）返回full/compact顶层`result.adopted=false`、`adopt_pending`/revision0、快照保存重载verified（sha256 `7771effd…`）、证据令牌600秒；apply（job `422d8abe…`）`adoption_committed`/revision1/`adopted=true`且快照哈希不变；副本续作40×30×20拉伸revision1→2、24000 mm³、保存重载verified；原件保持无盘/modified/未改名/窗口在。同轮完成BUG-072英寸实机复验与一次-11连接事故的恢复记录（Creo停在拉伸Dashboard模态叠加警告框循环，ESC取消后恢复，未结束Creo/未清unknown，不改BUG-001结论）。边角观察：extrude以整数特征ID引用快照草图被按标签查找拒绝（回滚成功），与loft数字串规范化不一致，待评估登记。详见[接管补录](../validation/ADOPTION-WorkBuddy-2026-10-19.md)同日晚间各节。WorkBuddy公开复验与既有未测边界保持，未合入main或发布。
+
 ## 问题与目标
 
 用户希望在 Creo 手动打开的 `001.prt` 中继续建模。报告称会话查询可看到当前模型，但建模接口要求已登记 model_id，`creo_reconcile_model` 返回 `Unsupported/unproven ownership`。这是已声明的所有权边界，不能按恢复缺陷处理或通过放宽该拒绝直接接管。

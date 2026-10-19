@@ -354,3 +354,35 @@ WorkBuddy未执行prepare/apply或恢复DTM1。拒绝后报告受管列表哈希
 | native/inspection_units.h | e6696e10cad9ce6b45be8b09b3acd265d889eabb9f818907b33e92e1e56b85d8 |
 
 开发者仅通过Creo UI激活已有WB_REJECT_INCH窗口，未编辑/保存/关原件。待操作者重启WorkBuddy的E盘dev MCP连接器后，按[字段复验提示](../WORKBUDDY_ADOPTION.md#2026-10-19字段修正复验)先核对部署身份并检查英寸摘要，再切无盘来源验证新prepare/apply字段。BUG-072转验收中；FEAT-042/043/022未关闭。旧失败载荷及上方矩阵按当时事实保留，不能把本轮代码实现写成修正后WorkBuddy通过；未合入main或发布。
+
+## 同日晚间：连接器重启后的开发者实机复验（WorkBuddy公开复验仍待）
+
+会话背景：E盘dev MCP连接器已于2026-10-19 20:59（本地）重启为含修正实例；期间另一ZCode MCP会话同时持有第二个`server.py`实例。上一轮准备工作（GUI把无盘WB_FIELDS_UNSAVED草图改到精确40×30并完成草绘，特征40创建成功）停在拉伸Dashboard等待选择、窗口被最小化时连接中断。本段为开发者通过已连接dev服务完成的实机复验；WorkBuddy黑盒复验仍未执行，不因本段改标。
+
+### 连接事故与恢复（环境事件，不改BUG-001结论）
+
+重启后Toolkit通道持续`connection_failed`/`toolkit_code=-11`（`PRO_TK_COMM_ERROR`，本机12.4 SDK `ProToolkitErrors.h`）、`worker_exit_code=20`；`creo_startup_status` retry三次未恢复。只读排查证实：xtop.exe（PID 1912，20:01本地启动）存活且`Responding=True`，注册在13:54（UTC）旧nmsd上，WB_FIELDS_UNSAVED与WB_REJECT_INCH两窗口可见；无残留worker；toolkit.lock在两个server实例的启动协调器间轮转争抢。trail.txt.32尾部显示上一轮停在`ProCmdFtExtrude`的ODUI等待选择状态。开发者通过user32恢复窗口并发送Esc取消拉伸Dashboard（trail记录`dashInst0.Quit`、`Creating feature -1 error 53`，已完成的40×30草绘特征不受影响）后，下一次探针的IPC初始化在Creo侧返回-97并弹出"外部程序UNNAMED没有正确初始化"警告框（与BUG-001家族同型），每次自动重试都再弹。关闭警告框并终止重复server实例后（另一ZCode会话随后自动重连拉起新实例），通道于21:21（本地）恢复：`connected=true`/`toolkit_code=0`/`state=ready`，trail记录`user_initialize status 0`+`connected to Pro/E`。判定：该次-11的直接诱因是Creo停在模态Dashboard（异步连接初始化被拒）叠加警告框循环，属启动/通道家族环境事件；BUG-001的Creo卡死根因未定结论不变，本次未出现AppHang。
+
+### 部署身份
+
+`creo_capabilities`：`source_changed_since_startup=false`，启动指纹与上节"供重启后逐文件核对"表逐项一致（adoption.py `c0ce3d59…`、model_queries.py `e3766ce6…`、generic.cpp `acd5ea9a…`、inspection_units.h `e6696e10…`、server.py `0486ee92…`），工具86个。
+
+### BUG-072英寸实机复验（通过）
+
+UI激活WB_REJECT_INCH窗口后公开`creo_adopt_current_model mode=inspect`：`available=false`、`reason="Adoption requires millimeter model units"`；双层`inspection.units="in"`、`units_query_code=0`、`volume_mm3=null`（两层一致）、`volume_query_code=0`、`millimeter_units=false`、`has_solid=true`、`healthy=true`；`model_id=null`/`evidence_token=null`；origin与sha256（`02dadb76…`，92401字节）与上午UI实测记录一致；会话枚举中该原件`modified=false`。不再出现units="mm"或约1的volume_mm3假标值，非毫米准入拒绝保持。
+
+### FEAT-042 prepare/apply字段实机复验（通过）
+
+UI激活WB_FIELDS_UNSAVED（无盘、毫米、当时仅含40×30草绘特征，has_solid=false但healthy=true）：
+
+1. `mode=inspect`：`source_kind="session_only"`、`reason="snapshot_required: use mode=prepare"`、`available_modes=["prepare"]`、`units="mm"`。
+2. `mode=prepare`（幂等键`wb-fields-unsaved-prepare-20261019-a1`，job `4e68bcfccd45491781d19b0837fe093f`，model `d5075d8736a03d6579104530ec6c89ee`）：succeeded/`snapshot_prepared`/revision0；**full与compact两视图顶层`result.adopted=false`**；`adoption.status="adopt_pending"`；快照`saved_file_reloaded_and_verified=true`（`models/d5075d87…/output/wb_fields_managed.prt.1`，sha256 `7771effd…`，75680字节）；`evidence_token`发放（600秒）；快照inspection与原件live一致（特征40草图d0=30/d1=40、5条线）。
+3. `mode=apply`（job `422d8abe4d4e46fa867b9cf0d8e4dbf3`）：succeeded/`adoption_committed`/revision1；**`result.adopted=true`**（与prepare正确对照）；sha256与准备时一致（冻结语义）；message确认source model未被修改。
+4. 续作：开发者通道`generic_bridge.submit`在副本上新建40×30标签草图并拉伸20（job `27bf949c8992460d8a31c34750dfcd69`）：succeeded、revision1→2、`volume_mm3=24000.0`、`units="mm"`、`saved_file_reloaded_and_verified=true`。受管列表：ready/revision2/`adopted=true`/`source_kind="session_snapshot"`。
+5. 原件保护：会话枚举中WB_FIELDS_UNSAVED仍`has_saved_origin=false`、`modified=true`、名称未改、窗口保留；受管副本wb_fields_managed为当前窗口。
+
+边角观察（未改代码）：`creo_extrude`以整数40引用快照草图特征时，参数规范化为字符串"40"后按标签查找报`Unknown feature label: 40`（job `344e4162fe7443d1b8e666d5819caacb`失败，`rollback_succeeded=true`、revision保持1）——与`creo_loft` sections对纯数字串按特征ID规范化的行为不一致，是否补数字串规范化另行登记评估；改用带标签草图引用后续作成功。另：本次ZCode宿主对带判别联合的数组参数（execute_plan operations、create_sketch entities）在客户端校验层全量拒绝（子错误为空），简单参数工具正常，服务端开发者通道同载荷提交成功，属调用方环境问题，不记为服务缺陷。
+
+### 边界
+
+本段为开发者实机证据：实机英寸拒绝载荷、prepare/apply字段语义、冻结/续作与原件保护均已复验；WorkBuddy公开复验（操作者侧独立运行身份、完整公开载荷记录）仍未执行，上方矩阵第1步与两条"失败→已修正"行待公开复验后改标。prepare完成时点未单独抓取受管列表的adopted=false快照（直接apply），该点位由任务级字段与既有单测覆盖。未测范围（关闭原件后确认、真实再生失败、真实并发、钣金专有语义等）沿用上表。本轮未修改产品代码、未合入main或发布；连接事故恢复过程未结束Creo、未清unknown、未删除登记。
