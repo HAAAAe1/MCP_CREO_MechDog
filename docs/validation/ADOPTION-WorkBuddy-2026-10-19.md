@@ -243,3 +243,23 @@ sheetmetal models can be adopted; assemblies and drawings keep their own ownersh
 3. assembly的query_codes缺subtype，而part/sheetmetal有subtype=0：开发者静态核对native/generic.cpp，确实只在PRO_MDL_PART分支调用ProMdlSubtypeGet、添加该诊断。因此字段集不同符合当前查询行为；缺失项不推断为失败或0，0表示已执行查询成功。该说明与WorkBuddy观察分列，不伪装为黑盒读取源码，不新增缺陷ID。
 
 开发者随后仅通过Creo UI激活已有WB_REJECT_INCH窗口；未保存、编辑、接管或执行单位拒绝探测。当前单位拒绝待WorkBuddy重新枚举/inspect，装配及多页通过结果已取得；FEAT-042/043维持剩余范围的验收中状态，实际并发和其他拒绝分支不因本段成功而关闭。
+
+## 同日后续：非毫米拒绝通过，单位摘要另记BUG-072
+
+用户转贴WorkBuddy报告：WB_REJECT_INCH为当前part，来源 `E:\CreoAcceptance\2026-10-19\wb_reject_inch.prt.1`、has_saved_origin=true、modified=false、model_id/adopted_copy_model_id均null，session_model_id=524295；total=9、session_fingerprint=9090761655684717328。枚举不暴露单位信息，不能以名称或枚举单独证明英寸单位。
+
+受管列表基线调用 `creo_list_models({"detail":"compact","limit":3})`，报告快照哈希前缀4989131a…、首项6343b3f7…（wb_ext_dirty_copy_01）、complete=false、cursor offset=3。接管inspect完整输入 `{"mode":"inspect"}`，本次正常返回结构化JSON：available=false、reason="Adoption requires millimeter model units"、available_modes=[]、conflict=null、model_id=null、evidence_token=null、source_kind=file；current_model.millimeter_units=false、healthy=true、dependency_free=true、feature_count=8。没有接管ID/令牌，WorkBuddy未继续prepare/apply或转换单位。
+
+该载荷同时提供current_model.volume_mm3=0.9999999999999999、inspection.units="mm"、inspection.volume_mm3=0.9999999999999999、volume_query_code=0、has_solid=true、8特征/6面/12边/1实体。源文件92401字节、SHA256 `02dadb769a8caf248f1064d49d86fd44f988b6566405f569f6a91371b09504b4`。这些量纲字段互相矛盾，不能把约1当成已核验的mm³值；拒绝保护通过与摘要缺陷分开判断。
+
+拒绝后报告受管列表快照哈希与cursor完全相同、会话仍9个模型、fingerprint不变；WB_REJECT_INCH来源/空受管关联不变、modified=false、仍当前。非毫米明确拒绝、没有观察到新副本/登记或窗口切换，通过；受管列表只读首页不等于全量枚举。WorkBuddy公开接口没有第二个独立模型级单位读数，确为英寸的黑盒独立交叉验证仍未完成。此前开发者通过UI选inlbs模板并实测1.00000 in³是另列的独立开发者证据，不改写WorkBuddy验证边界。
+
+开发者静态定位native/generic.cpp：inspection()固定units="mm"、将SDK mp.volume直接填入volume_mm3；adopt_current_native另行查询主长度单位生成millimeter_units。现有源码不能支持“inspection读取会话或全局单位”的猜测。非毫米单位/体积误标新登记[BUG-072](../work-items/BUG-072.md)（P2待开发），修正量纲、可靠换算或null，保留非毫米拒绝；尚未修改运行源码或重编。装配抛工具级错误、非毫米返回结构化不可用的差异继续归[FEAT-008](../work-items/FEAT-008.md)契约改进；不是两个保护分支都失败。
+
+## 同日后续：关联外部来源的拒绝素材就绪
+
+开发者通过Creo12.4 UI新建WB_REJECT_DEP，明确使用mmns_part_solid_abs；模型→获取数据→合并/继承，选择外部参考，打开外部WB_EXT_CLEAN为源模型，采用默认坐标放置（完全约束），保留合并/添加主体与选项中的自动更新。提交后模型树出现“外部添加主体 标识40”，实体可见；体积工具实际读到 **6000.00 mm³**。没有修改来源WB_EXT_CLEAN，也没有使用MCP创建或预检。
+
+保存为 `E:\CreoAcceptance\2026-10-19\wb_reject_dep.prt.1`，关闭测量浮窗后保持WB_REJECT_DEP为当前。只读核对文件85207字节、SHA256 `c2eaa0ccf12d381499050878aef8ec9bef88cd49590343296243632ca4343888`；被引用clean源哈希仍 `8d4429d73fe721e5bf62df97a0efef15a9b4588310731d5eec9b19183cd18ba7`，核对时钟2026-10-19 10:07:29 UTC（北京时间18:07:29）。本段证明UI关联方式和素材状态，不代替公开接口dependency_free=false及拒绝行为的验收。
+
+交接WorkBuddy重新枚举并做只读inspect，核对part/mm/healthy及dependency_free=false、明确外部依赖拒绝、无ID/令牌/登记/副本。若公开检查意外可接管则报告与UI关联矛盾，不执行apply或解除保护。外部依赖、不健康、实际并发仍待结果；原件关闭/快照改写及字段修正复验仍未完成，FEAT-042/043保持验收中。

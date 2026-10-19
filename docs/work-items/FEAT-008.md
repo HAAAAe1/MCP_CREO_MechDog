@@ -60,3 +60,5 @@ list_models 的 complete=false / next_cursor 为报告方实际分页正例，�
 [WorkBuddy接管补录](../validation/ADOPTION-WorkBuddy-2026-10-19.md)报告assembly只读inspect被明确拒绝，但返回工具级文本错误，没有可直接读取的code/reason字段。在本卡补统一拒绝错误契约的改进线索：评估稳定机器可读原因与现有MCP工具级isError/文本的兼容方式，保持类型、证据、revision和通道保护；尚未选型或修改运行格式，不新增一个同义缺陷ID，首批三项顺序保持。
 
 同报告观察session_model_id在part/assembly间重复，不能单独当身份键；query_codes.subtype只在part/sheetmetal分支出现。FEAT-043及接管说明已澄清临时发现ID与按实际查询输出诊断的边界，0是查询成功码而非modified值；这两点不直接登记为实现缺陷。真正的未知业务字段仍按既定null语义处理，不把缺失诊断等同于查询失败。
+
+同日后续非毫米inspect则返回结构化available=false/reason，而assembly为工具级错误，两种不可接管形式的兼容与稳定原因分类继续归本卡；本轮两种保护均有通过报告。非毫米载荷内units="mm"及未换算volume_mm3是独立真实摘要缺陷，已登记[BUG-072](BUG-072.md)，不混作本卡错误格式问题。

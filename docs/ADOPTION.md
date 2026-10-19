@@ -48,6 +48,8 @@ inspect返回 `available=false`、`available_modes=["prepare"]`，没有可用mo
 
 首批支持独立part/钣金、毫米单位、无外部依赖、无失败/抑制/不完整特征。装配、工程图等类型明确拒绝。普通受管模型的origin、检查点、revision及unknown保护保持有效。
 
+当前开发部署的非毫米来源inspect已验证明确拒绝，但该拒绝载荷仍可能把原生单位体积误标为volume_mm3、嵌套units固定为mm，见[BUG-072](work-items/BUG-072.md)。millimeter_units=false时不要把这些几何数值用于毫米断言；拒绝通过不代表单位摘要已经修复。该缺陷待修正和重新部署复验，不扩大非毫米接管支持。
+
 未确认模型不能普通建模或通过accept_saved/live绕过确认。需要放弃时使用 `creo_reconcile_model` 的inspect→`abandon_new`，保留文件和审计。派发后结果不确定则保持保护，先查询原job，不重交建模计划、不修改登记或清锁。单一Toolkit通道busy立即拒绝，受理后只轮询。
 
 本轮实测范围见[第二阶段记录](work-items/FEAT-042.md)；Creo13外部环境未验收。开发者检查与[WorkBuddy黑盒场景](WORKBUDDY_ADOPTION.md)分别留证。
