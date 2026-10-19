@@ -132,3 +132,24 @@ apply输入为mode=apply、上述model及inspect令牌、model_name=wb_ext_copy_
 钣金、dirty尺寸/参数/新特征、关闭原件、拒绝/分页/真实并发等剩余矩阵继续未验证，FEAT-042/043保持验收中。
 
 开发者随后仅通过Creo UI激活已有WB_EXT_SHEET窗口；窗口清单明确显示 `WB_EXT_SHEET (启用的)`，未保存、编辑或纳管该件。后续WorkBuddy应重新枚举确认当前来源为外部wb_ext_sheet.prt.1、sheetmetal、modified=false且无受管关联，再执行已有文件inspect→apply，核对40×30×2/2400 mm³、ready/revision1、保存重载与原件保留。钣金接管结果尚未取得。
+
+## 同日后续：外部钣金接管通过
+
+用户转贴WorkBuddy公开MCP报告：WB_EXT_SHEET为当前sheetmetal，来源 `E:\CreoAcceptance\2026-10-19\wb_ext_sheet.prt.1`、has_saved_origin=true、modified=false/query_codes.modified=0、model_id与adopted_copy_model_id均null，session_model_id=3145729。会话total=4，session_fingerprint=9090761655684717328，另有WB_UNSAVED_03、WB_EXT_CLEAN及WB_EXT_COPY_01。
+
+- inspect完整输入为 `{"mode":"inspect"}`，返回available=true、adopt_pending、source_kind=file；model `ec76df179b254f688c79acf85f858d91`、default_model_name=adopt_ec76df17、600秒令牌。来源119555字节、SHA256 `1ca82d8106fdf347ba7a1cf186c2a9ce5ad0d714c2a0e3b1594be74c0553f2d2`。当前摘要为sheetmetal、2400.0 mm³、8特征/6面/12边/1实体，has_solid/healthy/millimeter_units/dependency_free均true。
+- apply输入为 `{"mode":"apply","model_id":"ec76df179b254f688c79acf85f858d91","evidence_token":"75a56a735aac48daa8777df31c0f4258","model_name":"wb_ext_sheet_copy_01","idempotency_key":"adopt-apply-sheet-20261019"}`。job `f5d28fad3c7f4aa787ed8ef3a9572bfe`，报告时刻部分created_at=08:37:44.614Z、finished_at=08:37:52.330Z；阶段intent_persisted→connect→adoption_save_and_reload→adoption_committed，终态succeeded、revision=1、adopted=true、connected=true。rollback_succeeded=false，未触发回滚，不作为回滚失败或通过的证据。
+- 后续副本ready/revision=1/adopted=true/source_kind=file、pending_job=null；体积2400.0 mm³、8特征/6面/12边/1实体、has_solid=true、units=mm。saved_file_reloaded_and_verified=true、inspection_source=adoption_verified、snapshot.source=saved_verified。文件models下本model的output/wb_ext_sheet_copy_01.prt.1，SHA256 `d241ee7f763e6b0da72a1c64aae5058fb5fd8e059ee3d255faab289c3a894d87`；副本重新保存不要求与来源字节相同。
+- 原件仍在会话、origin不变、modified=false、model_id=null，adopted_copy_model_id指向上述model；副本为当前，total=5、fingerprint未变。外部独立钣金的接管、几何摘要、保存重载、登记与原件关联通过；未验证其他钣金特征或展开行为。
+
+WorkBuddy还报告section=sheets返回unavailable_sections:["sheets"]、data.sheets=[]，features中type=942的特征标为other。此处保留其观察，但纠正段名解释：开发者静态核对native/drawing.cpp的drawing_inspection，sheets由ProDrawingSheetsCount/SheetSizeGet/SheetNameGet生成，是工程图图纸页；不是钣金壁、折弯或展开表。该段在钣金零件上不可用不能作为钣金缺陷。type=942的名称映射及钣金专有语义未从本报告证明，不从总体计数一致推断逐项一致；本轮未新增或扩大支持声明。
+
+WorkBuddy未独立取得接管后源文件哈希，其源字节不变仍记未验证。开发者随后只读核对磁盘源文件仍为119555字节、SHA256 `1ca82d8106fdf347ba7a1cf186c2a9ce5ad0d714c2a0e3b1594be74c0553f2d2`，与素材准备及inspect一致；文件核对在2026-10-19 08:42:14 UTC时钟读数之前完成。该证据单列为开发者结果，不计入WorkBuddy结论。
+
+## 同日后续：dirty独立基线已保存，界面覆盖阻断修改
+
+开发者通过Creo UI从WB_UNSAVED_03保存独立副本WB_EXT_DIRTY，路径 `E:\CreoAcceptance\2026-10-19\wb_ext_dirty.prt.1`；原件没有保存、改名或擦除。磁盘基线86408字节、SHA256 `0c90ff2e18f39a9ca5cf87a40f67c34f928be28ef7690294093a71adef7b5a24`，复制来源为此前30×20×10/约6000 mm³素材。本段尚未重新打开dirty副本或独立测量其磁盘重载体积，不把来源体积当作本段重载断言。
+
+准备打开副本时桌面出现QQ截图/取色覆盖层，输入定位明确返回 `point (189, 31) is over QQ.exe "Chrome Legacy Window", not target window xtop.exe "WB_UNSAVED_03 (启用的) - Creo Parametric 12"`。重新获取Creo窗口、激活并重试一次后仍被同一覆盖窗口拒绝，随后停止UI输入；未操作远程协助控件、结束进程或建立Toolkit连接。dirty尺寸、参数和新特征修改均尚未完成，不能交给WorkBuddy作为合格dirty素材。待覆盖层退出后继续打开该独立副本、完成改动并保持未保存。
+
+当前尚未完成dirty尺寸/参数/新特征、关闭原件、拒绝矩阵、快照改写拒绝、真实多页与实际并发等；FEAT-042/043保持验收中。准备顶层adopted的pending语义仍待统一，运行源码和构建产物本轮未改变。
