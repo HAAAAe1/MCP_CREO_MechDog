@@ -77,3 +77,13 @@ WorkBuddy 报告 prepare 任务 `result.adopted=true`，同时 `result.adoption.
 开发者再次进入原件草绘时，UI仍明确显示 **30.00×40.00 mm**，与此前12000 mm³记录一致。按用户要求继续制作可见变化：宽度 **30.00→35.00 mm**，另一尺寸40.00 mm、原拉伸10.00 mm；再生成功，体积实际测得 **14000.0 mm³**。未新增特征、未保存或关闭原件，未操作受管副本；原件仍为当前模型。完成后的时钟为 `2026-10-19 05:21:39 UTC`（北京时间13:21:39）。
 
 后续WorkBuddy应先在当前原件上执行不带model_id的只读inspect，预期得到约14000 mm³，再对原受管model_id续签并apply，确认副本仍约20000 mm³/8特征且保存重载verified。转贴中“12:01:40前有效”与本轮先后时间不一致，不采用该到期时刻；使用最新续签返回的600秒有效期。原件关闭、abandon_new及其他剩余矩阵仍未完成。
+
+## 同日后续：冻结确认通过，第三份素材就绪
+
+用户继续转贴 WorkBuddy 公开MCP结果：不带model_id的当前来源inspect实际读到 `WB_UNSAVED_02` 的体积 `13999.999999999996 mm³`、8特征/6面/12边，origin空，未再次prepare。对原model `2abbfbaae70183666f261d45076e2c8d` 续签，仍返回原快照路径及哈希；随后以幂等键 `adopt-apply-20261019-02` 确认，job `120bfdd8823a4e5d9bc01114edb6431b`，stage=adoption_committed、revision=1，完成时间 `2026-10-19T05:39:10.006132Z`。
+
+确认后公开检查副本体积 `19999.999999999996 mm³`、8特征/6面/12边/1实体，SHA256 `5c4ca52758fab440ba2f56152b7c3207902d92b282984aeeae3d67b008955f59` 与prepare一致；`saved_file_reloaded_and_verified=true`、`inspection_source=adoption_snapshot_verified`，状态ready/revision=1/adopted=true/source_kind=session_snapshot、snapshot.source=saved_verified。原件仍在会话、非当前、modified=true、origin空、model_id=null；副本成为当前，总数保持4。原件修改后的冻结几何、同ID续签确认、保存重载与原件保留已有通过报告。过期拒绝只验证过一次超期18秒，不外推更长超期或其他时间边界；副本内部执行次数仍不以会话数量不变推断。
+
+第三份独立素材由开发者经Creo UI创建：`WB_UNSAVED_03`，模板 `mmns_part_solid_abs`，FRONT（XY）草绘30.00×20.00 mm、拉伸10.00 mm；「分析→测量→体积」实际返回 **6000.00 mm³**。本次没有保存、接管或执行abandon，测量浮窗已关闭，第三份原件保持当前。准备时系统没有xtop进程或Creo窗口，经已安装Creo12.4的应用入口启动了新会话；没有新建Toolkit连接、结束进程或清除保护。前一报告的total=4属于此前会话，后续WorkBuddy须重新确认会话就绪和枚举，不复用旧cursor/session_model_id。结束UI操作后的时钟核对为 `2026-10-19 06:30:11 UTC`（北京时间14:30:11）。
+
+下一步为WorkBuddy独立执行新来源prepare→reconcile inspect→abandon_new→普通编辑拒绝，并记录原件与受管登记状态、文件/审计的公开证据；尚无这条放弃链路的通过结果。关闭原件、外部clean/dirty/钣金、拒绝矩阵、快照篡改拒绝和真实并发等剩余范围保持未验证，FEAT-042/043继续验收中。

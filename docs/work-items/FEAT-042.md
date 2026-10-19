@@ -10,7 +10,7 @@
 
 验收：从未保存001长方体40×30×20→prepare/apply→去顶面壁厚2的shell，体积7152±0.01、revision0→1→2及保存重载；另测外部文件clean/dirty、钣金、冻结语义、篡改拒绝、续签、幂等/并发/未知结果与WorkBuddy。开发与黑盒证据分别记录；会话限制保留。下方为首阶段历史，不据其成功外推新范围。
 
-第二阶段实现已完成，原生prepare复制→源/副本完整核验→保存/重载，确认仅加载受管快照；Python实现幂等任务、提交决策后轮询补登记、过期续签、摘要来源及仅abandon恢复边界。403项全量单元及统一开发检查、匹配SDK构建通过。2026-10-18开发脚本首次9秒就绪探测timeout、cases为空的[历史证据](../validation/ADOPTION-COMPLETION-2026-10-18.md)保持原样。2026-10-19用户转贴WorkBuddy报告支持无盘续作主链、24000→7152体积、revision0→1→2、保存重载、原件/窗口保护、未确认保护与幂等重放；后续过期拒绝与同身份续签已有通过报告，见[黑盒补录](../validation/ADOPTION-WorkBuddy-2026-10-19.md)。开发者已把第二原件修改到35×40×10、UI体积14000，确认后副本仍20000的公开几何证据尚待WorkBuddy；关闭/abandon、dirty/外部目录/钣金、拒绝矩阵与真实并发仍未验收。prepare顶层result.adopted=true与pending证据的语义不一致待统一；续签current_model沿用准备时摘要、无model_id检查当前来源的区别已补文档。本卡保持验收中，未合入main或发布。
+第二阶段实现已完成，原生prepare复制→源/副本完整核验→保存/重载，确认仅加载受管快照；Python实现幂等任务、提交决策后轮询补登记、过期续签、摘要来源及仅abandon恢复边界。403项全量单元及统一开发检查、匹配SDK构建通过。2026-10-18开发脚本首次9秒就绪探测timeout、cases为空的[历史证据](../validation/ADOPTION-COMPLETION-2026-10-18.md)保持原样。2026-10-19用户转贴WorkBuddy报告支持无盘续作主链、24000→7152体积、revision0→1→2、保存重载、原件/窗口保护、未确认保护与幂等重放；后续过期拒绝、同身份续签确认，以及原件改到35×40×10/14000后副本仍20000 mm³/同哈希亦有通过报告，见[黑盒补录](../validation/ADOPTION-WorkBuddy-2026-10-19.md)。第三份未保存UI素材wb_unsaved_03已备好（30×20×10、实测6000）；关闭/abandon、dirty/外部目录/钣金、拒绝矩阵与真实并发仍未验收。prepare顶层result.adopted=true与pending证据的语义不一致待统一；续签current_model沿用准备时摘要、无model_id检查当前来源的区别已补文档。本卡保持验收中，未合入main或发布。
 
 来源：[0.3.7 / Creo 13 反馈补录](../validation/FEEDBACK-0.3.7-CREO13-2026-10-18.md)第 2 项；[原件](../validation/feedback-0.3.7-creo13-2026-10-18/report.md)问题 2。关联 [FEAT-018](FEAT-018.md)（受管模型恢复）、[FEAT-019](FEAT-019.md)（自动启动边界，不接管未保存模型）、[BUG-070](BUG-070.md)（模型名称可信性）、[BUG-069](BUG-069.md)（名称与身份）。
 
