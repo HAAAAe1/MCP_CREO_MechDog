@@ -2,6 +2,10 @@
 #include "third_party/json.hpp"
 #include "recovery_deadline.h"
 #include "inspection_units.h"
+#include <algorithm>
+#include <cctype>
+#include <cerrno>
+#include <cstdlib>
 #include <memory>
 #include <map>
 #include <set>
@@ -81,13 +85,48 @@ static int constant(const J &value) {
         throw std::runtime_error("Unknown Toolkit constant: " + value.get<std::string>());
     return it->second;
 }
+// Resolve a user-supplied label to its registered alias entry. Creo
+// uppercases PRO_E_STD_FEATURE_NAME, so inspect_model(features).name differs
+// in case from the registered alias; both spellings must resolve to the same
+// entry, and callers reading alias metadata must use this canonical lookup
+// instead of indexing aliases[] with the raw string (which yields null).
+static const J *alias_entry(const std::string &label) {
+    auto it = aliases.find(label);
+    if (it == aliases.end()) {
+        std::string lower(label);
+        std::transform(lower.begin(), lower.end(), lower.begin(),
+                       [](unsigned char c) { return (char)std::tolower(c); });
+        if (lower != label)
+            it = aliases.find(lower);
+    }
+    return it == aliases.end() ? nullptr : &it.value();
+}
 static int feature_id(const J &ref) {
     if (ref.is_number_integer())
         return ref.get<int>();
     std::string label = ref.get<std::string>();
-    if (!aliases.contains(label))
-        throw std::runtime_error("Unknown feature label: " + label);
-    return aliases[label].at("feature_id").get<int>();
+    // Some public clients stringify the integer branch of str|int anyOf
+    // (BUG-073); digit-only strings cannot be feature labels, so normalize
+    // them to feature IDs like the Python-side LoftOp contract does.
+    if (!label.empty() && label.find_first_not_of("0123456789") == std::string::npos) {
+        errno = 0;
+        char *end = nullptr;
+        long long id = std::strtoll(label.c_str(), &end, 10);
+        if (!errno && end && !*end && id >= 0 && id <= 2147483647LL)
+            return (int)id;
+        throw std::runtime_error("Sketch feature ID is not a nonnegative 32-bit integer: " + label);
+    }
+    if (const J *entry = alias_entry(label))
+        return entry->at("feature_id").get<int>();
+    std::string known;
+    int count = 0;
+    for (auto it = aliases.begin(); it != aliases.end() && count < 10; ++it, ++count)
+        known += (count ? ", " : "") + it.key();
+    throw std::runtime_error(
+        "Unknown feature label: " + label +
+        (known.empty() ? "; this model has no registered aliases; reference features by "
+                         "numeric ID from inspect_model(features)"
+                       : "; available labels: " + known + (aliases.size() > 10 ? ", ..." : "")));
 }
 static ProFeature feature(const J &ref) {
     ProFeature f;
@@ -1017,8 +1056,8 @@ static J extrude_or_revolve(const J &op, bool revolve) {
         body_options(root, op);
     int sign = 1;
     if (op["sketch"].is_string()) {
-        std::string label = op["sketch"];
-        sign = aliases[label].value("section_normal_sign", 1);
+        if (const J *entry = alias_entry(op["sketch"].get<std::string>()))
+            sign = entry->value("section_normal_sign", 1);
     }
     if (direction == "negative")
         sign = -sign;
@@ -1762,16 +1801,15 @@ static void execute_operation(const J &op) {
         ProFeature f = feature(op["sketch"]);
         ProElement root = nullptr;
         CK(ProFeatureElemtreeExtract(&f, nullptr, PRO_FEAT_EXTRACT_NO_OPTS, &root));
-        J saved_path = op["sketch"].is_string()
-                           ? aliases[op["sketch"].get<std::string>()].value(
-                                 "section_path", J::array({PRO_E_STD_SECTION, PRO_E_SKETCHER}))
-                           : J::array({PRO_E_STD_SECTION, PRO_E_SKETCHER});
+        const J *meta =
+            op["sketch"].is_string() ? alias_entry(op["sketch"].get<std::string>()) : nullptr;
+        J saved_path =
+            meta ? meta->value("section_path", J::array({PRO_E_STD_SECTION, PRO_E_SKETCHER}))
+                 : J::array({PRO_E_STD_SECTION, PRO_E_SKETCHER});
         ProElement sk = get_path(root, saved_path);
         ProSection s = nullptr;
         CK(ProElementSpecialvalueGet(sk, nullptr, (ProAppData *)&s));
-        J ids = op["sketch"].is_string()
-                    ? aliases[op["sketch"].get<std::string>()].value("dimension_ids", J::object())
-                    : J::object();
+        J ids = meta ? meta->value("dimension_ids", J::object()) : J::object();
         for (auto it = op["values"].begin(); it != op["values"].end(); ++it) {
             int id = ids.contains(it.key()) ? ids[it.key()].get<int>() : std::stoi(it.key());
             CK(ProSecdimValueSet(s, id, it.value()));

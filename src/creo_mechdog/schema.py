@@ -6,7 +6,15 @@ import math
 import re
 from typing import Annotated, Any, Literal, Union
 
-from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    BeforeValidator,
+    ConfigDict,
+    Field,
+    TypeAdapter,
+    field_validator,
+    model_validator,
+)
 
 from creo_mechdog.references import PatternAxis
 
@@ -19,6 +27,20 @@ Point2 = Annotated[list[float], Field(min_length=2, max_length=2)]
 Point3 = Annotated[list[float], Field(min_length=3, max_length=3)]
 Label = Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]{0,27}$")]
 Positive = Annotated[float, Field(gt=0, le=100000)]
+
+
+def _normalize_sketch_ref(value: Any) -> Any:
+    # Some public clients stringify the integer branch of str|int anyOf
+    # (BUG-073); digit-only strings cannot be feature labels (labels start
+    # with a letter), so normalize them to feature IDs like LoftOp does.
+    if isinstance(value, str) and re.fullmatch(r"[0-9]+", value):
+        value = int(value)
+    if type(value) is int and not 0 <= value <= 2147483647:
+        raise ValueError("Sketch feature IDs must be nonnegative 32-bit integers")
+    return value
+
+
+SketchRef = Annotated[str | int, BeforeValidator(_normalize_sketch_ref)]
 
 
 class Line(StrictModel):
@@ -352,7 +374,7 @@ class TransformUpdateOp(StrictModel):
 class ExtrudeOp(StrictModel):
     op: Literal["extrude"]
     label: Label
-    sketch: str | int
+    sketch: SketchRef
     depth: Positive = 1
     mode: Literal["add", "cut", "surface"] = "add"
     direction: Literal["positive", "negative", "symmetric"] = "positive"
@@ -370,7 +392,7 @@ class ExtrudeOp(StrictModel):
 class RevolveOp(StrictModel):
     op: Literal["revolve"]
     label: Label
-    sketch: str | int
+    sketch: SketchRef
     angle: Annotated[float, Field(gt=0, le=360)] = 360
     mode: Literal["add", "cut", "surface"] = "add"
     direction: Literal["positive", "negative", "symmetric"] = "positive"
@@ -473,7 +495,7 @@ class DimensionsOp(StrictModel):
 
 class SketchDimensionsOp(StrictModel):
     op: Literal["set_sketch_dimensions"]
-    sketch: str | int
+    sketch: SketchRef
     values: dict[str, float]
 
 
@@ -648,7 +670,7 @@ class DraftOp(StrictModel):
 class SheetmetalWallOp(StrictModel):
     op: Literal["sheetmetal_wall"]
     label: Label
-    sketch: str | int
+    sketch: SketchRef
     depth: Positive
     thickness: Positive
     direction: Literal["positive", "negative"] = "positive"
@@ -974,7 +996,7 @@ class PointsOp(StrictModel):
 class FillOp(StrictModel):
     op: Literal["surface_fill"]
     label: Label
-    sketch: str | int
+    sketch: SketchRef
 
 
 class ThickenOp(StrictModel):
@@ -1025,7 +1047,7 @@ class BooleanOp(StrictModel):
 class RibOp(StrictModel):
     op: Literal["rib"]
     label: Label
-    sketch: str | int
+    sketch: SketchRef
     thickness: Positive
     side: Literal["positive", "negative", "symmetric"] = "symmetric"
     flip: bool = False
