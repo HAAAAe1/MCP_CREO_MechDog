@@ -208,3 +208,38 @@ WorkBuddy未通过公开接口独立重载源磁盘几何或再次读取源哈�
 开发者随后仅激活WB_REJECT_ASM窗口作为当前模型，未执行任何MCP接管或拒绝探测；两份素材均在同一会话，既有dirty来源和受管副本未关闭或改写。先交WorkBuddy通过公开接口枚举/inspect装配，预期明确拒绝、不返回可确认ID/令牌、不产生新受管登记或副本；回报后再切到WB_REJECT_INCH验证非毫米拒绝。真实多页枚举可在当前多模型会话独立补测，不能把session_model_id当成可操作目标或自动切窗能力。
 
 本轮重新核对BUG-001-recovery-2026-10-17历史卡死记录，连接-11根因仍未由本次材料证明；既有用户确认可操作及后续正常UI/MCP结果不等同根因关闭。开发者未建立新的Toolkit连接或故意制造再生失败，外部依赖与不健康模型拒绝仍待合格素材及相应安全条件，不将装配/英寸素材准备视作第8步通过。
+
+## 同日后续：装配拒绝与真实五页遍历通过
+
+用户转贴WorkBuddy报告：WB_REJECT_ASM为当前assembly，来源 `E:\CreoAcceptance\2026-10-19\wb_reject_asm.asm.1`、has_saved_origin=true、modified=false、无model_id/adopted_copy_model_id，session_model_id=524288；会话total=9、session_fingerprint=9090761655684717328。WB_REJECT_INCH亦在同一会话。
+
+受管列表基线调用 `creo_list_models({"detail":"compact","limit":50})`，因响应分页返回25条、complete=false、next_cursor非空；报告记录快照哈希前缀4989131a…，首项为wb_ext_dirty_copy_01（model前缀6343b3f7…、ready/revision1）。报告该登记created_at时间部分09:13:01，与前文apply任务created_at=09:13:12.464Z是不同对象时间，不强行视为冲突。未取得本次受管列表的后续页或完整哈希，不把首页25条作为登记总量。
+
+接管inspect完整输入 `{"mode":"inspect"}`，工具级错误原文：
+
+```text
+Error executing tool creo_adopt_current_model: Adoption refused: only part or
+sheetmetal models can be adopted; assemblies and drawings keep their own ownership
+```
+
+未返回model_id、evidence_token、available_modes或job；WorkBuddy未继续apply或其他写操作。拒绝后会话仍9个模型，当前仍WB_REJECT_ASM、来源及空受管关联未变、fingerprint一致；受管列表首项及报告中的快照哈希前缀亦未变。装配类型明确拒绝、未观察到新接管登记/副本或窗口切换，通过；这不等同已经执行装配apply、工程图拒绝或完整登记文件审计。
+
+随后WorkBuddy以limit=2和每页返回的cursor遍历同次会话快照，报告如下：
+
+| 页/offset | 模型（报告顺序） | snapshot_id | next_cursor |
+| --- | --- | --- | --- |
+| 1/0 | WB_UNSAVED_03、WB_EXT_SHEET | 1eb62765… | 有 |
+| 2/2 | WB_EXT_CLEAN、WB_EXT_COPY_01 | 同上 | 有 |
+| 3/4 | WB_EXT_SHEET_COPY_01、WB_EXT_DIRTY | 同上 | 有 |
+| 4/6 | WB_EXT_DIRTY_COPY_01、WB_REJECT_INCH | 同上 | 有 |
+| 5/8 | WB_REJECT_ASM | 同上 | null |
+
+合计9条，与total=9及先前limit=20的完整名称顺序一致，无重复遗漏；5页snapshot_id相同、checked_at时间部分均09:46:03.035290，末页当前标记仍为WB_REJECT_ASM。真实同快照多页、末页终止及未切窗通过；snapshot_id仅有前缀，不补造完整值。该会话同时覆盖无盘、clean、dirty、sheetmetal、assembly和受管副本；未知值查询失败、其他类型及实际并发仍不由本段外推。
+
+### 接口观察归类
+
+1. 装配拒绝仅有工具级文本，无code/reason结构化字段：记录为[FEAT-008](../work-items/FEAT-008.md)错误契约改进线索，尚未设计或修改统一错误格式，不把明确拒绝本身判失败。
+2. session_model_id=524288同时出现在part WB_UNSAVED_03与assembly WB_REJECT_ASM：说明该字段不是全局唯一身份；沿用FEAT-043的临时发现提示边界。后续操作只以当前窗口正式预检及返回的受管ID为准，不根据该整数选择或接管模型，也不承诺组合键为永久身份。
+3. assembly的query_codes缺subtype，而part/sheetmetal有subtype=0：开发者静态核对native/generic.cpp，确实只在PRO_MDL_PART分支调用ProMdlSubtypeGet、添加该诊断。因此字段集不同符合当前查询行为；缺失项不推断为失败或0，0表示已执行查询成功。该说明与WorkBuddy观察分列，不伪装为黑盒读取源码，不新增缺陷ID。
+
+开发者随后仅通过Creo UI激活已有WB_REJECT_INCH窗口；未保存、编辑、接管或执行单位拒绝探测。当前单位拒绝待WorkBuddy重新枚举/inspect，装配及多页通过结果已取得；FEAT-042/043维持剩余范围的验收中状态，实际并发和其他拒绝分支不因本段成功而关闭。

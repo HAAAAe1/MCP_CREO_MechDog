@@ -54,3 +54,9 @@ list_models 的 complete=false / next_cursor 为报告方实际分页正例，�
 补入逐工具引用支持矩阵：分别核对独立 revolve、计划 revolve 的标签/整数/数字字符串，与 loft.sections 的已声明支持对照。loft 的整数兼容范围归 [BUG-028](BUG-028.md)，不能自动扩展为全部 sketch 参数契约。先明确现有支持，选择准确的字段说明/校验错误，或在身份解析无歧义时提供兼容整数引用；不直接把数字字符串一律解释成标签或 ID。
 
 验收应覆盖合法标签、整数、数字字符串、未知 ID 和不存在标签；文档/schema/错误提示一致。若只支持标签，拒绝须说明使用标签及查询方式；若新增整数支持，须验证实际选中特征、几何、revision、失败回滚与保存重载，覆盖真实 MCP 两入口。状态仍为待规划，本次未改接口或复测；旋转创建 -1 另见 [BUG-067](BUG-067.md)，命名规则另见 [BUG-069](BUG-069.md)。
+
+## 2026-10-19：接管拒绝错误与会话诊断说明
+
+[WorkBuddy接管补录](../validation/ADOPTION-WorkBuddy-2026-10-19.md)报告assembly只读inspect被明确拒绝，但返回工具级文本错误，没有可直接读取的code/reason字段。在本卡补统一拒绝错误契约的改进线索：评估稳定机器可读原因与现有MCP工具级isError/文本的兼容方式，保持类型、证据、revision和通道保护；尚未选型或修改运行格式，不新增一个同义缺陷ID，首批三项顺序保持。
+
+同报告观察session_model_id在part/assembly间重复，不能单独当身份键；query_codes.subtype只在part/sheetmetal分支出现。FEAT-043及接管说明已澄清临时发现ID与按实际查询输出诊断的边界，0是查询成功码而非modified值；这两点不直接登记为实现缺陷。真正的未知业务字段仍按既定null语义处理，不把缺失诊断等同于查询失败。
