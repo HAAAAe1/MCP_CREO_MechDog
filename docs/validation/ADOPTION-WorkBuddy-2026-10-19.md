@@ -116,3 +116,19 @@ WorkBuddy 报告 prepare 任务 `result.adopted=true`，同时 `result.adoption.
 文件只读核验（开发者证据，不属于WorkBuddy黑盒）：clean为86171字节、SHA256 `8d4429d73fe721e5bf62df97a0efef15a9b4588310731d5eec9b19183cd18ba7`；sheet为119555字节、SHA256 `1ca82d8106fdf347ba7a1cf186c2a9ce5ad0d714c2a0e3b1594be74c0553f2d2`。时钟核对为2026-10-19 08:26:30 UTC（北京时间16:26:30）。两份PRT均在仓库外，不加入提交；已有未跟踪examples/wb_unsaved_03.prt.1保留原样，不纳入交付。
 
 收起测量浮窗后以WB_EXT_CLEAN为当前模型。外部clean、钣金接管本轮尚无WorkBuddy执行结果；dirty尺寸/参数/新增特征素材尚未制作，不能声明对应矩阵通过。
+
+## 同日后续：外部clean接管通过
+
+用户转贴WorkBuddy公开MCP报告：接管前WB_EXT_CLEAN当前、origin为 `E:\CreoAcceptance\2026-10-19\wb_ext_clean.prt.1`、has_saved_origin=true、modified=false（query_codes.modified=0）、model_id/adopted_copy_model_id均null、session_model_id=524290；同会话另有无盘WB_UNSAVED_03和已保存sheetmetal WB_EXT_SHEET，total=3。
+
+inspect返回available=true、adopt_pending、source_kind=file、model `d573a11f766c4679aae4e46858b8e803`，文件86171字节，SHA256 `8d4429d73fe721e5bf62df97a0efef15a9b4588310731d5eec9b19183cd18ba7`；当前来源体积5999.999999999999 mm³、8特征/6面/12边，毫米/无依赖/健康均true，默认副本名adopt_d573a11f、令牌600秒。此时会话枚举model_id仍null：inspect创建待确认登记不证明原件已受管，不能用该登记ID直接编辑原件；apply后需分别检查副本model_id与原件adopted_copy_model_id。
+
+apply输入为mode=apply、上述model及inspect令牌、model_name=wb_ext_copy_01、idempotency_key=adopt-apply-clean-20261019；job `0f9f80e854024e90befc5695334abfcf`，adoption_committed/revision=1，完成 `2026-10-19T08:30:39.713191Z`。后续检查副本ready/revision=1/adopted=true/source_kind=file，体积5999.999999999999 mm³、8特征/6面/12边/1实体，saved_file_reloaded_and_verified=true、inspection_source=adoption_verified、snapshot.source=saved_verified。保存路径为models下本model的output/wb_ext_copy_01.prt.1，SHA256 `afcc1b944f542645c009b80de3ccca727143b7d1445c8e10afe11d2f2f8034e9`；独立副本重新保存后的哈希无需等于来源文件。
+
+原件WB_EXT_CLEAN仍在会话、origin不变、modified=false、model_id=null，adopted_copy_model_id指向上述model；窗口切到WB_EXT_COPY_01，total=4。外部clean接管、保存重载、原件保留和来源/副本关联有通过报告。WorkBuddy未取得接管后独立读取源文件哈希的公开证据，其“源文件字节未变”仍记未验证，不以任务消息中的未修改声明代替核验。
+
+开发者随后只读Get-FileHash复核源文件：86171字节、SHA256仍为 `8d4429d73fe721e5bf62df97a0efef15a9b4588310731d5eec9b19183cd18ba7`，与准备素材时及WorkBuddy inspect时一致；核对时钟2026-10-19 08:32:57 UTC（北京时间16:32:57）。这补充开发者的磁盘前后字节一致证据，单独记录，不将其归入WorkBuddy公开MCP验收。未修改原件、重试接管或创建新登记。
+
+钣金、dirty尺寸/参数/新特征、关闭原件、拒绝/分页/真实并发等剩余矩阵继续未验证，FEAT-042/043保持验收中。
+
+开发者随后仅通过Creo UI激活已有WB_EXT_SHEET窗口；窗口清单明确显示 `WB_EXT_SHEET (启用的)`，未保存、编辑或纳管该件。后续WorkBuddy应重新枚举确认当前来源为外部wb_ext_sheet.prt.1、sheetmetal、modified=false且无受管关联，再执行已有文件inspect→apply，核对40×30×2/2400 mm³、ready/revision1、保存重载与原件保留。钣金接管结果尚未取得。
