@@ -28,3 +28,21 @@
 2. 待操作者切到仍无盘且无受管关联的独立WB_UNSAVED_03，再创建新prepare任务（新副本名与新幂等键），只轮询该job。预期任务result.adopted=false、adoption.status=adopt_pending、revision=0，compact/full查询和模型列表adopted一致为false。原件仍当前且无来源。显式apply后预期result.adopted=true、ready/revision1及保存重载verified；再重放原prepare键，仍返回原prepare任务及adopted=false，不将历史准备任务改成确认成功，也不回退当前ready登记。
 
 这两项是修正后新增的公开复验，不将修正前的成功或内部隔离SDK/stdio检查算作本轮实机通过。单位查询失败/NaN等内部故障注入只由开发者隔离验证，WorkBuddy不能为此运行本地脚本。真实再生失败、原件关闭、快照改写和实际并发保留各自未验证状态。
+
+## BUG-073 草图引用复验
+
+修复改动涉及Python与原生执行器：先等待已受理任务结束，由操作者重启指向E盘开发目录的MCP连接器，保留Creo及既有模型。WorkBuddy仅用公开接口记录版本、实际路径、启动源码指纹及`source_changed_since_startup=false`；工具数应为86。未重启或身份仍变化则报告阻断，不用源码/Git/配置补证。
+
+1. 自建模型：`creo_execute_plan` 新建零件，第一操作为带标签草图（如`label=wb73_rect`，XY面矩形），第二操作为引用该标签的挤出基准体（如`label=wb73_base`）。只轮询返回job，预期succeeded并记录体积与revision。
+2. 用`creo_inspect_model(section=features)`记录该草图特征的真实`id`与`name`（预期name为标签的大写形式，如`WB73_RECT`）；用`section=aliases`记录注册名（预期小写`wb73_rect`）。
+3. 同一草图连续四次`creo_extrude`，每次先查当前revision、使用全新标签，仅改`sketch`写法：
+   - 特征ID整数（如`sketch=<id>`）。若你的客户端把整数序列化成带引号字符串，如实记录实际到达形式；修复后两种到达形式都应成功；
+   - 特征ID纯数字串（如`sketch="<id>"`）；
+   - `features`段返回的大写`name`；
+   - `aliases`段返回的小写注册名。
+   四次均预期succeeded、revision逐一递增、保存重载verified；同截面小深度挤出的体积增量应符合几何预期。
+4. 故意传不存在的标签（如`sketch=wb73_no_such`）：预期failed、`rollback_succeeded=true`、错误信息含`available labels`候选列表且列表包含该模型的已注册标签；模型revision、体积、特征数不变。
+5. 受管接管模型对照：在现有`wb_fields_managed`（或操作者另备的接管副本）上重复数字串、大写名、小写名三种写法，预期与自建模型行为一致；每次成功revision+1。若其`RECT_40X30`截面挤出落在既有实体内，体积应保持不变，记录实际值。
+6. 重复标签保护：用已存在的标签提交应被拒绝且不产生job或模型变化。
+
+报告逐项记录工具、完整输入（含sketch的实际写法）、job_id/model_id、终态、revision、体积、特征数、保存重载、回滚与原始错误全文。区分通过、失败、阻断、未验证。`creo_loft`的实机数字串对照因回调注册需人工前置，本轮可不做，不将未测写成通过；不读源码/Git/本机配置，内部序列化实现细节记"无法确认"。
