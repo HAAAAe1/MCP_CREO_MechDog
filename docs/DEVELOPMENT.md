@@ -4,7 +4,7 @@
 
 当前服务/源码版本为0.4.0，发布交付见[0.4.0记录](validation/RELEASE-0.4.0.md)。本轮开发分支推进FEAT-042第二阶段、BUG-071、FEAT-043及FEAT-022指引，尚未发布；86工具与无盘快照流程见[接管说明](ADOPTION.md)。0.4.0首阶段、BUG-069/070等既有验收保持原范围，FEAT-018/029的完整验收仍未结束。以下旧轮次摘要保留历史背景，后续交付状态以主台账及对应Release为准。
 
-2026-10-19用户转贴的[WorkBuddy公开MCP验收补录](validation/ADOPTION-WorkBuddy-2026-10-19.md)支持无盘prepare→apply→shell主链、7152 mm³、revision0→1→2、保存重载和原件保留通过。冻结/过期续签/放弃、外部clean/dirty/钣金、拒绝/分页/真实并发等范围仍待完成；prepare顶层adopted字段的pending语义在FEAT-042内跟踪。该结果与10月18日开发脚本就绪超时分开记录，不关闭尚未完成的验收。
+2026-10-19用户转贴的[WorkBuddy公开MCP验收补录](validation/ADOPTION-WorkBuddy-2026-10-19.md)支持无盘prepare→apply→shell主链、7152 mm³、revision0→1→2、保存重载和原件保留通过；后续过期拒绝与同身份续签已有通过报告。原件修改后确认几何、关闭/放弃、外部clean/dirty/钣金、拒绝/分页/真实并发等范围仍待完成；prepare顶层adopted字段的pending语义在FEAT-042内跟踪，当前原件检查与快照续签的摘要区别已补文档。该结果与10月18日开发脚本就绪超时分开记录，不关闭尚未完成的验收。
 
 2026-10-17的[BUG-001离线卡死核对](validation/BUG-001-hang-offline-2026-10-17.md)记录了IPC初始化失败及同一12.4进程无响应关闭；当时无会话可验证，底层诱因未定。后续DEV-036的成功范围另记，不代替旧卡死根因结论；当前联调仍按根级规范核对条件，本轮台账分类不解除连接/注入限制。
 

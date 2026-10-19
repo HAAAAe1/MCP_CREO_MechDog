@@ -8,7 +8,7 @@
 
 - 现有模型纳管第二阶段：FEAT-042 无盘冻结快照接管、BUG-071 预检失败收尾、FEAT-043 只读会话枚举，FEAT-022 补重启指引。本轮按用户确认计划实施，保留0.4.0首阶段交付与未测边界；原反馈见[原件](validation/feedback-0.3.7-adoption-2026-10-18/report.md)。
 
-- 2026-10-19用户转贴WorkBuddy无盘接管主链通过：revision0→1→2、24000→7152 mm³、保存重载、原件保留及幂等保护，见[黑盒补录](validation/ADOPTION-WorkBuddy-2026-10-19.md)。FEAT-042/043保持验收中；冻结/续签/放弃、外部clean/dirty/钣金和拒绝/分页/并发矩阵仍未完成。prepare的result.adopted与pending状态语义不一致在FEAT-042内跟踪，尚未修改运行源码。
+- 2026-10-19用户转贴WorkBuddy无盘接管主链通过：revision0→1→2、24000→7152 mm³、保存重载、原件保留及幂等保护；后续过期拒绝、同身份续签亦有报告，见[黑盒补录](validation/ADOPTION-WorkBuddy-2026-10-19.md)。FEAT-042/043保持验收中；修改原件后的确认几何、关闭/放弃、外部clean/dirty/钣金和拒绝/分页/并发矩阵仍未完成。prepare的result.adopted语义待统一；续签current_model为准备时摘要的查询区别已补文档，尚未修改运行源码。
 
 - 0.3.7旋转与接管反馈的首阶段已随0.4.0交付；BUG-067～070已归档，FEAT-042因本次新增无盘范围重入验收。历史环境及未测事实见[0.4.0发布记录](validation/RELEASE-0.4.0.md)。
 
@@ -107,7 +107,7 @@ revision 是模型修改版本号；保存重载是保存后重新打开检查�
 
 | ID | 优先级 | 状态 | 目标版本 | 问题与下一步 |
 | --- | --- | --- | --- | --- |
-| [FEAT-042](work-items/FEAT-042.md) | P1 | 验收中 | 未排期 | 0.4.0首阶段保留；第二阶段已实现。10月19日WorkBuddy无盘prepare/apply/shell主链、7152体积、revision0→1→2、原件/窗口保护与幂等通过；剩余冻结/续签/放弃、clean/dirty/钣金、拒绝和并发矩阵待验收，prepare顶层adopted语义待统一。 |
+| [FEAT-042](work-items/FEAT-042.md) | P1 | 验收中 | 未排期 | 0.4.0首阶段保留；第二阶段已实现。WorkBuddy无盘续作主链、7152体积、revision0→1→2、原件/窗口保护、幂等及过期拒绝/同身份续签已有通过报告。原件修改后确认几何、关闭/放弃、clean/dirty/钣金、拒绝及并发仍待验收；prepare顶层adopted语义待统一，续签摘要来源已补说明。 |
 | [FEAT-043](work-items/FEAT-043.md) | P2 | 验收中 | 未排期 | 只读会话枚举、固定分页、未知值与身份关联已实现，stdio/规则回归及SDK构建通过；WorkBuddy已发现真实无盘原件/受管副本并观察窗口状态和busy。真实多页、unknown与完整类型矩阵待验收。 |
 | [FEAT-022](work-items/FEAT-022.md) | P2 | 验收中 | 未排期 | 已有启动指纹/源码变化检测；本轮补工具描述、README/安装与接管入口的重启和部署核对指引。已有模拟变化/启动身份回归；真实连接器升级前后对照未测。 |
 | [BUG-019](work-items/BUG-019.md) | P2 | 验收中 | 未排期 | 0.3.1 的 round 输入用 radius、chamfer 输入用 distance，计划和返回结果却使用 size；0.3.4/Creo 9 与 0.3.5/Creo 9 多轮确认。2026-10-18 [DEV-042](work-items/DEV-042.md) 已实现：三入口字段对照与请求示例、execute_plan 别名（round→radius、chamfer→distance，与 size 同现/错配明确拒绝）、`result.operations[].size` 回显（compact 保留）、工具描述与 REFERENCE_SYNTAX 同步；实机（本机 Creo 12.4）实际原生尺寸=输入、尺寸编辑、保存重载与失败回滚对照通过，MCP 黑盒独立工具正例通过。剩余：MCP 服务重启后的 WorkBuddy 别名/冲突与 compact 回显复核；非本机环境沿用各自条目。证据见[验证记录](validation/DEV-042-2026-10-18.md)。 |

@@ -40,6 +40,10 @@ inspect返回 `available=false`、`available_modes=["prepare"]`，没有可用mo
 
 令牌过期后使用 `{"mode":"inspect","model_id":"<快照ID>"}` 重新核验并续签，不再次复制。快照被改写则拒绝续签/确认。相同prepare幂等键返回原任务，参数不同拒绝；不同键代表显式创建另一份独立快照，不按名称推断原模型所有权。
 
+检查原件变化时，先在 Creo 激活原件，调用 `creo_adopt_current_model({"mode":"inspect"})`，**省略model_id**。它检查当前窗口；从未保存的原件仍返回prepare指引和当前几何摘要，无登记ID/令牌。仅记录摘要，不再次prepare。
+
+带model_id的续签检查已有快照的文件身份，返回的 `current_model` 沿用prepare时保存的来源摘要，不是对原件当前活体的重新读取。普通 `creo_inspect_model` 在adopt_pending时可能返回inspection_available=false；这表示该查询尚未提供几何，不能据此认定准备快照文件不存在。确认前用prepare/续签证据核对身份；apply成功后再用普通模型检查核对实际副本几何与保存重载结果。
+
 ## 失败与范围
 
 首批支持独立part/钣金、毫米单位、无外部依赖、无失败/抑制/不完整特征。装配、工程图等类型明确拒绝。普通受管模型的origin、检查点、revision及unknown保护保持有效。

@@ -65,3 +65,15 @@ WorkBuddy 报告 prepare 任务 `result.adopted=true`，同时 `result.adoption.
 按用户要求，开发者随后通过 Creo UI 编辑原件 `WB_UNSAVED_02` 的原有草绘，将宽度 d1 从 **50.00 改为 30.00 mm**，另一草绘尺寸保持40.00 mm，原拉伸深度10.00 mm；再生后「分析→测量→体积」实际返回 **12000.0 mm³**。操作中误开的新拉伸已取消，未提交新增特征。没有保存、关闭原件或操作受管副本，收起测量窗口后原件仍当前。完成后时钟核对为 `2026-10-19 04:48:43 UTC`（北京时间12:48:43）。
 
 下一步仍由 WorkBuddy 通过公开 MCP 核对副本保持约20000 mm³/8特征，并执行过期拒绝→inspect(model_id)续签→原model确认。原件变化是本段 UI 证据，尚不能据此认定副本冻结、过期拒绝或续签验收已通过。
+
+## 同日后续：过期拒绝/续签报告及原件第二次修改
+
+用户转贴 WorkBuddy 报告：04:51:34Z 使用原令牌与幂等键 `adopt-apply-expired-20261019-02` 提交apply，返回 `Evidence token is missing or expired; inspect again`。随后带原model_id的inspect返回同一模型、同一路径、同一SHA256和新的600秒令牌；会话total保持4。公开接口的过期拒绝与同身份续签已有通过报告；该段尚无确认后的冻结几何结果，不将模型数不变扩展为内部执行次数证明。
+
+报告中普通creo_inspect_model对adopt_pending返回 `part_file=null`、`inspection_available=false`、`snapshot.source=unavailable`。应解读为该查询未暴露准备几何；prepare已经返回保存文件及哈希，不能解释成没有保存快照。续签的current_model仍为约20000 mm³，也不能据此推断原件没有变化。
+
+开发者核对当前源码：`adoption.inspect(model_id)` 调用 `_prepared` 验证保存文件身份，再以 `snapshot["live"]` 构造证据；`_evidence` 将该准备时摘要放入current_model。省略model_id的inspect才派发当前来源原生预检。这是开发者对字段来源的说明，不是要求WorkBuddy读源码；客户端以公开调用分别核对两种摘要。文档和黑盒步骤已澄清，未修改运行源码。
+
+开发者再次进入原件草绘时，UI仍明确显示 **30.00×40.00 mm**，与此前12000 mm³记录一致。按用户要求继续制作可见变化：宽度 **30.00→35.00 mm**，另一尺寸40.00 mm、原拉伸10.00 mm；再生成功，体积实际测得 **14000.0 mm³**。未新增特征、未保存或关闭原件，未操作受管副本；原件仍为当前模型。完成后的时钟为 `2026-10-19 05:21:39 UTC`（北京时间13:21:39）。
+
+后续WorkBuddy应先在当前原件上执行不带model_id的只读inspect，预期得到约14000 mm³，再对原受管model_id续签并apply，确认副本仍约20000 mm³/8特征且保存重载verified。转贴中“12:01:40前有效”与本轮先后时间不一致，不采用该到期时刻；使用最新续签返回的600秒有效期。原件关闭、abandon_new及其他剩余矩阵仍未完成。
