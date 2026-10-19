@@ -288,3 +288,38 @@ WorkBuddy未执行prepare/apply或解除保护。拒绝后报告受管列表哈�
 开发者静态核对原生健康汇总：已访问特征含incomplete或status不等于PRO_FEAT_ACTIVE时healthy=false；接管对不健康状态明确拒绝。因此该素材用于验证含抑制特征的健康保护，**不等同实际再生失败素材或失败再生测试**。本轮没有新的Toolkit连接、MCP预检/接管或故障注入，不以静态条件替代公开返回。
 
 交接WorkBuddy仅通过公开MCP重新枚举当前WB_REJECT_UNHEALTHY、记录受管列表基线，再调用 `creo_adopt_current_model({"mode":"inspect"})`。预期part、millimeter_units=true、dependency_free=true、healthy=false，明确因failed/suppressed/incomplete features拒绝、无可确认ID/令牌；随后核对登记、会话数量、来源与当前窗口不变。不执行prepare/apply、恢复抑制或解除保护；若意外available=true或healthy=true，只报告矛盾。真实再生失败、真实并发及其他剩余范围仍未验证，FEAT-042/043维持验收中。
+
+## 同日后续：含抑制特征的不健康拒绝通过
+
+用户转贴WorkBuddy报告：WB_REJECT_UNHEALTHY为当前part，来源 `E:\CreoAcceptance\2026-10-19\wb_reject_unhealthy.prt.2`，has_saved_origin=true、modified=false、model_id/adopted_copy_model_id均null，session_model_id=1048585；会话total=11、session_fingerprint=9090761655684717328。来源版本.prt.2与前段已保存抑制状态的准备记录一致，不是素材不符；初始.prt.1没有DTM1，不可用于替代本次结果。
+
+受管列表基线输入 `{"detail":"compact","limit":3}`，报告snapshot_hash前缀4989131a…、首项6343b3f7…、complete=false、cursor offset=3。接管inspect完整输入 `{"mode":"inspect"}`，返回available=false、reason="The model has failed, suppressed or incomplete features"、available_modes=[]、conflict=null、model_id=null、evidence_token=null、source_kind=file。current_model中millimeter_units=true、dependency_free=true、healthy=false，inspection.healthy亦为false；有实体、volume_query_code=0、volume_mm3=5999.999999999999、9特征/6面/12边/1实体。来源95065字节、SHA256 `d1bba490c4bf6a87da0c90e89c28ba312d94c5fe36dd7993caa5a2531fe00591`，与准备记录一致。
+
+WorkBuddy未执行prepare/apply或恢复DTM1。拒绝后报告受管列表哈希前缀及cursor、会话total=11、fingerprint、来源.prt.2、空受管关联、modified=false和当前窗口均未变。含抑制特征的模型明确拒绝、无可确认ID/令牌、未观察到新登记/副本或切窗，通过。has_solid=true且体积保持6000支持健康判定与实体存在性不是同一条件；不能仅凭公开汇总反推具体哪个特征被抑制，9特征计数也不能独立证明DTM1的身份或状态。该细节仅由分列的开发者UI素材记录支持。
+
+原始理由合并failed/suppressed/incomplete三种状态，公开返回没有逐特征原因，因此真实再生失败及不完整特征分支仍未验证；不能把本例写成三种子状态都通过。细粒度诊断需求沿用FEAT-008契约改进线索，不另立同义缺陷。实际并发仍只有已有busy观察，没有主动重叠调用的证据。
+
+## 当前验收矩阵（截至本次转贴）
+
+以下为用户转贴材料汇总，不是开发者重新执行WorkBuddy工具。第1～8步均有记录或明确缺口，不能写成全部验收通过；没有原始运行身份材料的第1步、未实施的分支均保留未验证。
+
+| 场景 | 分类 | 当前依据与边界 |
+| --- | --- | --- |
+| 运行版本、启动路径/指纹、可见工具身份对照 | 未验证 | 当前转贴缺完整公开环境输出；开发者Git身份不能补替 |
+| 无盘/已保存/dirty/钣金/装配/受管对象发现 | 通过 | 枚举来源、修改状态与当前窗口；session_model_id仅发现提示 |
+| 同快照多页、limit超限与非法cursor、查询不切窗 | 通过 | 9模型/5页无重复遗漏；非法输入明确拒绝 |
+| 无盘inspect提示prepare、准备不切窗/不保存原件 | 通过 | 24000 mm³，adopt_pending/revision0、保存重载verified |
+| 未确认保护、同键重放、异参同键拒绝 | 通过 | 公开任务/模型/哈希一致；内部执行次数不由此推断 |
+| apply后去顶面2 mm抽壳续作 | 通过 | ready/revision1→2、7152 mm³、保存重载verified、原件保留 |
+| 令牌超期拒绝、同ID续签及修改原件后的冻结副本 | 通过 | 一次超期18秒；原件14000、副本20000、准备哈希不变 |
+| abandon_new及abandoned编辑保护 | 通过 | revision0、审计关联、普通编辑拒绝、原件保留；磁盘保留不归黑盒通过 |
+| 外部clean / dirty / 平板钣金接管 | 通过 | 6000 / 6750 / 2400 mm³，ready/revision1与重载verified；dirty尺寸/方孔/参数逐项核对 |
+| 装配、非毫米、外部依赖、含抑制特征拒绝 | 通过 | 明确拒绝且未观察到新登记/副本/切窗；工程图拒绝未单独测试 |
+| prepare任务顶层adopted的确认语义 | 失败 | result.adopted=true与adopt_pending/revision0及列表adopted=false矛盾，FEAT-042待修正 |
+| 非毫米只读摘要的单位/体积 | 失败 | units="mm"及约1的volume_mm3误标，BUG-072待修正；毫米准入拒绝仍通过 |
+| 原件关闭后确认、快照改写拒绝、真实再生失败/不完整特征拒绝 | 未验证 | 没有对应公开操作与结果 |
+| 实际并发busy、未知结果保护、字段查询失败unknown | 未验证 | 已有busy旁证不能替代重叠调用；内部注入不计WorkBuddy结果 |
+| 钣金专有语义、磁盘来源几何/接管后源哈希的公开独立核验 | 未验证 | sheets为工程图页；开发者UI/文件检查分列，不能替代公开接口 |
+| 真实连接器升级、重启前后身份与能力变化 | 未验证 | 文档/模拟检查已实施，当前没有公开前后对照材料 |
+
+当前没有新的活动素材阻断；此前不合格001及GUI不可操作的历史阻断已留在当时记录，不抹去也不继续当成当前阻断。FEAT-042/043/022保持验收中；BUG-072与prepare字段修正完成后需取得新的部署及公开复验证据，现有通过结果仅对应当时运行实现。
