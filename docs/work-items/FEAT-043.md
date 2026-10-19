@@ -14,4 +14,4 @@
 
 ## 实现与证据
 
-本轮在 codex/feat-042-adoption-completion 实施。原生枚举受支持查询类型，不支持/失败的类型保留type_errors与complete=false；逐字段返回query_codes/null。Python固定快照分页，十分钟有效、32KiB分页上限，只按已核验文件身份关联登记。规则及真实stdio（原生边界替换）回归、全量403项单元和匹配12.4 SDK构建通过。用户确认现场后首次9秒就绪探测超时，尚未执行真实枚举，未做自动重试。见[本轮记录](../validation/ADOPTION-COMPLETION-2026-10-18.md)；真实窗口不变、全部类型矩阵与WorkBuddy未验收。
+本轮在 codex/feat-042-adoption-completion 实施。原生枚举受支持查询类型，不支持/失败的类型保留type_errors与complete=false；逐字段返回query_codes/null。Python固定快照分页，十分钟有效、32KiB分页上限，只按已核验文件身份关联登记。规则及真实stdio（原生边界替换）回归、全量403项单元和匹配12.4 SDK构建通过。2026-10-18开发脚本首次就绪探测超时的[历史记录](../validation/ADOPTION-COMPLETION-2026-10-18.md)保持原样。2026-10-19用户转贴WorkBuddy报告已真实发现无盘WB_UNSAVED_01（origin空、has_saved_origin=false、modified=true、model_id=null），并观察准备前后原件/副本及当前窗口；一次真实busy含blocking字段，不能据此判定实际并发测试通过。见[黑盒补录](../validation/ADOPTION-WorkBuddy-2026-10-19.md)。真实多页遍历、unknown字段和完整类型矩阵仍待验收。

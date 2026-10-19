@@ -7,7 +7,7 @@
 1. 用公开环境/会话/能力接口记录运行身份及工具清单。应能看到 `creo_list_session_models` 和接管prepare模式；如果未部署或仍为旧连接器，报告阻断，不猜测源码已生效。
 2. 枚举会话，记录001的名称、类型、当前状态、origin、has_saved_origin=false、modified。使用limit=1和cursor遍历同次快照；未知字段保持null。对limit=51、非法cursor检查明确拒绝。查询前后当前窗口不变，不产生新受管模型。
 3. 对当前001做只读接管inspect，预期提示prepare，无可用ID/令牌。执行prepare（独立幂等键），只轮询返回job。预期成功、保存重载verified、adopt_pending/revision=0、体积24000。原001仍在会话且无保存来源、窗口仍为001。
-4. 未确认时尝试普通regenerate，预期拒绝且revision不变。重放同一prepare请求应得到同一job/model；相同键更换名称应拒绝。检查列表来源类别。
+4. 未确认时尝试普通regenerate，预期拒绝且revision不变。重放同一prepare请求应得到同一job/model；相同键更换名称应拒绝。检查列表来源类别，分别记录任务result.adopted、result.adoption.status、列表adopted与revision；字段语义矛盾时单独报告，不以顶层布尔值判断已确认。相同响应支持公开幂等重放，内部原生执行次数若无公开证据则保持未验证。
 5. 检查result.adoption证据并apply（新键），预期ready/revision=1。通过inspect找到Z=20的顶面，用thickness=2的shell去顶面，预期7152±0.01 mm³、revision=2、保存重载verified。原001仍保留。
 6. 独立再准备一份无盘快照，由操作者在prepare后修改或关闭原模型再确认。副本仍为准备时状态。等令牌过期后按model_id续签，再确认；不得重新创建副本。使用独立来源测试放弃快照，预期abandoned、后续普通编辑拒绝。
 7. 分开测试已有文件clean、dirty及钣金接管。dirty场景要事先明确并记录未保存尺寸、参数及新增特征；逐项检查副本，不只比较特征数。原件文件是否字节不变如公开接口无独立证据则记未验证，不推测通过。

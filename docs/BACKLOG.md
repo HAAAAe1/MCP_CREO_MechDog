@@ -1,12 +1,14 @@
 # 统一开发台账
 
-建立：2026-10-13；最近更新：2026-10-18；当前服务和源码版本：0.4.0（本轮开发未发布）。
+建立：2026-10-13；最近更新：2026-10-19；当前服务和源码版本：0.4.0（本轮开发未发布）。
 
 这里按下一步工作安排任务。各 ID 只保留一条当前记录，完成项见[完成档案](BACKLOG_COMPLETED.md)。历史观察项仍未证明修复，但暂不进入开发或发布阻断。
 
 ## 当前安排
 
 - 现有模型纳管第二阶段：FEAT-042 无盘冻结快照接管、BUG-071 预检失败收尾、FEAT-043 只读会话枚举，FEAT-022 补重启指引。本轮按用户确认计划实施，保留0.4.0首阶段交付与未测边界；原反馈见[原件](validation/feedback-0.3.7-adoption-2026-10-18/report.md)。
+
+- 2026-10-19用户转贴WorkBuddy无盘接管主链通过：revision0→1→2、24000→7152 mm³、保存重载、原件保留及幂等保护，见[黑盒补录](validation/ADOPTION-WorkBuddy-2026-10-19.md)。FEAT-042/043保持验收中；冻结/续签/放弃、外部clean/dirty/钣金和拒绝/分页/并发矩阵仍未完成。prepare的result.adopted与pending状态语义不一致在FEAT-042内跟踪，尚未修改运行源码。
 
 - 0.3.7旋转与接管反馈的首阶段已随0.4.0交付；BUG-067～070已归档，FEAT-042因本次新增无盘范围重入验收。历史环境及未测事实见[0.4.0发布记录](validation/RELEASE-0.4.0.md)。
 
@@ -105,8 +107,8 @@ revision 是模型修改版本号；保存重载是保存后重新打开检查�
 
 | ID | 优先级 | 状态 | 目标版本 | 问题与下一步 |
 | --- | --- | --- | --- | --- |
-| [FEAT-042](work-items/FEAT-042.md) | P1 | 验收中 | 未排期 | 0.4.0首阶段保留；第二阶段prepare/apply冻结快照、续签/幂等、来源摘要已实现。用户确认现场后首次9秒就绪探测超时，未提交纳管/抽壳；真实无盘、dirty、外部目录、钣金及WorkBuddy未验收。 |
-| [FEAT-043](work-items/FEAT-043.md) | P2 | 验收中 | 未排期 | 只读会话枚举、同次快照分页、未知值与身份关联已实现，stdio/规则回归及SDK构建通过；真实枚举受就绪超时阻断。 |
+| [FEAT-042](work-items/FEAT-042.md) | P1 | 验收中 | 未排期 | 0.4.0首阶段保留；第二阶段已实现。10月19日WorkBuddy无盘prepare/apply/shell主链、7152体积、revision0→1→2、原件/窗口保护与幂等通过；剩余冻结/续签/放弃、clean/dirty/钣金、拒绝和并发矩阵待验收，prepare顶层adopted语义待统一。 |
+| [FEAT-043](work-items/FEAT-043.md) | P2 | 验收中 | 未排期 | 只读会话枚举、固定分页、未知值与身份关联已实现，stdio/规则回归及SDK构建通过；WorkBuddy已发现真实无盘原件/受管副本并观察窗口状态和busy。真实多页、unknown与完整类型矩阵待验收。 |
 | [FEAT-022](work-items/FEAT-022.md) | P2 | 验收中 | 未排期 | 已有启动指纹/源码变化检测；本轮补工具描述、README/安装与接管入口的重启和部署核对指引。已有模拟变化/启动身份回归；真实连接器升级前后对照未测。 |
 | [BUG-019](work-items/BUG-019.md) | P2 | 验收中 | 未排期 | 0.3.1 的 round 输入用 radius、chamfer 输入用 distance，计划和返回结果却使用 size；0.3.4/Creo 9 与 0.3.5/Creo 9 多轮确认。2026-10-18 [DEV-042](work-items/DEV-042.md) 已实现：三入口字段对照与请求示例、execute_plan 别名（round→radius、chamfer→distance，与 size 同现/错配明确拒绝）、`result.operations[].size` 回显（compact 保留）、工具描述与 REFERENCE_SYNTAX 同步；实机（本机 Creo 12.4）实际原生尺寸=输入、尺寸编辑、保存重载与失败回滚对照通过，MCP 黑盒独立工具正例通过。剩余：MCP 服务重启后的 WorkBuddy 别名/冲突与 compact 回显复核；非本机环境沿用各自条目。证据见[验证记录](validation/DEV-042-2026-10-18.md)。 |
 | [FEAT-029](work-items/FEAT-029.md) | P1 | 验收中 | 0.3.4 | 固定的 DLL 注册入口、回调状态查询和建模前检查已由 DEV-032 随 0.3.4 交付。2026-10-18 问题 5 反馈处置（[指引与语义记录](validation/FEAT-029-guidance-2026-10-18.md)）：readiness 已拆分——not_loaded 覆盖“从未加载”与“已注册未运行”（可确定），unknown 仅剩“无法确认”（0.3.4 双义缺口关闭），not_loaded 的 instruction 首行即注册入口并含 registry_file 实际路径；README 安装节新增一次性设置小节（5 步+路径示例+种子免回调说明）、INSTALL 同步；setup 文本同口径重组。本机 12.4 实机查询实证 not_loaded+no_runtime_identity_record 返回新指引。脚本化注册/写 config.pro 维持待评估未实施（卡内边界）。仍待验收：实际加载、升级、回退及直接放样的完整生命周期流程；0.3.4→0.3.5 升级场景已由外部 Creo 10 文件层实证不触碰回调注册；反馈建议补 last_known_readiness 待评估；DLL 签名仍待评估且不能代替加载状态/ABI/资源匹配检查。原有 297 项单元、SDK 和 ABI 证据保留，完整生命周期仍未验收。 |
