@@ -263,3 +263,28 @@ sheetmetal models can be adopted; assemblies and drawings keep their own ownersh
 保存为 `E:\CreoAcceptance\2026-10-19\wb_reject_dep.prt.1`，关闭测量浮窗后保持WB_REJECT_DEP为当前。只读核对文件85207字节、SHA256 `c2eaa0ccf12d381499050878aef8ec9bef88cd49590343296243632ca4343888`；被引用clean源哈希仍 `8d4429d73fe721e5bf62df97a0efef15a9b4588310731d5eec9b19183cd18ba7`，核对时钟2026-10-19 10:07:29 UTC（北京时间18:07:29）。本段证明UI关联方式和素材状态，不代替公开接口dependency_free=false及拒绝行为的验收。
 
 交接WorkBuddy重新枚举并做只读inspect，核对part/mm/healthy及dependency_free=false、明确外部依赖拒绝、无ID/令牌/登记/副本。若公开检查意外可接管则报告与UI关联矛盾，不执行apply或解除保护。外部依赖、不健康、实际并发仍待结果；原件关闭/快照改写及字段修正复验仍未完成，FEAT-042/043保持验收中。
+
+## 同日后续：外部依赖拒绝通过
+
+用户转贴WorkBuddy报告：当前WB_REJECT_DEP为part，来源 `E:\CreoAcceptance\2026-10-19\wb_reject_dep.prt.1`，has_saved_origin=true、modified=false、is_current=true、model_id/adopted_copy_model_id均null，session_model_id=1048584；会话total=10、session_fingerprint=9090761655684717328。受管列表基线输入 `{"detail":"compact","limit":3}`，报告snapshot_hash前缀4989131a…、首项6343b3f7…、complete=false、cursor offset=3。
+
+接管inspect完整输入 `{"mode":"inspect"}`，返回结构化available=false、reason="External dependencies require separate ownership verification"、available_modes=[]、conflict=null、model_id=null、evidence_token=null、source_kind=file。current_model中millimeter_units=true、healthy=true、dependency_free=false、feature_count=5、volume_mm3=5999.999999999999；inspection为mm、有实体、volume_query_code=0，5特征/6面/12边/1实体。来源文件85207字节、SHA256 `c2eaa0ccf12d381499050878aef8ec9bef88cd49590343296243632ca4343888`，与此前独立开发者文件核验值相同；不将跨证据来源的一致性写成WorkBuddy额外执行的文件检查。
+
+WorkBuddy未执行prepare/apply或解除保护。拒绝后报告受管列表哈希前缀及cursor不变，会话仍total=10、fingerprint不变，原件来源、空受管关联、modified=false与当前窗口均不变。毫米且健康的零件因dependency_free=false明确拒绝、未观察到新登记/副本或窗口切换，通过。受管列表仅有首页及哈希前缀，不等同完整登记文件审计。
+
+公开接口未暴露具体依赖对象或依赖类型，WorkBuddy没有独立枚举依赖的证据；此前开发者UI中WB_EXT_CLEAN外部合并/自动更新是分列的素材证据。不能从本次单一条件拒绝反推所有保护检查的执行优先级。装配工具级错误与依赖/单位结构化拒绝的格式差异继续归FEAT-008；abandoned模型的普通编辑拒绝属于另一操作，不据此扩展同一接管接口的格式比较。
+
+## 同日后续：抑制特征的不健康素材就绪（开发者UI）
+
+开发者在Creo UI从独立实体WB_UNSAVED_03保存副本为WB_REJECT_UNHEALTHY，打开新副本；未在原件上添加或抑制特征。新副本保留30×20×10长方体，在FRONT偏移5 mm建立独立DTM1，不添加引用该面的后续特征。执行隐含/抑制时出现“突出显示项将被隐含，请确认”，按Computer Use规则请求确认；用户明确回答“允许，继续完成”。恢复操作时该确认框已经关闭，复核DTM1的隐含操作已不可用、恢复操作可用，几何保持可见；不补造确认框关闭者或额外点击。
+
+随后开发者保存副本，UI显示WB_REJECT_UNHEALTHY已保存；体积工具实际读到 **6000.00 mm³**，收起测量浮窗，保持该模型为当前。只读文件核验时钟2026-10-19 10:32:19 UTC（北京时间18:32:19）：
+
+| 文件 | 字节数 | SHA256 | 用途 |
+| --- | --- | --- | --- |
+| E:\CreoAcceptance\2026-10-19\wb_reject_unhealthy.prt.1 | 86613 | ce38e457e3c2d70762a08f336c0d9b5686ad297e1c06ba16d9432e16f362191e | 初始独立副本，尚未添加/抑制DTM1 |
+| E:\CreoAcceptance\2026-10-19\wb_reject_unhealthy.prt.2 | 95065 | d1bba490c4bf6a87da0c90e89c28ba312d94c5fe36dd7993caa5a2531fe00591 | 已保存的DTM1抑制状态，待公开预检 |
+
+开发者静态核对原生健康汇总：已访问特征含incomplete或status不等于PRO_FEAT_ACTIVE时healthy=false；接管对不健康状态明确拒绝。因此该素材用于验证含抑制特征的健康保护，**不等同实际再生失败素材或失败再生测试**。本轮没有新的Toolkit连接、MCP预检/接管或故障注入，不以静态条件替代公开返回。
+
+交接WorkBuddy仅通过公开MCP重新枚举当前WB_REJECT_UNHEALTHY、记录受管列表基线，再调用 `creo_adopt_current_model({"mode":"inspect"})`。预期part、millimeter_units=true、dependency_free=true、healthy=false，明确因failed/suppressed/incomplete features拒绝、无可确认ID/令牌；随后核对登记、会话数量、来源与当前窗口不变。不执行prepare/apply、恢复抑制或解除保护；若意外available=true或healthy=true，只报告矛盾。真实再生失败、真实并发及其他剩余范围仍未验证，FEAT-042/043维持验收中。
