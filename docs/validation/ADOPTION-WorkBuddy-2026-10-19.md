@@ -386,3 +386,16 @@ UI激活WB_FIELDS_UNSAVED（无盘、毫米、当时仅含40×30草绘特征，h
 ### 边界
 
 本段为开发者实机证据：实机英寸拒绝载荷、prepare/apply字段语义、冻结/续作与原件保护均已复验；WorkBuddy公开复验（操作者侧独立运行身份、完整公开载荷记录）仍未执行，上方矩阵第1步与两条"失败→已修正"行待公开复验后改标。prepare完成时点未单独抓取受管列表的adopted=false快照（直接apply），该点位由任务级字段与既有单测覆盖。未测范围（关闭原件后确认、真实再生失败、真实并发、钣金专有语义等）沿用上表。本轮未修改产品代码、未合入main或发布；连接事故恢复过程未结束Creo、未清unknown、未删除登记。
+
+## 同日第三轮：BUG-073 草图引用 WorkBuddy 公开复验（通过）
+
+操作者重启Creo（xtop pid 22900，14:49:18）与E盘dev MCP连接器后，WorkBuddy按[提示词](../WORKBUDDY_ADOPTION.md#bug-073-草图引用复验)独立执行，仅用公开工具。运行身份：0.4.0、E盘入口、tool_count=86、`source_changed_since_startup=false`、`server.py`指纹`0486ee92…`（启动指纹35项，含修正后`native/generic.cpp` `e55862a5…`）。通道ready、toolkit_code=0、release_numeric=44。
+
+- **自建模型**（`wb73_sketch_ref`，model `fcce20cde92d4197b9df5a5ac105fdad`）：execute_plan草图`wb73_rect`+挤出基准成功（rev1、200 mm³、8特征、保存重载verified）；`features`段记录草图**id=40/name=WB73_RECT**（大写），`aliases`段注册名**wb73_rect**。
+- **四写法**（每次先查revision、全新标签、同截面小深度挤出，几何增量可判读）：①整数`sketch=40`→succeeded rev2、体积+200；②发送串`"40"`回显**归一为整数40**→succeeded rev3、体积+0（同向同深完全重叠，几何预期）；③大写`"WB73_RECT"`→succeeded rev4、+200；④小写`"wb73_rect"`→succeeded rev5、+200。四次均保存重载verified。②的回显为整型即schema层规范化生效的公开可见证据；WorkBuddy按黑盒纪律将"到达形态"记为无法确认，本段补充开发者解读，不改其表述。
+- **不存在标签**`wb73_no_such`：failed、`rollback_succeeded=true`、rev/体积/特征数不变；错误全文含`available labels: wb73_base, wb73_r1_int, wb73_r2_str, wb73_r3_name, wb73_r4_alias, wb73_rect`（候选列表完整）。
+- **重复标签保护**：已存在标签被直接拒绝、无job_id、模型不变。
+- **受管模型对照**（`wb_fields_managed`，基线rev9/24000 mm³/24特征/`rect_40x30` id=48）：数字串`"48"`（回显整数48）、大写`"RECT_40X30"`、小写`"rect_40x30"`三写法均succeeded（rev10→12、体积恒24000、特征26→30，挤出落于既有实体内），与自建模型行为一致。
+- **未验证**：`creo_loft`实机数字串对照（回调注册需人工前置）；内部序列化实现细节。
+
+结论：BUG-073公开复验通过；模型rev9→12为测试痕迹（仅3个重叠挤出特征、体积未变）。报告原件为操作者转贴，本节为登记摘要。

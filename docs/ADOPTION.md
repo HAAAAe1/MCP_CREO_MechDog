@@ -1,10 +1,10 @@
 # 继续编辑 Creo 中的现有模型
 
-本页对应 FEAT-042 第二阶段与 FEAT-043，属于未发布开发分支。0.4.0 Release 的85工具和历史验收保持原范围；本分支为86工具，增加会话枚举及无盘快照流程。
+本页对应 FEAT-042 第二阶段与 FEAT-043，随 0.4.1 发布（86工具：新增会话枚举及无盘快照流程）。0.4.0 及以前的历史验收保持原范围。
 
 ## 升级与发现
 
-等待已受理任务结束，更新安装后重启客户端中的目标 MCP 连接器。调用 `creo_capabilities` 核对实际运行版本、`runtime.server_entry`、`runtime.code_root`、启动源码指纹及 `source_changed_since_startup=false`，并确认工具清单含 `creo_list_session_models`、接管 mode 含 `prepare`。版本仍为0.4.0不足以区分本开发源码与正式附件。发现来源变化时重启连接器；只修改配置不会替换已运行进程。
+等待已受理任务结束，更新安装后重启客户端中的目标 MCP 连接器。调用 `creo_capabilities` 核对实际运行版本（0.4.1）、`runtime.server_entry`、`runtime.code_root`、启动源码指纹及 `source_changed_since_startup=false`，并确认工具清单含 `creo_list_session_models`、接管 mode 含 `prepare`。发现来源变化时重启连接器；只修改配置不会替换已运行进程。
 
 `creo_list_models` 返回本服务登记的模型；`creo_list_session_models` 返回已在 Creo 会话中的模型。后者默认20条、最多50条、每页32KiB，同一cursor读取十分钟内同次快照。返回名称/类型、`is_current`、`origin`、`has_saved_origin`、`modified`、可证明的 `model_id` 和原文件对应的 `adopted_copy_model_id`。无法确认的值为null，`query_codes` 保留原始诊断；`complete=false` 或 `truncated=true` 表示覆盖不完整。临时 `session_model_id` 仅用于发现，可能跨类型重复，不作为全局唯一或永久身份，也不用于选择接管对象；在Creo切到目标后使用正式预检返回的受管ID。`query_codes`只保留实际查询的诊断，0表示查询成功，不是modified=false；未查询/不适用的诊断项可省略（例如assembly不查询part的subtype），不要将缺失推断为0或失败。
 
