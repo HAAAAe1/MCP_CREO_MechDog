@@ -87,3 +87,9 @@ WorkBuddy 报告 prepare 任务 `result.adopted=true`，同时 `result.adoption.
 第三份独立素材由开发者经Creo UI创建：`WB_UNSAVED_03`，模板 `mmns_part_solid_abs`，FRONT（XY）草绘30.00×20.00 mm、拉伸10.00 mm；「分析→测量→体积」实际返回 **6000.00 mm³**。本次没有保存、接管或执行abandon，测量浮窗已关闭，第三份原件保持当前。准备时系统没有xtop进程或Creo窗口，经已安装Creo12.4的应用入口启动了新会话；没有新建Toolkit连接、结束进程或清除保护。前一报告的total=4属于此前会话，后续WorkBuddy须重新确认会话就绪和枚举，不复用旧cursor/session_model_id。结束UI操作后的时钟核对为 `2026-10-19 06:30:11 UTC`（北京时间14:30:11）。
 
 下一步为WorkBuddy独立执行新来源prepare→reconcile inspect→abandon_new→普通编辑拒绝，并记录原件与受管登记状态、文件/审计的公开证据；尚无这条放弃链路的通过结果。关闭原件、外部clean/dirty/钣金、拒绝矩阵、快照篡改拒绝和真实并发等剩余范围保持未验证，FEAT-042/043继续验收中。
+
+## 同日后续：第三份素材误保存后重新创建
+
+用户告知误将 `wb_unsaved_03` 保存，该件不再作为从未保存来源使用。开发者保留已保存文件，另经Creo UI新建独立零件 `WB_UNSAVED_03_RETRY`，使用 `mmns_part_solid_abs` 模板；FRONT（XY）草绘明确设置30.00×20.00 mm，实体拉伸10.00 mm，体积工具实际测得 **6000.00 mm³**。本次没有执行保存或MCP纳管，测量浮窗已关闭、选择已清除，新件保持当前。
+
+本轮开始时系统没有xtop进程或Creo窗口，经已安装Creo12.4应用入口重新启动；未操作Toolkit连接或清除保护。后续WorkBuddy应重新确认当前会话，并通过枚举核对新名称、无保存来源和无受管关联，使用新的幂等键及本次返回的model_id继续放弃快照验收。此处仅记录替代素材的UI准备，不声明abandon_new通过。
