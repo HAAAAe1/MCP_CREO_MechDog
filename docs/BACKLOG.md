@@ -8,7 +8,7 @@
 
 - 现有模型纳管第二阶段：FEAT-042 无盘冻结快照接管、BUG-071 预检失败收尾、FEAT-043 只读会话枚举，FEAT-022 补重启指引。本轮按用户确认计划实施，保留0.4.0首阶段交付与未测边界；原反馈见[原件](validation/feedback-0.3.7-adoption-2026-10-18/report.md)。
 
-- 2026-10-19用户转贴WorkBuddy无盘接管主链通过：revision0→1→2、24000→7152 mm³、保存重载、原件保留及幂等保护；后续过期拒绝、同身份续签确认、修改原件后副本仍20000 mm³/同哈希，以及独立快照abandon_new→abandoned/revision0→普通编辑拒绝与原件保留亦有通过报告，见[黑盒补录](validation/ADOPTION-WorkBuddy-2026-10-19.md)。外部clean和独立平板钣金接管亦通过（分别6000/2400 mm³、ready/revision1、保存重载与原件关联）。sheets指工程图图纸页，不作为钣金展开查询；钣金专有语义仍未验证。FEAT-042/043保持验收中；关闭原件、dirty和拒绝/分页/并发矩阵仍未完成。prepare的result.adopted语义待统一；续签摘要和放弃时省略null参数的指引已补文档，空值问题映射既有BUG-055，尚未修改运行源码。
+- 2026-10-19用户转贴WorkBuddy无盘接管主链通过：revision0→1→2、24000→7152 mm³、保存重载、原件保留及幂等保护；后续过期拒绝、同身份续签确认、修改原件后副本仍20000 mm³/同哈希，以及独立快照abandon_new→abandoned/revision0→普通编辑拒绝与原件保留亦有通过报告，见[黑盒补录](validation/ADOPTION-WorkBuddy-2026-10-19.md)。外部clean和独立平板钣金接管亦通过（分别6000/2400 mm³、ready/revision1、保存重载与原件关联）。sheets指工程图图纸页，不作为钣金展开查询；钣金专有语义仍未验证。dirty接管亦通过（6750 mm³、35×20×10尺寸、5×5贯穿方孔、参数WB_DIRTY_CHECK=42.0逐项核对及保存重载）。FEAT-042/043保持验收中；关闭原件和拒绝/分页/并发矩阵仍未完成。prepare的result.adopted语义待统一；续签摘要和放弃时省略null参数的指引已补文档，空值问题映射既有BUG-055，尚未修改运行源码。
 
 - 0.3.7旋转与接管反馈的首阶段已随0.4.0交付；BUG-067～070已归档，FEAT-042因本次新增无盘范围重入验收。历史环境及未测事实见[0.4.0发布记录](validation/RELEASE-0.4.0.md)。
 
@@ -107,7 +107,7 @@ revision 是模型修改版本号；保存重载是保存后重新打开检查�
 
 | ID | 优先级 | 状态 | 目标版本 | 问题与下一步 |
 | --- | --- | --- | --- | --- |
-| [FEAT-042](work-items/FEAT-042.md) | P1 | 验收中 | 未排期 | 0.4.0首阶段保留；第二阶段已实现。WorkBuddy无盘续作7152/revision0→1→2、原件/窗口保护、幂等、过期拒绝/续签确认、原件14000与冻结副本20000/同哈希，以及独立快照放弃abandoned/revision0/编辑拒绝均有通过报告。外部clean/平板钣金接管6000/2400、ready/revision1、保存重载与原件关联通过；钣金专有语义未验。关闭原件、dirty、拒绝及并发待验收；prepare顶层adopted语义待统一，续签与null省略指引已补。 |
+| [FEAT-042](work-items/FEAT-042.md) | P1 | 验收中 | 未排期 | 0.4.0首阶段保留；第二阶段已实现。WorkBuddy无盘续作7152/revision0→1→2、原件/窗口保护、幂等、过期拒绝/续签确认、原件14000与冻结副本20000/同哈希，以及独立快照放弃abandoned/revision0/编辑拒绝均有通过报告。外部clean/平板钣金接管6000/2400、ready/revision1、保存重载与原件关联通过；钣金专有语义未验。dirty接管6750/尺寸/方孔/参数42.0逐项核对通过。关闭原件、拒绝及并发待验收；prepare顶层adopted语义待统一，续签与null省略指引已补。 |
 | [FEAT-043](work-items/FEAT-043.md) | P2 | 验收中 | 未排期 | 只读会话枚举、固定分页、未知值与身份关联已实现，stdio/规则回归及SDK构建通过；WorkBuddy已发现真实无盘原件/受管副本并观察窗口状态和busy。真实多页、unknown与完整类型矩阵待验收。 |
 | [FEAT-022](work-items/FEAT-022.md) | P2 | 验收中 | 未排期 | 已有启动指纹/源码变化检测；本轮补工具描述、README/安装与接管入口的重启和部署核对指引。已有模拟变化/启动身份回归；真实连接器升级前后对照未测。 |
 | [BUG-019](work-items/BUG-019.md) | P2 | 验收中 | 未排期 | 0.3.1 的 round 输入用 radius、chamfer 输入用 distance，计划和返回结果却使用 size；0.3.4/Creo 9 与 0.3.5/Creo 9 多轮确认。2026-10-18 [DEV-042](work-items/DEV-042.md) 已实现：三入口字段对照与请求示例、execute_plan 别名（round→radius、chamfer→distance，与 size 同现/错配明确拒绝）、`result.operations[].size` 回显（compact 保留）、工具描述与 REFERENCE_SYNTAX 同步；实机（本机 Creo 12.4）实际原生尺寸=输入、尺寸编辑、保存重载与失败回滚对照通过，MCP 黑盒独立工具正例通过。剩余：MCP 服务重启后的 WorkBuddy 别名/冲突与 compact 回显复核；非本机环境沿用各自条目。证据见[验证记录](validation/DEV-042-2026-10-18.md)。 |

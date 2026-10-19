@@ -169,3 +169,42 @@ WorkBuddy未独立取得接管后源文件哈希，其源字节不变仍记未�
 本轮界面准备已具备三项明确变化：原草绘宽30→35 mm，新增零件参数WB_DIRTY_CHECK=42.0，新增草绘2及拉伸2形成X=8..13/Y=6..11/Z=0..10 mm方形通孔。外部磁盘基线仍为86408字节、最后写入时间北京时间16:40:55、SHA256 `0c90ff2e18f39a9ca5cf87a40f67c34f928be28ef7690294093a71adef7b5a24`，没有变化；只读核对后时钟2026-10-19 09:07:58 UTC（北京时间17:07:58）。此为开发者UI与磁盘证据，不是dirty接管通过结果。
 
 交接WorkBuddy：先通过公开枚举确认当前WB_EXT_DIRTY、来源为上述外部prt.1、has_saved_origin=true、modified=true且没有受管关联，再执行已有文件inspect→apply；副本使用独立名称wb_ext_dirty_copy_01和新幂等键，只轮询已接受任务。确认副本保存重载verified、ready/revision1、体积6750±0.01，并通过公开详情逐项核对35×20×10、5×5通孔及参数42.0；接口无法暴露的原件/副本细项明确记未验证，不能仅凭特征数判定全部变化已复制。原件应保留来源路径与modified=true。尚未取得本次dirty的WorkBuddy任务/模型及终态，相关验收状态保持不变。
+
+## 同日后续：dirty尺寸、参数和新特征接管通过
+
+用户转贴WorkBuddy报告：WB_EXT_DIRTY为当前part，origin为 `E:\CreoAcceptance\2026-10-19\wb_ext_dirty.prt.1`、has_saved_origin=true、modified=true、无受管关联，session_model_id=524293；total=6、session_fingerprint=9090761655684717328。query_codes.modified=0为查询成功状态码，不能代替modified布尔值，亦不能由该码推断未修改。
+
+- inspect完整输入 `{"mode":"inspect"}`，返回model `6343b3f7640746f4b2c1bfa209bd8a63`、adopt_pending/source_kind=file/available=true、600秒令牌；磁盘来源86408字节、SHA256 `0c90ff2e18f39a9ca5cf87a40f67c34f928be28ef7690294093a71adef7b5a24`。活体体积6749.999999999997 mm³、12特征/10面/24边/1实体，has_solid/healthy/millimeter_units/dependency_free均true。
+- apply完整输入 `{"mode":"apply","model_id":"6343b3f7640746f4b2c1bfa209bd8a63","evidence_token":"871c74a2728745cf8fa68cd1ad56fb03","model_name":"wb_ext_dirty_copy_01","idempotency_key":"adopt-apply-dirty-20261019"}`，只轮询返回的job `e0e83eb085344eba81fc521853c974e2`。报告时刻部分created_at=09:13:12.464Z、finished_at=09:13:21.340Z；intent_persisted→connect→adoption_apply→adoption_committed，succeeded/revision=1/adopted=true。rollback_succeeded=false，未触发回滚。副本models下本model的output/wb_ext_dirty_copy_01.prt.1，SHA256 `e5a22ef6393040a1baf9542be82ddcbc9bf0d9b129d874ede68c1bdda853efa4`。
+- 副本后续ready/revision=1、pending_job=null；saved_file_reloaded_and_verified=true、inspection_source=adoption_verified、snapshot.source=saved_verified，体积6749.999999999997 mm³，符合6750±0.01。
+
+| 未保存修改 | 副本公开检查证据 | 判定 |
+| --- | --- | --- |
+| 原草绘宽度30→35 mm | sketch40 d1=35.0、protrusion48 d4=35.0、bbox x=0..35；另有sketch40 d0=20.0、protrusion48 d3=20.0，深度d2=10.0，bbox y=0..20/z=0..10 | 尺寸通过 |
+| 新增5×5贯穿方孔 | cut84，d10=5.0、d11=6.0、d12=8.0、d9=10.0；草绘76只有一条边长5.0，另边由等长约束保证。10面均平面type=34，四孔壁分别位于x=8/13、y=6/11，z=0..10 | 方孔及贯穿几何通过；d10称边长，不称圆孔孔径 |
+| 新增零件参数 | WB_DIRTY_CHECK，type=50、value=42.0 | 参数通过 |
+
+特征/面/边为12/10/24，与来源inspect摘要一致；通过依据还包括上述尺寸、参数、平面位置和深度，未仅凭特征数量或体积相同推断复制正确。
+
+原件WB_EXT_DIRTY仍在、非当前、origin不变、modified=true，adopted_copy_model_id指向上述model；副本WB_EXT_DIRTY_COPY_01成为当前、modified=false、model_id指向该登记，total=7、fingerprint未变。来源未保存修改被副本捕获、保存重载和原件关联有公开通过报告。末态modified=true证明检查时仍有未保存修改，单凭该标志不能独立证明中途从未保存。
+
+WorkBuddy未通过公开接口独立重载源磁盘几何或再次读取源哈希，这两项继续未验证。开发者接管后另只读复核外部源文件仍86408字节、最后写入北京时间16:40:55、SHA256仍为 `0c90ff2e18f39a9ca5cf87a40f67c34f928be28ef7690294093a71adef7b5a24`，与修改前基线和inspect一致；核对时间晚于2026-10-19 09:15:38 UTC时钟读数。此为独立开发者文件证据，不并入WorkBuddy结论。没有为比较而关闭/重载仍dirty的原件。
+
+来源矩阵的从未保存、外部clean、含未保存尺寸/参数/新特征的file来源及独立平板钣金均已有本机公开通过报告。关闭来源、拒绝类型/非毫米/外部依赖/不健康、快照改写拒绝、真实多页与实际并发等仍待补；FEAT-042/043继续验收中，prepare顶层adopted语义尚未修正。本轮继续只操作UI素材与文档，不修改运行源码、执行器或清除保护。
+
+## 同日后续：装配与非毫米拒绝素材就绪
+
+开发者通过Creo12.4 UI新建WB_REJECT_ASM，类型装配/设计，明确选择mmns_asm_design_abs模板；保留模板的三基准面与坐标系，不含组件。保存为外部文件 `E:\CreoAcceptance\2026-10-19\wb_reject_asm.asm.1`。此为空装配的类型拒绝素材，不用于证明装配纳管、装配几何或依赖处理能力。
+
+另通过UI新建实体零件WB_REJECT_INCH，明确使用inlbs_part_solid_abs模板，FRONT草绘为边长1.00的等边矩形，实体拉伸深度1.00；体积工具实际读到 **1.00000 in³**。保存为 `E:\CreoAcceptance\2026-10-19\wb_reject_inch.prt.1`，收起测量浮窗。该素材有正常实体，后续公开预检仍须独立确认单位、健康及依赖，不能仅以模板名称代替拒绝结果。
+
+保存后只读核验、时钟2026-10-19 09:40:03 UTC（北京时间17:40:03）：
+
+| 文件 | 字节数 | SHA256 |
+| --- | --- | --- |
+| wb_reject_asm.asm.1 | 64737 | 20cbfe112c1cdf816fa55f59f25eb4387606ddc6442aeb07c62a6035526052f4 |
+| wb_reject_inch.prt.1 | 92401 | 02dadb769a8caf248f1064d49d86fd44f988b6566405f569f6a91371b09504b4 |
+
+开发者随后仅激活WB_REJECT_ASM窗口作为当前模型，未执行任何MCP接管或拒绝探测；两份素材均在同一会话，既有dirty来源和受管副本未关闭或改写。先交WorkBuddy通过公开接口枚举/inspect装配，预期明确拒绝、不返回可确认ID/令牌、不产生新受管登记或副本；回报后再切到WB_REJECT_INCH验证非毫米拒绝。真实多页枚举可在当前多模型会话独立补测，不能把session_model_id当成可操作目标或自动切窗能力。
+
+本轮重新核对BUG-001-recovery-2026-10-17历史卡死记录，连接-11根因仍未由本次材料证明；既有用户确认可操作及后续正常UI/MCP结果不等同根因关闭。开发者未建立新的Toolkit连接或故意制造再生失败，外部依赖与不健康模型拒绝仍待合格素材及相应安全条件，不将装配/英寸素材准备视作第8步通过。
