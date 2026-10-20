@@ -6,6 +6,8 @@
 
 6 项新增隔离单测、全量 455 项单元、增量检查与匹配 SDK 构建通过；实机加载证据因会话就绪失败未取得，Creo 9 加载问题仍开放。详见[本轮验证记录](../validation/FEEDBACK-0.3.7-IMPLEMENTATION-2026-10-20.md)。下文历史日期的未实现描述保留其当时状态。
 
+同日续做通过实际 MCP_CREO_MechDog_dev 只读核对 list 与全部九个 validate：哈希有效、生产版本null、当前原生兼容未验证、无历史加载记录，公开根路径为E盘。无隐式原生加载，非WorkBuddy或加载验收；最新全量458项通过。原始返回保存在build/feedback037-public-readonly-followup.json，范围见本轮记录。
+
 来源：[Creo 9 / 0.3.0 报告](../validation/feedback-2026-10-16/2026-10-15_CREO_0.3.0_叶片种子加载失败与筋特征失败.md) P0-1 检测盲区；[补录](../validation/FEEDBACK-2026-10-16.md)。关联 BUG-034、FEAT-008、DEV-005/006。
 
 目标：list/validate/install 现有 available/哈希信息不应被理解为当前 Creo 原生可加载。评估独立可选的原生加载探针或清晰的兼容状态、种子生产版本及证据；不能在普通元数据查询中隐式加载全部模型或假定文件头足以判兼容。

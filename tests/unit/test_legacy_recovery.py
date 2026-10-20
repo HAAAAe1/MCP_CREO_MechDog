@@ -74,6 +74,48 @@ class LegacyRecovery(unittest.TestCase):
                 self.assertFalse(rec._snapshot(self.mid)["owners"][0]["stopped"])
                 query.assert_not_called()
 
+    def test_pid_only_identities_require_previous_boot_proof(self):
+        directory = bridge.job_path(self.original)
+        job = bridge.read_json(directory / "job.json")
+        job["runner_identity"].pop("created")
+        bridge.write_json(directory / "job.json", job)
+        bridge.write_json(directory / "native_owner.json", {"pid": 2147483646})
+        for boot, stopped in ((None, False), (self.boot(-60), False), (self.boot(), True)):
+            with (
+                self.subTest(boot=boot),
+                patch.object(rec, "process_identity", return_value={"alive": True, "created": 12}),
+                patch.object(rec, "boot_info", return_value=boot),
+            ):
+                owner = rec._snapshot(self.mid)["owners"][0]
+                self.assertEqual(owner["stopped"], stopped)
+                if stopped:
+                    self.assertIn("stop_evidence", owner)
+
+    def test_pid_only_checkpoint_requires_previous_boot_proof(self):
+        directory = self.legacy()
+        bridge.write_json(directory / "native_checkpoint.json", {"native_pid": 2147483646})
+        with (
+            patch.object(rec, "process_identity", return_value={"alive": True, "created": 12}),
+            patch.object(rec, "boot_info", return_value=self.boot()),
+        ):
+            owner = rec._snapshot(self.mid)["owners"][0]
+            self.assertTrue(owner["stopped"])
+            self.assertIn("stop_evidence", owner)
+
+    def test_malformed_identity_never_proves_reuse_or_uses_reboot_fallback(self):
+        directory = self.legacy()
+        job = bridge.read_json(directory / "job.json")
+        for recorded in ("invalid", {"pid": True}, {"pid": 12, "created": "12"}):
+            with (
+                self.subTest(recorded=recorded),
+                patch.object(rec, "process_identity", return_value={"alive": True, "created": 12}),
+                patch.object(rec, "boot_info") as query,
+            ):
+                job["runner_identity"] = recorded
+                bridge.write_json(directory / "job.json", job)
+                self.assertFalse(rec._snapshot(self.mid)["owners"][0]["stopped"])
+                query.assert_not_called()
+
     def test_missing_record_and_current_declared_time_refuse(self):
         directory = self.legacy()
         with patch.object(rec, "boot_info", return_value=self.boot()):

@@ -101,28 +101,28 @@ async def seeds(probe: Probe) -> None:
 
 async def rounds(probe: Probe) -> None:
     for kind, field, value in (("round", "radius", 2), ("chamfer", "distance", 1)):
-        for planned in (False, True):
+        for mode in ("tool", "plan_size", "plan_alias"):
             base = await probe.job(
-                "creo_execute_plan", {"operations": box()}, f"{kind}_{planned}_base"
+                "creo_execute_plan", {"operations": box()}, f"{kind}_{mode}_base"
             )
             edge = base["result"]["inspection"]["edges"][0]["id"]
             inputs = {
                 "label": "finish",
                 "references": [{"edge": {"kind": "edge", "id": edge}}],
-                field: value,
             }
-            if planned:
+            size_field = "size" if mode == "plan_size" else field
+            if mode != "tool":
                 result = await probe.job(
                     "creo_execute_plan",
                     {
                         **identity(base),
-                        "operations": [{"op": kind, **inputs}],
+                        "operations": [{"op": kind, **inputs, size_field: value}],
                     },
-                    f"{kind}_plan_alias",
+                    f"{kind}_{mode}",
                 )
             else:
                 result = await probe.job(
-                    "creo_" + kind, {**identity(base), **inputs}, kind + "_tool"
+                    "creo_" + kind, {**identity(base), **inputs, field: value}, kind + "_tool"
                 )
             operation = result["result"]["operations"][-1]
             assert operation["size"] == value
@@ -133,14 +133,25 @@ async def rounds(probe: Probe) -> None:
             fid = result["result"]["aliases"]["finish"]["feature_id"]
             feature = next(f for f in result["result"]["inspection"]["features"] if f["id"] == fid)
             assert any(abs(d["value"] - value) < 1e-7 for d in feature["dimensions"])
-            await probe.call(
-                "creo_execute_plan",
-                {
-                    **identity(result),
-                    "operations": [{"op": kind, **inputs, "size": value}],
-                },
-                expect_error=True,
-            )
+            other_alias = "distance" if kind == "round" else "radius"
+            for invalid, message in (
+                ({"size": value, field: value}, "not both"),
+                ({other_alias: value}, "does not accept"),
+            ):
+                await probe.call(
+                    "creo_execute_plan",
+                    {
+                        **identity(result),
+                        "operations": [
+                            {"op": kind, **inputs, "label": "invalid_finish", **invalid}
+                        ],
+                    },
+                    expect_error=True,
+                )
+                error_text = " ".join(
+                    item.get("text", "") for item in probe.report["calls"][-1]["raw_error"]
+                )
+                assert message in error_text, error_text
             unchanged = await probe.job(
                 "creo_refresh_model", {"model_id": result["model_id"]}, kind + "_after_conflict"
             )

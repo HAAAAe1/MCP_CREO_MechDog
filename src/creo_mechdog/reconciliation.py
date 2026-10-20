@@ -138,16 +138,42 @@ def validate_baseline(model: dict) -> None:
 
 
 def _stopped(recorded: dict | None) -> dict:
-    if not recorded or not isinstance(recorded.get("pid"), int):
+    if (
+        not isinstance(recorded, dict)
+        or type(recorded.get("pid")) is not int
+        or recorded["pid"] <= 0
+    ):
         return {"stopped": False, "reason": "No recorded process identity"}
     observed = process_identity(recorded["pid"])
     if observed.get("alive") is False:
         stopped = True
-    elif observed.get("alive") is True and recorded.get("created") and observed.get("created"):
+    elif (
+        observed.get("alive") is True
+        and type(recorded.get("created")) is int
+        and recorded["created"] > 0
+        and type(observed.get("created")) is int
+        and observed["created"] > 0
+    ):
         stopped = recorded["created"] != observed["created"]
     else:
         stopped = False
     return {"recorded": recorded, "observed": observed, "stopped": stopped}
+
+
+def _legacy_identity_incomplete(recorded: dict | None) -> bool:
+    """Missing PID/creation fields may use reboot proof; malformed values may not."""
+    if recorded is None:
+        return True
+    if not isinstance(recorded, dict):
+        return False
+    pid, created = recorded.get("pid"), recorded.get("created")
+    missing_pid = pid is None
+    missing_created = created is None or (type(created) is int and created == 0)
+    return (
+        (missing_pid or type(pid) is int and pid > 0)
+        and (missing_created or type(created) is int and created > 0)
+        and (missing_pid or missing_created)
+    )
 
 
 def _owners(job_id: str, boot_reader: Callable[[], dict | None] | None = None) -> dict:
@@ -156,6 +182,9 @@ def _owners(job_id: str, boot_reader: Callable[[], dict | None] | None = None) -
     runner = _stopped(job.get("runner_identity"))
     owner = _read(directory / "native_owner.json")
     checkpoint = _read(directory / "native_checkpoint.json") or {}
+    worker_identity = owner or (
+        {"pid": checkpoint["native_pid"]} if checkpoint.get("native_pid") else None
+    )
     if owner:
         worker = _stopped(owner)
     else:
@@ -174,8 +203,10 @@ def _owners(job_id: str, boot_reader: Callable[[], dict | None] | None = None) -
         "stopped": runner["stopped"] and worker["stopped"],
     }
     # A complete but live/unreadable recorded identity never gets a time-based override.
-    missing_runner = not runner["stopped"] and not job.get("runner_identity")
-    missing_worker = not worker["stopped"] and not owner and not checkpoint.get("native_pid")
+    missing_runner = not runner["stopped"] and _legacy_identity_incomplete(
+        job.get("runner_identity")
+    )
+    missing_worker = not worker["stopped"] and _legacy_identity_incomplete(worker_identity)
     eligible = (runner["stopped"] or missing_runner) and (worker["stopped"] or missing_worker)
     if not result["stopped"] and eligible:
         proof = previous_boot_evidence(directory, job, (boot_reader or boot_info)())

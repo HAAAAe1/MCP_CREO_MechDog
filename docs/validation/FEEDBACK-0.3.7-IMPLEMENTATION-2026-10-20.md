@@ -66,3 +66,19 @@
 会话恢复后还需运行适用的 `tools/test_general.py`、`python -m tools.test_p1_modeling --cases ribs`，补 BUG-017 当前环境对照；缺失的 Creo 9 完整输入和原环境测试仍保持开放。FEAT-018 四动作真实恢复矩阵、FEAT-042 关闭原件后确认、FEAT-043/BUG-072 单位与枚举边界、FEAT-029 回调 ready/直接放样/升级回退生命周期及真正并发验收均未由本轮完成。不能靠源码或隔离夹具宣布通过。
 
 公开 WorkBuddy 提示词已保存为 [WORKBUDDY_037_REMAINING](../WORKBUDDY_037_REMAINING.md)，仅使用公开 MCP，不读源码或运行开发脚本。本轮未执行 WorkBuddy。原计划和执行状态见[计划](../development/0.3.7-feedback-remaining-plan-2026-10-20.md)。
+
+## 继续执行：不完整进程身份与公开只读复验
+
+用户要求继续计划后，在 `d4097be` 上复核并补齐 BUG-074 的遗漏：只有 PID、没有创建时间的 runner/native_owner，以及仅含 native_pid 的历史检查点，首批实现仍不允许使用跨启动停止证明。两项新增隔离用例在修改前均实际失败，记录 `build/feedback037-pid-only-before.txt`；修复后与相关恢复回归共 53 项通过，记录 `build/feedback037-partial-identity-after.txt`。
+
+兜底现覆盖字段缺失的不完整身份，但完整活动/权限未知身份继续拒绝；同次启动、不可核验启动时间、文件变化仍拒绝。另补格式错误拒绝：非对象身份、布尔 PID、字符串创建时间不能被误判为 PID 已复用，也不能获得跨启动兜底。没有放宽四动作其他条件，没有改真实作业/模型。
+
+通过当前已连接的 MCP_CREO_MechDog_dev 完成开发者公开接口只读复验：`creo_list_seeds` 与全部九次 `creo_validate_seed` 均返回哈希有效、seed_build_version=null、native_compatibility.status=not_verified_for_current_session、observations=[]。运行路径公开核实为 E 盘 Python、server、包和数据根。记录 `build/feedback037-public-readonly-followup.json`；这证明元数据公开语义，不证明种子能在当前会话加载，也不是 WorkBuddy 验收。runtime 页属于冻结快照，不用其旧的 source_changed_since_startup 值证明之后的源码改动已加载。
+
+15:55:54 的一次只读 `creo_session_status` 仍返回 probe_timeout（9 秒）；可见 xtop 窗口未观测挂起。此次没有启动或结束 Creo，没有建模/恢复提交，也没有继续轮询式重连。原生验收仍待可操作会话；最新 Python 变更在正式实测前须重启开发 MCP 连接器并核对源码身份。
+
+同时补齐尚未执行的原生驱动：圆角/倒角分别覆盖独立工具、计划 size、计划别名三个入口；冲突与错配别名采用新的未使用标签，必须返回对应错误文字，随后检查 revision/体积不变，避免仅因标签重复而误记为参数保护通过。该驱动仍不计作实际原生通过。
+
+续做全量 `tools/dev_check.py --work-item BUG-074-partial-identities` 通过：458 项单元，0 失败、0 错误，增量检查通过。开始于 15:59:30（北京时间），HEAD `d4097be3abbdb4c71aef4278c9b67f58c1b0b953`、dirty=true，检查源码指纹 `7da46b298319f13804e47e08e24b205228e6d53e31ab474c6c22227a6cc78cfe`，记录 `build/feedback037-partial-identity-dev-check.txt`。该次已覆盖新的生产恢复保护；原生驱动之后的补充另经 Ruff 检查通过，没有用单元结果宣称其原生场景已执行。当前 build/development_check.json 与 unit_test_report.json 已被本次结果更新；首轮455项的原记录仍保留在 feedback037-dev-check-final.txt。
+
+本次保护代码 SHA256：reconciliation.py = `e0272ae592d2ec2ebeb82e97aa7451469c492a6de6afe48ca8e9f99e99612ebe`，test_legacy_recovery.py = `77de9cb09b00bcab3428938d4439aec28237cee9233c2b0b6bcaa513f0468b96`。原生文件没有变化；本次保护修改后未重新构建或连接 Toolkit。
