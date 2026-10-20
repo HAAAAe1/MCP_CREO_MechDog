@@ -24,6 +24,8 @@ from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS, families
 from creo_mechdog import update_check
 from creo_mechdog.adoption import adopt
 from creo_mechdog.blend_callback import callback_setup_status, unknown_readiness
+from creo_mechdog.capability_pages import capabilities_response
+from creo_mechdog.open_file import open_file as submit_open_file
 from creo_mechdog.paths import SOURCE_PATHS
 from creo_mechdog.reconciliation import reconcile
 from creo_mechdog.references import PatternAxis, reference_capabilities
@@ -66,6 +68,8 @@ _SOURCE_NAMES = (
     "src/creo_mechdog/reconciliation.py",
     "src/creo_mechdog/adoption.py",
     "src/creo_mechdog/session_models.py",
+    "src/creo_mechdog/open_file.py",
+    "src/creo_mechdog/capability_pages.py",
     "src/creo_mechdog/model_queries.py",
     "src/creo_mechdog/startup_state.py",
     "src/creo_mechdog/windows_boot.py",
@@ -125,7 +129,10 @@ mcp = MCPServer(
     "Mutation tools return a job_id: poll creo_get_job with detail=compact, then use its model_id and latest revision. "
     "Inspect surfaces/edges/dimensions before choosing raw references. Always provide expected_revision "
     "when modifying an existing MCP model. Models and native files persist across clients. "
-    "Consult creo_capabilities.references.by_tool for each parameter's kind and container shape. "
+    "creo_capabilities defaults to a compact summary page including support_status; "
+    "use detail=full with section=references and follow next_cursor for each "
+    "parameter's kind and container shape. "
+    "Open existing on-disk .prt/.asm read-only with creo_open_file (no managed model); adopt before managed editing. "
     "Success requires status=succeeded and saved_file_reloaded_and_verified=true for mutations. "
     "Busy errors mean this request was not accepted; inspect blocking_job_id, blocking_model_id "
     "and retry_guidance. Poll accepted jobs instead of resubmitting them. "
@@ -160,7 +167,7 @@ class Hole(BaseModel):
 
 async def invoke(fn, *args, **kwargs):
     try:
-        if fn in (bridge.create_job, general.submit, general.new_loft_part):
+        if fn in (bridge.create_job, general.submit, general.new_loft_part, submit_open_file):
             startup.require_ready()
         return await asyncio.to_thread(fn, *args, **kwargs)
     except bridge.ToolkitBusy as exc:
@@ -181,8 +188,9 @@ async def creo_check_environment() -> dict[str, Any]:
 
 @mcp.tool(annotations=READ)
 async def creo_session_status() -> dict[str, Any]:
-    """Check the configured/unique Creo session through Toolkit (9 second probe budget, no rebuild). Busy returns its occupying job; probe_timeout returns recovery guidance. During startup return its snapshot promptly. connected=true requires verification; ambiguous/stale session selections never fall back to a random session. Includes a read-only creo_process_snapshot (pid/name/created_at/matches) so a failed probe can distinguish a dead IPC endpoint from an exited Creo process."""
-    return await invoke(startup.session_status)
+    """Check the configured/unique Creo session through Toolkit (9 second probe budget, no rebuild). Every return branch carries server_version. Busy returns its occupying job; probe_timeout returns recovery guidance. During startup return its snapshot promptly. connected=true requires verification; ambiguous/stale session selections never fall back to a random session. Includes a read-only creo_process_snapshot (pid/name/created_at/matches) so a failed probe can distinguish a dead IPC endpoint from an exited Creo process."""
+    result = await invoke(startup.session_status)
+    return {**result, "server_version": VERSION}
 
 
 @mcp.tool(annotations=READ)
@@ -342,6 +350,15 @@ async def creo_list_session_models(
     return await invoke(list_session_models, limit, cursor)
 
 
+@mcp.tool(annotations=CREATE)
+async def creo_open_file(
+    file_path: str,
+    idempotency_key: str,
+) -> dict[str, Any]:
+    """Retrieve an existing on-disk .prt/.asm into the connected Creo session and display it, read-only. file_path is a Windows absolute path; append an explicit numeric version (e.g. .prt.3) to open exactly that file, otherwise the highest numeric version in the directory is selected and only the extension-only file is used when no numeric version exists. idempotency_key (8-80 letters/digits/underscores/hyphens) replays the same job for the same path and rejects a different path. Submission returns a job_id; poll creo_get_job. The file is never saved, erased, renamed or adopted: a successful open returns model_id=null/adopted=false and creates no managed revision. Same-name/same-type session models cause rejection, and assemblies additionally require a session without parts/assemblies; both checks and the retrieval share one Toolkit channel. An incomplete assembly fails with any residual session objects reported and missing components marked unknown; a display failure is reported separately from retrieval. Source-file identity is recorded at submit and after the job. Opened models are not MCP-managed: adopt with creo_adopt_current_model first if managed editing is needed."""
+    return await invoke(submit_open_file, file_path, idempotency_key)
+
+
 @mcp.tool(annotations=READ)
 async def creo_list_jobs(
     limit: int = 10, detail: Literal["compact", "full"] = "compact"
@@ -350,9 +367,51 @@ async def creo_list_jobs(
     return {"jobs": await invoke(bridge.list_jobs, limit, detail)}
 
 
-@mcp.tool(annotations=READ)
-async def creo_capabilities() -> dict[str, Any]:
-    """Describe general modeling tools, coordinate frames, reference syntax and test evidence."""
+def _support_status() -> dict[str, Any]:
+    """Explicit capability boundaries so callers need not infer them (FEAT-008)."""
+    return {
+        "disk_open": {
+            "status": "supported",
+            "tool": "creo_open_file",
+            "summary": (
+                "read-only retrieval and display of existing on-disk .prt/.asm "
+                "(explicit or highest numeric version); never saves, erases, renames "
+                "or adopts, and creates no managed model"
+            ),
+        },
+        "session_enumeration": {
+            "status": "supported",
+            "tool": "creo_list_session_models",
+            "summary": "read-only session inventory with frozen pagination; no loading or activation",
+        },
+        "adoption": {
+            "status": "supported_limited",
+            "tool": "creo_adopt_current_model",
+            "summary": (
+                "explicit managed-copy adoption of part/sheetmetal only (millimeter "
+                "units, no external dependencies, healthy features); assembly/drawing "
+                "and repeat adoption of the same file are refused"
+            ),
+        },
+        "assembly_checks": {
+            "status": "planned",
+            "tracking": "FEAT-045",
+            "summary": (
+                "read-only external assembly inspection (component tree, transforms) is "
+                "not available yet; assemblies open for display only"
+            ),
+        },
+        "external_file_managed_edit": {
+            "status": "not_supported_through_open",
+            "summary": (
+                "creo_open_file never modifies external files; adopt the opened model "
+                "with creo_adopt_current_model first if managed editing is required"
+            ),
+        },
+    }
+
+
+def _capabilities_payload(tool_entries: list[dict[str, Any]]) -> dict[str, Any]:
     local_evidence = bridge.ROOT / "build/capability_evidence.json"
     evidence = (
         local_evidence
@@ -389,6 +448,7 @@ async def creo_capabilities() -> dict[str, Any]:
     return {
         "name": "MCP_CREO_MechDog",
         "version": VERSION,
+        "server_version": VERSION,
         "update": updates.snapshot(),
         "runtime": {
             "python_executable": sys.executable,
@@ -424,8 +484,8 @@ async def creo_capabilities() -> dict[str, Any]:
                 "creo_reconcile_model (inspect without live)",
             ],
         },
-        "tool_count": len(await mcp.list_tools()),
-        "enabled_tool_count": len(await mcp.list_tools()),
+        "tool_count": len(tool_entries),
+        "enabled_tool_count": len(tool_entries),
         "disabled_tools_hidden": True,
         "startup": {
             "automatic_by_default": True,
@@ -459,12 +519,14 @@ async def creo_capabilities() -> dict[str, Any]:
             "XZ": "u=+X,v=+Z,normal=-Y",
             "YZ": "u=+Y,v=+Z,normal=+X",
         },
+        "tools": tool_entries,
         "references": reference_capabilities(),
         "arbitrary_planar_support": "plane={reference:{kind:surface,id:...},origin:[x,y,z],u_axis:[x,y,z]}",
         "workflow": "submit once -> poll get_job -> inspect model -> choose references -> append using expected_revision",
-        "scope": "MCP-owned native part, sheetmetal, assembly and drawing models. Tool availability does not prove every option or Creo operation is supported; consult validation evidence and coverage documentation.",
+        "scope": "MCP-owned native part, sheetmetal, assembly and drawing models; plus read-only retrieval/display of existing on-disk models via creo_open_file. Tool availability does not prove every option or Creo operation is supported; consult validation evidence and coverage documentation.",
+        "support_status": _support_status(),
         "complete_creo_coverage": False,
-        "seed_library": await invoke(seeds.list_seeds),
+        "seed_library": seeds.list_seeds(),
         "direct_blend_callback": callback_setup_status(bridge.ROOT / "build"),
         "release_status": "pre-release candidate; requested complete coverage has not been achieved",
         "families": families(),
@@ -472,6 +534,27 @@ async def creo_capabilities() -> dict[str, Any]:
         "evidence_directory": str(bridge.ROOT / "build"),
         "verified_evidence": verified,
     }
+
+
+@mcp.tool(annotations=READ)
+async def creo_capabilities(
+    detail: Literal["compact", "full"] = "compact",
+    section: str | None = None,
+    limit: int = 50,
+    cursor: str | None = None,
+) -> dict[str, Any]:
+    """Describe capability boundaries, tool families, reference syntax and test evidence. Default detail=compact returns one bounded summary page (name/version/tool_count/scope/support_status/operation list/family index/pagination guide). detail=full pages one section at a time with limit and next_cursor from a frozen in-process snapshot (600 s; cursors from an older snapshot or another process are rejected). Pages stay within 32 KiB; a single oversized entry is reported as an oversize marker instead of being truncated. Migration: before 0.5.0 this tool returned the whole document; page detail=full sections (e.g. references, families, evidence) to rebuild it."""
+    tool_entries = [
+        {"name": tool.name, "description": tool.description} for tool in await mcp.list_tools()
+    ]
+    return await invoke(
+        capabilities_response,
+        lambda: _capabilities_payload(tool_entries),
+        detail=detail,
+        section=section,
+        limit=limit,
+        cursor=cursor,
+    )
 
 
 @mcp.tool(annotations=CREATE)

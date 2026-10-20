@@ -48,6 +48,8 @@ inspect返回 `available=false`、`available_modes=["prepare"]`，没有可用mo
 
 首批支持独立part/钣金、毫米单位、无外部依赖、无失败/抑制/不完整特征。装配、工程图等类型明确拒绝。普通受管模型的origin、检查点、revision及unknown保护保持有效。
 
+inspect 拒绝时除文本 `reason` 外携带稳定 `reason_code`（`unsupported_model_type` / `non_millimeter_units` / `external_dependencies` / `unhealthy_features` / `managed_output` / `already_adopted` / `snapshot_required`）与 `refusal_details`：报告实际长度单位（未知时 `actual_units=null` 并标记 `actual_units_known=false`）；依赖清单与逐特征健康原因当前无法可靠取得，分别标记 `unknown` 与合并口径说明，不补造细节。毫米、无依赖与健康的准入边界不变。Creo 窗口无当前模型时返回 `NO_CURRENT_MODEL` 前缀错误（保留 `ProMdlCurrentGet` 调用名与 -8 原码），可先经 `creo_list_session_models` 查看会话清单；需要把磁盘既有模型放进会话时先用 `creo_open_file` 只读检入显示，再切换/接管。
+
 [BUG-072](work-items/BUG-072.md)已在开发源码修正，尚待重启部署后的实机复验：inspection.units为查询到的模型长度单位，未知时为null，units_query_code保留查询诊断；只有确认毫米且数值有限时才提供volume_mm3。非毫米/未知单位的两层volume_mm3均为null，volume_query_code=0不代表已换算成mm³。坐标、半径等仍采用所示模型长度单位，不扩大非毫米接管支持。旧连接器可能仍返回原生体积误标mm³，需按本页入口核对启动身份后再采用新语义。
 
 未确认模型不能普通建模或通过accept_saved/live绕过确认。需要放弃时使用 `creo_reconcile_model` 的inspect→`abandon_new`，保留文件和审计。派发后结果不确定则保持保护，先查询原job，不重交建模计划、不修改登记或清锁。单一Toolkit通道busy立即拒绝，受理后只轮询。

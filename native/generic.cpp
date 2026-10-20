@@ -2220,9 +2220,16 @@ static void confirm_adoption_snapshot(const J &choice, J &report) {
                    {"adopted", true}});
 }
 
-static void session_models_native(J &report) {
+struct SessionInventory {
+    J models = J::array();
+    J type_errors = J::array();
+    bool truncated = false;
+    int current_code = 0;
+};
+
+static void collect_session_models(SessionInventory &inventory) {
     ProMdl current = nullptr;
-    ProError current_code = ProMdlCurrentGet(&current);
+    inventory.current_code = ProMdlCurrentGet(&current);
     J models = J::array(), errors = J::array();
     const std::pair<ProMdlType, const char *> types[] = {{PRO_MDL_PART, "part"},
                                                          {PRO_MDL_ASSEMBLY, "assembly"},
@@ -2257,15 +2264,16 @@ static void session_models_native(J &report) {
                     ProError oc = ProMdlOriginGet(list[i], origin);
                     ProError mc = ProMdlModificationVerify(list[i], &modified);
                     ProError ic = ProMdlIdGet(list[i], &id);
-                    J item = {{"name", nc ? J(nullptr) : J(utf8(name))},
-                              {"model_type", entry.second},
-                              {"is_current", current_code ? J(nullptr) : J(list[i] == current)},
-                              {"origin", oc ? J(nullptr) : J(utf8(origin))},
-                              {"has_saved_origin", oc ? J(nullptr) : J(origin[0] != 0)},
-                              {"modified", mc ? J(nullptr) : J(modified == PRO_B_TRUE)},
-                              {"session_model_id", ic ? J(nullptr) : J(id)},
-                              {"query_codes",
-                               {{"name", nc}, {"origin", oc}, {"modified", mc}, {"id", ic}}}};
+                    J item = {
+                        {"name", nc ? J(nullptr) : J(utf8(name))},
+                        {"model_type", entry.second},
+                        {"is_current", inventory.current_code ? J(nullptr) : J(list[i] == current)},
+                        {"origin", oc ? J(nullptr) : J(utf8(origin))},
+                        {"has_saved_origin", oc ? J(nullptr) : J(origin[0] != 0)},
+                        {"modified", mc ? J(nullptr) : J(modified == PRO_B_TRUE)},
+                        {"session_model_id", ic ? J(nullptr) : J(id)},
+                        {"query_codes",
+                         {{"name", nc}, {"origin", oc}, {"modified", mc}, {"id", ic}}}};
                     if (entry.first == PRO_MDL_PART) {
                         ProMdlsubtype subtype;
                         ProError sc = ProMdlSubtypeGet(list[i], &subtype);
@@ -2284,12 +2292,226 @@ static void session_models_native(J &report) {
         if (list)
             CK(ProArrayFree((ProArray *)&list));
     }
+    inventory.models = models;
+    inventory.type_errors = errors;
+    inventory.truncated = truncated;
+}
+
+static void session_models_native(J &report) {
+    SessionInventory inventory;
+    collect_session_models(inventory);
     report.update({{"success", true},
-                   {"models", models},
-                   {"type_errors", errors},
-                   {"complete", errors.empty() && !truncated},
-                   {"truncated", truncated},
-                   {"current_model_code", current_code}});
+                   {"models", inventory.models},
+                   {"type_errors", inventory.type_errors},
+                   {"complete", inventory.type_errors.empty() && !inventory.truncated},
+                   {"truncated", inventory.truncated},
+                   {"current_model_code", inventory.current_code}});
+}
+
+static int components_total = 0;
+static int components_missing = 0;
+static ProError component_probe(ProFeature *feature, ProError status, ProAppData) {
+    if (status)
+        return status;
+    ProFeattype type;
+    if (ProFeatureTypeGet(feature, &type))
+        return PRO_TK_NO_ERROR;
+    if (type != PRO_FEAT_COMPONENT)
+        return PRO_TK_NO_ERROR;
+    components_total++;
+    ProMdl component = nullptr;
+    if (ProAsmcompMdlGet((ProAsmcomp *)feature, &component) != PRO_TK_NO_ERROR)
+        components_missing++;
+    return PRO_TK_NO_ERROR;
+}
+
+// Read-only retrieval and display of an existing on-disk native model. The file
+// is never saved, erased, renamed or adopted; success creates no managed model.
+static void open_file_native(const J &request, J &report) {
+    const J &choice = request.at("open_file");
+    std::wstring requested = wide(choice.at("requested_path").get<std::string>());
+    std::wstring selected = wide(choice.at("selected_file").get<std::string>());
+    bool assembly = choice.at("model_kind").get<std::string>() == "assembly";
+    std::filesystem::path file_path(selected);
+    std::wstring base = file_path.filename().wstring();
+    if (size_t dot = base.rfind(L'.'); dot != std::wstring::npos) {
+        std::wstring tail = base.substr(dot + 1);
+        if (!tail.empty() && tail.find_first_not_of(L"0123456789") == std::wstring::npos)
+            base = base.substr(0, dot);
+        if (dot = base.rfind(L'.'); dot != std::wstring::npos) {
+            std::wstring ext = base.substr(dot + 1);
+            if (!_wcsicmp(ext.c_str(), L"prt") || !_wcsicmp(ext.c_str(), L"asm"))
+                base = base.substr(0, dot);
+        }
+    }
+    if (base.empty() || base.find_first_of(L".") != std::wstring::npos)
+        throw std::runtime_error("Cannot derive a model name from the selected file path");
+    J summary = {{"requested_path", utf8(requested)},
+                 {"selected_file", utf8(selected)},
+                 {"model_kind", assembly ? "assembly" : "part"},
+                 {"model_name", utf8(base)}};
+    report["open_file"] = summary;
+    // Pre-checks and retrieval share one Toolkit channel: the session state the
+    // checks observed is the state retrieval starts from.
+    generic_stage("open_file_session_check");
+    SessionInventory inventory;
+    collect_session_models(inventory);
+    if (!inventory.type_errors.empty() || inventory.truncated) {
+        report["session_inventory"] = {{"type_errors", inventory.type_errors},
+                                       {"truncated", inventory.truncated}};
+        throw std::runtime_error(
+            "SESSION_ENUMERATION_INCOMPLETE: the session inventory could not be "
+            "completed, so open-file preconditions cannot be proven; no file was "
+            "retrieved");
+    }
+    for (const auto &item : inventory.models) {
+        if (item["name"].is_null())
+            continue;
+        bool same_name = !_wcsicmp(wide(item["name"].get<std::string>()).c_str(), base.c_str());
+        std::string kind = item["model_type"];
+        bool same_family = assembly ? kind == "assembly" : (kind == "part" || kind == "sheetmetal");
+        if (same_name && same_family) {
+            report["open_file"]["conflicting_session_model"] = item;
+            throw std::runtime_error(
+                "SESSION_NAME_CONFLICT: a " + kind +
+                " model with this name is already in the Creo session; the file was "
+                "not retrieved. Close or erase it in Creo first, or switch to it "
+                "directly");
+        }
+    }
+    if (assembly) {
+        for (const auto &item : inventory.models) {
+            std::string kind = item["model_type"];
+            if (kind == "part" || kind == "sheetmetal" || kind == "assembly")
+                throw std::runtime_error(
+                    "ASSEMBLY_REQUIRES_EMPTY_SESSION: the session already holds a "
+                    "part or assembly; assembly retrieval needs a session without "
+                    "parts/assemblies so partial loading stays observable. No file "
+                    "was retrieved");
+        }
+    }
+    generic_stage("open_file_retrieve");
+    ProMdl opened = nullptr;
+    ProPath file;
+    path(file, selected);
+    ProError load_code = ProMdlFiletypeLoad(file, PRO_MDLFILE_UNUSED, PRO_B_FALSE, &opened);
+    if (load_code != PRO_TK_NO_ERROR) {
+        // Retrieval of an incomplete assembly can leave components in the session.
+        // Report them explicitly; the missing-component list is unknown to Toolkit.
+        SessionInventory after;
+        collect_session_models(after);
+        J remaining = J::array();
+        for (const auto &item : after.models) {
+            std::string kind = item["model_type"];
+            if (kind == "part" || kind == "sheetmetal" || kind == "assembly")
+                remaining.push_back(item);
+        }
+        report["loaded"] = false;
+        report["open_file"]["loaded"] = false;
+        report["open_file"]["missing_components"] = "unknown";
+        report["open_file"]["remaining_session_models"] = remaining;
+        report["open_file"]["remaining_models_note"] =
+            "retrieval failed; listed part/assembly objects may be partial residues of "
+            "this attempt and are not erased automatically";
+        throw std::runtime_error(
+            "RETRIEVE_FAILED: ProMdlFiletypeLoad returned " + std::to_string(load_code) +
+            " for the selected file; assemblies failing here usually miss components "
+            "(list unavailable, marked unknown). Inspect remaining_session_models; "
+            "nothing was saved or erased");
+    }
+    report["loaded"] = true;
+    report["open_file"]["loaded"] = true;
+    ProMdlType kind = PRO_MDL_PART;
+    check(ProMdlTypeGet(opened, &kind), "ProMdlTypeGet");
+    if (kind != (assembly ? PRO_MDL_ASSEMBLY : PRO_MDL_PART)) {
+        report["open_file"]["actual_model_type_code"] = kind;
+        throw std::runtime_error(
+            "MODEL_TYPE_MISMATCH: the retrieved file is not the requested model kind; "
+            "the loaded object stays in the session, nothing was saved or erased");
+    }
+    if (assembly) {
+        // Toolkit retrieves an incomplete assembly without error; the component
+        // features exist but their models stay unresolved. Refuse to report a
+        // complete open in that case and leave the residues observable.
+        generic_stage("open_file_component_check");
+        components_total = 0;
+        components_missing = 0;
+        check(ProSolidFeatVisit((ProSolid)opened, component_probe, nullptr, nullptr),
+              "ProSolidFeatVisit");
+        report["open_file"]["component_count"] = components_total;
+        if (components_missing > 0) {
+            SessionInventory after;
+            collect_session_models(after);
+            J remaining = J::array();
+            for (const auto &item : after.models) {
+                std::string item_kind = item["model_type"];
+                if (item_kind == "part" || item_kind == "sheetmetal" || item_kind == "assembly")
+                    remaining.push_back(item);
+            }
+            report["open_file"].update(
+                {{"displayed", false},
+                 {"missing_component_count", components_missing},
+                 {"missing_components",
+                  {{"count", components_missing},
+                   {"total", components_total},
+                   {"names", "unknown"}}},
+                 {"remaining_session_models", remaining},
+                 {"remaining_models_note",
+                  "retrieval incomplete; the assembly object stays in the session "
+                  "(not displayed, not erased); listed part/assembly objects may be "
+                  "partial residues"}});
+            throw std::runtime_error(
+                "RETRIEVE_INCOMPLETE: the assembly was retrieved but " +
+                std::to_string(components_missing) + " of " + std::to_string(components_total) +
+                " components did not resolve (names unavailable, marked unknown). The "
+                "assembly is not displayed; inspect remaining_session_models; nothing "
+                "was saved or erased");
+        }
+    }
+    std::string model_type = assembly ? "assembly" : "part";
+    if (kind == PRO_MDL_PART) {
+        ProMdlsubtype subtype;
+        ProError sc = ProMdlSubtypeGet(opened, &subtype);
+        if (!sc && subtype == PROMDLSTYPE_PART_SHEETMETAL)
+            model_type = "sheetmetal";
+    }
+    ProPath origin = {};
+    check(ProMdlOriginGet(opened, origin), "ProMdlOriginGet");
+    ProMdlName display = {};
+    ProError name_code = ProMdlMdlnameGet(opened, display);
+    report["open_file"].update(
+        {{"model_type", model_type},
+         {"origin", utf8(origin)},
+         {"origin_matches_selected_file", !_wcsicmp(origin, selected.c_str())},
+         {"display_name", name_code ? J(nullptr) : J(utf8(display))}});
+    generic_stage("open_file_display");
+    bool displayed = false;
+    std::string display_message;
+    try {
+        CK(ProMdlDisplay(opened));
+        int window = -1;
+        CK(ProMdlWindowGet(opened, &window));
+        CK(ProWindowCurrentSet(window));
+        CK(ProWindowRefit(window));
+        CK(ProWindowRepaint(window));
+        CK(ProWindowActivate(window));
+        displayed = true;
+    } catch (ProError error) {
+        display_message = "Toolkit call " + last_toolkit_error + " failed with code " +
+                          std::to_string(error) + " during open_file_display";
+    } catch (const std::exception &error) {
+        display_message = error.what();
+    }
+    report["open_file"]["displayed"] = displayed;
+    if (!displayed) {
+        report["open_file"]["display_message"] = display_message;
+        report["message"] =
+            "Loaded the model into the session but could not display it: " + display_message +
+            "; the object remains in the session (query creo_list_session_models); "
+            "nothing was saved or erased";
+        return;
+    }
+    report["success"] = true;
 }
 
 static void adopt_native(const J &request, J &report) {
@@ -2304,13 +2526,23 @@ static void adopt_native(const J &request, J &report) {
     if (choice.contains("session_fingerprint") && choice["session_fingerprint"] != session)
         throw std::runtime_error("Adoption refused: Creo session changed since recorded evidence");
     ProMdl current = nullptr;
-    CK(ProMdlCurrentGet(&current));
+    ProError current_code = ProMdlCurrentGet(&current);
+    if (current_code == PRO_TK_BAD_CONTEXT)
+        // -8 is "no current model", not a connection failure; keep the call name
+        // and raw code so the original evidence stays machine-checkable.
+        throw std::runtime_error(
+            "NO_CURRENT_MODEL: the Creo window has no current model "
+            "(ProMdlCurrentGet(&current) returned -8 PRO_TK_BAD_CONTEXT during " +
+            generic_phase +
+            "); switch to a model in Creo first; creo_list_session_models shows the "
+            "session inventory");
+    check(current_code, "ProMdlCurrentGet(&current)");
     ProMdlType kind = PRO_MDL_PART;
     CK(ProMdlTypeGet(current, &kind));
     if (kind != PRO_MDL_PART)
         throw std::runtime_error(
-            "Adoption refused: only part or sheetmetal models can be adopted; assemblies and "
-            "drawings keep their own ownership");
+            "unsupported_model_type: only part or sheetmetal models can be adopted; "
+            "assemblies and drawings keep their own ownership (adoption refused)");
     ProPath origin = {};
     CK(ProMdlOriginGet(current, origin));
     std::wstring origin_text = origin;
@@ -2354,16 +2586,17 @@ static void adopt_native(const J &request, J &report) {
         throw std::runtime_error(
             "Never-saved model requires explicit prepare, then confirm its frozen snapshot");
     if (!live.value("healthy", false))
-        throw std::runtime_error(
-            "Adoption refused: source has failed, suppressed or incomplete features");
+        throw std::runtime_error("unhealthy_features: source has failed, suppressed or incomplete "
+                                 "features (adoption refused)");
     if (!supported)
-        throw std::runtime_error(
-            "Adoption refused: only independent part or sheetmetal models are supported");
+        throw std::runtime_error("unsupported_model_type: only independent part or sheetmetal "
+                                 "models are supported (adoption refused)");
     if (!millimeters)
-        throw std::runtime_error("Adoption refused: millimeter model units are required");
-    if (!dependency_clean)
         throw std::runtime_error(
-            "Adoption refused: external dependencies require separate ownership verification");
+            "non_millimeter_units: millimeter model units are required (adoption refused)");
+    if (!dependency_clean)
+        throw std::runtime_error("external_dependencies: external dependencies require separate "
+                                 "ownership verification (adoption refused)");
     struct WindowRestore {
         int window = -1;
         ~WindowRestore() {
@@ -2386,16 +2619,17 @@ static void adopt_native(const J &request, J &report) {
     ProMdl clash = nullptr;
     ProError found = ProMdlInit(adopted, PRO_MDL_PART, &clash);
     if (found == PRO_TK_NO_ERROR)
-        throw std::runtime_error(
-            "Adoption refused: the managed model name already exists in this Creo session");
+        throw std::runtime_error("session_name_conflict: the managed model name already exists in "
+                                 "this Creo session (adoption refused)");
     if (found != PRO_TK_E_NOT_FOUND)
         check(found, "CheckAdoptedName");
     CK(ProMdlnameCopy(current, adopted, &board));
     if (!millimeter_units(board))
-        throw std::runtime_error("Adoption refused: copied model units are not millimeter");
-    if (!dependency_free(board))
         throw std::runtime_error(
-            "Adoption refused: the copied model carries external dependencies");
+            "non_millimeter_units: copied model units are not millimeter (adoption refused)");
+    if (!dependency_free(board))
+        throw std::runtime_error("external_dependencies: the copied model carries external "
+                                 "dependencies (adoption refused)");
     CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
     J before = inspection();
     verify_recovery(live, before); // Prove the copy includes the live source state.
@@ -2487,6 +2721,9 @@ static int run_generic(const std::wstring &job) {
         } else if (request.contains("session_models")) {
             generic_stage("list_session_models");
             session_models_native(report);
+        } else if (request.contains("open_file")) {
+            generic_stage("open_file_" + request["open_file"]["model_kind"].get<std::string>());
+            open_file_native(request, report);
         } else if (request.contains("adoption")) {
             generic_stage("adoption_" + request["adoption"]["action"].get<std::string>());
             adopt_native(request, report);

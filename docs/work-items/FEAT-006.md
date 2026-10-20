@@ -31,3 +31,9 @@
 ## 2026-10-17：0.3.4 特征引用错误的可行动提示
 
 [报告第四节](../validation/FEEDBACK-0.3.4-2026-10-17.md)称 dump_feature_tree 用原生名 H34 报 Unknown feature label，创建别名 h34 成功。沿用本项与 FEAT-008：明确 label/id/原生名、大小写及支持范围，评估有界可用别名/当前引用查询指引，避免全量 aliases 膨胀或泄露无关模型。未承诺原生名输入时不据此登记导出缺陷，不能在歧义时猜选对象。本次只补需求。
+
+## 2026-10-20：0.4.1 接管空窗口的语义化错误
+
+[v0.4.1 反馈](../validation/FEEDBACK-0.4.1-CREO10-2026-10-20.md) P3-1：会话无模型时 `creo_adopt_current_model(mode=inspect)` 返回裸 `ProMdlCurrentGet(&current) failed with code -8 during adoption_inspect`，agent 无法区分"窗口无模型"与连接故障。本轮在 native 接管入口对该调用返回"无当前模型"原码时改抛 `NO_CURRENT_MODEL` 前缀错误，保留失败调用名与 Toolkit 原码，并提示先经 `creo_list_session_models` 查看会话清单。仅改错误可读性，不改接管准入、证据与保护路径；其余裸 Toolkit 错误码的可读化仍按本卡整体范围分批推进。
+
+实现当日完成（-8 经 SDK 头文件核对为 PRO_TK_BAD_CONTEXT）；实机以装配窗口的 `unsupported_model_type` 前缀路径旁证稳定原因码改造，无窗口 `NO_CURRENT_MODEL` 分支留 WorkBuddy 黑盒复验，见[验证记录](../validation/FEAT-044-live-2026-10-20.md)第四节。

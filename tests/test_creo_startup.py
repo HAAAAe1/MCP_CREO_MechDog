@@ -16,6 +16,7 @@ from unittest.mock import Mock, patch
 import bridge
 import creo_startup
 import server
+from creo_mechdog import capability_pages
 
 ROOT = Path(__file__).resolve().parents[1]
 ABSENT = {"connected": False, "connection_state": "not_found_or_unreadable", "toolkit_code": -4}
@@ -103,8 +104,9 @@ class CreoStartupTests(unittest.TestCase):
         }
 
     def test_capabilities_identifies_running_source(self):
-        capabilities = asyncio.run(server.creo_capabilities())
-        runtime = capabilities["runtime"]
+        capability_pages.reset_snapshot()
+        page = asyncio.run(server.creo_capabilities(detail="full", section="runtime"))
+        runtime = {entry["key"]: entry["value"] for entry in page["entries"]}
         self.assertEqual(Path(runtime["server_entry"]), ROOT / "server.py")
         self.assertEqual(Path(runtime["code_root"]), ROOT)
         self.assertEqual(Path(runtime["python_executable"]), Path(os.sys.executable))
@@ -115,7 +117,10 @@ class CreoStartupTests(unittest.TestCase):
         loaded = dict(server._LOADED_FINGERPRINTS)
         changed = {**loaded, "server.py": "changed-on-disk"}
         with patch.object(server, "_source_fingerprints", return_value=changed):
-            runtime = asyncio.run(server.creo_capabilities())["runtime"]
+            # Drop the frozen capabilities snapshot so the patched detector runs.
+            capability_pages.reset_snapshot()
+            page = asyncio.run(server.creo_capabilities(detail="full", section="runtime"))
+            runtime = {entry["key"]: entry["value"] for entry in page["entries"]}
         self.assertTrue(runtime["source_changed_since_startup"])
         self.assertEqual(runtime["source_fingerprints_at_startup"], loaded)
 

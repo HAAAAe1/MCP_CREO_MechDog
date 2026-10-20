@@ -12,7 +12,7 @@ from pathlib import Path
 import bridge
 import generic_bridge
 import server
-from creo_mechdog import update_check
+from creo_mechdog import capability_pages, update_check
 from creo_mechdog.paths import SOURCE_PATHS, ProjectPaths
 from tools import package
 from version import VERSION
@@ -91,7 +91,9 @@ else:
         self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_runtime_identifies_roots_and_migrated_source(self):
-        runtime = asyncio.run(server.creo_capabilities())["runtime"]
+        capability_pages.reset_snapshot()
+        page = asyncio.run(server.creo_capabilities(detail="full", section="runtime"))
+        runtime = {entry["key"]: entry["value"] for entry in page["entries"]}
         self.assertEqual(Path(runtime["code_root"]), ROOT)
         self.assertEqual(Path(runtime["python_package_root"]), SOURCE_PATHS.code_root)
         self.assertEqual(Path(runtime["resource_root"]), SOURCE_PATHS.resource_root)

@@ -129,6 +129,26 @@ def families() -> dict:
             "automatic_activation": False,
             "automatic_adoption": False,
         },
+        "disk_open": {
+            "enabled": True,
+            "tool": "creo_open_file",
+            "scope": (
+                "Read-only retrieval and display of existing on-disk .prt/.asm models "
+                "(explicit or highest numeric version); never saves, erases, renames "
+                "or adopts; creates no managed model"
+            ),
+            "supported": (
+                "part, sheetmetal and complete assemblies; retrieval requires no "
+                "same-name/same-type session model; assemblies additionally require a "
+                "session without parts/assemblies"
+            ),
+            "limits": (
+                "no managed revision and no adoption (use creo_adopt_current_model "
+                "afterwards); incomplete assemblies fail with residues reported and "
+                "missing components marked unknown; display failures are reported "
+                "separately from retrieval"
+            ),
+        },
         "seed_library": {
             "enabled": True,
             "scope": "MIT native seeds bundled with source; SHA256 validation, local registration and automatic count/mode selection",

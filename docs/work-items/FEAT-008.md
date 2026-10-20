@@ -64,3 +64,15 @@ list_models 的 complete=false / next_cursor 为报告方实际分页正例，�
 同日后续非毫米inspect则返回结构化available=false/reason，而assembly为工具级错误，两种不可接管形式的兼容与稳定原因分类继续归本卡；本轮两种保护均有通过报告。非毫米载荷内units="mm"及未换算volume_mm3是独立真实摘要缺陷，已登记[BUG-072](BUG-072.md)，不混作本卡错误格式问题。
 
 后续外部依赖及含抑制特征的健康拒绝亦通过；健康理由合并failed/suppressed/incomplete，没有公开逐特征原因。若后续增加细粒度诊断，保持稳定原因分类与原错误兼容，不能从feature_count=9推断具体DTM1状态，也不能据抑制用例判真实再生失败已验收。当前仅补改进线索，不新增同义条目或扩大本卡首批范围。
+
+## 2026-10-20：0.4.1 顶层支持状态与接管拒绝稳定原因
+
+[v0.4.1 反馈](../validation/FEEDBACK-0.4.1-CREO10-2026-10-20.md) P2-2/P1-1/P3-1：能力边界只由"MCP-owned"措辞隐式表达；接管拒绝为文本错误且缺实际单位；空窗口为裸 Toolkit 码。本轮三项：
+
+1. capabilities 顶层新增**支持状态表**（磁盘打开、会话枚举、接管、装配检查各自的支持/工具/边界一句话），把"是否支持打开磁盘外部文件"从隐式措辞变为显式声明；随 FEAT-044/023 的结构变化一并发布并补迁移说明。
+2. 接管拒绝（inspect 的 available=false 路径）在文本 reason 之外增加**稳定原因代码**，并携带实际单位字符串与可靠取得的依赖/健康字段；取不到的详情明确标记未知，不补造。毫米、无外部依赖与健康的准入边界本身不变（放宽另按 P1-1 整体评估）。
+3. 空窗口裸错误码归 FEAT-006 本轮 NO_CURRENT_MODEL。
+
+装配只读检查另登记 FEAT-045；本卡 2026-10-19 的统一 code/reason 契约评估与本轮稳定原因代码衔接，不重复登记。
+
+三项当日实现并随[验证记录](../validation/FEAT-044-live-2026-10-20.md)实测：支持状态表与分页一并经 stdio 直连确认（compact 含 support_status）；接管拒绝 Python 路径携带 `reason_code`+`refusal_details`（实际单位/未知标记），native 八处接管拒绝错误文本同步加稳定原因前缀（实机 `unsupported_model_type` 前缀已观察）；空窗口 NO_CURRENT_MODEL 见 FEAT-006。整卡仍待规划中首批三项（底板/对称深度/平面构造）未动，不据此关闭。

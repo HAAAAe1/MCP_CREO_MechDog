@@ -977,6 +977,11 @@ def run_job(job_id: str) -> None:
 
         run(job_id, manifest)
         return
+    if manifest.get("kind") == "open_file":
+        from creo_mechdog.open_file import run
+
+        run(job_id, manifest)
+        return
     if manifest.get("kind") == "generic":
         from generic_bridge import run_generic_job
 
@@ -1113,7 +1118,7 @@ def get_job(job_id: str, detail: str = "full") -> dict:
         ).total_seconds()
         timeout = (
             config().get("generic_timeout_seconds", 600)
-            if manifest.get("kind") in ("generic", "reconciliation", "adoption")
+            if manifest.get("kind") in ("generic", "reconciliation", "adoption", "open_file")
             else config()["native_timeout_seconds"]
         )
         if age > 120 + 180 + timeout + 30:
@@ -1203,6 +1208,9 @@ def compact_job(manifest: dict) -> dict:
             "inspection_source",
             "adoption",
             "adopted",
+            "open_file",
+            "loaded",
+            "session_fingerprint",
         )
         native = {key: result[key] for key in result_keys if key in result}
         from creo_mechdog.model_queries import inspection_summary

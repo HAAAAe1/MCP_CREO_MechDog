@@ -158,16 +158,44 @@ def _origin_conflict(origin: Path, exclude: str | None = None) -> dict | None:
     return None
 
 
-def _refusal_reason(live: dict) -> str | None:
+def _refusal_reason(live: dict) -> tuple[str, str] | None:
+    """Stable machine-readable code plus human text; None when eligible."""
     if live.get("model_type") not in SUPPORTED_TYPES:
-        return "Only independent part or sheetmetal models can be adopted"
+        return (
+            "unsupported_model_type",
+            "Only independent part or sheetmetal models can be adopted",
+        )
     if not live.get("millimeter_units"):
-        return "Adoption requires millimeter model units"
+        return ("non_millimeter_units", "Adoption requires millimeter model units")
     if not live.get("dependency_free"):
-        return "External dependencies require separate ownership verification"
+        return (
+            "external_dependencies",
+            "External dependencies require separate ownership verification",
+        )
     if not live.get("healthy"):
-        return "The model has failed, suppressed or incomplete features"
+        return ("unhealthy_features", "The model has failed, suppressed or incomplete features")
     return None
+
+
+def _refusal_details(live: dict) -> dict:
+    """Report what is reliably known; mark unavailable details as unknown."""
+    inspection = live.get("inspection") or {}
+    units = inspection.get("units")
+    units_known = isinstance(units, str) and bool(units)
+    return {
+        "actual_units": units if units_known else None,
+        "actual_units_known": units_known,
+        "units_query_code": inspection.get("units_query_code"),
+        "dependency_inventory": "unknown",
+        "dependency_inventory_note": (
+            "Toolkit exposes no reliable dependency list here; the boolean "
+            "dependency_free check is all that is provable"
+        ),
+        "health_breakdown": (
+            "combined failed/suppressed/incomplete feature check; per-feature "
+            "reasons are unavailable"
+        ),
+    }
 
 
 def _new_model(model_id: str, model_name: str | None = None) -> dict:
@@ -253,20 +281,29 @@ def inspect(model_id: str | None = None) -> dict:
             # Keep identity checks and token publication inside the cleanup boundary
             # and the same channel lock (BUG-071).
             origin = live.get("origin")
-            reason = _refusal_reason(live)
+            refusal = _refusal_reason(live)
             if not isinstance(origin, str):
                 raise ValueError("Source origin could not be determined; no adoption accepted")
             file = identity(Path(origin)) if origin else None
             conflict = _origin_conflict(Path(origin), exclude=model_id) if origin else None
-            reason = conflict["message"] if conflict else reason
+            if conflict:
+                reason, reason_code = conflict["message"], conflict["reason"]
+            elif refusal:
+                reason, reason_code = refusal[1], refusal[0]
+            elif not origin:
+                reason, reason_code = None, "snapshot_required"
+            else:
+                reason, reason_code = None, None
             if reason or not origin:
                 shutil.rmtree(path)
                 return {
                     "available": False,
                     "reason": reason or "snapshot_required: use mode=prepare",
+                    "reason_code": reason_code,
                     "available_modes": [] if reason else ["prepare"],
                     "conflict": conflict,
                     "current_model": _summary_only({"live": live}),
+                    "refusal_details": _refusal_details(live),
                     "file": file,
                     "source_kind": "file" if origin else "session_only",
                     "model_id": None,
