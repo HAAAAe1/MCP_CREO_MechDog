@@ -1,4 +1,4 @@
-# MCP_CREO_MechDog 0.4.2
+# MCP_CREO_MechDog 0.4.3
 
 开发维护从 [开发入口](docs/DEVELOPMENT.md) 和 [统一功能台账](docs/BACKLOG.md) 开始。每项工作先定义验收；语言与单元检查、Creo 实机验收分别记录。项目采用渐进布局整理，当前支持环境见 [兼容矩阵](docs/COMPATIBILITY.md)。
 
@@ -6,7 +6,7 @@
 
 **本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 0.4.2 注册 **87 个工具**（0.4.1 为 86 个，新增 `creo_open_file`）；v0.4.1/Creo 10 反馈按[处理计划](docs/development/CREO10-0.4.1-FEEDBACK-PLAN.md)交付：磁盘 `.prt`/`.asm` 只读检索显示、`creo_capabilities` compact 摘要与分页（FEAT-023/044）、`creo_session_status` 各分支 `server_version`（FEAT-022）、接管 `NO_CURRENT_MODEL`/稳定 `reason_code`/结构化 `refusal_details` 与顶层支持状态（FEAT-006/008）；既有能力（无盘快照接管、会话枚举、受控恢复、直接混合等）保留。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
 
-当前服务/源码版本为 **0.4.2**（PATCH：含新增公开工具 `creo_open_file`，按约定本应为 MINOR，作为本次例外）。0.4.2 交付：FEAT-044 `creo_open_file`（磁盘 `.prt`/`.asm` 只读检索显示：显式或最高数字版本、同名冲突与非空会话装配拒绝、缺件装配 `RETRIEVE_INCOMPLETE` 报告残留与 unknown 计数、不保存不接管）；FEAT-023 capabilities 摘要与分页（compact 默认约 10 KB/旧 106 KB、七 section、32 KiB 页、600 秒冻结快照、迁移指引）；FEAT-022 session_status 各分支 `server_version`；FEAT-006/008 接管 `NO_CURRENT_MODEL`、稳定 `reason_code`+结构化 `refusal_details`、capabilities 顶层 `support_status`。开发者实机 12 场景与 WorkBuddy 黑盒 16/16 均通过；`asm_mx.asm.16` 原环境、显示失败注入、真实并发、钣金件打开等未测边界见版本说明。见[0.4.2 说明](docs/RELEASE_NOTES_0.4.2.md)；历史[0.4.1](docs/RELEASE_NOTES_0.4.1.md)、[0.4.0](docs/RELEASE_NOTES_0.4.0.md)、[0.3.7](docs/RELEASE_NOTES_0.3.7.md)及原验收身份保留。
+当前服务/源码版本为 **0.4.3**（PATCH：0.3.7 反馈修复合集与观察性增强，无新增公开工具）。0.4.3 交付：BUG-036（component_constraints 成功但位姿不更新——native 组件变换/矩阵读取修复，隔离 C++ 回归）；BUG-057（toolkit_lock 并发准入在 Windows 报 Errno 13——锁打开路径细化）；BUG-074（缺失 owner 身份的历史作业永久阻断恢复——以独立核验的 Windows 重启为界的守卫与证据绑定）；种子兼容观察与窗口观察增强（seed_load_evidence、进程快照观察参数）；BUG-075 登记。0.3.7 剩余验收：黑盒 16/16、开发者补测（英寸/类型枚举/families/只读 inspect）；跨重启四动作与外部原环境未测。见[0.4.3 说明](docs/RELEASE_NOTES_0.4.3.md)；历史[0.4.2](docs/RELEASE_NOTES_0.4.2.md)、[0.4.1](docs/RELEASE_NOTES_0.4.1.md)、[0.4.0](docs/RELEASE_NOTES_0.4.0.md)及原验收身份保留。
 
 本版包含 [FEAT-019 自动启动](docs/work-items/FEAT-019.md)：后台检测、启动协调和建模就绪保护已实现；用户于 2026-10-13 接受 WorkBuddy / Creo 12.4 的自动启动、Toolkit 就绪及建模/保存重载验收，并于 2026-10-14 确认补充 Creo 12 已验证可用的说明。该专项未取得 Creo 10 实测结果；Codex 冷启动连接复测失败另列 [BUG-005](docs/work-items/BUG-005.md)。见 [原验收证据](docs/validation/FEAT-019.md)。
 
@@ -28,7 +28,7 @@ DEV-002 已开始分批迁移：更新检查实现位于 `src/creo_mechdog/`，�
 
 ## 安装
 
-0.4.2（2026-10-20 发布，源自 [v0.4.1/Creo 10 反馈处理计划](docs/development/CREO10-0.4.1-FEEDBACK-PLAN.md)）：87 工具，新增只读 `creo_open_file`（磁盘 `.prt`/`.asm` 检索进会话并显示，不保存不接管；显式或最高数字版本；同名冲突与非空会话装配拒绝，缺件装配报 `RETRIEVE_INCOMPLETE` 与残留对象）；`creo_capabilities` 默认返回 compact 摘要页并支持 `detail=full&section=...&cursor` 分页（32 KiB 单页、600 秒冻结快照，旧全量消费者需按 section 遍历迁移）；`creo_session_status` 各分支携带 `server_version`；接管拒绝携带稳定 `reason_code` 与 `refusal_details`（实际单位、依赖/健康未知标记），空窗口返回 `NO_CURRENT_MODEL`。WorkBuddy 黑盒 16/16 通过，见[验收记录](docs/validation/WORKBUDDY-0.5.0-open-file-2026-10-20.md)。升级后先重启目标 MCP 连接器，再核对实际路径、启动指纹和工具清单；纳管流程与未测边界见[现有模型接管](docs/ADOPTION.md)。
+0.4.3（2026-10-20 发布，0.3.7 反馈修复合集，工具数 87 不变）：BUG-036 装配约束后元件位姿查询修复（native 组件变换重写 + 隔离 C++ 对照）；BUG-057 Windows 并发准入 open Errno 13 修复（锁打开路径细化）；BUG-074 无进程身份历史作业的恢复守卫（PID-only owner 以独立核验的 Windows 重启为界，证据绑定 token）；种子兼容观察（`creo_list_seeds`/加载证据记录历史兼容性）与进程窗口观察增强；BUG-075 通道探针稳定性登记待复现。0.3.7 剩余黑盒 16/16 与开发者补测（英寸拒绝/四类型枚举/families 全量/异常候选只读 inspect）通过。升级后先重启目标 MCP 连接器，再核对实际路径、启动指纹和工具清单；纳管流程与未测边界见[现有模型接管](docs/ADOPTION.md)。
 
 准备 Windows x64、Python 3.12+ x64、Creo Parametric 9、10 或 12 及匹配的 Toolkit SDK、MSVC x64 C++ 构建工具和可用的 PTC 许可。Creo 9 与 Toolkit 9 的编译探测修复已实现，实机编译与建模运行时未在本机验收。Creo 软件、SDK、模板和许可需要自行取得；MIT 适用于本项目代码、文档及种子库的原创内容，不提供 PTC 软件授权。第三方依赖和 PTC 前置条件见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
