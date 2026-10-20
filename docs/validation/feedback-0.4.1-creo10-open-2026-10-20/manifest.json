@@ -1,0 +1,22 @@
+{
+  "source": "2026-10-20_CREO10_v0.4.1_仍无法从磁盘打开既有模型文件.md",
+  "report_sha256": "79290610c79dbaae05364263fda7f5cd2b7fcbf687eb7a06febacc3a1338687f",
+  "related_report": {
+    "source": "2026-10-18_CREO10_v0.4.0_MCP无法打开磁盘既有模型文件.md",
+    "archived_as": "report-v0.4.0.md",
+    "report_sha256": "e71c7e2082dec5928479e6e419405689a9076712c30c5cad211f1fe28ebbb559",
+    "archived_from": "用户提供的 v0.4.0 反馈目录（MX_PCB 场景同源）"
+  },
+  "reported_version": "0.4.1",
+  "reported_environment": "Creo 10.0.0.0 / release_numeric=42, Windows 10 x64",
+  "mapping": {
+    "P0 缺少磁盘打开入口": "FEAT-044（新增能力，非 0.4.1 回归）",
+    "P1-1 adopt 契约细化（单位/依赖报错）": "FEAT-008（本轮补拒绝稳定原因与实际单位）",
+    "P1-2 reconcile/装配收养": "FEAT-045（后续待规划，本轮不开放）",
+    "P2-1 capabilities 106,380 字符": "FEAT-023（本轮实施 compact/section/cursor 分页）",
+    "P2-2 顶层显式 limitation": "FEAT-008（本轮补顶层支持状态）",
+    "P2-3 session_status 无 server_version": "FEAT-022（本轮实施；capabilities 顶层已有 version 字段，见核对结论）",
+    "P3-1 adopt 空窗口裸 Toolkit 错误码": "FEAT-006/FEAT-008（本轮补 NO_CURRENT_MODEL 语义化错误）"
+  },
+  "additional_note": "同日另有一份构建侧反馈（json.hpp 指纹清单与 vcvars64_env 键集），不属于本计划范围，待后续单独登记条目跟进。"
+}
