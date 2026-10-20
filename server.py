@@ -63,9 +63,11 @@ _SOURCE_NAMES = (
     "src/creo_mechdog/blend_callback.py",
     "src/creo_mechdog/build_support.py",
     "src/creo_mechdog/seed_distribution.py",
+    "src/creo_mechdog/seed_compatibility.py",
     "seeds.py",
     "src/creo_mechdog/recovery.py",
     "src/creo_mechdog/reconciliation.py",
+    "src/creo_mechdog/legacy_recovery.py",
     "src/creo_mechdog/adoption.py",
     "src/creo_mechdog/session_models.py",
     "src/creo_mechdog/open_file.py",
@@ -73,6 +75,7 @@ _SOURCE_NAMES = (
     "src/creo_mechdog/model_queries.py",
     "src/creo_mechdog/startup_state.py",
     "src/creo_mechdog/windows_boot.py",
+    "src/creo_mechdog/window_observations.py",
     "src/creo_mechdog/schema.py",
     "src/creo_mechdog/profile_checks.py",
     "src/creo_mechdog/airfoil.py",
@@ -85,6 +88,9 @@ _SOURCE_NAMES = (
     "native/geometry.cpp",
     "tools/generate_constants.py",
     "native/generic.cpp",
+    "native/loft_seed.cpp",
+    "native/advanced.cpp",
+    "native/component_transform.h",
     "native/inspection_units.h",
     "native/drawing.cpp",
     "native/result_delivery.h",
@@ -272,7 +278,7 @@ async def creo_create_plate(
 
 @mcp.tool(annotations=READ)
 async def creo_get_job(job_id: str, detail: Literal["compact", "full"] = "full") -> dict[str, Any]:
-    """Read modeling progress/result. Use detail=compact for polling: status/revision/files/hash/volume/counts/operation outcomes; full includes complete geometry, aliases and validation. Full remains the compatibility default."""
+    """Read modeling progress/result. Use detail=compact for polling: status/revision/files/hash/volume/counts/operation outcomes; full includes complete geometry, aliases and validation. Full remains the compatibility default. Recovery failures may include reason, failure_phase and recovery_pending_released; success normally omits failure_phase, so use status and the public server version to interpret absent fields."""
     return await invoke(bridge.get_job, job_id, detail)
 
 
@@ -606,13 +612,13 @@ async def creo_new_loft_part(
 
 @mcp.tool(annotations=READ)
 async def creo_list_seeds() -> dict[str, Any]:
-    """Discover bundled/registered native Blend seeds and verify their SHA256. No manual paths/feature IDs are needed for auto-selected lofts."""
+    """Discover bundled/registered native Blend seeds and verify their SHA256. available means matching file bytes, not current Creo compatibility. seed_build_version is null when provenance is unknown; native_compatibility contains bounded historical loads tied to seed SHA256 and native release/session, without connecting Creo. No manual paths/feature IDs are needed for auto-selected lofts."""
     return await invoke(seeds.list_seeds)
 
 
 @mcp.tool(annotations=READ)
 async def creo_validate_seed(seed_name: str) -> dict[str, Any]:
-    """Verify a seed's file hash and manifest metadata; actual native type/count/mode are additionally checked on every loft creation."""
+    """Verify a seed's file hash/provenance without connecting Creo. Unknown seed_build_version stays null; native_compatibility observations are historical, never proof of current-session compatibility. Native load/type/count/mode are additionally checked on actual loft creation and reported separately from overall modeling success."""
     return await invoke(seeds.validate_seed, seed_name)
 
 

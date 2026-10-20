@@ -164,11 +164,14 @@ except bridge.ToolkitBusy as exc:
     def test_first_creation_concurrent_admission_keeps_lock_file(self):
         retained = []
         with ThreadPoolExecutor(max_workers=2) as executor:
-            for iteration in range(20):
+            for iteration in range(600):
                 directory = self.root / f"first-create-{iteration}"
                 directory.mkdir()
                 lock = directory / "toolkit.lock"
                 self.assertFalse(lock.exists())
+                initial = (None, b"", b"\0")[iteration % 3]
+                if initial is not None:
+                    lock.write_bytes(initial)
                 start = threading.Barrier(2, timeout=5)
                 attempted = threading.Barrier(2, timeout=5)
 
@@ -195,7 +198,7 @@ except bridge.ToolkitBusy as exc:
                     with bridge.toolkit_lock():
                         self.assertEqual(lock.stat().st_ino, identity)
                     self.assertEqual(lock.stat().st_ino, identity)
-                    self.assertEqual(lock.read_bytes(), b"")
+                    self.assertEqual(lock.read_bytes(), initial or b"")
                 retained.append(lock)
         self.assertTrue(all(path.exists() for path in retained))
 
@@ -213,6 +216,33 @@ except bridge.ToolkitBusy as exc:
                 self.assertEqual(lock.stat().st_ino, identity)
             self.assertEqual(observer.read(), content)
         self.assertEqual(lock.read_bytes(), content)
+
+    def test_open_handle_prevents_lock_file_deletion_or_replacement(self):
+        lock = self.root / "toolkit.lock"
+        with bridge.toolkit_lock():
+            identity = lock.stat().st_ino
+            with self.assertRaises(PermissionError):
+                lock.unlink()
+            replacement = self.root / "replacement.lock"
+            replacement.write_bytes(b"different file")
+            with self.assertRaises(PermissionError):
+                replacement.replace(lock)
+            self.assertEqual(lock.stat().st_ino, identity)
+        with bridge.toolkit_lock():
+            self.assertEqual(lock.stat().st_ino, identity)
+
+    def test_open_failure_is_not_retried_or_reported_busy(self):
+        with (
+            patch.object(bridge, "_create_file", return_value=ctypes.c_void_p(-1).value) as opened,
+            patch.object(bridge.ctypes, "get_last_error", return_value=5),
+            patch.object(bridge.time, "sleep") as slept,
+        ):
+            with self.assertRaises(PermissionError) as failure, bridge.toolkit_lock():
+                self.fail("Open failure must not admit native work")
+        self.assertNotIsInstance(failure.exception, bridge.ToolkitBusy)
+        self.assertEqual(failure.exception.winerror, 5)
+        opened.assert_called_once()
+        slept.assert_not_called()
 
     def test_real_stdio_preserves_busy_fields_and_polling_during_contention(self):
         from mcp import Client

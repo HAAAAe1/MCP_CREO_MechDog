@@ -20,7 +20,7 @@ import uuid
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import TextIO
+from typing import BinaryIO, TextIO
 
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS
 from creo_mechdog.blend_callback import callback_setup_status, prepare_callback, unknown_readiness
@@ -293,6 +293,27 @@ def toolkit_owner() -> dict:
     }
 
 
+def _open_toolkit_lock(path: Path) -> BinaryIO:
+    """Open once without CRT append/create handling or permission to replace the lock."""
+    # OPEN_ALWAYS does not truncate existing bytes. Excluding FILE_SHARE_DELETE
+    # keeps all contenders on the same file identity while any handle is open.
+    handle = _create_file(str(path), 0x80000000 | 0x40000000, 0x1 | 0x2, None, 4, 0x80, None)
+    if handle == ctypes.c_void_p(-1).value:
+        error = ctypes.WinError(ctypes.get_last_error())
+        error.filename = str(path)
+        raise error
+    try:
+        descriptor = msvcrt.open_osfhandle(handle, os.O_RDWR | os.O_BINARY)
+    except BaseException:
+        _close_handle(handle)
+        raise
+    try:
+        return os.fdopen(descriptor, "r+b", buffering=0)
+    except BaseException:
+        os.close(descriptor)
+        raise
+
+
 @contextmanager
 def toolkit_lock(
     wait_seconds: float = 0,
@@ -303,7 +324,7 @@ def toolkit_lock(
 ):
     """Serialize all native calls across MCP clients and detached jobs."""
     lock = ROOT / "toolkit.lock"
-    with lock.open("a+b") as f:
+    with _open_toolkit_lock(lock) as f:
         # Windows byte-range locking also covers empty files; no pre-lock write.
         deadline = time.monotonic() + wait_seconds
         while True:
@@ -1185,6 +1206,9 @@ def compact_job(manifest: dict) -> dict:
     if result:
         result_keys = (
             "success",
+            "seed_load_evidence",
+            "creo_release_numeric",
+            "creo_release_query_code",
             "code",
             "toolkit_code",
             "message",

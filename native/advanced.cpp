@@ -572,17 +572,25 @@ static J assembly_inspection() {
             ProName name;
             CK(ProMdlNameGet(child, name));
             ProMatrix position;
-            CK(ProAsmcompPositionGet(&comp, position));
+            CK(component_to_assembly_transform(&comp, position));
+            ProMatrix initial;
+            CK(ProAsmcompPositionGet(&comp, initial));
             J matrix = J::array();
-            for (int i = 0; i < 4; i++)
+            J initial_matrix = J::array();
+            for (int i = 0; i < 4; i++) {
                 matrix.push_back(
                     J::array({position[i][0], position[i][1], position[i][2], position[i][3]}));
+                initial_matrix.push_back(
+                    J::array({initial[i][0], initial[i][1], initial[i][2], initial[i][3]}));
+            }
             ProBoolean packaged = PRO_B_FALSE, under = PRO_B_FALSE;
             ProAsmcompIsPackaged(&comp, &packaged);
             ProAsmcompIsUnderconstrained(&comp, &under);
             components.push_back({{"feature_id", comp.id},
                                   {"model_name", utf8(name)},
                                   {"transform", matrix},
+                                  {"transform_source", "component_to_assembly"},
+                                  {"initial_transform", initial_matrix},
                                   {"packaged", packaged == PRO_B_TRUE},
                                   {"underconstrained", under == PRO_B_TRUE},
                                   {"constraints", inspect_constraints(&comp)}});

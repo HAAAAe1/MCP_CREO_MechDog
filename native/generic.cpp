@@ -1692,6 +1692,7 @@ static J populate_profile(ProSection section, const J &op) {
         ids[item.first] = item.second;
     return {{"entity_ids", ids}, {"dimension_ids", dims}, {"solver", solver_info}};
 }
+#include "component_transform.h"
 #include "advanced.cpp"
 #include "surfaces.cpp"
 #include "udf.cpp"
@@ -1947,10 +1948,11 @@ static void verify_saved(const J &before, const J &after) {
             auto a = before["components"][i], b = after["components"][i];
             if (a["feature_id"] != b["feature_id"] || a["model_name"] != b["model_name"])
                 throw std::runtime_error("Saved component changed");
+            const auto &verified_transform = component_transform_for_verification(a, b);
             for (int r = 0; r < 4; r++)
                 for (int c = 0; c < 4; c++)
                     if (fabs(a["transform"][r][c].get<double>() -
-                             b["transform"][r][c].get<double>()) > 1e-7)
+                             verified_transform[r][c].get<double>()) > 1e-7)
                         throw std::runtime_error("Saved component transform changed");
         }
     }
@@ -2707,6 +2709,10 @@ static int run_generic(const std::wstring &job) {
         CK(connect_creo(&process));
         connected = true;
         report["connected"] = true;
+        int release_numeric = 0;
+        ProError release_code = ProEngineerReleaseNumericversionGet(&release_numeric);
+        report["creo_release_query_code"] = release_code;
+        report["creo_release_numeric"] = release_code ? J(nullptr) : J(release_numeric);
         report["session_fingerprint"] = recovery_session_fingerprint();
         if (!publish_native_json(
                 job + L"\\native_owner.json",
@@ -2759,7 +2765,7 @@ static int run_generic(const std::wstring &job) {
                 try {
                     ProMdl templ;
                     if (request.contains("loft_seed"))
-                        templ = load_isolated_loft_seed(template_file);
+                        templ = load_isolated_loft_seed(template_file, report["seed_native_load"]);
                     else
                         CK(ProMdlFiletypeLoad(tfile, PRO_MDLFILE_UNUSED, PRO_B_FALSE, &templ));
                     ProMdlName new_name;

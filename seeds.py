@@ -10,6 +10,7 @@ import zipfile
 from pathlib import Path, PurePosixPath
 
 import bridge
+from creo_mechdog.seed_compatibility import metadata
 from creo_mechdog.seed_distribution import seed_file_bytes
 
 REGISTRY_NAME = "seed_registry.json"
@@ -55,6 +56,7 @@ def _checked_seed(root: Path, entry: dict) -> dict:
         raise ValueError("Seed path escapes its library directory")
     result = {
         **entry,
+        **metadata(entry),
         "seed_file": str(path),
         "seed_feature_id": entry["seed_feature_id"],
         "required_section_count": entry["section_count"],

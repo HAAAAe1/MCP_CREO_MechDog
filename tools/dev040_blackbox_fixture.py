@@ -217,6 +217,8 @@ def isolated(directory: Path, *, child: bool = False):
         stack.enter_context(patch.object(bridge, "JOBS", directory / "jobs"))
         stack.enter_context(patch.object(general, "MODELS", directory / "models"))
         stack.enter_context(patch.object(rec, "_deployment", side_effect=deployment))
+        # Synthetic records have no real boot history; never query host WMI here.
+        stack.enter_context(patch.object(rec, "boot_info", return_value=None))
         for target in ("build_native", "session_status", "native_environment"):
             stack.enter_context(patch.object(bridge, target, side_effect=denied))
         stack.enter_context(patch.object(rec, "_native", side_effect=denied))

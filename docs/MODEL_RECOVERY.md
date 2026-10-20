@@ -8,6 +8,8 @@
 
 ## 查询
 
+开发分支 BUG-074 为缺少进程身份的历史作业增加严格的跨启动证据：Windows 启动时间须经 WMI/内核时钟交叉核验；原作业目录及控制记录的创建、修改时间和作业声明时间均须早于该启动时间。完整但仍活动或不可读的身份不得走此兜底。同次启动、记录缺失、时钟不一致或文件变化仍拒绝；owners 返回原因及操作指引，不要求删除模型。四动作各自的基线/候选/健康会话条件不变。此证据绑定令牌，准入和原生派发前后重新核对，文件仅触碰时间戳也使旧证据失效。跨启动证明不表示当前 Creo 已就绪，实际处置仍须显式 apply。
+
 ```json
 {"model_id":"<异常模型ID>","mode":"inspect"}
 ```
@@ -63,6 +65,8 @@ Python 侧的 `reason="session_selection_changed"` 表示准入后配置中的 C
 其他确定性证据拒绝的 `reason` 包括 `reservation_changed`、`model_changed`、`deployment_changed`、`job_evidence_changed`、`original_worker_unconfirmed`、`source_changed`；runner 启动失败为 `runner_start_failed`。同样的证据检查若在原生派发后失败，仍按 `native_worker_started` 保留 unknown。真正超时、派发异常或交付未确认也保留保护，通常返回 `reason="native_outcome_unconfirmed"`。
 
 `recovery_pending_released=true` 只表示本次失败恢复任务的预留已清除，不表示原任务被恢复：原 `pending_job`、unknown 状态、revision 和历史不变，`recovery_required` 仍可为 true。清理失败时 `recovery_pending_released=false` 并给出 `recovery_pending_cleanup_error`；锁收尾异常另列 `channel_finalization_error`，不覆盖此前拒绝原因或清理结果。只轮询并核对返回证据，不手工清保护。同一幂等键继续返回原失败作业；确需再次处置时先重新预检并使用新键。
+
+成功作业通常不带 `failure_phase`；该字段缺失不能单独用于识别旧版本或判断成功，应同时核对 job.status 与公开服务版本。`before_native` 的准入后竞争窗口由开发者隔离夹具验证，不提供生产故障开关；WorkBuddy 仅验证公开接口实际可达场景，无法触发的内部阶段标为未验证。
 
 登记采用持久化提交决策：决定提交前中断须重新核对；决定提交后查询可仅补全元数据，不再次推进 revision。即使通道已经空闲，也不能据此解除模型保护。原生动作不自动重跑。
 

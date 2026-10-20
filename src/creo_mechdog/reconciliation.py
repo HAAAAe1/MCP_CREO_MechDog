@@ -9,12 +9,15 @@ import subprocess
 import sys
 import time
 import uuid
+from collections.abc import Callable
 from pathlib import Path
 
 import bridge
 import generic_bridge as general
+from creo_mechdog.legacy_recovery import previous_boot_evidence
 from creo_mechdog.model_queries import inspection_summary
 from creo_mechdog.recovery import process_identity
+from creo_mechdog.windows_boot import boot_info
 
 ACTIONS = ("restore_baseline", "accept_saved", "accept_live", "abandon_new")
 TOKEN_SECONDS = 600
@@ -49,6 +52,7 @@ def _binding(snapshot: dict) -> str:
                 "stopped": owner["stopped"],
                 "runner": owner["runner"].get("recorded"),
                 "worker": owner["worker"].get("recorded"),
+                "stop_evidence": owner.get("stop_evidence"),
             }
             for owner in snapshot["owners"]
         ],
@@ -146,15 +150,15 @@ def _stopped(recorded: dict | None) -> dict:
     return {"recorded": recorded, "observed": observed, "stopped": stopped}
 
 
-def _owners(job_id: str) -> dict:
+def _owners(job_id: str, boot_reader: Callable[[], dict | None] | None = None) -> dict:
     directory = bridge.job_path(job_id)
     job = _read(directory / "job.json") or {}
     runner = _stopped(job.get("runner_identity"))
     owner = _read(directory / "native_owner.json")
+    checkpoint = _read(directory / "native_checkpoint.json") or {}
     if owner:
         worker = _stopped(owner)
     else:
-        checkpoint = _read(directory / "native_checkpoint.json") or {}
         if job.get("worker_started") is False and runner["stopped"]:
             worker = {"stopped": True, "reason": "Runner ended before native worker started"}
         elif checkpoint.get("native_pid"):
@@ -163,12 +167,32 @@ def _owners(job_id: str) -> dict:
             # A runner without native ownership evidence may have died between
             # spawning a legacy worker and persisting its PID. Do not guess.
             worker = {"stopped": False, "reason": "Native owner identity is unavailable"}
-    return {
+    result = {
         "job_id": job_id,
         "runner": runner,
         "worker": worker,
         "stopped": runner["stopped"] and worker["stopped"],
     }
+    # A complete but live/unreadable recorded identity never gets a time-based override.
+    missing_runner = not runner["stopped"] and not job.get("runner_identity")
+    missing_worker = not worker["stopped"] and not owner and not checkpoint.get("native_pid")
+    eligible = (runner["stopped"] or missing_runner) and (worker["stopped"] or missing_worker)
+    if not result["stopped"] and eligible:
+        proof = previous_boot_evidence(directory, job, (boot_reader or boot_info)())
+        if proof["stopped"]:
+            result["stop_evidence"] = proof
+            for missing, value in ((missing_runner, runner), (missing_worker, worker)):
+                if missing:
+                    value.update(stopped=True, reason="Historical owner predates verified OS boot")
+            result["stopped"] = runner["stopped"] and worker["stopped"]
+        else:
+            result["reason"] = proof["reason"]
+            result["guidance"] = (
+                "Preserve job/model files. Missing legacy identities require all job records "
+                "to predate an independently verified Windows boot. After an operator-controlled "
+                "restart, inspect again; no action can bypass uncertain ownership."
+            )
+    return result
 
 
 def _deployment(deadline: float) -> str:
@@ -178,6 +202,8 @@ def _deployment(deadline: float) -> str:
         "server.py",
         "version.py",
         "src/creo_mechdog/reconciliation.py",
+        "src/creo_mechdog/legacy_recovery.py",
+        "src/creo_mechdog/windows_boot.py",
         "src/creo_mechdog/adoption.py",
         "native/generic.cpp",
         "native/result_delivery.h",
@@ -197,6 +223,17 @@ def _deployment(deadline: float) -> str:
     worker = bridge.ROOT / "build/creo_worker.exe"
     values.append(identity(worker, deadline) if worker.is_file() else {"worker": "not_built"})
     return digest(values)
+
+
+def _cached_boot_reader() -> Callable[[], dict | None]:
+    observations = []
+
+    def read() -> dict | None:
+        if not observations:
+            observations.append(boot_info())
+        return observations[0]
+
+    return read
 
 
 def _snapshot(model_id: str) -> dict:
@@ -221,13 +258,15 @@ def _snapshot(model_id: str) -> dict:
     files = []
     owners = []
     candidate = None
+    verified_boot = _cached_boot_reader()
+
     for job_id in job_ids:
         directory = bridge.job_path(job_id)
         job = _read(directory / "job.json") or {}
         request = _read(directory / "request.json") or {}
         if job.get("model_id") != model_id or request.get("model", {}).get("model_id") != model_id:
             raise ValueError("Job evidence is not bound to this model")
-        owners.append(_owners(job_id))
+        owners.append(_owners(job_id, verified_boot))
         for name in (
             "job.json",
             "request.json",
@@ -857,11 +896,17 @@ def _check_execution(intent: dict, current: dict) -> None:
             raise RecoveryRefused(
                 "job_evidence_changed", "Original job evidence changed after admission"
             )
+    verified_boot = _cached_boot_reader()
     for owner in original["owners"]:
-        if not _owners(owner["job_id"])["stopped"]:
+        observed = _owners(owner["job_id"], verified_boot)
+        if not observed["stopped"]:
             raise RecoveryRefused(
                 "original_worker_unconfirmed",
                 "Original worker is active or cannot be proven stopped",
+            )
+        if observed.get("stop_evidence") != owner.get("stop_evidence"):
+            raise RecoveryRefused(
+                "job_evidence_changed", "Original owner reboot evidence changed after admission"
             )
     for source in (original.get("baseline"), original.get("candidate")):
         if (

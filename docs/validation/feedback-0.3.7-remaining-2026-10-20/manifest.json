@@ -1,0 +1,21 @@
+{
+  "recorded_date": "2026-10-20",
+  "baseline": "cfcea22284f5eb3735029b1db0e4495a5e7af09f",
+  "reported_version": "0.3.7",
+  "reported_environment": "Windows 10 19045 / Python 3.13.14 / Creo 9.0.0.0",
+  "scope": "External reports only; referenced raw diagnostic JSON and jobs not supplied",
+  "files": [
+    {
+      "source_name": "2026-10-18_CREO_0.3.7_首次创建竞争致toolkit锁Errno13与诊断脚本现场数据.md",
+      "archive": "lock-first-create-report.md",
+      "bytes": 5991,
+      "sha256": "a000966e8229c625b9ae7d2d87042e7ec2db3287ee12bfa40a40b8ee1a022812"
+    },
+    {
+      "source_name": "2026-10-18_CREO_0.3.7_恢复动作对旧模型永久失效与种子筋第七轮依旧.md",
+      "archive": "legacy-recovery-report.md",
+      "bytes": 11159,
+      "sha256": "edf5580605aeaead8d58a2f9ce53c69b11f57ffe7e06155d2133aa38cac485fc"
+    }
+  ]
+}

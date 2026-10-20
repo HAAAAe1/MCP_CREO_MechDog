@@ -409,6 +409,10 @@ def run_generic_job(job_id: str, manifest: dict):
                 else:
                     result = bridge.read_json(result_file)
                     manifest["result"] = result
+                    if request.get("loft_seed"):
+                        from creo_mechdog.seed_compatibility import observe_load
+
+                        result["seed_load_evidence"] = observe_load(request, result, job_id)
                     if (
                         result.get("disconnect_code") not in (None, 0)
                         or result.get("delivery_complete") is False

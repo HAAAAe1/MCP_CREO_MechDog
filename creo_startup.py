@@ -25,6 +25,7 @@ import win32security
 
 import bridge
 from creo_mechdog.startup_state import StartupStateError, archive_preboot_state, read_startup_state
+from creo_mechdog.window_observations import connection_guidance, window_observations
 from creo_mechdog.windows_boot import BOOT_QUERY_BUDGET_SECONDS, boot_info
 
 LOG = logging.getLogger(__name__)
@@ -224,16 +225,17 @@ def process_identity(pid: int) -> dict | None:
         _close(handle)
 
 
-def process_snapshot(settings: Settings) -> dict:
+def process_snapshot(settings: Settings, observed: dict | None = None) -> dict:
     """Best-effort read-only Creo process identities for probe reports.
 
     A failed connection alone cannot distinguish "Creo exited" from "the IPC
     endpoint died while the process survives"; this snapshot makes the
     difference observable without connecting Toolkit."""
     try:
-        observed = inventory(settings)
+        observed = inventory(settings) if observed is None else observed
     except (OSError, RuntimeError) as exc:
         return {"available": False, "reason": f"inventory_failed_{type(exc).__name__}"}
+    windows = window_observations({p["pid"] for p in observed["processes"]})
     processes = []
     for identity in observed["processes"]:
         created = identity.get("created")
@@ -254,6 +256,7 @@ def process_snapshot(settings: Settings) -> dict:
                 "created_filetime": created,
                 "image": image,
                 "matches": identity.get("matches"),
+                "windows": windows.get(identity.get("pid"), {"state": "unknown"}),
             }
         )
     return {
@@ -561,6 +564,7 @@ class CreoStartup:
                 verified_at=bridge.now(),
             )
         else:
+            native["connection_guidance"] = connection_guidance(snapshot)
             self._publish(
                 "timeout",
                 "Toolkit connection is no longer available; inspect Creo and request creo_startup_status(retry=true)",
@@ -1073,10 +1077,12 @@ class CreoStartup:
                     launch_attempt=attempt,
                 )
                 return
+            observed = process_snapshot(settings, current)
             self._publish(
                 "waiting_for_connection",
-                "Creo is starting or awaiting interaction; Toolkit has not confirmed readiness. Check startup dialogs if this persists",
+                "Toolkit has not confirmed readiness. " + connection_guidance(observed),
                 native=native,
+                creo_process_snapshot=observed,
                 launch_reserved=launched or previous.get("launch_reserved", False),
                 launch_attempt=attempt,
             )

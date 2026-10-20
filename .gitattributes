@@ -42,6 +42,8 @@ docs/validation/feedback-0.3.7-creo13-2026-10-18/*.md -text
 
 # FEAT-042: preserve the new feedback and raw validation evidence byte for byte.
 docs/validation/feedback-0.3.7-adoption-2026-10-18/report.md -text
+docs/validation/feedback-0.3.7-remaining-2026-10-20/*.md -text
+docs/validation/feedback-0.3.7-remaining-2026-10-20/manifest.json -text
 docs/validation/adoption-completion-2026-10-18/*.json -text
 
 # DEV-035: preserve the historical user plan as supplied.
