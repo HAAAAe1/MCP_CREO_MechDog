@@ -346,7 +346,7 @@ async def creo_adopt_current_model(
 async def creo_list_session_models(
     limit: int = Field(default=20, ge=1, le=50), cursor: str | None = None
 ) -> dict[str, Any]:
-    """List models already in the connected Creo session without loading, saving, activating or adopting them. Returns names/types/current model, origin, has_saved_origin, modified and proven managed IDs; unknown fields are null with query codes. First page uses the single Toolkit channel (busy rejects immediately); cursor pages read the same frozen ten-minute snapshot. Integer session IDs are transient discovery hints, never adoption identities. Partial type queries report complete=false. Switch to the desired model in Creo before adopting it."""
+    """List models already in the connected Creo session without loading, saving, activating or adopting them. Returns names/types/current model, origin, has_saved_origin, modified and proven managed IDs; unknown fields are null with query codes. First page uses the single Toolkit channel (busy rejects immediately); cursor pages read the same frozen ten-minute snapshot. Integer session IDs are transient discovery hints, never adoption identities; they may legitimately be 0 or duplicated across model types, so locate models by name plus model_type. session_fingerprint identifies the connection/process session and does not change when session contents change. Partial type queries report complete=false. Switch to the desired model in Creo before adopting it."""
     return await invoke(list_session_models, limit, cursor)
 
 

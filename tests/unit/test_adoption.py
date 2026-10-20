@@ -597,6 +597,38 @@ class AdoptionBusinessRules(unittest.TestCase):
         self.assertFalse(evidence["available"])
         self.assertIn("part or sheetmetal", evidence["reason"])
 
+    def test_native_prefix_refusal_returns_structured_details(self):
+        # An assembly current window is refused by the native executor before a
+        # live summary exists; the stable prefix becomes a structured refusal
+        # with unknown-marked details instead of a bare tool error.
+        def refused(job_directory, manifest):
+            raise RuntimeError(
+                "unsupported_model_type: only part or sheetmetal models can be "
+                "adopted; assemblies and drawings keep their own ownership "
+                "(adoption refused)"
+            )
+
+        with patch.object(adoption, "_native", side_effect=refused):
+            evidence = adoption.inspect()
+        self.assertFalse(evidence["available"])
+        self.assertEqual(evidence["reason_code"], "unsupported_model_type")
+        self.assertTrue(evidence["reason"].startswith("unsupported_model_type:"))
+        details = evidence["refusal_details"]
+        self.assertFalse(details["actual_units_known"])
+        self.assertIsNone(details["actual_units"])
+        self.assertEqual(details["dependency_inventory"], "unknown")
+        self.assertIsNone(evidence["model_id"])
+        # The structured refusal must not leave a staging registration behind.
+        self.assertEqual(list((self.directory / "models").iterdir()), [])
+
+    def test_native_failure_without_known_prefix_still_raises(self):
+        def broken(job_directory, manifest):
+            raise RuntimeError("Toolkit call SomethingGet(&x) failed with code -1")
+
+        with patch.object(adoption, "_native", side_effect=broken):
+            with self.assertRaisesRegex(RuntimeError, "SomethingGet"):
+                adoption.inspect()
+
     def test_inspect_hash_conflict_and_token_failures_leave_no_registration(self):
         real_write = adoption.bridge.write_json
 

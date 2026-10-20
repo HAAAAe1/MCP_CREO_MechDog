@@ -28,7 +28,7 @@ DEV-002 已开始分批迁移：更新检查实现位于 `src/creo_mechdog/`，�
 
 ## 安装
 
-开发分支 0.5.0 反馈处理（未发布，源自 [v0.4.1/Creo 10 反馈处理计划](docs/development/CREO10-0.4.1-FEEDBACK-PLAN.md)）：87 工具，新增只读 `creo_open_file`（磁盘 `.prt`/`.asm` 检索进会话并显示，不保存不接管；显式或最高数字版本；同名冲突与非空会话装配拒绝）；`creo_capabilities` 默认返回 compact 摘要页并支持 `detail=full&section=...&cursor` 分页（32 KiB 单页、600 秒冻结快照，旧全量消费者需按 section 遍历迁移）；`creo_session_status` 各分支携带 `server_version`；接管拒绝携带稳定 `reason_code` 与实际单位，空窗口返回 `NO_CURRENT_MODEL`。升级后先重启目标 MCP 连接器，再核对实际路径、启动指纹和工具清单；纳管流程与未测边界见[现有模型接管](docs/ADOPTION.md)。
+开发分支 0.5.0 反馈处理（未发布，`version.py` 已置 0.5.0，源自 [v0.4.1/Creo 10 反馈处理计划](docs/development/CREO10-0.4.1-FEEDBACK-PLAN.md)）：87 工具，新增只读 `creo_open_file`（磁盘 `.prt`/`.asm` 检索进会话并显示，不保存不接管；显式或最高数字版本；同名冲突与非空会话装配拒绝，缺件装配报 `RETRIEVE_INCOMPLETE` 与残留对象）；`creo_capabilities` 默认返回 compact 摘要页并支持 `detail=full&section=...&cursor` 分页（32 KiB 单页、600 秒冻结快照，旧全量消费者需按 section 遍历迁移）；`creo_session_status` 各分支携带 `server_version`；接管拒绝携带稳定 `reason_code` 与 `refusal_details`（实际单位、依赖/健康未知标记），空窗口返回 `NO_CURRENT_MODEL`。WorkBuddy 黑盒 16/16 通过，见[验收记录](docs/validation/WORKBUDDY-0.5.0-open-file-2026-10-20.md)。升级后先重启目标 MCP 连接器，再核对实际路径、启动指纹和工具清单；纳管流程与未测边界见[现有模型接管](docs/ADOPTION.md)。
 
 准备 Windows x64、Python 3.12+ x64、Creo Parametric 9、10 或 12 及匹配的 Toolkit SDK、MSVC x64 C++ 构建工具和可用的 PTC 许可。Creo 9 与 Toolkit 9 的编译探测修复已实现，实机编译与建模运行时未在本机验收。Creo 软件、SDK、模板和许可需要自行取得；MIT 适用于本项目代码、文档及种子库的原创内容，不提供 PTC 软件授权。第三方依赖和 PTC 前置条件见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 

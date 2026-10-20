@@ -6,6 +6,8 @@
 
 测试发起者准备素材：本机一个既有已保存零件（外部目录）、同目录几何不同的 `.prt.1` 与 `.prt.2` 两版本、一个完整小装配（含至少 2 个子件）、一个缺件的装配目录；会话可操作后逐项执行。
 
+**幂等键注意（2026-10-20 首轮实测）**：`idempotency_key` 持久保存于安装目录的 `open_file/` 注册表，跨进程、跨重启长期有效；历史键会永久占用同一路径（同 key 同路径返回原 job、同 key 换路径拒绝）。**每轮验收必须使用全新键**，不要复用历史键或示例键。
+
 ## A. 磁盘打开主链（creo_open_file）
 
 1. `creo_session_status`：确认 connected，记录返回中的 `server_version`（应与 capabilities 的 version 一致）。
@@ -21,7 +23,7 @@
 
 9. 完整装配：先确保会话无零件/装配（必要时由操作者在 Creo 中关闭）；`creo_open_file` 打开完整装配 → 预期 succeeded、`model_type="assembly"`、显示成功、`model_id=null`。子件入会话由 `creo_list_session_models` 观察。
 10. 非空会话装配拒绝：会话存在零件/装配时再开另一装配，应拒绝（ASSEMBLY_REQUIRES_EMPTY_SESSION），不加载。
-11. 缺件装配：把装配某子件文件移走（操作者执行），打开该装配 → 预期 failed、错误含 RETRIEVE_FAILED、`missing_components="unknown"`、报告 `remaining_session_models`（可能残留对象，不自动清理）。
+11. 缺件装配：把装配子件文件移走（操作者执行）后打开该装配 → 预期 failed。错误码区分两种路径：组件未解析时为 **`RETRIEVE_INCOMPLETE`**（`missing_components={count,total,names:"unknown"}`、`displayed=false`、`loaded=true`，报告 `remaining_session_models` 残留对象，不自动清理）；检索调用本身失败时才为 `RETRIEVE_FAILED`。**素材要点（2026-10-20 首轮实测）**：Creo 会按搜索规则从装配所在目录之外的可达副本解析子件——`build/creo_session/`（Creo 工作目录）与 `models/<受管输出>/output/` 的副本都会让"缺件"照常成功；隔离必须连同这两处一起移走，测后按原 sha256 恢复。
 12. 打开后不接管：对刚打开的外部模型调用 `creo_adopt_current_model(mode=inspect)`，行为按既有接管契约记录（可接管/拒绝均如实记录）；确认 `creo_open_file` 本身未创建受管模型。
 
 ## C. capabilities 分页与诊断（FEAT-023/008）
@@ -29,6 +31,6 @@
 13. `creo_capabilities(detail="full", section="references")`：按 `next_cursor` 翻页遍历，记录页数、每页条目数、`complete=true` 收尾；页大小应受 32 KiB 约束（记录实际量级）。`section=tools` 应列出 87 个工具条目。
 14. 错误处理：未知 section、非法 cursor、compact 下传 section/cursor 应明确拒绝；跨 section 误用 cursor 应拒绝。
 15. 顶层支持状态：compact 的 `support_status` 应含磁盘打开、会话枚举、接管、装配检查（FEAT-045 planned）各项状态。
-16. 接管诊断：Creo 空窗口时 `creo_adopt_current_model(mode=inspect)` 应返回 `NO_CURRENT_MODEL` 前缀错误（保留 ProMdlCurrentGet 与 -8 原码）；对装配模型 inspect 应拒绝且携带稳定 `reason_code`（如 `unsupported_model_type`）与 `refusal_details`（实际单位、依赖/健康未知标记）。
+16. 接管诊断：Creo 空窗口时 `creo_adopt_current_model(mode=inspect)` 应返回 `NO_CURRENT_MODEL` 前缀错误（保留 ProMdlCurrentGet 与 -8 原码）；对装配模型 inspect 应返回结构化拒绝：`available=false`、稳定 `reason_code`（如 `unsupported_model_type`）与 `refusal_details`（实际单位、依赖/健康未知标记）。另记录 `session_fingerprint` 的语义：它标识连接/进程会话，**不随会话内容变化**（拭除模型前后不变），判断会话内容以 `creo_list_session_models` 的 `total` 为准；`session_model_id` 可能取 0 或跨类型重复，只作临时发现提示，定位模型用 name+model_type。
 
 报告逐项记录工具、完整输入、job_id/model_id、终态、revision、几何/参数、Creo 实际显示与原始错误。区分通过、失败、阻断、未验证。`asm_mx.asm.16` 原场景保持"待原环境复验"，不以本机样件替代。真实并发仅在能实际并行调用时测试，否则记未验证。

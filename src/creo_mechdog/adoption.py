@@ -198,6 +198,48 @@ def _refusal_details(live: dict) -> dict:
     }
 
 
+# Stable reason codes the native executor prefixes onto adoption refusals that
+# fire before a live summary exists (e.g. an assembly current window).
+_NATIVE_REFUSAL_CODES = frozenset(
+    {
+        "unsupported_model_type",
+        "non_millimeter_units",
+        "external_dependencies",
+        "unhealthy_features",
+    }
+)
+
+
+def _native_refusal(message: str) -> dict | None:
+    """Shape a native-level stable-prefix refusal as a structured refusal."""
+    code, _, _ = message.partition(":")
+    if code not in _NATIVE_REFUSAL_CODES:
+        return None
+    return {
+        "available": False,
+        "reason": message,
+        "reason_code": code,
+        "available_modes": [],
+        "conflict": None,
+        "current_model": None,
+        "refusal_details": {
+            "actual_units": None,
+            "actual_units_known": False,
+            "units_query_code": None,
+            "dependency_inventory": "unknown",
+            "dependency_inventory_note": (
+                "the native executor refused before a live summary was available; "
+                "units/dependency/health values were not queried"
+            ),
+            "health_breakdown": "unavailable for the same reason",
+        },
+        "file": None,
+        "source_kind": "unknown",
+        "model_id": None,
+        "evidence_token": None,
+    }
+
+
 def _new_model(model_id: str, model_name: str | None = None) -> dict:
     path = general.model_path(model_id)
     return {
@@ -272,6 +314,16 @@ def inspect(model_id: str | None = None) -> dict:
             try:
                 live = _native(probe, manifest)["live"]
                 manifest["status"] = "succeeded"
+            except RuntimeError as error:
+                manifest["status"] = "failed"
+                # A native stable-prefix refusal (e.g. an assembly current window)
+                # is a structured refusal, not an unknown failure; the failed
+                # preflight job stays as evidence.
+                structured = _native_refusal(str(error))
+                if structured is not None:
+                    shutil.rmtree(path, ignore_errors=True)
+                    return structured
+                raise
             except Exception:
                 manifest["status"] = "failed"
                 raise
