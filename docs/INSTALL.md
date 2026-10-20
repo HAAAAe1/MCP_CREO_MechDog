@@ -186,9 +186,9 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C
 
 ## 本机开发恢复联调（2026-10-17）
 
-2026-10-19纳管补充（0.4.1）：本版86工具正式交付；无盘prepare模式与会话枚举随0.4.1发布。更新安装后必须重启目标MCP连接器，核对实际路径、启动指纹、`source_changed_since_startup=false`及新工具/模式；只更新磁盘文件或配置不会替换运行实例。先按[接管说明](ADOPTION.md)选择有文件或无盘流程。下面保留2026-10-17当轮部署边界。
+2026-10-20磁盘打开补充（0.4.2）：本版87工具正式交付；`creo_open_file`（磁盘 .prt/.asm 只读检索显示）与 capabilities compact/分页、session_status `server_version`、接管结构化拒绝随 0.4.2 发布。更新安装后必须重启目标 MCP 连接器（工具数从 86 变 87；capabilities 默认返回 compact 摘要页，旧全量消费者按 section 遍历迁移）。上一轮 2026-10-19 纳管补充（0.4.1，86 工具）：无盘 prepare 模式与会话枚举。更新安装后必须重启目标MCP连接器，核对实际路径、启动指纹、`source_changed_since_startup=false`及新工具/模式；只更新磁盘文件或配置不会替换运行实例。先按[接管说明](ADOPTION.md)选择有文件或无盘流程。下面保留2026-10-17当轮部署边界。
 
-按用户要求，WorkBuddy/Codex 只启用 `MCP_CREO_MechDog_dev`，启动 E盘项目的 `.venv\Scripts\python.exe` 与 `server.py`；C盘旧副本和test项保持禁用。注册名不等于发布版本，当前源码VERSION为0.4.1；用实际入口、源码指纹和86工具辨认部署。不要在同一Creo会话混用不同安装根的客户端：它们的根目录Toolkit锁互不共享。正式使用恢复入口前，先看[恢复说明](MODEL_RECOVERY.md)与[本轮中断记录](validation/BUG-001-recovery-2026-10-17.md)。目前实机测试已停止，卡死原因未定位。
+按用户要求，WorkBuddy/Codex 只启用 `MCP_CREO_MechDog_dev`，启动 E盘项目的 `.venv\Scripts\python.exe` 与 `server.py`；C盘旧副本和test项保持禁用。注册名不等于发布版本，当前源码VERSION为0.4.2；用实际入口、源码指纹和87工具辨认部署。不要在同一Creo会话混用不同安装根的客户端：它们的根目录Toolkit锁互不共享。正式使用恢复入口前，先看[恢复说明](MODEL_RECOVERY.md)与[本轮中断记录](validation/BUG-001-recovery-2026-10-17.md)。目前实机测试已停止，卡死原因未定位。
 
 ## FEAT-029开发集成后的回调入口
 

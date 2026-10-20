@@ -543,7 +543,7 @@ async def creo_capabilities(
     limit: int = 50,
     cursor: str | None = None,
 ) -> dict[str, Any]:
-    """Describe capability boundaries, tool families, reference syntax and test evidence. Default detail=compact returns one bounded summary page (name/version/tool_count/scope/support_status/operation list/family index/pagination guide). detail=full pages one section at a time with limit and next_cursor from a frozen in-process snapshot (600 s; cursors from an older snapshot or another process are rejected). Pages stay within 32 KiB; a single oversized entry is reported as an oversize marker instead of being truncated. Migration: before 0.5.0 this tool returned the whole document; page detail=full sections (e.g. references, families, evidence) to rebuild it."""
+    """Describe capability boundaries, tool families, reference syntax and test evidence. Default detail=compact returns one bounded summary page (name/version/tool_count/scope/support_status/operation list/family index/pagination guide). detail=full pages one section at a time with limit and next_cursor from a frozen in-process snapshot (600 s; cursors from an older snapshot or another process are rejected). Pages stay within 32 KiB; a single oversized entry is reported as an oversize marker instead of being truncated. Migration: before 0.4.2 this tool returned the whole document; page detail=full sections (e.g. references, families, evidence) to rebuild it."""
     tool_entries = [
         {"name": tool.name, "description": tool.description} for tool in await mcp.list_tools()
     ]

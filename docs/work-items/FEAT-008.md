@@ -75,4 +75,4 @@ list_models 的 complete=false / next_cursor 为报告方实际分页正例，�
 
 装配只读检查另登记 FEAT-045；本卡 2026-10-19 的统一 code/reason 契约评估与本轮稳定原因代码衔接，不重复登记。
 
-三项当日实现并随[验证记录](../validation/FEAT-044-live-2026-10-20.md)实测：支持状态表与分页一并经 stdio 直连确认（compact 含 support_status）；native 八处接管拒绝错误文本加稳定原因前缀；空窗口 NO_CURRENT_MODEL 见 FEAT-006。2026-10-20 晚按 WorkBuddy 黑盒第 16 项反馈（refusal_details 未在错误表面出现）补齐：inspect 对 native 稳定前缀拒绝返回结构化 `{available:false, reason_code, refusal_details}`（native 先于 live 摘要拒绝时单位/依赖/健康如实标 unknown，不留 staging 登记），实机装配窗口验证通过、新增 2 项单元；同轮 `version.py` 置 0.5.0、缺件错误码/幂等键/session_model_id 提示同步（见验证记录第六节）。整卡仍待规划中首批三项（底板/对称深度/平面构造）未动，不据此关闭。
+三项当日实现并随[验证记录](../validation/FEAT-044-live-2026-10-20.md)实测：支持状态表与分页一并经 stdio 直连确认（compact 含 support_status）；native 八处接管拒绝错误文本加稳定原因前缀；空窗口 NO_CURRENT_MODEL 见 FEAT-006。2026-10-20 晚按 WorkBuddy 黑盒第 16 项反馈（refusal_details 未在错误表面出现）补齐：inspect 对 native 稳定前缀拒绝返回结构化 `{available:false, reason_code, refusal_details}`（native 先于 live 摘要拒绝时单位/依赖/健康如实标 unknown，不留 staging 登记），实机装配窗口验证通过、新增 2 项单元；同轮 `version.py` 定版 0.4.2（用户 2026-10-20 指定 PATCH、弃用 0.5.0 编号）、缺件错误码/幂等键/session_model_id 提示同步（见验证记录第六节）。整卡仍待规划中首批三项（底板/对称深度/平面构造）未动，不据此关闭。

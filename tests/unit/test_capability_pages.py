@@ -9,7 +9,7 @@ from creo_mechdog.model_queries import decode_cursor, encode_cursor
 
 PAYLOAD = {
     "name": "MCP_CREO_MechDog",
-    "version": "0.5.0",
+    "version": "0.4.2",
     "unit": "mm",
     "support_status": {"disk_open": {"status": "supported"}},
     "operations": ["sketch", "extrude"],
