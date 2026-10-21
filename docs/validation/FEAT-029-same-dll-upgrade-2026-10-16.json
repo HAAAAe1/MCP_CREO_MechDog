@@ -1,0 +1,57 @@
+{
+  "work_item": "FEAT-029",
+  "started_at": "2026-10-16T07:08:59.397758+00:00",
+  "scope": "Real source update to persistence guidance in Python setup metadata and worker only; callback DLL, loader and registration must remain unchanged",
+  "source_commit": "6a55119f5dc2c9b95fb3365c8073c354f83c7325",
+  "dirty": true,
+  "before": {
+    "module_file": {
+      "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback\\9346f9e0410a6b7f91b6c33db2b6be9b8e2f1e597e6d41c5fa0f774b6081e20e\\callback.dll",
+      "sha256": "9346f9e0410a6b7f91b6c33db2b6be9b8e2f1e597e6d41c5fa0f774b6081e20e",
+      "mtime_ns": 1792131293703442500
+    },
+    "loader_file": {
+      "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_loader\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\loader.dll",
+      "sha256": "a4a75e71a47abd66e16cbd994e34e19ea67aba4abb7e7f3eccf2dd098e196fb9",
+      "mtime_ns": 1792123528869716400
+    },
+    "registry_file": {
+      "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback_protk.dat",
+      "sha256": "a420dfebdd23753f17b8bdd0aac17f59b99757e64b31ba659e904c234e1bb3e2",
+      "mtime_ns": 1792123529057106300
+    }
+  },
+  "source_before": {
+    "native/callback_runtime.h": "1cfde04d340c58e44864cd6b2918636766ffd69fedc7c50ce0cdf86f7985fa66",
+    "src/creo_mechdog/blend_callback.py": "b7d46e47a7254b1fc4294bd78044e469dc37f17506bc2972e58e782dabad960c"
+  },
+  "after": {
+    "module_file": {
+      "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback\\9346f9e0410a6b7f91b6c33db2b6be9b8e2f1e597e6d41c5fa0f774b6081e20e\\callback.dll",
+      "sha256": "9346f9e0410a6b7f91b6c33db2b6be9b8e2f1e597e6d41c5fa0f774b6081e20e",
+      "mtime_ns": 1792131293703442500
+    },
+    "loader_file": {
+      "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_loader\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\loader.dll",
+      "sha256": "a4a75e71a47abd66e16cbd994e34e19ea67aba4abb7e7f3eccf2dd098e196fb9",
+      "mtime_ns": 1792123528869716400
+    },
+    "registry_file": {
+      "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback_protk.dat",
+      "sha256": "a420dfebdd23753f17b8bdd0aac17f59b99757e64b31ba659e904c234e1bb3e2",
+      "mtime_ns": 1792123529057106300
+    }
+  },
+  "source_after": {
+    "native/callback_runtime.h": "3c4f097b3165fa30ca16c539cdfab823504b8e459e67445d33559048902430a9",
+    "src/creo_mechdog/blend_callback.py": "4bfb9915ffc42df6c2a8055d3471bdfcbdbcbedb983b6b56c32ef8d451a62652"
+  },
+  "unchanged_loaded_artifacts": true,
+  "finished_at": "2026-10-16T07:09:23.146784+00:00",
+  "sdk_build_succeeded": true,
+  "evidence_excerpt": {
+    "original_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\feat029-same-dll-upgrade.json",
+    "original_sha256": "e25b23667a33e7edfd48a044afc89b9e351f07374f97dedf029650da497c2fb7",
+    "scope": "Developer source update and real MCP observation; repetitive polls, capabilities and native log text omitted; not WorkBuddy"
+  }
+}

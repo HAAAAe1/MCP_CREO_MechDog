@@ -1,0 +1,15 @@
+{
+  "source": "2026-10-18_creo_v0.3.7_现有模型无法纳管.md",
+  "report_sha256": "1182c2960ba586e6a699e3c5b6ff403f41538432e80b9ebcb5f1b2566f4679e7",
+  "reported_version": "0.3.7",
+  "reported_environment": "Creo 13.4.1.0 / release_numeric=45, unverified",
+  "mapping": {
+    "1": "FEAT-042 phase 1 delivered in 0.4.0",
+    "2": "FEAT-042 phase 2",
+    "3": "FEAT-042 external-source validation; existing guards retained",
+    "4": "BUG-069 delivered in 0.4.0",
+    "5": "FEAT-043",
+    "6": "FEAT-022"
+  },
+  "additional_finding": "BUG-071"
+}

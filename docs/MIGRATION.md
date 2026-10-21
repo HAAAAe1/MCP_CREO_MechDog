@@ -48,3 +48,11 @@ Agent 通过上述 MCP 工具即可查询和使用随包种子，无需读取本
 ## 包含 FEAT-020 后的手动升级
 
 首次使用时查询 `creo_check_update`；发现新版本后由客户端提醒，同一会话对同一版本只提醒一次。升级前等待任务完成并停止 MCP 服务，保留本机配置、模型、任务和种子登记，更新源码并使用目标 Creo 对应 SDK 重跑安装，再重启服务并核对工具和 runtime 指纹。旧安装需要先手动升级到包含此功能的版本；网络失败不影响启动或建模，也不代表已是最新版。详见 [版本检查说明](UPDATE_CHECK.md)。
+
+## FEAT-029开发分支升级
+
+已集成固定注册入口、不可变引导/载荷及creo_callback_status，纳入0.3.4。旧protocol 2需一次显式迁移，持久配置需实际加载config.pro；同一安装根的载荷升级按预检提示正常重启、手动启动同一注册。不要复制其他安装的DLL、metadata或会话记录作为就绪证明。模型/查询不自动加载或重启。步骤见[生命周期说明](CALLBACK_LIFECYCLE.md)，本轮集成实机未测边界见[记录](validation/FEAT-029-integration-2026-10-17.md)。
+
+## 2026-10-17：0.3.4 → 0.3.5
+
+新实体cut守卫会将无材料变化的拉伸/旋转切除返回为失败并回滚，不再保留静默成功；有效cut回显material_removed_mm3。恢复expected_pending_job_id可发JSON null或省略，空串/空白拒绝，真实stale分别报告revision/pending差异；令牌/所有者/幂等保护保持。升级后同步editable包、按安装流程重建本机执行器并重连MCP；未知恢复作业不自动重放。BUG-056和M2收尾限制见[版本说明](RELEASE_NOTES_0.3.5.md)。

@@ -1,0 +1,898 @@
+{
+  "recorded_at": "2026-10-17T12:42:01.626978+08:00",
+  "environment": "Windows-11-10.0.26100-SP0",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "source": {
+    "commit": "058f57781a02e6fa44c522d0e93963807b2caff5",
+    "branch": "codex/bug-001-hang-diagnosis",
+    "status_before_capture": "M docs/work-items/BUG-001-FEAT-018-RECOVERY.md\n?? .codebuddy/\n?? .workbuddy/\n?? .zcode/\n?? \"docs/DEV-026_0_3_2_\\344\\270\\211\\344\\273\\275\\345\\217\\215\\351\\246\\210\\350\\241\\245\\345\\275\\225\\344\\270\\216_Creo_9_SDK_\\346\\226\\207\\346\\241\\243\\345\\217\\243\\345\\276\\204.md\"",
+    "dirty": true
+  },
+  "scope": "offline filesystem, SDK documentation, process inventory and existing Windows events only",
+  "native_connections_started": 0,
+  "creo_processes_started_or_stopped": 0,
+  "recovery_actions_applied": 0,
+  "process_snapshot": {
+    "recorded_at": "2026-10-17T12:42:02.4581624+08:00",
+    "processes": [
+      {
+        "Name": "python.exe",
+        "ProcessId": 6848,
+        "ParentProcessId": 9320,
+        "CreationDate": "/Date(1792203058914)/",
+        "ExecutablePath": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+        "CommandLine": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe E:\\Projects\\MCP_CREO_MechDog\\server.py"
+      },
+      {
+        "Name": "python.exe",
+        "ProcessId": 20296,
+        "ParentProcessId": 6848,
+        "CreationDate": "/Date(1792203058938)/",
+        "ExecutablePath": "C:\\Users\\Administrator\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "CommandLine": "\"C:\\Users\\Administrator\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe\" E:\\Projects\\MCP_CREO_MechDog\\server.py"
+      },
+      {
+        "Name": "python.exe",
+        "ProcessId": 14676,
+        "ParentProcessId": 15188,
+        "CreationDate": "/Date(1792207967268)/",
+        "ExecutablePath": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+        "CommandLine": "\"E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe\" E:\\Projects\\MCP_CREO_MechDog\\server.py"
+      },
+      {
+        "Name": "python.exe",
+        "ProcessId": 19784,
+        "ParentProcessId": 14676,
+        "CreationDate": "/Date(1792207967328)/",
+        "ExecutablePath": "C:\\Users\\Administrator\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "CommandLine": "\"C:\\Users\\Administrator\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe\" E:\\Projects\\MCP_CREO_MechDog\\server.py"
+      },
+      {
+        "Name": "python.exe",
+        "ProcessId": 19544,
+        "ParentProcessId": 15188,
+        "CreationDate": "/Date(1792207969933)/",
+        "ExecutablePath": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+        "CommandLine": "\"E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe\" E:\\Projects\\MCP_CREO_MechDog\\server.py"
+      },
+      {
+        "Name": "python.exe",
+        "ProcessId": 19328,
+        "ParentProcessId": 19544,
+        "CreationDate": "/Date(1792207970075)/",
+        "ExecutablePath": "C:\\Users\\Administrator\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "CommandLine": "\"C:\\Users\\Administrator\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe\" E:\\Projects\\MCP_CREO_MechDog\\server.py"
+      },
+      {
+        "Name": "python.exe",
+        "ProcessId": 23436,
+        "ParentProcessId": 15188,
+        "CreationDate": "/Date(1792211713301)/",
+        "ExecutablePath": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+        "CommandLine": "\"E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe\" E:\\Projects\\MCP_CREO_MechDog\\server.py"
+      },
+      {
+        "Name": "python.exe",
+        "ProcessId": 14984,
+        "ParentProcessId": 23436,
+        "CreationDate": "/Date(1792211713367)/",
+        "ExecutablePath": "C:\\Users\\Administrator\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "CommandLine": "\"C:\\Users\\Administrator\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe\" E:\\Projects\\MCP_CREO_MechDog\\server.py"
+      },
+      {
+        "Name": "python.exe",
+        "ProcessId": 19432,
+        "ParentProcessId": 15188,
+        "CreationDate": "/Date(1792211729846)/",
+        "ExecutablePath": "E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe",
+        "CommandLine": "\"E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe\" E:\\Projects\\MCP_CREO_MechDog\\server.py"
+      },
+      {
+        "Name": "python.exe",
+        "ProcessId": 11948,
+        "ParentProcessId": 19432,
+        "CreationDate": "/Date(1792211729894)/",
+        "ExecutablePath": "C:\\Users\\Administrator\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "CommandLine": "\"C:\\Users\\Administrator\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe\" E:\\Projects\\MCP_CREO_MechDog\\server.py"
+      }
+    ]
+  },
+  "windows_events": [
+    {
+      "recorded_at": "2026-10-17T09:52:07.7130030+08:00",
+      "event_id": 1002,
+      "record_id": 70801,
+      "provider": "Application Hang",
+      "message": "程序xtop.exe版本40.0.2025.111停止与 Windows 交互并已关闭。若要查看有关此问题的详细信息是否可用，请查看安全性与维护控制面板中的问题历史记录。\r\n",
+      "raw_xml_sha256": "a288d4207fd467e82d44c11b2c71c2ea4e75fcdebe66344bf1b9323bd1fe8b1a",
+      "event_data": {
+        "AppName": "xtop.exe",
+        "AppVersion": "40.0.2025.111",
+        "ProcessId": "0x57f8",
+        "StartTime": "0x1dd5dd515c50108",
+        "TerminationTime": "106",
+        "ExeFileName": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+        "ReportId": "db816cb2-6fd6-4dba-8316-ed7dc2686b5f",
+        "PackageFullName": null,
+        "PackageRelativeAppId": null,
+        "HangType": "Unknown",
+        "process_id_decimal": 22520,
+        "process_started_at": "2026-10-17T09:16:06.563252+08:00"
+      }
+    },
+    {
+      "recorded_at": "2026-10-17T09:52:07.7112833+08:00",
+      "event_id": 1001,
+      "record_id": 70800,
+      "provider": "Windows Error Reporting",
+      "message": "故障存储段 ，类型 0\r\n事件名称: AppHangB1\r\n响应: 不可用\r\nCab ID: 0\r\n\r\n问题签名:\r\nP1: xtop.exe\r\nP2: 40.0.2025.111\r\nP3: 68360515\r\nP4: 4152\r\nP5: 134217728\r\nP6: \r\nP7: \r\nP8: \r\nP9: \r\nP10: \r\n\r\n附加文件:\r\n\\\\?\\C:\\ProgramData\\Microsoft\\Windows\\WER\\Temp\\WER.91df61a5-332e-45e1-aa80-be4321bdefb0.tmp.WERInternalMetadata.xml\r\n\\\\?\\C:\\ProgramData\\Microsoft\\Windows\\WER\\Temp\\WER.1788c2e9-1b22-4c44-a7c7-c8e5aa2f5959.tmp.csv\r\n\\\\?\\C:\\ProgramData\\Microsoft\\Windows\\WER\\Temp\\WER.b5e54bff-1284-4d7c-95ec-978750a349bd.tmp.txt\r\n\\\\?\\C:\\Users\\Administrator\\AppData\\Local\\Temp\\WER.01e5b107-8150-4721-b19f-a4da335b3b4a.tmp.appcompat.txt\r\n\\\\?\\C:\\ProgramData\\Microsoft\\Windows\\WER\\Temp\\WER.d66987a8-39c2-4293-a9b8-dad09ccbb542.tmp.xml\r\n\r\n可在此处获取这些文件:\r\nNULL\r\n\r\n分析符号: \r\n重新检查解决方案: 0\r\n报告 ID: db816cb2-6fd6-4dba-8316-ed7dc2686b5f\r\n报告状态: 97\r\n哈希存储段: \r\nCab GUID: 0",
+      "raw_xml_sha256": "262edb4271f07a307f689cc59eca6e0c4f2b35a830c0d5d6191f68310a43d08f",
+      "event_data": {
+        "Bucket": null,
+        "BucketType": "0",
+        "EventName": "AppHangB1",
+        "Response": "不可用",
+        "CabId": "0",
+        "P1": "xtop.exe",
+        "P2": "40.0.2025.111",
+        "P3": "68360515",
+        "P4": "4152",
+        "P5": "134217728",
+        "P6": null,
+        "P7": null,
+        "P8": null,
+        "P9": null,
+        "P10": null,
+        "AttachedFiles": "\n\\\\?\\C:\\ProgramData\\Microsoft\\Windows\\WER\\Temp\\WER.91df61a5-332e-45e1-aa80-be4321bdefb0.tmp.WERInternalMetadata.xml\n\\\\?\\C:\\ProgramData\\Microsoft\\Windows\\WER\\Temp\\WER.1788c2e9-1b22-4c44-a7c7-c8e5aa2f5959.tmp.csv\n\\\\?\\C:\\ProgramData\\Microsoft\\Windows\\WER\\Temp\\WER.b5e54bff-1284-4d7c-95ec-978750a349bd.tmp.txt\n\\\\?\\C:\\Users\\Administrator\\AppData\\Local\\Temp\\WER.01e5b107-8150-4721-b19f-a4da335b3b4a.tmp.appcompat.txt\n\\\\?\\C:\\ProgramData\\Microsoft\\Windows\\WER\\Temp\\WER.d66987a8-39c2-4293-a9b8-dad09ccbb542.tmp.xml",
+        "StorePath": "NULL",
+        "AnalysisSymbol": null,
+        "Rechecking": "0",
+        "ReportId": "db816cb2-6fd6-4dba-8316-ed7dc2686b5f",
+        "ReportStatus": "97",
+        "HashedBucket": null,
+        "CabGuid": "0"
+      }
+    }
+  ],
+  "wer_search": {
+    "roots": [
+      {
+        "root": "C:/ProgramData/Microsoft/Windows/WER/ReportArchive",
+        "exists": true,
+        "matches": []
+      },
+      {
+        "root": "C:/ProgramData/Microsoft/Windows/WER/ReportQueue",
+        "exists": true,
+        "matches": []
+      },
+      {
+        "root": "C:\\Users\\Administrator\\AppData\\Local/CrashDumps",
+        "exists": true,
+        "matches": []
+      }
+    ],
+    "errors": []
+  },
+  "installed_binaries": [
+    {
+      "path": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\x86e_win64\\obj\\xtop.exe",
+      "size_bytes": 312552864,
+      "file_version": "40,0,2025,111",
+      "product_version": "12.4.0.0"
+    },
+    {
+      "path": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Parametric\\bin\\parametric.exe",
+      "size_bytes": 45644704,
+      "file_version": "28, 0, 2007, 220",
+      "product_version": "12.4.0.0"
+    }
+  ],
+  "historical_manifest_matches": {
+    "deadline.json": true,
+    "delivery.json": true,
+    "deployment.json": true,
+    "dev-check.json": true,
+    "mcp-metadata.json": true,
+    "native-05.json": true,
+    "native-06.json": true,
+    "unit-report.json": true
+  },
+  "g0_matches": {
+    "docs/validation/BUG-001-repro-2026-10-16.md": true,
+    "docs/validation/BUG-001-repro-2026-10-16.json": true,
+    "docs/validation/bug-001-repro-2026-10-16/g0_driver.py": true,
+    "docs/validation/bug-001-repro-2026-10-16/g0_evidence.json": true
+  },
+  "native_06": {
+    "started_at": "2026-10-17T01:34:30.227587+00:00",
+    "environment": "Windows-11-10.0.26100-SP0",
+    "source": {
+      "commit": "209e37204de20ead423276aaf802032229800d8f",
+      "dirty": true
+    },
+    "data_root": "E:\\Projects\\MCP_CREO_MechDog\\build\\bug001-feat018-recovery\\native-06",
+    "not_verified": [
+      "Creo 9/10",
+      "WorkBuddy client",
+      "external-reference recovery"
+    ],
+    "worker": {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\creo_worker.exe",
+      "size_bytes": 12320768,
+      "sha256": "fd808c8b4b3b5ccc1bcfdf4b6f5a05101c7875279d7b3681e8a72e1938bf2b9f"
+    },
+    "fingerprints": {
+      "bridge.py": "0a224b0ae3aae66add8599eeedd6944ae8ef87c3b89a2fce574a144213393ef8",
+      "generic_bridge.py": "8a6ab79d59a205f9d593cf5bf65882662cf9e17abc76eacb02b0350b18655bcf",
+      "native/generic.cpp": "dd2abda206213601a33a80acd6e906110d65bca2b4eb795591892e65e419def9",
+      "src/creo_mechdog/reconciliation.py": "5cfcda229319067c9b0a03fd3ebdc407693e6a44c06ebcd8895d0677004d46c7"
+    },
+    "success": false,
+    "error": "",
+    "finished_at": "2026-10-17T01:37:27.861437+00:00"
+  },
+  "timeline": [
+    {
+      "case": "modeling_none",
+      "job_id": "4cebdaab220e492daa49274c2168387f",
+      "model_id": "a4d70e5a361c4bbab68dc570e4618572",
+      "status": "succeeded",
+      "created_at": "2026-10-17T01:34:35.870579+00:00",
+      "started_at": "2026-10-17T01:34:36.253880+00:00",
+      "finished_at": "2026-10-17T01:34:44.053902+00:00",
+      "input_operation_count": 2,
+      "result": {
+        "success": true,
+        "failed_stage": null,
+        "failed_toolkit_call": null,
+        "toolkit_code": 0,
+        "rollback_succeeded": false,
+        "disconnect_code": 0,
+        "delivery_complete": true,
+        "completion_stage": "result_delivery",
+        "saved_file_reloaded_and_verified": true
+      }
+    },
+    {
+      "case": "modeling_timeout",
+      "job_id": "cb6f857357654d1780f21167f0aaf3ff",
+      "model_id": "a4d70e5a361c4bbab68dc570e4618572",
+      "status": "unknown_outcome",
+      "created_at": "2026-10-17T01:34:44.116729+00:00",
+      "started_at": "2026-10-17T01:34:44.475020+00:00",
+      "finished_at": "2026-10-17T01:34:56.814417+00:00",
+      "input_operation_count": 48,
+      "result": {
+        "success": null,
+        "failed_stage": null,
+        "failed_toolkit_call": null,
+        "toolkit_code": null,
+        "rollback_succeeded": null,
+        "disconnect_code": null,
+        "delivery_complete": null,
+        "completion_stage": null,
+        "saved_file_reloaded_and_verified": null
+      }
+    },
+    {
+      "case": "restore_baseline",
+      "job_id": "30f0ffdd986a413f8c4f139632079212",
+      "model_id": "a4d70e5a361c4bbab68dc570e4618572",
+      "status": "succeeded",
+      "created_at": "2026-10-17T01:35:06.826161+00:00",
+      "started_at": null,
+      "finished_at": "2026-10-17T01:35:13.778348+00:00",
+      "input_operation_count": null,
+      "result": {
+        "success": true,
+        "failed_stage": null,
+        "failed_toolkit_call": null,
+        "toolkit_code": null,
+        "rollback_succeeded": false,
+        "disconnect_code": 0,
+        "delivery_complete": true,
+        "completion_stage": "result_delivery",
+        "saved_file_reloaded_and_verified": true
+      }
+    },
+    {
+      "case": "modeling_none",
+      "job_id": "dfdc4bdcb9a041329790e7dfd3c8495b",
+      "model_id": "a4d70e5a361c4bbab68dc570e4618572",
+      "status": "succeeded",
+      "created_at": "2026-10-17T01:35:14.095979+00:00",
+      "started_at": "2026-10-17T01:35:14.479319+00:00",
+      "finished_at": "2026-10-17T01:35:21.672309+00:00",
+      "input_operation_count": 1,
+      "result": {
+        "success": true,
+        "failed_stage": null,
+        "failed_toolkit_call": null,
+        "toolkit_code": 0,
+        "rollback_succeeded": false,
+        "disconnect_code": 0,
+        "delivery_complete": true,
+        "completion_stage": "result_delivery",
+        "saved_file_reloaded_and_verified": true
+      }
+    },
+    {
+      "case": "modeling_lost_delivery",
+      "job_id": "889b16a34c5e42bf94b36c1848ba665f",
+      "model_id": "f3c26faae5ea4fc989f73b96b5577486",
+      "status": "unknown_outcome",
+      "created_at": "2026-10-17T01:35:21.746073+00:00",
+      "started_at": "2026-10-17T01:35:22.122729+00:00",
+      "finished_at": "2026-10-17T01:35:29.584865+00:00",
+      "input_operation_count": 2,
+      "result": {
+        "success": null,
+        "failed_stage": null,
+        "failed_toolkit_call": null,
+        "toolkit_code": null,
+        "rollback_succeeded": null,
+        "disconnect_code": null,
+        "delivery_complete": null,
+        "completion_stage": null,
+        "saved_file_reloaded_and_verified": null
+      }
+    },
+    {
+      "case": "accept_saved",
+      "job_id": "e93eafac36a6476bb4b3cf022a96b798",
+      "model_id": "f3c26faae5ea4fc989f73b96b5577486",
+      "status": "succeeded",
+      "created_at": "2026-10-17T01:35:29.841170+00:00",
+      "started_at": null,
+      "finished_at": "2026-10-17T01:35:36.709603+00:00",
+      "input_operation_count": null,
+      "result": {
+        "success": true,
+        "failed_stage": null,
+        "failed_toolkit_call": null,
+        "toolkit_code": null,
+        "rollback_succeeded": false,
+        "disconnect_code": 0,
+        "delivery_complete": true,
+        "completion_stage": "result_delivery",
+        "saved_file_reloaded_and_verified": true
+      }
+    },
+    {
+      "case": "modeling_none",
+      "job_id": "968a7765bc0a41e4ad73b464ecee3eb0",
+      "model_id": "f3c26faae5ea4fc989f73b96b5577486",
+      "status": "succeeded",
+      "created_at": "2026-10-17T01:35:37.005080+00:00",
+      "started_at": "2026-10-17T01:35:37.393544+00:00",
+      "finished_at": "2026-10-17T01:35:44.886185+00:00",
+      "input_operation_count": 1,
+      "result": {
+        "success": true,
+        "failed_stage": null,
+        "failed_toolkit_call": null,
+        "toolkit_code": 0,
+        "rollback_succeeded": false,
+        "disconnect_code": 0,
+        "delivery_complete": true,
+        "completion_stage": "result_delivery",
+        "saved_file_reloaded_and_verified": true
+      }
+    },
+    {
+      "case": "modeling_timeout",
+      "job_id": "4bf9a2ec48cc4a13b32e691fcdfe690f",
+      "model_id": "4b16cce9fb1345189f236da6bcc28976",
+      "status": "unknown_outcome",
+      "created_at": "2026-10-17T01:35:44.978348+00:00",
+      "started_at": "2026-10-17T01:35:45.441710+00:00",
+      "finished_at": "2026-10-17T01:35:57.819922+00:00",
+      "input_operation_count": 50,
+      "result": {
+        "success": null,
+        "failed_stage": null,
+        "failed_toolkit_call": null,
+        "toolkit_code": null,
+        "rollback_succeeded": null,
+        "disconnect_code": null,
+        "delivery_complete": null,
+        "completion_stage": null,
+        "saved_file_reloaded_and_verified": null
+      }
+    },
+    {
+      "case": "accept_live",
+      "job_id": "4f2ed4ee19ee4c3eb37dd2061000b297",
+      "model_id": "4b16cce9fb1345189f236da6bcc28976",
+      "status": "succeeded",
+      "created_at": "2026-10-17T01:36:03.968530+00:00",
+      "started_at": null,
+      "finished_at": "2026-10-17T01:36:13.110292+00:00",
+      "input_operation_count": null,
+      "result": {
+        "success": true,
+        "failed_stage": null,
+        "failed_toolkit_call": null,
+        "toolkit_code": null,
+        "rollback_succeeded": false,
+        "disconnect_code": 0,
+        "delivery_complete": true,
+        "completion_stage": "result_delivery",
+        "saved_file_reloaded_and_verified": true
+      }
+    },
+    {
+      "case": "modeling_none",
+      "job_id": "02f7838394bc41d1a71c997d87200eb5",
+      "model_id": "4b16cce9fb1345189f236da6bcc28976",
+      "status": "succeeded",
+      "created_at": "2026-10-17T01:36:13.693137+00:00",
+      "started_at": "2026-10-17T01:36:14.349213+00:00",
+      "finished_at": "2026-10-17T01:36:24.569553+00:00",
+      "input_operation_count": 1,
+      "result": {
+        "success": true,
+        "failed_stage": null,
+        "failed_toolkit_call": null,
+        "toolkit_code": 0,
+        "rollback_succeeded": false,
+        "disconnect_code": 0,
+        "delivery_complete": true,
+        "completion_stage": "result_delivery",
+        "saved_file_reloaded_and_verified": true
+      }
+    },
+    {
+      "case": "modeling_timeout",
+      "job_id": "6847a6285ab6468183206701ba902ff4",
+      "model_id": "6bbe7a806b304673b24c4ba5d0ceace6",
+      "status": "unknown_outcome",
+      "created_at": "2026-10-17T01:36:24.735082+00:00",
+      "started_at": "2026-10-17T01:36:25.358728+00:00",
+      "finished_at": "2026-10-17T01:36:38.137488+00:00",
+      "input_operation_count": 50,
+      "result": {
+        "success": null,
+        "failed_stage": null,
+        "failed_toolkit_call": null,
+        "toolkit_code": null,
+        "rollback_succeeded": null,
+        "disconnect_code": null,
+        "delivery_complete": null,
+        "completion_stage": null,
+        "saved_file_reloaded_and_verified": null
+      }
+    },
+    {
+      "case": "abandon_new",
+      "job_id": "056067867924459cb04f3426eb270750",
+      "model_id": "6bbe7a806b304673b24c4ba5d0ceace6",
+      "status": "succeeded",
+      "created_at": "2026-10-17T01:36:38.464315+00:00",
+      "started_at": null,
+      "finished_at": "2026-10-17T01:36:45.192708+00:00",
+      "input_operation_count": null,
+      "result": {
+        "success": true,
+        "failed_stage": null,
+        "failed_toolkit_call": null,
+        "toolkit_code": null,
+        "rollback_succeeded": false,
+        "disconnect_code": 0,
+        "delivery_complete": true,
+        "completion_stage": "result_delivery",
+        "saved_file_reloaded_and_verified": false
+      }
+    },
+    {
+      "case": "modeling_none",
+      "job_id": "658e13f47a5f44dc9efd6cfd8b2116ba",
+      "model_id": "a4d70e5a361c4bbab68dc570e4618572",
+      "status": "failed",
+      "created_at": "2026-10-17T01:36:45.661544+00:00",
+      "started_at": "2026-10-17T01:36:46.216379+00:00",
+      "finished_at": "2026-10-17T01:36:52.072311+00:00",
+      "input_operation_count": 1,
+      "result": {
+        "success": false,
+        "failed_stage": "execute_set_dimensions",
+        "failed_toolkit_call": "ProModelitemInit(board, v[\"id\"], PRO_DIMENSION, &d)",
+        "toolkit_code": -23,
+        "rollback_succeeded": true,
+        "disconnect_code": 0,
+        "delivery_complete": true,
+        "completion_stage": "result_delivery",
+        "saved_file_reloaded_and_verified": false
+      }
+    },
+    {
+      "case": "modeling_none",
+      "job_id": "fce7e7b594d44cb2b62602be1b6c550f",
+      "model_id": "794a808f7cdb4e439daf7d0dace6a2c1",
+      "status": "failed",
+      "created_at": "2026-10-17T01:36:52.190802+00:00",
+      "started_at": "2026-10-17T01:36:52.575704+00:00",
+      "finished_at": "2026-10-17T01:37:27.773921+00:00",
+      "input_operation_count": 2,
+      "result": {
+        "success": false,
+        "failed_stage": "connect",
+        "failed_toolkit_call": "connect_creo(&process)",
+        "toolkit_code": -11,
+        "rollback_succeeded": false,
+        "disconnect_code": null,
+        "delivery_complete": true,
+        "completion_stage": "result_delivery",
+        "saved_file_reloaded_and_verified": false
+      }
+    }
+  ],
+  "native_06_session_fingerprints": {
+    "15805213694966830147": 15
+  },
+  "trail": {
+    "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\creo_session\\trail.txt.25",
+    "size_bytes": 93777,
+    "sha256": "14d6b6555624e64f44f5dfb119429d9d715f1468883846efada55ac76705c2f1",
+    "modified_at": "2026-10-17T09:36:57.741302+08:00",
+    "header": [
+      {
+        "line": 1,
+        "text": "﻿!trail file version No. 2530"
+      },
+      {
+        "line": 2,
+        "text": "!Creo  TM  12  (c) 2026 by PTC Inc.  All Rights Reserved."
+      },
+      {
+        "line": 3,
+        "text": "!Exit Logger data:"
+      },
+      {
+        "line": 4,
+        "text": "!\tProcess ID: 22520"
+      },
+      {
+        "line": 5,
+        "text": "!\tApplication: Creo_Parametric"
+      },
+      {
+        "line": 6,
+        "text": "!\tStart date&time: 2026/10/17  09:16:15"
+      },
+      {
+        "line": 7,
+        "text": "!\tlanguage: chinese_cn"
+      },
+      {
+        "line": 8,
+        "text": "!\tmachine type: x86e_win64"
+      },
+      {
+        "line": 9,
+        "text": "!\tdatecode: 12.4.0.0"
+      },
+      {
+        "line": 10,
+        "text": "!\tServer: NONE"
+      },
+      {
+        "line": 11,
+        "text": "!\tWorkspace: NONE"
+      },
+      {
+        "line": 12,
+        "text": "!\ttraceback file: E:\\Projects\\MCP_CREO_MechDog\\build\\creo_session\\traceback.log"
+      },
+      {
+        "line": 13,
+        "text": "!end Exit Logger data."
+      }
+    ],
+    "tail": [
+      {
+        "line": 1666,
+        "text": "!\texec path: E:\\Projects\\MCP_CREO_MechDog\\build\\creo_worker.exe"
+      },
+      {
+        "line": 1667,
+        "text": "!\ttype: asynchronous"
+      },
+      {
+        "line": 1668,
+        "text": "!Application (UNNAMED): running IPC-mode user_initialize"
+      },
+      {
+        "line": 1669,
+        "text": "!Application (UNNAMED): returned from IPC-mode user_initialize; status is 0"
+      },
+      {
+        "line": 1670,
+        "text": "!Application (UNNAMED): connected to Pro/E."
+      },
+      {
+        "line": 1671,
+        "text": "!\texec path: E:\\Projects\\MCP_CREO_MechDog\\build\\creo_worker.exe"
+      },
+      {
+        "line": 1672,
+        "text": "!\ttype: asynchronous"
+      },
+      {
+        "line": 1673,
+        "text": "!17-Oct-26 09:36:51  Start E:\\Projects\\MCP_CREO_MechDog\\build\\bug001-feat018-recovery\\native-06\\models\\a4d70e5a361c4bbab68dc570e4618572\\output\\ai_part_a4d70e5a361c.prt.3"
+      },
+      {
+        "line": 1674,
+        "text": "!17-Oct-26 09:36:51  End   E:\\Projects\\MCP_CREO_MechDog\\build\\bug001-feat018-recovery\\native-06\\models\\a4d70e5a361c4bbab68dc570e4618572\\output\\ai_part_a4d70e5a361c.prt.3"
+      },
+      {
+        "line": 1675,
+        "text": "!%CI09:36:51 从上次重新生成起零件'AI_PART_A4D70E5A361C'未被更改。"
+      },
+      {
+        "line": 1676,
+        "text": "!Application (UNNAMED): running IPC-mode user_initialize"
+      },
+      {
+        "line": 1677,
+        "text": "!Application (UNNAMED): returned from IPC-mode user_initialize; status is -97"
+      },
+      {
+        "line": 1678,
+        "text": "! Message Dialog: Warning"
+      },
+      {
+        "line": 1679,
+        "text": "!               : 外部程序\"UNNAMED\"没有正确初始化；"
+      },
+      {
+        "line": 1680,
+        "text": "!               : 可能出现了通信问题。"
+      }
+    ],
+    "initialization_status_counts": {
+      "0": 53,
+      "-97": 1
+    },
+    "worker_connection_paths": {
+      "E:\\Projects\\MCP_CREO_MechDog\\build\\creo_worker.exe": 53
+    }
+  },
+  "creo_stderr": {
+    "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\creo_session\\std.err",
+    "size_bytes": 648,
+    "sha256": "f378f3385ce161bdd7b4d1ceb07910f35caba8052b9b638d4be63f64b6620682",
+    "modified_at": "2026-10-17T09:35:06.134406+08:00",
+    "text": " giving up- peer appn and/or msg module is not alive\n giving up- peer appn and/or msg module is not alive\n giving up- peer appn and/or msg module is not alive\n giving up- peer appn and/or msg module is not alive\n giving up- peer appn and/or msg module is not alive\n giving up- peer appn and/or msg module is not alive\n giving up- peer appn and/or msg module is not alive\n giving up- peer appn and/or msg module is not alive\n giving up- peer appn and/or msg module is not alive\n giving up- peer appn and/or msg module is not alive\n giving up- peer appn and/or msg module is not alive\n giving up- peer appn and/or msg module is not alive\n"
+  },
+  "older_logs_not_current_evidence": [
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\creo_session\\std.out",
+      "size_bytes": 960,
+      "sha256": "bb9db4c8a060d5bf8bd976331750fc45c9a5037c3d69192fe3b41fc96c5aa0c5",
+      "modified_at": "2026-10-16T15:54:33.061326+08:00"
+    },
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\creo_session\\traceback.log",
+      "size_bytes": 44503,
+      "sha256": "8f2f178ea0584136c6069ea6254713067aa31340efe606ba0f84fe9906393b68",
+      "modified_at": "2026-10-14T15:20:30.802577+08:00"
+    }
+  ],
+  "persisted_health": {
+    "connected": false,
+    "checked_at": "2026-10-17T01:38:51.143729+00:00",
+    "connection_state": "connection_failed",
+    "toolkit_code": -11,
+    "current_model": "",
+    "current_model_code": -8,
+    "model_type": -1,
+    "release_numeric": 0,
+    "disconnect_code": 0,
+    "feature_creation_license": "requires_actual_modeling_test",
+    "worker_exit_code": 20
+  },
+  "historical_probe": {
+    "connected": false,
+    "connection_state": "connection_failed",
+    "toolkit_code": -11,
+    "current_model": "",
+    "current_model_code": -8,
+    "model_type": -1,
+    "release_numeric": 0,
+    "disconnect_code": 0,
+    "feature_creation_license": "requires_actual_modeling_test",
+    "worker_exit_code": 20
+  },
+  "configuration": {
+    "creo_root": "C:\\Program Files\\PTC\\Creo 12.4.0.0",
+    "generic_timeout_seconds": 600,
+    "native_timeout_seconds": 180,
+    "creo_session_id": ""
+  },
+  "sdk_error_definitions": {
+    "path": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit\\includes\\ProToolkitErrors.h",
+    "size_bytes": 3487,
+    "sha256": "897f822479c5976af86e40f04d84f4dbe91028c0653629611b921bf7d7f9ea04",
+    "modified_at": "2026-10-13T10:00:11.158638+08:00",
+    "selected_lines": [
+      {
+        "line": 23,
+        "text": "  PRO_TK_COMM_ERROR\t\t= -11, /* communication error */"
+      },
+      {
+        "line": 102,
+        "text": "  PRO_TK_APP_VERSION_MISMATCH   = -96,"
+      },
+      {
+        "line": 103,
+        "text": "  PRO_TK_APP_COMM_FAILURE\t= -97,"
+      }
+    ]
+  },
+  "sdk_connection_contract": {
+    "path": "C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit\\includes\\ProCore.h",
+    "size_bytes": 22686,
+    "sha256": "2ac09cf9ea938fee1ee167ba1b514e2ab8a955fe2080da5ad7d083c1bd42b744",
+    "modified_at": "2026-10-13T10:00:10.783040+08:00",
+    "selected_lines": [
+      {
+        "line": 192,
+        "text": "     PRO_TK_COMM_ERROR    - Creo Parametric session refused connection. (This"
+      },
+      {
+        "line": 193,
+        "text": "                            can happen if application initialization fails.)"
+      }
+    ]
+  },
+  "current_build_inputs": {
+    "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\build.cmd",
+    "size_bytes": 2725,
+    "sha256": "ca1c8ce60962f6183e9e696da4974d43f8da624ba89d1c134aeb8a5c2ecaee23",
+    "modified_at": "2026-10-17T12:01:24.835513+08:00",
+    "text": "@echo off\nsetlocal DisableDelayedExpansion\ncall \"C:\\MCP_CREO_MechDog\\vcvars64_local.cmd\"\nif errorlevel 1 exit /b 1\n\"E:\\Projects\\MCP_CREO_MechDog\\.venv\\Scripts\\python.exe\" \"E:\\Projects\\MCP_CREO_MechDog\\tools\\compiler_preflight.py\"\nif errorlevel 1 exit /b 4\ncl /nologo /MD /EHsc /std:c++17 /bigobj /W3 /DPRO_MACHINE=36 /DPRO_OS=4 /DPRO_USE_VAR_ARGS /I\"C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit\\includes\" /c \"E:\\Projects\\MCP_CREO_MechDog\\native\\worker.cpp\" /Fo\"E:\\Projects\\MCP_CREO_MechDog\\build\\worker.obj\"\nif errorlevel 1 exit /b 2\nlink /nologo /MACHINE:X64 /SUBSYSTEM:CONSOLE /OUT:\"E:\\Projects\\MCP_CREO_MechDog\\build\\creo_worker.exe\" \"E:\\Projects\\MCP_CREO_MechDog\\build\\worker.obj\" \"C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit\\x86e_win64\\obj\\protkmd_NU.lib\" \"C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit\\x86e_win64\\obj\\ptasyncmd.lib\" \"C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit\\x86e_win64\\obj\\ucore.lib\" \"C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit\\x86e_win64\\obj\\udata.lib\" kernel32.lib user32.lib wsock32.lib advapi32.lib mpr.lib winspool.lib netapi32.lib psapi.lib gdi32.lib shell32.lib comdlg32.lib ole32.lib ws2_32.lib\nif errorlevel 1 exit /b 3\n\ncl /nologo /MD /EHsc /std:c++17 /W3 /DPRO_MACHINE=36 /DPRO_OS=4 /I\"C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit\\includes\" /c \"E:\\Projects\\MCP_CREO_MechDog\\native\\blend_sync.cpp\" /Fo\"E:\\Projects\\MCP_CREO_MechDog\\build\\blend_sync.obj\"\nif errorlevel 1 exit /b 2\nlink /nologo /DLL /MACHINE:X64 /OUT:\"E:\\Projects\\MCP_CREO_MechDog\\build\\creo_blend_sync.dll\" \"E:\\Projects\\MCP_CREO_MechDog\\build\\blend_sync.obj\" kernel32.lib user32.lib wsock32.lib advapi32.lib mpr.lib winspool.lib netapi32.lib psapi.lib gdi32.lib shell32.lib comdlg32.lib ole32.lib ws2_32.lib\nif errorlevel 1 exit /b 3\n\n\ncl /nologo /MD /EHsc /std:c++17 /W3 /DPRO_MACHINE=36 /DPRO_OS=4 /I\"C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit\\includes\" /c \"E:\\Projects\\MCP_CREO_MechDog\\native\\blend_loader.cpp\" /Fo\"E:\\Projects\\MCP_CREO_MechDog\\build\\blend_loader.obj\"\nif errorlevel 1 exit /b 2\nlink /nologo /DLL /MACHINE:X64 /OUT:\"E:\\Projects\\MCP_CREO_MechDog\\build\\creo_blend_loader.dll\" \"E:\\Projects\\MCP_CREO_MechDog\\build\\blend_loader.obj\" \"C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit\\x86e_win64\\obj\\protk_dllmd_NU.lib\" \"C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit\\x86e_win64\\obj\\ucore.lib\" \"C:\\Program Files\\PTC\\Creo 12.4.0.0\\Common Files\\protoolkit\\x86e_win64\\obj\\udata.lib\" kernel32.lib user32.lib wsock32.lib advapi32.lib mpr.lib winspool.lib netapi32.lib psapi.lib gdi32.lib shell32.lib comdlg32.lib ole32.lib ws2_32.lib\nif errorlevel 1 exit /b 3\n\nexit /b 0\n"
+  },
+  "current_worker": {
+    "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\creo_worker.exe",
+    "size_bytes": 12357120,
+    "sha256": "fded0660cd3d8275368d9c283ec5863a58775fd950d612f050b501e731eb9b9d",
+    "modified_at": "2026-10-17T12:01:46.779140+08:00"
+  },
+  "current_source_sha256_lf": {
+    "src/creo_mechdog/model_queries.py": "7156e56ee1dd8786d6a46a3ee3b4a064a8d25da886c430c48d419a38ed1d85d5",
+    "native/worker.cpp": "37b3c8ef0d4cedd91adcf3d0dff03f41a33516c10f7d467ecfe62defc476bc7c",
+    "capabilities.py": "e9293c3b863c49f1b9d79a5a8746d41b623db8a2d52d168f500ee2a1721dffb6",
+    "server.py": "05500ba4586aa18dad99f06928f2f8ea4d00bcf0efd0b36d5ff3ce14a29beafa",
+    "generic_bridge.py": "023103f4493e670cd50a3296787effbbab9950daed722d494f9e25d59a12c9c9",
+    "tools/test_model_reconciliation.py": "9d5371d79e44d2e140a4d2e93a1809a02bd04ac75652a11629bbe1bffd6f6853",
+    "bridge.py": "968de501c5ac1e89986a503418bc6043f36e06dc3cae1dacd3add44e3ffa9303",
+    "src/creo_mechdog/reconciliation.py": "eca3cd7a15793342aed08850eb2346606e2888d709957bc2cd534a5fdc175ed8",
+    "tests/unit/test_reconciliation.py": "cc38d5645ebb74aa5ac96f3201008b2737534a85abaec24da17c5630111a9079",
+    "native/recovery_deadline.h": "29ae4c196fe9b7cd1254acb97b8458dba5f26dd4b12021ccf08bb507ad9f80b9",
+    "native/result_delivery.h": "fb6da37ac0a591f94ec8bbe4fcdc02b37f1ef527de26b7c8a2410a3907130220",
+    "native/generic.cpp": "0ecb41de603ad585cba65e098e6b141cd98bf8e5b59069fd9c8d6ef150ae0fd5",
+    "src/creo_mechdog/recovery.py": "3478597d68764af0c351d8edb2e7c5e4245dca6bf9d0d0799b1a792aaddc982c"
+  },
+  "collection_command": ".\\.venv\\Scripts\\python.exe build/bug001-feat018-recovery/offline-20261017-01/collect_offline.py",
+  "local_full_snapshot": {
+    "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\bug001-feat018-recovery\\offline-20261017-01\\evidence.json",
+    "size_bytes": 464536,
+    "sha256": "d2ab0a75ef0ceb4d1b92c8143810fab7220e58fa7ad21027734136445985d1f6"
+  },
+  "collector": {
+    "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\bug001-feat018-recovery\\offline-20261017-01\\collect_offline.py",
+    "size_bytes": 9918,
+    "sha256": "46b879071d1171f47565a6f3604f82fb84a2eb4b131e1bdbeabc5355b6b46cac"
+  },
+  "historical_inputs": [
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\docs\\validation\\bug-001-recovery-2026-10-17\\manifest.json",
+      "size_bytes": 3267,
+      "sha256": "b549cfcab07ab6b1b4eff5f631d7aa3ab91e5121aabfff02684231c336523e3c"
+    },
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\docs\\validation\\bug-001-recovery-2026-10-17\\native-05.json",
+      "size_bytes": 656753,
+      "sha256": "dfb59dfe090c3a7ba508a52451021ec543dc7c3276fd04b90a027bad5bf88348"
+    },
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\docs\\validation\\bug-001-recovery-2026-10-17\\native-06.json",
+      "size_bytes": 659022,
+      "sha256": "edb7df33e188fc8558a04a80e64dbd0a6f4a234015ea52f7f32f00fbaacb70c4"
+    },
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\docs\\validation\\bug-001-recovery-2026-10-17\\deployment.json",
+      "size_bytes": 2837,
+      "sha256": "ce380bb34b03f7deab5c83ce6b29166ea7ed0529923dc194f55edd48e6a6be69"
+    },
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\bug001-feat018-recovery\\native-06\\jobs\\658e13f47a5f44dc9efd6cfd8b2116ba\\native.log",
+      "size_bytes": 6911,
+      "sha256": "9f5ecdf38392fa3671504195bee677f95613043cdf50c6442f5e018b5210ac2f"
+    },
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\bug001-feat018-recovery\\native-06\\jobs\\658e13f47a5f44dc9efd6cfd8b2116ba\\native_result.json",
+      "size_bytes": 17121,
+      "sha256": "daa9bdda369a52188710c1bb22e4b0787b6845fdbe16d6348396f93d6374b388"
+    },
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\bug001-feat018-recovery\\native-06\\jobs\\fce7e7b594d44cb2b62602be1b6c550f\\native.log",
+      "size_bytes": 111,
+      "sha256": "3aa241a4f9848c6e7d738889a227c7a27ee582c3a2beede454d86c0b94a9ac28"
+    },
+    {
+      "path": "E:\\Projects\\MCP_CREO_MechDog\\build\\bug001-feat018-recovery\\native-06\\jobs\\fce7e7b594d44cb2b62602be1b6c550f\\native_result.json",
+      "size_bytes": 540,
+      "sha256": "92c8ae5a32b0ad867587a7fe93c9fe528c499d49860e258a17942561c2b7476b"
+    }
+  ],
+  "wer_temporary_attachments": [
+    {
+      "path": "C:\\ProgramData\\Microsoft\\Windows\\WER\\Temp\\WER.91df61a5-332e-45e1-aa80-be4321bdefb0.tmp.WERInternalMetadata.xml",
+      "exists_at_summary": false
+    },
+    {
+      "path": "C:\\ProgramData\\Microsoft\\Windows\\WER\\Temp\\WER.1788c2e9-1b22-4c44-a7c7-c8e5aa2f5959.tmp.csv",
+      "exists_at_summary": false
+    },
+    {
+      "path": "C:\\ProgramData\\Microsoft\\Windows\\WER\\Temp\\WER.b5e54bff-1284-4d7c-95ec-978750a349bd.tmp.txt",
+      "exists_at_summary": false
+    },
+    {
+      "path": "C:\\Users\\Administrator\\AppData\\Local\\Temp\\WER.01e5b107-8150-4721-b19f-a4da335b3b4a.tmp.appcompat.txt",
+      "exists_at_summary": false
+    },
+    {
+      "path": "C:\\ProgramData\\Microsoft\\Windows\\WER\\Temp\\WER.d66987a8-39c2-4293-a9b8-dad09ccbb542.tmp.xml",
+      "exists_at_summary": false
+    }
+  ],
+  "preservation": {
+    "historical_validation_files_sha256": {
+      "count": 183,
+      "all_unchanged": true,
+      "canonical_manifest_sha256": "6608506ab278af02b8bb2648e9be14bd58d619b86974f4d3387f1635db063db9"
+    },
+    "job_model_json_sha256": {
+      "count": 3019,
+      "all_unchanged": true,
+      "canonical_manifest_sha256": "da7f3bda9600bef5c4f92b7a862ce6599b7a72ceef6e377b0f1c10522991d8a3"
+    },
+    "guard_files_sha256": {
+      "count": 2,
+      "all_unchanged": true,
+      "canonical_manifest_sha256": "361ce1e33c67289efae00a7f147d1dcfce851e871e545acbda89d523bee9cb8c"
+    }
+  },
+  "conclusions": {
+    "confirmed": [
+      "IPC initialization communication failure -97 and Warning in Creo trail",
+      "client connect failed -11 before modeling",
+      "Windows AppHangB1 for same PID 22520 and Creo 12.4 executable",
+      "no current Creo/native worker in captured process inventory"
+    ],
+    "unconfirmed": [
+      "underlying IPC failure or hang cause",
+      "wrong SDK at failed-run link time",
+      "simultaneous C/E native access",
+      "modal dialog versus actual thread deadlock",
+      "current interactive session operability"
+    ],
+    "suspected_only": [
+      "communication lifecycle after forced worker timeout",
+      "GUI/model lifecycle after rollback",
+      "warning dialog affecting responsiveness"
+    ],
+    "not_verified": [
+      "R01-R12 final native matrix on current integrated source",
+      "WorkBuddy MCP-only acceptance",
+      "Creo 9/10"
+    ],
+    "resume_gate": "confirm interactive Creo operability first, then one bounded connection check; stop on error or warning"
+  },
+  "summarized_at": "2026-10-17T12:43:54.923910+08:00"
+}

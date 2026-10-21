@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-17",
+  "purpose": "0.3.4 feedback deduplication and BACKLOG update",
+  "repository_base_commit_at_registration": "65ea3db4578e334575936734b7c2366fabce90c1",
+  "repository_branch_at_registration": "codex/bug-054-feedback033",
+  "instructions_in_report_executed": false,
+  "sources": [
+    {
+      "original_path": "C:\\Users\\Administrator\\Downloads\\2026-10-17_CREO_0.3.4_恢复工具MCP层null失效与种子筋放样第五轮依旧.md",
+      "original_filename": "2026-10-17_CREO_0.3.4_恢复工具MCP层null失效与种子筋放样第五轮依旧.md",
+      "archive_path": "docs/validation/feedback-0.3.4-2026-10-17/creo9-recovery-callback-report.md",
+      "bytes": 11317,
+      "sha256": "da4b778a23d0ee3f962ef84cfadcd6afe39bba476fafe50c2083dd31521dd58b",
+      "reported_version": "0.3.4",
+      "reported_environment": "Windows 10 / Creo Parametric 9.0.0.0 / release_numeric=41 / stdio / 84 tools",
+      "reported_test_time": "2026-10-17 16:00-16:55 GMT+8",
+      "evidence_kind": "external_report_mixed_MCP_and_local_Python_methods_not_reexecuted",
+      "original_job_and_model_ids_provided": false
+    },
+    {
+      "original_path": "C:\\Users\\Administrator\\Downloads\\0.3.4\\2026-10-17CREO10.0.0.0-0.3.4payload目录残留累积与vcvars64env键集未改.md",
+      "original_filename": "2026-10-17CREO10.0.0.0-0.3.4payload目录残留累积与vcvars64env键集未改.md",
+      "archive_path": "docs/validation/feedback-0.3.4-2026-10-17/creo10-payload-vcvars-report.md",
+      "bytes": 11088,
+      "sha256": "de1209234c160d67a305f44536356c02bbc0812265fdbe6923bacdcae7fde2d1",
+      "reported_version": "0.3.4",
+      "reported_environment": "Windows 10 x64 / Creo Parametric 10.0.0.0 / VS2022 BuildTools 14.44.35207 / Windows SDK 10.0.26100.0 / Python 3.13 / reg.exe blocked by security policy",
+      "reported_test_time": "2026-10-17 (report written 17:28 GMT+8)",
+      "evidence_kind": "external_report_local_build_and_callback_verification_not_reexecuted",
+      "original_job_and_model_ids_provided": false,
+      "registered_on_commit": "8ce644f (main / v0.3.5)",
+      "registered_branch": "codex/dev-027-feedback034-creo10"
+    }
+  ]
+}

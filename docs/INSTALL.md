@@ -1,5 +1,7 @@
 # 源码安装与接入
 
+当前源码版本0.3.5：切除材料守卫与恢复参数契约见[版本说明](RELEASE_NOTES_0.3.5.md)。BUG-056通道掉线仍待核实，发布不意味着完整兼容或稳定性已验收。
+
 ## 需要的环境
 
 可使用 Creo 9、10 或 Creo 12。当前开发与发布按本机 Creo 12.4.0.0 的改动范围验收，Creo 10 独立复测不作为项目门槛；Creo 9 与匹配 Toolkit 9 已纳入支持/要求范围，[BUG-033](work-items/BUG-033.md) 编译探测修复已实现。本机无 Creo 9 SDK，Creo 9 实机编译与建模运行时均未验收，支持声明不代表本机测试通过。其他环境收到具体测试反馈后再跟进；具体已测范围与未测项见 [兼容矩阵](COMPATIBILITY.md)。仅做 Python 单元和语言检查的开发环境见 [开发入口](DEVELOPMENT.md)，不必先运行完整 Creo 安装流程。
@@ -65,7 +67,9 @@ $compilerEnv = @{ INCLUDE = $env:INCLUDE; LIB = $env:LIB; PATH = $env:PATH }
 .\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 12.4.0.0' -VcVars64Env $compilerEnv
 ```
 
-也可在本机 `config.json` 中添加 `"vcvars64_env": {"INCLUDE": "完整头文件目录列表", "LIB": "完整库目录列表", "PATH": "完整工具目录列表"}`，目录间用分号分隔，JSON 路径中的反斜杠写成 `\\`。三个键必须大写、完整、非空，值不能包含引号、百分号、换行或 NUL；使用展开后的绝对路径，不写 `%PATH%`。默认 `null` 使用 vcvars64。显式环境分支不调用或要求 vcvars64 文件，仍运行 compiler_preflight 检查 cl/link、UCRT 与 Windows SDK，`-CheckOnly` 只核对配置和前置文件，不执行编译自检。
+也可在本机 `config.json` 中添加 `"vcvars64_env": {"INCLUDE": "完整头文件目录列表", "LIB": "完整库目录列表", "PATH": "完整工具目录列表"}`，目录间用分号分隔，JSON 路径中的反斜杠写成 `\\`。当前0.3.3只接受恰好这三个键，必须大写、完整、非空；“完整环境”指这三个值中的完整路径列表，不是vcvars的全部变量转储。WindowsSdkDir、WindowsSDKVersion等额外键目前会被拒绝，并未实现忽略或透传。值不能包含引号、百分号、换行或 NUL；使用展开后的绝对路径，不写 `%PATH%`。默认 `null` 使用 vcvars64。显式环境分支不调用或要求 vcvars64 文件，仍运行 compiler_preflight 检查 cl/link、UCRT 与 Windows SDK，`-CheckOnly` 只核对配置和前置文件，不执行编译自检。
+
+外部[Creo10/0.3.3反馈](validation/FEEDBACK-0.3.3-BUILD.md)记录了reg.exe受限时三键环境的官方编译成功正例。额外键兼容和日志展示仍是待核对的后续请求；该外部记录不等于受限机器完整安装或其他SDK均已验收。
 
 `-VcVars64Env` 优先于同次提供的 `-VcVars64`；只显式提供 `-VcVars64` 时切回批处理分支并清除持久化环境，`-VcVars64Env $null` 也可恢复自动发现。未提供这两个参数时沿用本机配置。安装会回写选定环境并保留已有额外属性，`-CheckOnly` 不写配置。完整 PATH 必须包含 MSVC、Windows SDK 及必要系统工具；本机受限环境仍需管理员核实，不修改全局策略。
 
@@ -75,7 +79,7 @@ $compilerEnv = @{ INCLUDE = $env:INCLUDE; LIB = $env:LIB; PATH = $env:PATH }
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C:\Program Files\PTC\Creo 10.0.0.0'
 ```
 
-脚本保留已有本机配置中的额外选项，创建项目内的 Python 虚拟环境及客户端配置，再安装锁定依赖、更新本机 SDK 常量并编译执行器。同步混合回调 DLL 独立校验缓存，只有自身源码、ABI/SDK、构建参数或 DLL 内容改变才重建。BUG-007开发版在build/blend_callback中生成按DLL哈希分开的初始化副本和protk.dat；所有策略下，直接Blend前由使用者通过Creo辅助应用程序完成一次初始化，PROMPT下的安全确认也在该阶段完成，否则建模任务明确拒绝。注册文件路径由creo_capabilities.direct_blend_callback返回，构建副本存在不代表DLL已加载；MCP不修改Creo安全策略，NEVER策略由管理员处理。新建种子放样不需要该回调。每次构建先按当前 SDK 更新常量，并将 SDK 头文件内容计入缓存指纹；源码、配置及头文件都不变时复用现有二进制。不需要把 Creo 安装到示例路径；不修改 PTC 安装目录或全局 AI 客户端配置。
+脚本保留已有本机配置中的额外选项，创建项目内的 Python 虚拟环境及客户端配置，再安装锁定依赖、更新本机 SDK 常量并编译执行器。同步混合回调 DLL 独立校验缓存，只有自身源码、ABI/SDK、构建参数或 DLL 内容改变才重建。BUG-007开发版在build/blend_callback中生成按DLL哈希分开的初始化副本和protk.dat；所有策略下，直接Blend前由使用者通过Creo辅助应用程序完成一次初始化，PROMPT下的安全确认也在该阶段完成，否则建模任务明确拒绝。一次性注册步骤（含固定入口 `<安装目录>\build\blend_callback_protk.dat` 与 config.pro 持久化）见 README「直接混合（Blend）的一次性回调设置」小节与[生命周期说明](CALLBACK_LIFECYCLE.md)；`creo_callback_status` 的 `not_loaded` 状态 instruction 首行即注册入口。注册文件路径由creo_capabilities.direct_blend_callback返回，构建副本存在不代表DLL已加载；MCP不修改Creo安全策略，NEVER策略由管理员处理。新建种子放样不需要该回调。每次构建先按当前 SDK 更新常量，并将 SDK 头文件内容计入缓存指纹；源码、配置及头文件都不变时复用现有二进制。不需要把 Creo 安装到示例路径；不修改 PTC 安装目录或全局 AI 客户端配置。
 
 安装中断会输出 `INSTALL_INCOMPLETE`、失败阶段、已完成步骤和重跑方法。修复错误后在同一目录重跑相同安装命令即可，不必删除 `.venv`、模型或任务。`client-config.json` 提前生成便于接入与诊断；它存在不代表依赖、原生执行器或许可验证已完成。
 
@@ -179,3 +183,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1 -CreoRoot 'C
 ## 引用参数核对（BUG-006）
 
 使用 capabilities.references.by_tool 查询工具特定种类和结构。axis_pattern.axis 支持几何轴 ID、datum_axis_feature 标签，并兼容 datum_feature 轴标签；其它参数中的 datum_feature 仍为基准平面。钣金边是裸引用，倒圆/倒角是集合数组，草图字典支撑面使用 reference 包装。更新源码后重启 MCP，并核对 schema、runtime 指纹及 [引用说明](REFERENCE_SYNTAX.md)；0.2.6 开发安装不能仅由版本号确认本项修复；0.3.0 包含本修复。
+
+## 本机开发恢复联调（2026-10-17）
+
+2026-10-20修复合集（0.4.3）：本版87工具不变（0.3.7 反馈修复 BUG-036/057/074 与观察性增强）；0.4.2 引入磁盘打开补充（87 工具）：`creo_open_file`（磁盘 .prt/.asm 只读检索显示）与 capabilities compact/分页、session_status `server_version`、接管结构化拒绝随 0.4.2 发布。更新安装后必须重启目标 MCP 连接器（工具数从 86 变 87；capabilities 默认返回 compact 摘要页，旧全量消费者按 section 遍历迁移）。上一轮 2026-10-19 纳管补充（0.4.1，86 工具）：无盘 prepare 模式与会话枚举。更新安装后必须重启目标MCP连接器，核对实际路径、启动指纹、`source_changed_since_startup=false`及新工具/模式；只更新磁盘文件或配置不会替换运行实例。先按[接管说明](ADOPTION.md)选择有文件或无盘流程。下面保留2026-10-17当轮部署边界。
+
+按用户要求，WorkBuddy/Codex 只启用 `MCP_CREO_MechDog_dev`，启动 E盘项目的 `.venv\Scripts\python.exe` 与 `server.py`；C盘旧副本和test项保持禁用。注册名不等于发布版本，当前源码VERSION为0.4.3；用实际入口、源码指纹和87工具辨认部署。不要在同一Creo会话混用不同安装根的客户端：它们的根目录Toolkit锁互不共享。正式使用恢复入口前，先看[恢复说明](MODEL_RECOVERY.md)与[本轮中断记录](validation/BUG-001-recovery-2026-10-17.md)。目前实机测试已停止，卡死原因未定位。
+
+## FEAT-029开发集成后的回调入口
+
+0.3.4共84工具，新增只读creo_callback_status；运行实例需重连才会加载新定义。构建准备固定 `build/blend_callback_protk.dat`，其指向不可变引导及部署载荷，不代表Creo已注册或加载。首次及旧protocol 2迁移仍需使用者一次正式注册；将生成的blend_callback.config.pro片段合入实际加载的config.pro，delay_start true仍需手动启动。兼容升级通常需正常重启Creo并启动同一条目，无须为载荷哈希重新选择注册文件。具体步骤、拒绝/未知分支和限制见[生命周期说明](CALLBACK_LIFECYCLE.md)；当前卡死限制下只完成[离线集成](validation/FEAT-029-integration-2026-10-17.md)，本轮不执行这些GUI操作或实机复验。

@@ -1,4 +1,4 @@
-"""FEAT-032 acceptance: a true helical M3.5x0.6x5 hex screw thread.
+"""FEAT-999 acceptance: a true helical M3.5x0.6x5 hex screw thread.
 
 Builds the screw (shank + hex head) and cuts the thread groove as a single
 helical sweep whose section plane is normal to the projection of the helix on

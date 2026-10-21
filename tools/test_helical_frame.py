@@ -1,4 +1,4 @@
-"""FEAT-032 frame probe: locate the local section axes of a helical sweep.
+"""FEAT-999 frame probe: locate the local section axes of a helical sweep.
 
 Three small marker circles are placed at a known local offset from the section
 origin; the bounding box of each coil then identifies which local axis maps to the

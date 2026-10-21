@@ -1,4 +1,4 @@
-"""FEAT-032 probe: does the equation helix land on the model Z axis, and how does
+"""FEAT-999 probe: does the equation helix land on the model Z axis, and how does
 Creo orient the generated sweep frame at the helix start?
 
 Run with the repository venv from the repository root:

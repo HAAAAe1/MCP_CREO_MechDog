@@ -1,0 +1,47 @@
+{
+  "work_item": "FEAT-029",
+  "scope": "Worker instruction update; unchanged payload/loader/registration artifacts",
+  "installations": {
+    "E:\\Projects\\MCP_CREO_MechDog_Test": {
+      "module_file": {
+        "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback\\9346f9e0410a6b7f91b6c33db2b6be9b8e2f1e597e6d41c5fa0f774b6081e20e\\callback.dll",
+        "same_sha256": true,
+        "same_mtime": true
+      },
+      "loader_file": {
+        "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_loader\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\loader.dll",
+        "same_sha256": true,
+        "same_mtime": true
+      },
+      "registry_file": {
+        "path": "E:\\Projects\\MCP_CREO_MechDog_Test\\build\\blend_callback_protk.dat",
+        "same_sha256": true,
+        "same_mtime": true
+      },
+      "worker_before_sha256": "7f6cdc559d91efe4270a274a23a6c0a42737b52b14445c387749b6c5123b6b8d",
+      "worker_after_sha256": "374a84ffce7077655d52f6b9393dfb633c90d70456676a3594ad938183406e48",
+      "callback_runtime_source_sha256": "1cfde04d340c58e44864cd6b2918636766ffd69fedc7c50ce0cdf86f7985fa66"
+    },
+    "E:\\Projects\\MCP_CREO_MechDog_Isolation": {
+      "module_file": {
+        "path": "E:\\Projects\\MCP_CREO_MechDog_Isolation\\build\\blend_callback\\f8bd9e815dc658c98b6e1fe71bbf5b9543d2aaedb554ba9f8140262dbe88341a\\callback.dll",
+        "same_sha256": true,
+        "same_mtime": true
+      },
+      "loader_file": {
+        "path": "E:\\Projects\\MCP_CREO_MechDog_Isolation\\build\\blend_loader\\452c98e835b510636c0440837e6474482546967127bdbd87319bea43ac764319\\loader.dll",
+        "same_sha256": true,
+        "same_mtime": true
+      },
+      "registry_file": {
+        "path": "E:\\Projects\\MCP_CREO_MechDog_Isolation\\build\\blend_callback_protk.dat",
+        "same_sha256": true,
+        "same_mtime": true
+      },
+      "worker_before_sha256": "6cfbca42900620c616f2f415ccc311b759d19dd452cb8a316264ebdf1a52c5d7",
+      "worker_after_sha256": "00ed4260378275518d7513681db1202184e24566f4724bd1c31ecbb5b54e85d1",
+      "callback_runtime_source_sha256": "1cfde04d340c58e44864cd6b2918636766ffd69fedc7c50ce0cdf86f7985fa66"
+    }
+  },
+  "success": true
+}

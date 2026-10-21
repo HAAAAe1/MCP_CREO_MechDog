@@ -1,12 +1,17 @@
 """BUG-009: real process exclusion, actionable rejection and finalization order."""
 
 import asyncio
+import ctypes
 import errno
 import json
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import ExitStack
+from ctypes import wintypes
 from pathlib import Path
 from unittest.mock import patch
 
@@ -64,7 +69,8 @@ except bridge.ToolkitBusy as exc:
         def run(*args, **kwargs):
             if outcome == "timeout":
                 raise subprocess.TimeoutExpired(args[0], 1)
-            part = general.model_path(created["model_id"]) / "output/fixture.prt.1"
+            model = general.model_info(created["model_id"])
+            part = general.model_path(created["model_id"]) / f"output/{model['model_name']}.prt.1"
             part.write_bytes(b"synthetic native result")
             bridge.write_json(
                 bridge.job_path(created["job_id"]) / "native_result.json",
@@ -122,6 +128,121 @@ except bridge.ToolkitBusy as exc:
             with self.assertRaises(OSError) as error, bridge.toolkit_lock():
                 self.fail("Unexpected acquisition")
         self.assertNotIsInstance(error.exception, bridge.ToolkitBusy)
+
+    def test_real_open_sharing_denial_is_permission_error_not_busy(self):
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        create = kernel.CreateFileW
+        create.argtypes = [
+            wintypes.LPCWSTR,
+            wintypes.DWORD,
+            wintypes.DWORD,
+            wintypes.LPVOID,
+            wintypes.DWORD,
+            wintypes.DWORD,
+            wintypes.HANDLE,
+        ]
+        create.restype = wintypes.HANDLE
+        close = kernel.CloseHandle
+        close.argtypes = [wintypes.HANDLE]
+        close.restype = wintypes.BOOL
+        lock = self.root / "toolkit.lock"
+        lock.touch()
+        # A real share-mode conflict fails at open, before byte-lock contention exists.
+        handle = create(str(lock), 0x80000000 | 0x40000000, 0, None, 3, 0x80, None)
+        if handle == ctypes.c_void_p(-1).value:
+            raise ctypes.WinError(ctypes.get_last_error())
+        try:
+            with self.assertRaises(PermissionError) as error, bridge.toolkit_lock():
+                self.fail("An exclusive WinAPI holder must deny the Python open")
+            self.assertNotIsInstance(error.exception, bridge.ToolkitBusy)
+        finally:
+            if not close(handle):
+                raise ctypes.WinError(ctypes.get_last_error())
+        with bridge.toolkit_lock():
+            self.assertTrue(lock.exists())
+
+    def test_first_creation_concurrent_admission_keeps_lock_file(self):
+        retained = []
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            for iteration in range(600):
+                directory = self.root / f"first-create-{iteration}"
+                directory.mkdir()
+                lock = directory / "toolkit.lock"
+                self.assertFalse(lock.exists())
+                initial = (None, b"", b"\0")[iteration % 3]
+                if initial is not None:
+                    lock.write_bytes(initial)
+                start = threading.Barrier(2, timeout=5)
+                attempted = threading.Barrier(2, timeout=5)
+
+                def acquire():
+                    with ExitStack() as held:
+                        start.wait()
+                        try:
+                            held.enter_context(bridge.toolkit_lock())
+                        except bridge.ToolkitBusy:
+                            outcome = "busy"
+                        except OSError as exc:
+                            outcome = exc
+                        else:
+                            outcome = "acquired"
+                        # Hold the successful admission until both attempts have finished.
+                        attempted.wait()
+                        return outcome
+
+                with patch.object(bridge, "ROOT", directory):
+                    futures = [executor.submit(acquire) for _ in range(2)]
+                    outcomes = [future.result(timeout=10) for future in futures]
+                    self.assertCountEqual(outcomes, ["acquired", "busy"])
+                    identity = lock.stat().st_ino
+                    with bridge.toolkit_lock():
+                        self.assertEqual(lock.stat().st_ino, identity)
+                    self.assertEqual(lock.stat().st_ino, identity)
+                    self.assertEqual(lock.read_bytes(), initial or b"")
+                retained.append(lock)
+        self.assertTrue(all(path.exists() for path in retained))
+
+    def test_existing_lock_file_identity_and_bytes_survive_release(self):
+        lock = self.root / "toolkit.lock"
+        content = b"persistent-lock-file"
+        lock.write_bytes(content)
+        identity = lock.stat().st_ino
+        # An independent open handle remains valid across repeated service admissions.
+        with lock.open("rb") as observer:
+            for _ in range(3):
+                with bridge.toolkit_lock():
+                    self.assertEqual(lock.stat().st_ino, identity)
+                self.assertTrue(lock.exists())
+                self.assertEqual(lock.stat().st_ino, identity)
+            self.assertEqual(observer.read(), content)
+        self.assertEqual(lock.read_bytes(), content)
+
+    def test_open_handle_prevents_lock_file_deletion_or_replacement(self):
+        lock = self.root / "toolkit.lock"
+        with bridge.toolkit_lock():
+            identity = lock.stat().st_ino
+            with self.assertRaises(PermissionError):
+                lock.unlink()
+            replacement = self.root / "replacement.lock"
+            replacement.write_bytes(b"different file")
+            with self.assertRaises(PermissionError):
+                replacement.replace(lock)
+            self.assertEqual(lock.stat().st_ino, identity)
+        with bridge.toolkit_lock():
+            self.assertEqual(lock.stat().st_ino, identity)
+
+    def test_open_failure_is_not_retried_or_reported_busy(self):
+        with (
+            patch.object(bridge, "_create_file", return_value=ctypes.c_void_p(-1).value) as opened,
+            patch.object(bridge.ctypes, "get_last_error", return_value=5),
+            patch.object(bridge.time, "sleep") as slept,
+        ):
+            with self.assertRaises(PermissionError) as failure, bridge.toolkit_lock():
+                self.fail("Open failure must not admit native work")
+        self.assertNotIsInstance(failure.exception, bridge.ToolkitBusy)
+        self.assertEqual(failure.exception.winerror, 5)
+        opened.assert_called_once()
+        slept.assert_not_called()
 
     def test_real_stdio_preserves_busy_fields_and_polling_during_contention(self):
         from mcp import Client

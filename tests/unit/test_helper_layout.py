@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 import generic_bridge
 import server
-from creo_mechdog import schema
+from creo_mechdog import capability_pages, schema
 from tools import package
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -92,12 +92,17 @@ print(json.dumps({name: [importlib.import_module(name).__file__,
                 shutil.copy2(ROOT / name, destination)
             with patch.object(server, "_CODE_ROOT", root):
                 self.assertEqual(server._source_fingerprints(), server._LOADED_FINGERPRINTS)
-                for module in HELPERS:
-                    name = f"src/creo_mechdog/{module}.py"
+                names = [f"src/creo_mechdog/{module}.py" for module in HELPERS]
+                names.append("native/inspection_units.h")
+                for name in names:
                     self.assertIn(name, server._SOURCE_NAMES)
                     original = (root / name).read_bytes()
-                    (root / name).write_bytes(original + b"\n# changed implementation\n")
-                    runtime = asyncio.run(server.creo_capabilities())["runtime"]
+                    (root / name).write_bytes(original + b"\n")
+                    # The capabilities snapshot is frozen; drop it so the runtime
+                    # section reflects the just-changed source.
+                    capability_pages.reset_snapshot()
+                    page = asyncio.run(server.creo_capabilities(detail="full", section="runtime"))
+                    runtime = {entry["key"]: entry["value"] for entry in page["entries"]}
                     self.assertTrue(runtime["source_changed_since_startup"])
                     self.assertEqual(
                         runtime["source_fingerprints_at_startup"], server._LOADED_FINGERPRINTS

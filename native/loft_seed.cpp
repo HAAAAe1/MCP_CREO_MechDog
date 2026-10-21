@@ -2,7 +2,8 @@
 // This does not create Blend element trees or add sections to a smaller seed.
 // The caller supplies a saved native seed; only the new owned copy is modified.
 #include <ProCurve.h>
-static ProMdl load_isolated_loft_seed(const std::wstring &filename) {
+static ProMdl load_isolated_loft_seed(const std::wstring &filename, J &observation) {
+    observation = {{"status", "not_attempted"}};
     std::filesystem::path source(filename);
     ProPath previous, directory;
     CK(ProDirectoryCurrentGet(previous));
@@ -29,7 +30,9 @@ static ProMdl load_isolated_loft_seed(const std::wstring &filename) {
         std::filesystem::copy_file(source, isolated);
         ProPath file;
         path(file, isolated.wstring());
-        CK(ProMdlFiletypeLoad(file, PRO_MDLFILE_UNUSED, PRO_B_FALSE, &loaded));
+        ProError code = ProMdlFiletypeLoad(file, PRO_MDLFILE_UNUSED, PRO_B_FALSE, &loaded);
+        observation = {{"status", code ? "load_failed" : "loaded"}, {"toolkit_code", code}};
+        check(code, "ProMdlFiletypeLoad");
     } catch (...) {
         ProDirectoryChange(previous);
         throw;

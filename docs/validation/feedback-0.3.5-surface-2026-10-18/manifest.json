@@ -1,0 +1,40 @@
+{
+  "feedback": "0.3.5 纯曲面链路能力缺口（第六份 0.3.5 外部反馈）",
+  "date": "2026-10-18",
+  "environment": "Windows win32 / Creo Parametric 10.0.0.0 (release_numeric=42) / ProToolkit x86e_win64 release 42 / Python 3.13 / stdio / mcp 0.3.5 (84 工具, 60 operations)",
+  "trigger_task": "可乐瓶五爪花瓣瓶底建模任务书（纯曲面法）",
+  "files": [
+    {
+      "name": "report.md",
+      "original": "C:\\Users\\Administrator\\Downloads\\0.3.5\\2026-10-18CREO10.0.0.0-0.3.5纯曲面链路缺Trim-Merge与草图不可就地改几何.md",
+      "sha256": "fa6f4b6426542c130a3523a3c1ad897b73121b9a30a4d17c45f76842456e2e27"
+    },
+    {
+      "name": "可乐瓶五爪花瓣瓶底建模任务书.docx",
+      "original": "C:\\Users\\Administrator\\Downloads\\0.3.5\\可乐瓶五爪花瓣瓶底建模任务书.docx",
+      "sha256": "7bb0d30ea692cfac21c364178640b8fa4a1a3a420ba68ca8539475dda141f7e1",
+      "note": "软件无关版任务书（实体法 7 步 + 纯曲面法 8 步，GrabCAD 教程尺寸还原）；FEAT-039 的验收用例"
+    },
+    {
+      "name": "可乐瓶五爪花瓣瓶底_参考图集.docx",
+      "original": "C:\\Users\\Administrator\\Downloads\\0.3.5\\可乐瓶五爪花瓣瓶底_参考图集.docx",
+      "sha256": "8049959c691009aa4b78f3e6f98d966bd63f9e686e794bc7aeb7e575530f0cad",
+      "note": "8 张参考图（GrabCAD 教程、期刊论文尺寸链、专利线稿、实物照片）"
+    }
+  ],
+  "registered_items": {
+    "BUG-062": "update_sketch_geometry 不支持 centerline，回转草图不可就地编辑",
+    "FEAT-039": "纯曲面链路算子（surface_trim / quilt_merge / boundary_blend / quilt_offset + 面积与最小壁厚查询）",
+    "FEAT-040": "变半径圆角与收尾控制",
+    "FEAT-041": "交付与预览体验（输出目录、视角可选）"
+  },
+  "evidence_to_existing": ["FEAT-009", "FEAT-036", "FEAT-023", "FEAT-006", "FEAT-007", "FEAT-008"],
+  "jobs": {
+    "update_sketch_centerline_fail": "085e56a792c5473a82fdff1b7340b118",
+    "round_r2_10edges_fail": "dbaea9c036a54c1694dbfe12ace72166",
+    "round_r2_1edge_fail": "bc9575c08b914a1495aa07f7501c25ef",
+    "boolean_subtract_ok_407482.40mm3": "6825be2c",
+    "shell_fail_removed_top": "7236a301fff446ea855bf66370e8b64b",
+    "shell_fail_keep_all": "244a2be09840486094118cbc6c693adb"
+  }
+}

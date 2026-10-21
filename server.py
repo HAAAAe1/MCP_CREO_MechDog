@@ -22,8 +22,12 @@ import generic_bridge as general
 import seeds
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS, families
 from creo_mechdog import update_check
-from creo_mechdog.blend_callback import callback_setup_status
+from creo_mechdog.adoption import adopt
+from creo_mechdog.blend_callback import callback_setup_status, unknown_readiness
+from creo_mechdog.capability_pages import capabilities_response
+from creo_mechdog.open_file import open_file as submit_open_file
 from creo_mechdog.paths import SOURCE_PATHS
+from creo_mechdog.reconciliation import reconcile
 from creo_mechdog.references import PatternAxis, reference_capabilities
 from creo_mechdog.schema import (
     AirfoilProfile,
@@ -36,6 +40,7 @@ from creo_mechdog.schema import (
     SketchDimension,
     SketchOp,
 )
+from creo_mechdog.session_models import list_session_models
 from version import VERSION
 
 logging.basicConfig(level=logging.WARNING)
@@ -58,10 +63,19 @@ _SOURCE_NAMES = (
     "src/creo_mechdog/blend_callback.py",
     "src/creo_mechdog/build_support.py",
     "src/creo_mechdog/seed_distribution.py",
+    "src/creo_mechdog/seed_compatibility.py",
     "seeds.py",
     "src/creo_mechdog/recovery.py",
+    "src/creo_mechdog/reconciliation.py",
+    "src/creo_mechdog/legacy_recovery.py",
+    "src/creo_mechdog/adoption.py",
+    "src/creo_mechdog/session_models.py",
+    "src/creo_mechdog/open_file.py",
+    "src/creo_mechdog/capability_pages.py",
+    "src/creo_mechdog/model_queries.py",
     "src/creo_mechdog/startup_state.py",
     "src/creo_mechdog/windows_boot.py",
+    "src/creo_mechdog/window_observations.py",
     "src/creo_mechdog/schema.py",
     "src/creo_mechdog/profile_checks.py",
     "src/creo_mechdog/airfoil.py",
@@ -74,10 +88,20 @@ _SOURCE_NAMES = (
     "native/geometry.cpp",
     "tools/generate_constants.py",
     "native/generic.cpp",
+    "native/loft_seed.cpp",
     "native/advanced.cpp",
+    "native/component_transform.h",
+    "native/inspection_units.h",
     "native/helical.cpp",
     "native/drawing.cpp",
     "native/result_delivery.h",
+    "native/recovery_deadline.h",
+    "native/blend_sync.cpp",
+    "native/blend_loader.cpp",
+    "native/blend_create.cpp",
+    "native/callback_identity.h",
+    "native/callback_api.h",
+    "native/callback_runtime.h",
 )
 
 
@@ -112,7 +136,10 @@ mcp = MCPServer(
     "Mutation tools return a job_id: poll creo_get_job with detail=compact, then use its model_id and latest revision. "
     "Inspect surfaces/edges/dimensions before choosing raw references. Always provide expected_revision "
     "when modifying an existing MCP model. Models and native files persist across clients. "
-    "Consult creo_capabilities.references.by_tool for each parameter's kind and container shape. "
+    "creo_capabilities defaults to a compact summary page including support_status; "
+    "use detail=full with section=references and follow next_cursor for each "
+    "parameter's kind and container shape. "
+    "Open existing on-disk .prt/.asm read-only with creo_open_file (no managed model); adopt before managed editing. "
     "Success requires status=succeeded and saved_file_reloaded_and_verified=true for mutations. "
     "Busy errors mean this request was not accepted; inspect blocking_job_id, blocking_model_id "
     "and retry_guidance. Poll accepted jobs instead of resubmitting them. "
@@ -147,7 +174,7 @@ class Hole(BaseModel):
 
 async def invoke(fn, *args, **kwargs):
     try:
-        if fn in (bridge.create_job, general.submit, general.new_loft_part):
+        if fn in (bridge.create_job, general.submit, general.new_loft_part, submit_open_file):
             startup.require_ready()
         return await asyncio.to_thread(fn, *args, **kwargs)
     except bridge.ToolkitBusy as exc:
@@ -157,6 +184,15 @@ async def invoke(fn, *args, **kwargs):
             structured_content=exc.payload,
         )
     except (ValueError, RuntimeError, OSError) as exc:
+        # A structured payload (e.g. AdoptionMetadataBudgetExceeded) keeps the
+        # same JSON text and structuredContent contract as busy errors.
+        payload = getattr(exc, "payload", None)
+        if isinstance(payload, dict) and str(exc) == json.dumps(payload, ensure_ascii=False):
+            return CallToolResult(
+                is_error=True,
+                content=[TextContent(type="text", text=str(exc))],
+                structured_content=payload,
+            )
         raise ToolError(str(exc)) from None
 
 
@@ -168,8 +204,33 @@ async def creo_check_environment() -> dict[str, Any]:
 
 @mcp.tool(annotations=READ)
 async def creo_session_status() -> dict[str, Any]:
-    """Check the configured/unique Creo session through Toolkit (9 second probe budget, no rebuild). Busy returns its occupying job; probe_timeout returns recovery guidance. During startup return its snapshot promptly. connected=true requires verification; ambiguous/stale session selections never fall back to a random session."""
-    return await invoke(startup.session_status)
+    """Check the configured/unique Creo session through Toolkit (9 second probe budget, no rebuild). Every return branch carries server_version. Busy returns its occupying job; probe_timeout returns recovery guidance. During startup return its snapshot promptly. connected=true requires verification; ambiguous/stale session selections never fall back to a random session. Includes a read-only creo_process_snapshot (pid/name/created_at/matches) so a failed probe can distinguish a dead IPC endpoint from an exited Creo process."""
+    result = await invoke(startup.session_status)
+    return {**result, "server_version": VERSION}
+
+
+@mcp.tool(annotations=READ)
+async def creo_callback_status() -> dict[str, Any]:
+    """Read resident Blend readiness without building, loading a DLL, launching Creo or changing models. The native probe has a 9-second budget and verifies a fresh nonce, module/loader hashes, protocol, command and resource root. Returns ready/not_loaded/version_mismatch/unknown with identities, checked_at and next steps. not_loaded is provable (never loaded, or registered but not running) and its instruction leads with the one-time registration entry; unknown means the loaded state cannot be confirmed. GUI registration stays unknown; busy, unreachable and timeout never imply unregistered. Old protocol-2 registration requires a one-time migration; stable loader upgrades normally require a Creo restart and starting the same registration. Do not replay unknown_outcome."""
+    state = startup.status()
+    if state.get("coordinator_running"):
+        return unknown_readiness(
+            callback_setup_status(bridge.ROOT / "build"), "startup_in_progress", startup=state
+        )
+    result = await invoke(bridge.callback_status)
+    result["service"] = {
+        "version": VERSION,
+        "resource_root": str(SOURCE_PATHS.resource_root),
+        "source_fingerprints_at_startup": dict(_LOADED_FINGERPRINTS),
+        "source_changed_since_startup": _source_fingerprints() != _LOADED_FINGERPRINTS,
+    }
+    if result["service"]["source_changed_since_startup"]:
+        result.update(
+            readiness="unknown",
+            reason="service_source_changed",
+            instruction="Restart this MCP service to load the deployed code, then query again. Preserve unknown jobs/models.",
+        )
+    return result
 
 
 @mcp.tool(annotations=CREATE)
@@ -227,8 +288,91 @@ async def creo_create_plate(
 
 @mcp.tool(annotations=READ)
 async def creo_get_job(job_id: str, detail: Literal["compact", "full"] = "full") -> dict[str, Any]:
-    """Read modeling progress/result. Use detail=compact for polling: status/revision/files/hash/volume/counts/operation outcomes; full includes complete geometry, aliases and validation. Full remains the compatibility default."""
+    """Read modeling progress/result. Use detail=compact for polling: status/revision/files/hash/volume/counts/operation outcomes; full includes complete geometry, aliases and validation. Full remains the compatibility default. Recovery failures may include reason, failure_phase and recovery_pending_released; success normally omits failure_phase, so use status and the public server version to interpret absent fields."""
     return await invoke(bridge.get_job, job_id, detail)
+
+
+@mcp.tool(annotations=CREATE)
+async def creo_reconcile_model(
+    model_id: str,
+    mode: Literal["inspect", "apply"] = "inspect",
+    live: bool = False,
+    action: Literal["restore_baseline", "accept_saved", "accept_live", "abandon_new"] | None = None,
+    expected_revision: int | None = Field(
+        default=None, description="Apply only: the revision returned by this inspect."
+    ),
+    expected_pending_job_id: str | None = Field(
+        default=None,
+        description=(
+            "Apply only: the pending_job value returned by this inspect. Send JSON null "
+            "(or omit the parameter) when inspect returned pending_job=null; "
+            "never send an empty string."
+        ),
+    ),
+    evidence_token: str | None = Field(
+        default=None, description="Apply only: the evidence_token returned by this inspect."
+    ),
+    idempotency_key: str | None = Field(
+        default=None,
+        description="Apply only: unique 8-80 letters, digits, underscores or hyphens.",
+    ),
+) -> dict[str, Any]:
+    """Inspect uncertain owned models without requiring Creo. live=true performs a bounded read-only session preflight. Apply an explicitly selected available action with the returned token, revision, pending_job (null when absent) and a unique 8–80 character idempotency_key. Poll its independent recovery job; never replay the original plan. Execution failures expose reason and failure_phase: before_native refusals release only their own recovery reservation under the channel lock; native_worker_started means dispatch may have begun and unknown_outcome protection remains. restore_baseline keeps revision; accept_saved/live increments once; abandon_new preserves files and archives the model. accept_live requires live preflight. Unsupported/unproven ownership is rejected; no Creo restart or user file deletion."""
+    return await invoke(
+        reconcile,
+        model_id,
+        mode,
+        live,
+        action,
+        expected_revision,
+        expected_pending_job_id,
+        evidence_token,
+        idempotency_key,
+    )
+
+
+@mcp.tool(annotations=CREATE)
+async def creo_adopt_current_model(
+    mode: Literal["inspect", "prepare", "apply"] = "inspect",
+    model_id: str | None = Field(
+        default=None,
+        description="Apply: pending model_id. Inspect with model_id renews prepared-snapshot evidence without copying.",
+    ),
+    evidence_token: str | None = Field(
+        default=None, description="Apply only: the evidence_token returned by inspect."
+    ),
+    model_name: str | None = Field(
+        default=None,
+        description=(
+            "Prepare or file-source apply: managed copy name (1-31 chars of lowercase letters/digits/underscores, "
+            "letter or digit first; uppercase input is normalized to lowercase); defaults to the "
+            "inspect default_model_name and must not exist in the Creo session."
+        ),
+    ),
+    idempotency_key: str | None = Field(
+        default=None,
+        description="Prepare/apply: unique 8-80 letters, digits, underscores or hyphens; use different keys for the two steps.",
+    ),
+) -> dict[str, Any]:
+    """Explicitly adopt the current window model as a managed copy; the original is never saved, erased or renamed. File sources use read-only inspect then evidence-bound apply. A never-saved model requires prepare with an idempotency_key: poll its job and review result.adoption, then apply that model_id/evidence_token with a new key. prepare freezes a copy at native execution time without switching the current window; status stays adopt_pending/revision=0. Confirmation adopts that frozen snapshot at revision=1, displays the managed copy and excludes later edits to the original. inspect(model_id=...) renews ten-minute snapshot evidence without copying. Same-key replay never repeats native execution. Supported: healthy independent part/sheetmetal, millimeters, no external dependencies. Poll accepted jobs only; uncertain outcomes keep protection and resolve through reconcile abandon_new. Upgrade source code then restart the MCP connector and verify runtime identity/tool list before using new modes."""
+    return await invoke(adopt, mode, model_id, evidence_token, model_name, idempotency_key)
+
+
+@mcp.tool(annotations=READ)
+async def creo_list_session_models(
+    limit: int = Field(default=20, ge=1, le=50), cursor: str | None = None
+) -> dict[str, Any]:
+    """List models already in the connected Creo session without loading, saving, activating or adopting them. Returns names/types/current model, origin, has_saved_origin, modified and proven managed IDs; unknown fields are null with query codes. First page uses the single Toolkit channel (busy rejects immediately); cursor pages read the same frozen ten-minute snapshot. Integer session IDs are transient discovery hints, never adoption identities; they may legitimately be 0 or duplicated across model types, so locate models by name plus model_type. session_fingerprint identifies the connection/process session and does not change when session contents change. Partial type queries report complete=false. Switch to the desired model in Creo before adopting it."""
+    return await invoke(list_session_models, limit, cursor)
+
+
+@mcp.tool(annotations=CREATE)
+async def creo_open_file(
+    file_path: str,
+    idempotency_key: str,
+) -> dict[str, Any]:
+    """Retrieve an existing on-disk .prt/.asm into the connected Creo session and display it, read-only. file_path is a Windows absolute path; append an explicit numeric version (e.g. .prt.3) to open exactly that file, otherwise the highest numeric version in the directory is selected and only the extension-only file is used when no numeric version exists. idempotency_key (8-80 letters/digits/underscores/hyphens) replays the same job for the same path and rejects a different path. Submission returns a job_id; poll creo_get_job. The file is never saved, erased, renamed or adopted: a successful open returns model_id=null/adopted=false and creates no managed revision. Same-name/same-type session models cause rejection, and assemblies additionally require a session without parts/assemblies; both checks and the retrieval share one Toolkit channel. An incomplete assembly fails with any residual session objects reported and missing components marked unknown; a display failure is reported separately from retrieval. Source-file identity is recorded at submit and after the job. Opened models are not MCP-managed: adopt with creo_adopt_current_model first if managed editing is needed."""
+    return await invoke(submit_open_file, file_path, idempotency_key)
 
 
 @mcp.tool(annotations=READ)
@@ -239,9 +383,51 @@ async def creo_list_jobs(
     return {"jobs": await invoke(bridge.list_jobs, limit, detail)}
 
 
-@mcp.tool(annotations=READ)
-async def creo_capabilities() -> dict[str, Any]:
-    """Describe general modeling tools, coordinate frames, reference syntax and test evidence."""
+def _support_status() -> dict[str, Any]:
+    """Explicit capability boundaries so callers need not infer them (FEAT-008)."""
+    return {
+        "disk_open": {
+            "status": "supported",
+            "tool": "creo_open_file",
+            "summary": (
+                "read-only retrieval and display of existing on-disk .prt/.asm "
+                "(explicit or highest numeric version); never saves, erases, renames "
+                "or adopts, and creates no managed model"
+            ),
+        },
+        "session_enumeration": {
+            "status": "supported",
+            "tool": "creo_list_session_models",
+            "summary": "read-only session inventory with frozen pagination; no loading or activation",
+        },
+        "adoption": {
+            "status": "supported_limited",
+            "tool": "creo_adopt_current_model",
+            "summary": (
+                "explicit managed-copy adoption of part/sheetmetal only (millimeter "
+                "units, no external dependencies, healthy features); assembly/drawing "
+                "and repeat adoption of the same file are refused"
+            ),
+        },
+        "assembly_checks": {
+            "status": "planned",
+            "tracking": "FEAT-045",
+            "summary": (
+                "read-only external assembly inspection (component tree, transforms) is "
+                "not available yet; assemblies open for display only"
+            ),
+        },
+        "external_file_managed_edit": {
+            "status": "not_supported_through_open",
+            "summary": (
+                "creo_open_file never modifies external files; adopt the opened model "
+                "with creo_adopt_current_model first if managed editing is required"
+            ),
+        },
+    }
+
+
+def _capabilities_payload(tool_entries: list[dict[str, Any]]) -> dict[str, Any]:
     local_evidence = bridge.ROOT / "build/capability_evidence.json"
     evidence = (
         local_evidence
@@ -278,6 +464,7 @@ async def creo_capabilities() -> dict[str, Any]:
     return {
         "name": "MCP_CREO_MechDog",
         "version": VERSION,
+        "server_version": VERSION,
         "update": updates.snapshot(),
         "runtime": {
             "python_executable": sys.executable,
@@ -286,6 +473,8 @@ async def creo_capabilities() -> dict[str, Any]:
             "python_package_root": str(SOURCE_PATHS.code_root),
             "resource_root": str(SOURCE_PATHS.resource_root),
             "data_root": str(SOURCE_PATHS.data_root),
+            "job_root": str(bridge.JOBS),
+            "model_root": str(general.MODELS),
             "source_fingerprints_at_startup": dict(_LOADED_FINGERPRINTS),
             "source_changed_since_startup": _source_fingerprints() != _LOADED_FINGERPRINTS,
         },
@@ -308,10 +497,11 @@ async def creo_capabilities() -> dict[str, Any]:
                 "creo_list_jobs",
                 "creo_inspect_model",
                 "creo_list_models",
+                "creo_reconcile_model (inspect without live)",
             ],
         },
-        "tool_count": len(await mcp.list_tools()),
-        "enabled_tool_count": len(await mcp.list_tools()),
+        "tool_count": len(tool_entries),
+        "enabled_tool_count": len(tool_entries),
         "disabled_tools_hidden": True,
         "startup": {
             "automatic_by_default": True,
@@ -345,12 +535,14 @@ async def creo_capabilities() -> dict[str, Any]:
             "XZ": "u=+X,v=+Z,normal=-Y",
             "YZ": "u=+Y,v=+Z,normal=+X",
         },
+        "tools": tool_entries,
         "references": reference_capabilities(),
         "arbitrary_planar_support": "plane={reference:{kind:surface,id:...},origin:[x,y,z],u_axis:[x,y,z]}",
         "workflow": "submit once -> poll get_job -> inspect model -> choose references -> append using expected_revision",
-        "scope": "MCP-owned native part, sheetmetal, assembly and drawing models. Tool availability does not prove every option or Creo operation is supported; consult validation evidence and coverage documentation.",
+        "scope": "MCP-owned native part, sheetmetal, assembly and drawing models; plus read-only retrieval/display of existing on-disk models via creo_open_file. Tool availability does not prove every option or Creo operation is supported; consult validation evidence and coverage documentation.",
+        "support_status": _support_status(),
         "complete_creo_coverage": False,
-        "seed_library": await invoke(seeds.list_seeds),
+        "seed_library": seeds.list_seeds(),
         "direct_blend_callback": callback_setup_status(bridge.ROOT / "build"),
         "release_status": "pre-release candidate; requested complete coverage has not been achieved",
         "families": families(),
@@ -360,9 +552,30 @@ async def creo_capabilities() -> dict[str, Any]:
     }
 
 
+@mcp.tool(annotations=READ)
+async def creo_capabilities(
+    detail: Literal["compact", "full"] = "compact",
+    section: str | None = None,
+    limit: int = 50,
+    cursor: str | None = None,
+) -> dict[str, Any]:
+    """Describe capability boundaries, tool families, reference syntax and test evidence. Default detail=compact returns one bounded summary page (name/version/tool_count/scope/support_status/operation list/family index/pagination guide). detail=full pages one section at a time with limit and next_cursor from a frozen in-process snapshot (600 s; cursors from an older snapshot or another process are rejected). Pages stay within 32 KiB; a single oversized entry is reported as an oversize marker instead of being truncated. Migration: before 0.4.2 this tool returned the whole document; page detail=full sections (e.g. references, families, evidence) to rebuild it."""
+    tool_entries = [
+        {"name": tool.name, "description": tool.description} for tool in await mcp.list_tools()
+    ]
+    return await invoke(
+        capabilities_response,
+        lambda: _capabilities_payload(tool_entries),
+        detail=detail,
+        section=section,
+        limit=limit,
+        cursor=cursor,
+    )
+
+
 @mcp.tool(annotations=CREATE)
 async def creo_new_part(model_name: str | None = None) -> dict[str, Any]:
-    """Create a new metric native part with datum planes and coordinate system. Returns model_id and job_id."""
+    """Create a new metric native part with datum planes and coordinate system. Returns model_id and job_id. model_name: 1-31 chars of lowercase letters/digits/underscores, letter or digit first; uppercase input is normalized to lowercase."""
     return await invoke(general.submit, [], None, model_name)
 
 
@@ -409,13 +622,13 @@ async def creo_new_loft_part(
 
 @mcp.tool(annotations=READ)
 async def creo_list_seeds() -> dict[str, Any]:
-    """Discover bundled/registered native Blend seeds and verify their SHA256. No manual paths/feature IDs are needed for auto-selected lofts."""
+    """Discover bundled/registered native Blend seeds and verify their SHA256. available means matching file bytes, not current Creo compatibility. seed_build_version is null when provenance is unknown; native_compatibility contains bounded historical loads tied to seed SHA256 and native release/session, without connecting Creo. No manual paths/feature IDs are needed for auto-selected lofts."""
     return await invoke(seeds.list_seeds)
 
 
 @mcp.tool(annotations=READ)
 async def creo_validate_seed(seed_name: str) -> dict[str, Any]:
-    """Verify a seed's file hash and manifest metadata; actual native type/count/mode are additionally checked on every loft creation."""
+    """Verify a seed's file hash/provenance without connecting Creo. Unknown seed_build_version stays null; native_compatibility observations are historical, never proof of current-session compatibility. Native load/type/count/mode are additionally checked on actual loft creation and reported separately from overall modeling success."""
     return await invoke(seeds.validate_seed, seed_name)
 
 
@@ -441,6 +654,9 @@ async def creo_execute_plan(
     Sketch/extrude/revolve and later features reference earlier feature labels.
     Existing models require expected_revision. Stops at first error; existing models
     roll back to their saved checkpoint. assertions supports require_solid and volume_mm3.
+    round/chamfer use `size` (mm); as a standalone-tool alias they also accept
+    radius (round) or distance (chamfer), but providing the alias together with
+    size is rejected instead of silently preferring one.
     """
     return await invoke(
         general.submit,
@@ -751,7 +967,9 @@ async def creo_extrude(
     new_body: bool = False,
     thin: float | None = None,
 ) -> dict[str, Any]:
-    """Create native extrusion from a sketch label/ID. Supports protrusion, pocket, through cut, symmetric, surface and thin modes."""
+    """Create native extrusion from a sketch label/ID. Supports protrusion, pocket, through cut, symmetric, surface and thin modes.
+    A cut that removes no material (disjoint sketch, wrong direction or already-removed region) fails and rolls back;
+    a successful cut reports material_removed_mm3 in its operation details."""
     op = {
         "op": "extrude",
         "label": label,
@@ -780,7 +998,8 @@ async def creo_revolve(
     new_body: bool = False,
     thin: float | None = None,
 ) -> dict[str, Any]:
-    """Create native revolve/revolved cut from an arbitrary sketch, about its centerline or an external axis."""
+    """Create native revolve/revolved cut from an arbitrary sketch, about its centerline or an external axis.
+    A cut that removes no material fails and rolls back; a successful cut reports material_removed_mm3."""
     op = {
         "op": "revolve",
         "label": label,
@@ -847,7 +1066,12 @@ async def creo_round(
         ),
     ],
 ) -> dict[str, Any]:
-    """Create a native constant-radius fillet on edges or face pairs. Each set is {edge:reference} or {surfaces:[reference,reference]}."""
+    """Create a native constant-radius fillet on edges or face pairs. Each set is {edge:reference} or {surfaces:[reference,reference]}.
+
+    radius is in mm and maps to the plan-operation field `size` (op="round"):
+    the submitted job echoes it as operations[].size, and the finished job's
+    result.operations[].size repeats the value the native feature applied.
+    """
     return await invoke(
         general.submit,
         [{"op": "round", "label": label, "size": radius, "references": references}],
@@ -870,7 +1094,12 @@ async def creo_chamfer(
         ),
     ],
 ) -> dict[str, Any]:
-    """Create equal-distance native chamfer sets on explicit edges or face pairs."""
+    """Create equal-distance native chamfer sets on explicit edges or face pairs.
+
+    distance is in mm and maps to the plan-operation field `size` (op="chamfer"):
+    the submitted job echoes it as operations[].size, and the finished job's
+    result.operations[].size repeats the value the native feature applied.
+    """
     return await invoke(
         general.submit,
         [{"op": "chamfer", "label": label, "size": distance, "references": references}],
@@ -1194,10 +1423,11 @@ async def creo_loft(
     """Append a native solid Blend using independent MCP-owned XY sketches, ordered by increasing Z.
 
     Straight/smooth, default-body add only. Cut, surface and new_body are rejected.
-    Manually initialize the resident callback before modeling under every loader policy
-    before modeling using capabilities.direct_blend_callback.registry_file. If absent,
-    the native worker rejects before DLL loading with BLEND_CALLBACK_SETUP_REQUIRED.
-    Reuses the prepared callback across jobs; MCP does not change Creo security policy.
+    Query creo_callback_status before modeling. Register its registry_file once per
+    loader/SDK generation and start it manually under every loader policy. Payload
+    upgrades normally require restarting Creo and starting the same registration.
+    Missing, mismatched or unverified callbacks reject before model mutation with
+    BLEND_CALLBACK_SETUP_REQUIRED. MCP never loads DLLs or changes security policy.
     sections accepts sketch labels or integer feature IDs; digit-only strings are
     normalized to feature IDs for public-client compatibility. References must be distinct.
     """

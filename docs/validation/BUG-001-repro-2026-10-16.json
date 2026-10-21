@@ -1,0 +1,79 @@
+{
+  "work_item": "BUG-001",
+  "recorded_at_utc": "2026-10-16T15:00:00Z",
+  "branch": "codex/bug-001-unknown-recovery",
+  "git_commit": "113c0bae61128dcc7c907830dfc90d4b5ed8dd2f",
+  "git_dirty": false,
+  "service_version": "0.3.3",
+  "environment": {
+    "os": "Windows x64",
+    "python": "3.12.14",
+    "creo": "Creo 12.4.0.0 (release_numeric=44)",
+    "worker_exe_sha256": "13021ae8d32c7dd30032d400db8ab66129c46a926874859f64eac57447bbdc0b",
+    "worker_exe_built_utc": "2026-10-16T10:38:13Z",
+    "config_timeouts": {"native_timeout_seconds": 180, "generic_timeout_seconds": 600},
+    "data_root": "isolated worktree C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog"
+  },
+  "method": {
+    "driver": "docs/validation/bug-001-repro-2026-10-16/g0_driver.py",
+    "driver_sha256": "c54c1c51b3cf32263a78db1a3b011f98d91a642c15474449d0b6350172ba04b0",
+    "raw_evidence": "docs/validation/bug-001-repro-2026-10-16/g0_evidence.json",
+    "raw_evidence_sha256": "5360e6b23c44da58ba3d4bc5237619036d9918cf3c5f1c08218999339752c5a4",
+    "transport": "real MCP stdio client against server.py; injections at process/config level (developer-only, isolated worktree)",
+    "timeout_injection": "config generic_timeout_seconds lowered to 12 (restored after each scenario); kills via process termination at native PHASE markers",
+    "deviation_from_report": "报告 601 s 客户端超时未按原时长复刻,用 12 s 预算触发同一 subprocess.TimeoutExpired 路径;未使用 Creo 10"
+  },
+  "scenarios": {
+    "S1_normal_long_task": {
+      "job_id": "1327cbe972f3429c8890ec687898bf1e",
+      "model_id": "3f0e5accd4f3492583c513c90580e467",
+      "result": "succeeded, revision 0→1 exactly once, saved_file_reloaded_and_verified=true, part sha256 0977b4bd45fbb292baa8561571f8f1e6eda3c9a2b6b356315aeb54d158f703b0, 62 ops / 113.8 s"
+    },
+    "S2_pre_save_timeout": {
+      "job_id": "ae5b5af64b774b9796e5037e5b76e931",
+      "model_id": "95eb09c9fb0a4a46991cda397b8594f8",
+      "result": "unknown_outcome at executing_feature_plan; model unknown_outcome + pending_job retained + revision 0 + part_file null; on-disk prt.1 (63 KB, sha256 2ebb777f…) is the template instantiation, not a save",
+      "channel_layer": "resubmit rejected with 'Creo is not ready (timeout): Toolkit verification was invalidated' until creo_startup_status(retry=true) re-verified (~30 s)",
+      "model_layer": "after channel retry, resubmit rejected status=busy/code=toolkit_busy with blocking_job_id/blocking_model_id/blocking_operation=pending_job"
+    },
+    "S3_saved_but_undelivered": {
+      "job_id": "65e4bc89b7f24f2fbe176d3e43d15966",
+      "model_id": "47d6caa7bf2b4b29ab590eeaef31a863",
+      "injection": "worker killed at PHASE=after_reload_blend_validation (after ProMdlnameBackup save + reload verify, before preview/result delivery)",
+      "result": "unknown_outcome ('Worker exited 1 without a result'); output contains real saved prt.2 (490 KB, sha256 9471d034…) plus template prt.1; model revision stays 0, part_file null → saved result NOT accepted by latest-prt heuristic; recovery evidence attached (automatic_replay_allowed=false, native_result_present=false)"
+    },
+    "S4_worker_killed_mid_ops": {
+      "job_id": "0cf7f4ae44a54a469a4bcbf5d546842d",
+      "model_id": "2472bbbba6fd478d834bd3e3ce90d04e",
+      "result": "unknown_outcome during execute_extrude; after channel retry a normal job on another new model (a51e2a4b645444e0acf1a674677ee188 / 486f76a172dc49b0aa46c520003d92e0) succeeded rev 1 saved_verified=true → channel/lock recover, other models unaffected"
+    },
+    "S5_session_deviation_gate": {
+      "model_id": "3f0e5accd4f3492583c513c90580e467 (checkpointed, rev 1)",
+      "timeout_job": "6df694689250470ab6363a061220b88b → unknown_outcome",
+      "injection_1": "developer-only model.json edit pending_job→null, status→ready (before-value recorded)",
+      "gate_job_1": "22bcd3b465fc46e79252f09605c44474 → failed 'Saved feature/body count changed', failed_stage=connect, toolkit_code=-1, rollback_succeeded=false; model → failed, revision stays 1",
+      "injection_2_retry": "8b87e27951e840e89e734adeca52eeb9 → failed identically → writes fail indefinitely without restart",
+      "root_cause_source_0_3_3": "native/generic.cpp sets mutated=true only when the job's own write operations execute; the load-time deviation check (verify_saved at load) raises before any op, so the rollback_to_saved_checkpoint branch (requires connected && mutated && checkpoint) never runs and the mutated session model is kept"
+    },
+    "S6_recovery_inventory": {
+      "tool_count": 82,
+      "recovery_like_tools": [],
+      "readonly_while_pending": "dump_tree on pending model rejected status=busy/toolkit_busy with blocking_* fields",
+      "job_recovery_evidence_keys": ["automatic_replay_allowed", "job_id", "model", "model_id", "native_result_present", "next_steps", "runner"]
+    },
+    "S6restart": {
+      "pseudo_restart_lesson": "killing parametric.exe (launcher stub) does NOT end the session; xtop.exe survives and all results remain session-bound",
+      "no_checkpoint_asymmetry": "with the session still alive, a manually unlocked checkpoint-less model (95eb09c9…, part_file null, no recorded inspection) accepted the mutated session state: regenerate job fec310397ca345e4a9568e2e786afe71 succeeded, revision 0→1, inspection shows 26 of the planned 62 features — the partial timed-out state became the new baseline",
+      "real_restart": "killed xtop/parametric/pro_comm_msg/nmsd (verified 0), fresh session started; checkpointed model M1 write job 15c6a68e693b4f6a939b03584f8306cc succeeded, revision 1→2, saved_file_reloaded_and_verified=true"
+    }
+  },
+  "startup_incident_before_matrix": "2026-10-16 20:33 本地时间一次启动滞留(parametric 25 MB、无 xtop 子进程,TEMP 含同时刻 workbuddy-product-spill 条目,推测来自用户 WorkBuddy 会话);首次清理后重试仍出现『外部程序 UNNAMED 没有正确初始化』弹窗并冻结(toolkit_code=-11/connection_failed/worker_exit_code=20);结束全部 PTC 进程并移除 0 字节 toolkit.lock 后一次冷启动成功。startup_status retry 单独未能恢复,需人工全进程清理;该现象归 BUG-011/FEAT-001 家族,不计入 BUG-001 结论。",
+  "verdict": "a — 复现阻断:保护层(unknown_outcome + pending_job + 通道健康失效 + toolkit_busy 契约)全部按设计持续生效,且无任何官方恢复接口;人工解锁后 checkpointed 模型陷入会话偏离门禁循环,唯一出路是真重启 Creo;无 checkpoint 模型的人工解锁会静默采纳脏会话状态。FEAT-018 受控恢复确认为优先修复,衔接 DEV-030 G1。",
+  "not_tested": [
+    "报告的 601 s 原始时长与 Creo 10 环境",
+    "legacy create_plate 的 native_timeout 路径",
+    "真实并发提交",
+    "WorkBuddy 黑盒(内部故障注入不适用于黑盒范围)",
+    "601 s 报告中的具体模型与作业恢复"
+  ]
+}

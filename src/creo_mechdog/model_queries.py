@@ -57,6 +57,7 @@ def inspection_summary(inspection: Any) -> dict[str, Any]:
                 "healthy",
                 "has_solid",
                 "units",
+                "units_query_code",
                 "model_type",
                 "volume_mm3",
                 "volume_query_code",
@@ -83,6 +84,9 @@ def model_summary(model: dict[str, Any]) -> dict[str, Any]:
             "created_at",
             "updated_at",
             "pending_job",
+            "recovery_pending",
+            "reconciliation",
+            "part_sha256",
             "last_job",
             "last_query_at",
             "part_file",
@@ -96,9 +100,12 @@ def model_summary(model: dict[str, Any]) -> dict[str, Any]:
         "revision": model.get("revision"),
         "at": model.get("updated_at"),
         "live_state_verified": False,
-        "mutation_pending": bool(model.get("pending_job")),
+        "mutation_pending": bool(model.get("pending_job") or model.get("recovery_pending")),
     }
     result["detail_available"] = True
+    source = model.get("adopted_from")
+    result["adopted"] = bool(source and source.get("state") == "completed")
+    result["source_kind"] = (source or {}).get("source_kind", "file" if source else "created")
     return result
 
 

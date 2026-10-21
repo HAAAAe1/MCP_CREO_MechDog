@@ -330,7 +330,8 @@ int wmain(int argc, wchar_t *argv[]) {
         printf("%s\n", result.dump().c_str());
         return 0;
     }
-    bool probe = (argc == 2 || argc == 3) && wcscmp(argv[1], L"status") == 0;
+    bool callback_probe = (argc == 2 || argc == 3) && wcscmp(argv[1], L"callback-status") == 0;
+    bool probe = callback_probe || ((argc == 2 || argc == 3) && wcscmp(argv[1], L"status") == 0);
     unsigned int probe_timeout = 30;
     if (probe && argc == 3) {
         wchar_t *end = nullptr;
@@ -367,15 +368,41 @@ int wmain(int argc, wchar_t *argv[]) {
         log("CONNECT=%d\n", result);
     }
     if (probe) {
+        if (callback_probe) {
+            J state = {{"connected", connected},
+                       {"toolkit_code", result},
+                       {"connection_state", connected ? "connected" : "connection_failed"}};
+            if (connected) {
+                wchar_t executable[MAX_PATH];
+                GetModuleFileNameW(nullptr, executable, MAX_PATH);
+                ProToolkitDllHandle verified = nullptr;
+                std::string command;
+                state["direct_blend_callback"] = callback_runtime_status(
+                    std::filesystem::path(executable).parent_path(), verified, command);
+                disconnect_code =
+                    ProEngineerDisconnect(&process, probe_timeout < 15 ? probe_timeout : 15);
+                if (disconnect_code) {
+                    state["connected"] = false;
+                    state["connection_state"] = "disconnect_failed";
+                }
+            }
+            state["disconnect_code"] = disconnect_code;
+            printf("%s\n", state.dump().c_str());
+            return result ? 20 : 0;
+        }
         std::wstring name;
-        int type = -1, current_code = -8, release = 0;
+        int type = -1, current_code = -8, release = 0, name_code = 0;
         if (connected) {
             ProMdl current = nullptr;
             current_code = ProMdlCurrentGet(&current);
             if (!current_code) {
-                ProName value;
-                ProMdlNameGet(current, value);
-                name = value;
+                // BUG-070: the deprecated ProMdlNameGet left an uninitialized
+                // ProName untouched on failure and stale stack bytes surfaced as
+                // a garbled model name. The successor fills a zeroed buffer.
+                ProMdlName value = {};
+                name_code = ProMdlMdlnameGet(current, value);
+                if (!name_code)
+                    name = value;
                 ProMdlType t;
                 ProMdlTypeGet(current, &t);
                 type = t;
@@ -393,10 +420,11 @@ int wmain(int argc, wchar_t *argv[]) {
             connection_state = "ambiguous";
         printf("{\"connected\":%s,\"connection_state\":\"%s\",\"toolkit_code\":%d,\"current_"
                "model\":%s,\"current_model_code\":%"
-               "d,\"model_type\":%d,\"release_numeric\":%d,\"disconnect_code\":%d,\"feature_"
+               "d,\"name_read_code\":%d,\"model_type\":%d,\"release_numeric\":%d,"
+               "\"disconnect_code\":%d,\"feature_"
                "creation_license\":\"requires_actual_modeling_test\"}\n",
                connected ? "true" : "false", connection_state, result, json_string(name).c_str(),
-               current_code, type, release, disconnect_code);
+               current_code, name_code, type, release, disconnect_code);
         return result ? 20 : 0;
     }
     if (connected) {

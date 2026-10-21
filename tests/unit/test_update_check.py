@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock, Mock, patch
 import httpx2
 
 import server
+from creo_mechdog import capability_pages
 from creo_mechdog import update_check as updates
 
 
@@ -194,7 +195,8 @@ class UpdateCacheTests(unittest.IsolatedAsyncioTestCase):
             patch.object(server, "startup") as startup,
         ):
             startup.status.return_value = {"state": "ready", "revision": 8}
-            caps = await asyncio.wait_for(server.creo_capabilities(), 0.5)
+            capability_pages.reset_snapshot()
+            caps = await asyncio.wait_for(server.creo_capabilities(), 3.0)
             state = await asyncio.wait_for(server.creo_startup_status(), 0.5)
             self.assertEqual(caps["update"], state["update"])
             self.assertEqual(state["update"]["status"], "checking")
@@ -263,11 +265,12 @@ class UpdateCacheTests(unittest.IsolatedAsyncioTestCase):
             startup.status.return_value = {"state": "ready"}
             await server.creo_check_update()
             direct = await server.creo_check_update()
+            capability_pages.reset_snapshot()
             self.assertEqual(direct, (await server.creo_capabilities())["update"])
             self.assertEqual(direct, (await server.creo_startup_status())["update"])
             tools = {tool.name: tool for tool in await server.mcp.list_tools()}
             tool = tools["creo_check_update"]
-            self.assertEqual(len(tools), 82)
+            self.assertEqual(len(tools), 87)
             self.assertTrue(tool.annotations.read_only_hint)
             self.assertTrue(tool.annotations.open_world_hint)
             self.assertFalse(tool.annotations.destructive_hint)

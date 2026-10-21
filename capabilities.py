@@ -90,6 +90,67 @@ def require_available(operations: list[dict]) -> None:
 
 def families() -> dict:
     return {
+        "callback_lifecycle": {
+            "enabled": True,
+            "tool": "creo_callback_status",
+            "scope": "Stable resident Blend registration, deployment identity and bounded live readiness",
+            "automatic_loading": False,
+            "automatic_creo_restart": False,
+        },
+        "model_reconciliation": {
+            "enabled": True,
+            "tool": "creo_reconcile_model",
+            "actions": ["restore_baseline", "accept_saved", "accept_live", "abandon_new"],
+            "scope": "Owned part/sheetmetal models; explicit evidence-bound recovery; assembly/drawing rejected",
+            "original_plan_replay": False,
+            "inspect_requires_creo": False,
+        },
+        "model_adoption": {
+            "enabled": True,
+            "tool": "creo_adopt_current_model",
+            "actions": ["inspect", "prepare", "apply"],
+            "never_saved_models": "Explicit prepare freezes a verified snapshot; apply confirms it. Later source edits are excluded.",
+            "snapshot_evidence_renewal": "inspect(model_id=...) without copying; 600-second tokens",
+            "scope": (
+                "Explicit managed-copy adoption of the user's current window model; the source "
+                "model and its file are never modified; identity from origin path, file sha256 "
+                "and live inspection, never display names"
+            ),
+            "supported": "independent part/sheetmetal, millimeter units, no external dependencies, healthy features",
+            "limits": (
+                "assembly/drawing, non-millimeter units, dependent or unhealthy models are "
+                "refused; each source file adopts at most once; failed adoption resolves via "
+                "creo_reconcile_model abandon_new"
+            ),
+        },
+        "session_models": {
+            "enabled": True,
+            "tool": "creo_list_session_models",
+            "scope": "Read-only session inventory, frozen pagination, unknown fields are null",
+            "limit": {"default": 20, "maximum": 50, "page_bytes": 32768},
+            "automatic_activation": False,
+            "automatic_adoption": False,
+        },
+        "disk_open": {
+            "enabled": True,
+            "tool": "creo_open_file",
+            "scope": (
+                "Read-only retrieval and display of existing on-disk .prt/.asm models "
+                "(explicit or highest numeric version); never saves, erases, renames "
+                "or adopts; creates no managed model"
+            ),
+            "supported": (
+                "part, sheetmetal and complete assemblies; retrieval requires no "
+                "same-name/same-type session model; assemblies additionally require a "
+                "session without parts/assemblies"
+            ),
+            "limits": (
+                "no managed revision and no adoption (use creo_adopt_current_model "
+                "afterwards); incomplete assemblies fail with residues reported and "
+                "missing components marked unknown; display failures are reported "
+                "separately from retrieval"
+            ),
+        },
         "seed_library": {
             "enabled": True,
             "scope": "MIT native seeds bundled with source; SHA256 validation, local registration and automatic count/mode selection",

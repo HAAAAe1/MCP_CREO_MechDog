@@ -1,5 +1,12 @@
 // Composable Creo feature operations, using the installed Creo 10 Toolkit.
 #include "third_party/json.hpp"
+#include "recovery_deadline.h"
+#include "inspection_units.h"
+#include <algorithm>
+#include <cctype>
+#include <cerrno>
+#include <cstdlib>
+#include <memory>
 #include <map>
 #include <set>
 #include <array>
@@ -78,13 +85,48 @@ static int constant(const J &value) {
         throw std::runtime_error("Unknown Toolkit constant: " + value.get<std::string>());
     return it->second;
 }
+// Resolve a user-supplied label to its registered alias entry. Creo
+// uppercases PRO_E_STD_FEATURE_NAME, so inspect_model(features).name differs
+// in case from the registered alias; both spellings must resolve to the same
+// entry, and callers reading alias metadata must use this canonical lookup
+// instead of indexing aliases[] with the raw string (which yields null).
+static const J *alias_entry(const std::string &label) {
+    auto it = aliases.find(label);
+    if (it == aliases.end()) {
+        std::string lower(label);
+        std::transform(lower.begin(), lower.end(), lower.begin(),
+                       [](unsigned char c) { return (char)std::tolower(c); });
+        if (lower != label)
+            it = aliases.find(lower);
+    }
+    return it == aliases.end() ? nullptr : &it.value();
+}
 static int feature_id(const J &ref) {
     if (ref.is_number_integer())
         return ref.get<int>();
     std::string label = ref.get<std::string>();
-    if (!aliases.contains(label))
-        throw std::runtime_error("Unknown feature label: " + label);
-    return aliases[label].at("feature_id").get<int>();
+    // Some public clients stringify the integer branch of str|int anyOf
+    // (BUG-073); digit-only strings cannot be feature labels, so normalize
+    // them to feature IDs like the Python-side LoftOp contract does.
+    if (!label.empty() && label.find_first_not_of("0123456789") == std::string::npos) {
+        errno = 0;
+        char *end = nullptr;
+        long long id = std::strtoll(label.c_str(), &end, 10);
+        if (!errno && end && !*end && id >= 0 && id <= 2147483647LL)
+            return (int)id;
+        throw std::runtime_error("Sketch feature ID is not a nonnegative 32-bit integer: " + label);
+    }
+    if (const J *entry = alias_entry(label))
+        return entry->at("feature_id").get<int>();
+    std::string known;
+    int count = 0;
+    for (auto it = aliases.begin(); it != aliases.end() && count < 10; ++it, ++count)
+        known += (count ? ", " : "") + it.key();
+    throw std::runtime_error(
+        "Unknown feature label: " + label +
+        (known.empty() ? "; this model has no registered aliases; reference features by "
+                         "numeric ID from inspect_model(features)"
+                       : "; available labels: " + known + (aliases.size() > 10 ? ", ..." : "")));
 }
 static ProFeature feature(const J &ref) {
     ProFeature f;
@@ -346,9 +388,19 @@ static J inspection(bool require_healthy = true) {
         for (auto f : gfeatures)
             if (f["type"].get<int>() == PRO_FEAT_COMPONENT)
                 solid = true;
-    J result = {{"features", gfeatures}, {"surfaces", gsurfaces}, {"edges", gedges},
-                {"bodies", bodies},      {"healthy", healthy},    {"units", "mm"},
-                {"has_solid", solid},    {"volume_mm3", nullptr}};
+    auto length_units = inspect_length_units(board);
+    // Coordinates/dimensions retain model units. Do not label native in^3 as mm^3.
+    J units = length_units.code || !length_units.length.name[0] ? J(nullptr)
+                                                                : J(utf8(length_units.length.name));
+    J result = {{"features", gfeatures},
+                {"surfaces", gsurfaces},
+                {"edges", gedges},
+                {"bodies", bodies},
+                {"healthy", healthy},
+                {"units", units},
+                {"units_query_code", length_units.code},
+                {"has_solid", solid},
+                {"volume_mm3", nullptr}};
     result["model_type"] = isasm ? "assembly" : "part";
     if (isasm)
         result["components"] = assembly_inspection();
@@ -362,8 +414,11 @@ static J inspection(bool require_healthy = true) {
         ProError e = ProSolidMassPropertyWithDensityGet((ProSolid)board, nullptr,
                                                         PRO_MP_DENS_USE_ALWAYS, 1, &mp);
         result["volume_query_code"] = e;
-        if (!e)
-            result["volume_mm3"] = mp.volume;
+        if (!e) {
+            auto volume = length_units.volume_mm3(mp.volume);
+            if (volume)
+                result["volume_mm3"] = *volume;
+        }
     }
     planes.clear();
     CK(ProSolidFeatVisit((ProSolid)board, datum_cb, nullptr, nullptr));
@@ -622,6 +677,57 @@ static ProSectionPointType point_type(const std::string &s) {
            : s == "center" ? PRO_ENT_CENTER
                            : PRO_ENT_WHOLE;
 }
+// Constraint references need a real location on the referenced entity; the
+// section origin degenerates with arcs centered there (BUG-068) and idx_pnt
+// must stay unused for non-spline entities per the Toolkit contract.
+static ProSelection selected(ProSection section, int id, ProSectionPointType type) {
+    Pro2dEntdef *def = nullptr;
+    CK(ProSectionEntityGet(section, id, &def));
+    Pro2dPnt p;
+    bool have = false;
+    if (def->type == PRO_2D_LINE || def->type == PRO_2D_CENTER_LINE) {
+        auto line = (Pro2dLinedef *)def;
+        if (type == PRO_ENT_END) {
+            p[0] = line->end2[0];
+            p[1] = line->end2[1];
+        } else if (type == PRO_ENT_START) {
+            p[0] = line->end1[0];
+            p[1] = line->end1[1];
+        } else {
+            p[0] = (line->end1[0] + line->end2[0]) / 2;
+            p[1] = (line->end1[1] + line->end2[1]) / 2;
+        }
+        have = true;
+    } else if (def->type == PRO_2D_CIRCLE) {
+        auto circle = (Pro2dCircledef *)def;
+        if (type == PRO_ENT_CENTER) {
+            p[0] = circle->center[0];
+            p[1] = circle->center[1];
+        } else {
+            p[0] = circle->center[0] + circle->radius;
+            p[1] = circle->center[1];
+        }
+        have = true;
+    } else if (def->type == PRO_2D_ARC) {
+        auto arc = (Pro2dArcdef *)def;
+        if (type == PRO_ENT_START || type == PRO_ENT_END) {
+            double a = type == PRO_ENT_START ? arc->start_angle : arc->end_angle;
+            p[0] = arc->center[0] + arc->radius * cos(a);
+            p[1] = arc->center[1] + arc->radius * sin(a);
+        } else if (type == PRO_ENT_CENTER) {
+            p[0] = arc->center[0];
+            p[1] = arc->center[1];
+        } else {
+            double a = (arc->start_angle + arc->end_angle) / 2;
+            p[0] = arc->center[0] + arc->radius * cos(a);
+            p[1] = arc->center[1] + arc->radius * sin(a);
+        }
+        have = true;
+    }
+    ProSelection s = nullptr;
+    CK(ProSectionEntityGetSelected(section, id, type, have ? p : nullptr, PRO_VALUE_UNUSED, &s));
+    return s;
+}
 static void redefine(ProFeature *f, ProElement root) {
     ProFeatureCreateOptions *options = nullptr;
     CK(ProArrayAlloc(1, sizeof(ProFeatureCreateOptions), 1, (ProArray *)&options));
@@ -809,10 +915,8 @@ static void sketch(const J &op) {
         for (auto c : op["constraints"]) {
             std::vector<ProSelection> refs;
             for (auto r : c["refs"]) {
-                ProSelection s;
-                Pro2dPnt p = {0, 0};
-                CK(ProSectionEntityGetSelected(section, entities.at(r["entity"].get<std::string>()),
-                                               point_type(r.value("point", "whole")), p, 0, &s));
+                ProSelection s = selected(section, entities.at(r["entity"].get<std::string>()),
+                                          point_type(r.value("point", "whole")));
                 refs.push_back(s);
             }
             int cid;
@@ -910,8 +1014,29 @@ static void sketch(const J &op) {
     if (op.contains("profile"))
         aliases[op["label"].get<std::string>()]["airfoil"] = op["profile"];
 }
-static void extrude_or_revolve(const J &op, bool revolve) {
+// ProFeatureWithoptionsCreate reports an invalid section only as a bare code;
+// Toolkit validation stays authoritative, so explain the likely causes here
+// instead of duplicating the check.
+static std::string section_create_failure(const J &op, bool revolve, ProError error) {
+    std::string m = revolve ? "Revolve" : "Extrude";
+    m += " feature creation failed (ProFeatureWithoptionsCreate=" + std::to_string(error) + ")";
+    if (revolve) {
+        m += ". The closed profile must lie entirely on one side of the revolve axis and must "
+             "not cross it; entities may touch the axis. The sketch must contain a centerline, "
+             "or an explicit axis must be supplied, and the profile must be closed.";
+    } else {
+        m += ". The profile must form a valid closed section.";
+    }
+    if (op["sketch"].is_string())
+        m += " Sketch: '" + op["sketch"].get<std::string>() + "'.";
+    if (!last_feature_errors.empty())
+        m += " Element errors: " + last_feature_errors + ".";
+    return m;
+}
+static J extrude_or_revolve(const J &op, bool revolve) {
     ProFeature sketch_f = feature(op.at("sketch"));
+    bool cut = op.value("mode", "add") == "cut";
+    double before_volume = cut ? volume() : 0.0;
     ProSelection s = selection(sketch_f.id, PRO_FEATURE);
     std::string mode = op.value("mode", "add"), direction = op.value("direction", "positive");
     ProElement root = node(nullptr, PRO_E_FEATURE_TREE);
@@ -931,8 +1056,8 @@ static void extrude_or_revolve(const J &op, bool revolve) {
         body_options(root, op);
     int sign = 1;
     if (op["sketch"].is_string()) {
-        std::string label = op["sketch"];
-        sign = aliases[label].value("section_normal_sign", 1);
+        if (const J *entry = alias_entry(op["sketch"].get<std::string>()))
+            sign = entry->value("section_normal_sign", 1);
     }
     if (direction == "negative")
         sign = -sign;
@@ -970,9 +1095,29 @@ static void extrude_or_revolve(const J &op, bool revolve) {
         if (op.value("depth_type", "blind") != "through_all")
             real(to, PRO_E_EXT_DEPTH_TO_VALUE, op.at("depth"));
     }
-    ProFeature f = create(root);
+    ProFeature f = {};
+    try {
+        f = create(root);
+    } catch (ProError error) {
+        ProElementFree(&root);
+        if (last_toolkit_error != "ProFeatureWithoptionsCreate")
+            throw;
+        throw std::runtime_error(section_create_failure(op, revolve, error));
+    }
     CK(ProElementFree(&root));
     remember(op, f);
+    J details = J::object();
+    if (cut) {
+        CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
+        double removed = before_volume - volume();
+        log("CUT_MATERIAL_REMOVED_MM3=%.12f\n", removed);
+        if (removed <= std::max(1e-9, fabs(before_volume) * 1e-12))
+            throw std::runtime_error(
+                std::string(revolve ? "Revolve" : "Extrude") +
+                " cut removes no material; check the sketch position, direction and depth "
+                "against existing geometry");
+        details["material_removed_mm3"] = removed;
+    }
     J state = inspection();
     int active = 0;
     for (auto b : state["bodies"])
@@ -980,6 +1125,7 @@ static void extrude_or_revolve(const J &op, bool revolve) {
             active++;
     if (active == 1 && !op.value("skip_empty_body_cleanup", false))
         remove_empty_body();
+    return details;
 }
 static bool hole_plane_normal(ProSelection selection, V &normal, const char *role) {
     ProModelitem item;
@@ -1186,7 +1332,7 @@ static void curve_collection(ProElement element, const J &refs) {
     CK(ProElementCollectionSet(element, coll));
     CK(ProCollectionFree(&coll));
 }
-static void generic_round(const J &op, bool chamfer) {
+static J generic_round(const J &op, bool chamfer) {
     ProElement root = node(nullptr, PRO_E_FEATURE_TREE);
     integer(root, PRO_E_FEATURE_TYPE, chamfer ? PRO_FEAT_CHAMFER : PRO_FEAT_ROUND);
     text(root, PRO_E_STD_FEATURE_NAME, wide(op.at("label")).c_str());
@@ -1227,6 +1373,8 @@ static void generic_round(const J &op, bool chamfer) {
     ProFeature f = create(root);
     CK(ProElementFree(&root));
     remember(op, f);
+    // Echo the applied leg value so callers can compare it with their input.
+    return {{"size", op.at("size")}};
 }
 static void generic_shell(const J &op) {
     ProElement root = node(nullptr, PRO_E_FEATURE_TREE);
@@ -1496,10 +1644,8 @@ static J populate_profile(ProSection section, const J &op) {
         for (auto c : op["constraints"]) {
             std::vector<ProSelection> refs;
             for (auto r : c["refs"]) {
-                ProSelection s;
-                Pro2dPnt p = {0, 0};
-                CK(ProSectionEntityGetSelected(section, entities.at(r["entity"].get<std::string>()),
-                                               point_type(r.value("point", "whole")), p, 0, &s));
+                ProSelection s = selected(section, entities.at(r["entity"].get<std::string>()),
+                                          point_type(r.value("point", "whole")));
                 refs.push_back(s);
             }
             int cid;
@@ -1546,6 +1692,7 @@ static J populate_profile(ProSection section, const J &op) {
         ids[item.first] = item.second;
     return {{"entity_ids", ids}, {"dimension_ids", dims}, {"solver", solver_info}};
 }
+#include "component_transform.h"
 #include "advanced.cpp"
 #include "helical.cpp"
 #include "surfaces.cpp"
@@ -1575,11 +1722,11 @@ static void execute_operation(const J &op) {
     else if (kind == "set_geometry_transform")
         generic_transform_update(op);
     else if (kind == "extrude" || kind == "revolve")
-        extrude_or_revolve(op, kind == "revolve");
+        details = extrude_or_revolve(op, kind == "revolve");
     else if (kind == "hole")
         details = generic_hole(op);
     else if (kind == "round" || kind == "chamfer")
-        generic_round(op, kind == "chamfer");
+        details = generic_round(op, kind == "chamfer");
     else if (kind == "shell")
         generic_shell(op);
     else if (kind == "dimension_pattern")
@@ -1660,16 +1807,15 @@ static void execute_operation(const J &op) {
         ProFeature f = feature(op["sketch"]);
         ProElement root = nullptr;
         CK(ProFeatureElemtreeExtract(&f, nullptr, PRO_FEAT_EXTRACT_NO_OPTS, &root));
-        J saved_path = op["sketch"].is_string()
-                           ? aliases[op["sketch"].get<std::string>()].value(
-                                 "section_path", J::array({PRO_E_STD_SECTION, PRO_E_SKETCHER}))
-                           : J::array({PRO_E_STD_SECTION, PRO_E_SKETCHER});
+        const J *meta =
+            op["sketch"].is_string() ? alias_entry(op["sketch"].get<std::string>()) : nullptr;
+        J saved_path =
+            meta ? meta->value("section_path", J::array({PRO_E_STD_SECTION, PRO_E_SKETCHER}))
+                 : J::array({PRO_E_STD_SECTION, PRO_E_SKETCHER});
         ProElement sk = get_path(root, saved_path);
         ProSection s = nullptr;
         CK(ProElementSpecialvalueGet(sk, nullptr, (ProAppData *)&s));
-        J ids = op["sketch"].is_string()
-                    ? aliases[op["sketch"].get<std::string>()].value("dimension_ids", J::object())
-                    : J::object();
+        J ids = meta ? meta->value("dimension_ids", J::object()) : J::object();
         for (auto it = op["values"].begin(); it != op["values"].end(); ++it) {
             int id = ids.contains(it.key()) ? ids[it.key()].get<int>() : std::stoi(it.key());
             CK(ProSecdimValueSet(s, id, it.value()));
@@ -1807,10 +1953,11 @@ static void verify_saved(const J &before, const J &after) {
             auto a = before["components"][i], b = after["components"][i];
             if (a["feature_id"] != b["feature_id"] || a["model_name"] != b["model_name"])
                 throw std::runtime_error("Saved component changed");
+            const auto &verified_transform = component_transform_for_verification(a, b);
             for (int r = 0; r < 4; r++)
                 for (int c = 0; c < 4; c++)
                     if (fabs(a["transform"][r][c].get<double>() -
-                             b["transform"][r][c].get<double>()) > 1e-7)
+                             verified_transform[r][c].get<double>()) > 1e-7)
                         throw std::runtime_error("Saved component transform changed");
         }
     }
@@ -1863,6 +2010,700 @@ static std::wstring latest_model_file() {
         throw std::runtime_error("Saved native model version not found");
     return found;
 }
+// The only path allowed to replace a diverged owned session model. Python has
+// already bound the selected source and explicit action to a durable intent.
+static bool recovery_geometry_equal(const J &a, const J &b) {
+    if (a.is_number_integer() && b.is_number_integer())
+        return a == b;
+    if (a.is_number() && b.is_number()) {
+        double x = a.get<double>(), y = b.get<double>();
+        return std::isfinite(x) && std::isfinite(y) &&
+               fabs(x - y) <= 1e-6 * std::max(1.0, std::max(fabs(x), fabs(y)));
+    }
+    if (a.type() != b.type() || a.size() != b.size())
+        return false;
+    if (a.is_object()) {
+        for (auto it = a.begin(); it != a.end(); ++it)
+            if (!b.contains(it.key()) || !recovery_geometry_equal(it.value(), b.at(it.key())))
+                return false;
+        return true;
+    }
+    if (a.is_array()) {
+        for (size_t i = 0; i < a.size(); ++i)
+            if (!recovery_geometry_equal(a[i], b[i]))
+                return false;
+        return true;
+    }
+    return a == b;
+}
+
+static void verify_recovery(const J &before, const J &after) {
+    verify_saved(before, after);
+    for (const char *key : {"bodies", "surfaces", "edges", "datum_planes"})
+        if (!recovery_geometry_equal(before.at(key), after.at(key)))
+            throw std::runtime_error(std::string("Recovery geometry changed: ") + key);
+}
+
+static std::string recovery_session_fingerprint() {
+    ProConnectionId value;
+    CK(ProEngineerConnectIdGet(value));
+    // Bind the session without persisting or returning its connection secret.
+    return std::to_string(std::hash<std::string>{}(std::string(value)));
+}
+
+static bool dependency_free(ProMdl mdl) {
+    CK(ProMdlDependenciesCleanup(mdl));
+    ProMdlnameShortdata *names = nullptr;
+    ProMdlfileType *types = nullptr;
+    int count = 0;
+    ProError code = ProMdlDependenciesDataList(mdl, &names, &types, &count);
+    if (names)
+        ProArrayFree((ProArray *)&names);
+    if (types)
+        ProArrayFree((ProArray *)&types);
+    if (code == PRO_TK_E_NOT_FOUND)
+        return true;
+    check(code, "RecoveryDependencies");
+    return count == 0;
+}
+
+static bool recovery_dependency_free() {
+    return dependency_free(board);
+}
+
+static bool millimeter_units(ProMdl mdl) {
+    ProUnitsystem us;
+    ProUnititem unit;
+    CK(ProMdlPrincipalunitsystemGet(mdl, &us));
+    CK(ProUnitsystemUnitGet(&us, PRO_UNITTYPE_LENGTH, &unit));
+    return !wcscmp(unit.name, L"mm");
+}
+
+static void reconcile_native(const J &request, J &report) {
+    const J &choice = request.at("reconciliation");
+    const std::string action = choice.at("action");
+    const std::string session = recovery_session_fingerprint();
+    if (choice.contains("session_fingerprint") && choice["session_fingerprint"] != session)
+        throw std::runtime_error("Recovery refused: Creo session changed since recorded evidence");
+    ProName name;
+    wcscpy_s(name, model_name.c_str());
+    ProMdlType type = request["model"].value("model_type", "part") == "assembly" ? PRO_MDL_ASSEMBLY
+                                                                                 : PRO_MDL_PART;
+    ProError found = ProMdlInit(name, type, &board);
+    if (found != PRO_TK_E_NOT_FOUND)
+        check(found, "FindRecoveryModel");
+    bool loaded = found == PRO_TK_NO_ERROR, owned = false;
+    std::wstring origin;
+    if (loaded) {
+        ProPath value;
+        CK(ProMdlOriginGet(board, value));
+        origin = value;
+        std::wstring prefix = folder + L"\\";
+        owned = !_wcsnicmp(origin.c_str(), prefix.c_str(), prefix.size());
+    }
+    report["live"] = {{"loaded", loaded},
+                      {"owned", owned},
+                      {"origin", utf8(origin)},
+                      {"session_fingerprint", session}};
+    if (action == "inspect") {
+        if (loaded && owned) {
+            report["live"]["inspection"] = inspection(false);
+            ProUnitsystem us;
+            ProUnititem unit;
+            CK(ProMdlPrincipalunitsystemGet(board, &us));
+            CK(ProUnitsystemUnitGet(&us, PRO_UNITTYPE_LENGTH, &unit));
+            report["live"]["millimeter_units"] = !wcscmp(unit.name, L"mm");
+            report["live"]["dependency_free"] = recovery_dependency_free();
+            try {
+                if (request["model"].contains("inspection")) {
+                    verify_recovery(request["model"]["inspection"], report["live"]["inspection"]);
+                    report["live"]["matches_baseline"] = true;
+                }
+            } catch (const std::exception &error) {
+                report["live"]["matches_baseline"] = false;
+                report["live"]["baseline_mismatch"] = error.what();
+            }
+        }
+        report["success"] = true;
+        return;
+    }
+    if (loaded && !owned)
+        throw std::runtime_error("Recovery refused: session model origin is not owned");
+    if (action == "abandon_new") {
+        if (loaded) {
+            CK(ProMdlErase(board));
+            board = nullptr;
+        }
+        report.update({{"success", true}, {"abandoned", true}, {"files_preserved", true}});
+        return;
+    }
+    if (action == "accept_live") {
+        if (!loaded || !choice.contains("live_inspection"))
+            throw std::runtime_error(
+                "accept_live requires an owned loaded model and live evidence");
+        verify_recovery(choice["live_inspection"], inspection());
+    } else if (action == "restore_baseline" || action == "accept_saved") {
+        if (loaded) {
+            CK(ProMdlErase(board));
+            board = nullptr;
+        }
+        ProPath source;
+        path(source, wide(choice.at("source_file")));
+        CK(ProMdlFiletypeLoad(source, PRO_MDLFILE_UNUSED, PRO_B_FALSE, &board));
+    } else
+        throw std::runtime_error("Unknown reconciliation action");
+    ProUnitsystem us;
+    ProUnititem unit;
+    CK(ProMdlPrincipalunitsystemGet(board, &us));
+    CK(ProUnitsystemUnitGet(&us, PRO_UNITTYPE_LENGTH, &unit));
+    if (wcscmp(unit.name, L"mm"))
+        throw std::runtime_error("Recovery requires millimeter model units");
+    if (!recovery_dependency_free())
+        throw std::runtime_error(
+            "Recovery refused: external dependencies require separate ownership verification");
+    generic_stage("recovery_verify_source");
+    CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
+    J before = inspection();
+    if (action != "accept_live")
+        verify_recovery(choice.at("source_inspection"), before);
+    report["loft_checks"]["recovery_source"] = verify_loft_settings(L"recovery_source");
+    std::wstring saved = action == "restore_baseline" ? wide(choice.at("source_file")) : L"";
+    if (action != "restore_baseline") {
+        generic_stage("recovery_save_and_reload");
+        ProPath destination;
+        path(destination, folder);
+        CK(ProMdlnameBackup(board, destination));
+        saved = latest_model_file(); // Only select the output of this acknowledged save.
+        CK(ProMdlErase(board));
+        board = nullptr;
+        ProPath file;
+        path(file, saved);
+        CK(ProMdlFiletypeLoad(file, PRO_MDLFILE_UNUSED, PRO_B_FALSE, &board));
+        CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
+    }
+    J after = inspection();
+    verify_recovery(before, after);
+    report["loft_checks"]["recovery_reloaded"] = verify_loft_settings(L"recovery_reloaded");
+    after["inspection_source"] = "reconciliation_verified";
+    after["inspection_available"] = true;
+    CK(ProMdlDisplay(board));
+    report.update({{"success", true},
+                   {"saved_file_reloaded_and_verified", true},
+                   {"inspection", after},
+                   {"aliases", aliases},
+                   {"part_file", utf8(saved)}});
+}
+
+// Explicit adoption of the user's current window model as a managed copy. The
+// source model is never erased, saved or renamed; adoption copies the in-memory
+// state into this job's output directory and verifies the copy like any save.
+static void display_adopted_model() {
+    CK(ProMdlDisplay(board));
+    int window = -1;
+    CK(ProMdlWindowGet(board, &window));
+    CK(ProWindowCurrentSet(window));
+    CK(ProWindowRefit(window));
+    CK(ProWindowRepaint(window));
+    CK(ProWindowActivate(window));
+}
+
+static void confirm_adoption_snapshot(const J &choice, J &report) {
+    std::wstring saved = wide(choice.at("source_file"));
+    auto candidate = std::filesystem::path(saved).lexically_normal();
+    auto output = std::filesystem::path(folder).lexically_normal();
+    if (!candidate.is_absolute() || _wcsicmp(candidate.parent_path().c_str(), output.c_str()) ||
+        candidate.filename().wstring().find(model_name + L".prt.") != 0)
+        throw std::runtime_error("Prepared snapshot is outside its owned output");
+    ProMdlName name = {};
+    wcscpy_s(name, model_name.c_str());
+    ProError found = ProMdlInit(name, PRO_MDL_PART, &board);
+    if (found == PRO_TK_NO_ERROR) {
+        ProPath origin = {};
+        CK(ProMdlOriginGet(board, origin));
+        if (_wcsicmp(origin, saved.c_str()))
+            throw std::runtime_error("Prepared snapshot name conflicts with another session model");
+        // Refuse rather than discard manual changes to the staged copy.
+        verify_recovery(choice.at("source_inspection"), inspection(false));
+        CK(ProMdlErase(board));
+        board = nullptr;
+    } else if (found != PRO_TK_E_NOT_FOUND)
+        check(found, "FindPreparedSnapshot");
+    ProPath file;
+    path(file, saved);
+    CK(ProMdlFiletypeLoad(file, PRO_MDLFILE_UNUSED, PRO_B_FALSE, &board));
+    CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
+    if (!millimeter_units(board) || !dependency_free(board))
+        throw std::runtime_error("Prepared snapshot units or dependencies changed");
+    J after = inspection();
+    verify_recovery(choice.at("source_inspection"), after);
+    after["inspection_source"] = "adoption_snapshot_verified";
+    after["inspection_available"] = true;
+    display_adopted_model();
+    report.update({{"success", true},
+                   {"saved_file_reloaded_and_verified", true},
+                   {"inspection", after},
+                   {"aliases", J::object()},
+                   {"part_file", utf8(saved)},
+                   {"adopted", true}});
+}
+
+struct SessionInventory {
+    J models = J::array();
+    J type_errors = J::array();
+    bool truncated = false;
+    int current_code = 0;
+};
+
+// Single-handle session observation shared by the session inventory and the
+// open-file result; the field set stays identical so clients can compare
+// entries from either source. current_code mirrors ProMdlCurrentGet's own
+// outcome: when it failed, is_current is null rather than a guess.
+static J observe_session_model(ProMdl mdl, const char *model_type, ProMdl current,
+                               int current_code) {
+    ProMdlName name = {};
+    ProPath origin = {};
+    ProBoolean modified = PRO_B_FALSE;
+    int id = -1;
+    ProError nc = ProMdlMdlnameGet(mdl, name);
+    ProError oc = ProMdlOriginGet(mdl, origin);
+    ProError mc = ProMdlModificationVerify(mdl, &modified);
+    ProError ic = ProMdlIdGet(mdl, &id);
+    return {{"name", nc ? J(nullptr) : J(utf8(name))},
+            {"model_type", model_type},
+            {"is_current", current_code ? J(nullptr) : J(mdl == current)},
+            {"origin", oc ? J(nullptr) : J(utf8(origin))},
+            {"has_saved_origin", oc ? J(nullptr) : J(origin[0] != 0)},
+            {"modified", mc ? J(nullptr) : J(modified == PRO_B_TRUE)},
+            {"session_model_id", ic ? J(nullptr) : J(id)},
+            {"query_codes", {{"name", nc}, {"origin", oc}, {"modified", mc}, {"id", ic}}}};
+}
+
+static void collect_session_models(SessionInventory &inventory) {
+    ProMdl current = nullptr;
+    inventory.current_code = ProMdlCurrentGet(&current);
+    J models = J::array(), errors = J::array();
+    const std::pair<ProMdlType, const char *> types[] = {{PRO_MDL_PART, "part"},
+                                                         {PRO_MDL_ASSEMBLY, "assembly"},
+                                                         {PRO_MDL_DRAWING, "drawing"},
+                                                         {PRO_MDL_3DSECTION, "section3d"},
+                                                         {PRO_MDL_2DSECTION, "section2d"},
+                                                         {PRO_MDL_LAYOUT, "notebook"},
+                                                         {PRO_MDL_DWGFORM, "drawing_format"},
+                                                         {PRO_MDL_MFG, "manufacturing"},
+                                                         {PRO_MDL_REPORT, "report"},
+                                                         {PRO_MDL_MARKUP, "markup"},
+                                                         {PRO_MDL_DIAGRAM, "diagram"}};
+    bool truncated = false;
+    for (const auto &entry : types) {
+        ProMdl *list = nullptr;
+        int count = 0;
+        ProError listed = ProSessionMdlList(entry.first, &list, &count);
+        if (listed != PRO_TK_NO_ERROR && listed != PRO_TK_E_NOT_FOUND) {
+            errors.push_back({{"model_type", entry.second}, {"code", listed}});
+        } else if (listed == PRO_TK_NO_ERROR) {
+            try {
+                for (int i = 0; i < count; ++i) {
+                    if (models.size() >= 4096) {
+                        truncated = true;
+                        break;
+                    }
+                    J item = observe_session_model(list[i], entry.second, current,
+                                                   inventory.current_code);
+                    if (entry.first == PRO_MDL_PART) {
+                        ProMdlsubtype subtype;
+                        ProError sc = ProMdlSubtypeGet(list[i], &subtype);
+                        item["query_codes"]["subtype"] = sc;
+                        if (!sc && subtype == PROMDLSTYPE_PART_SHEETMETAL)
+                            item["model_type"] = "sheetmetal";
+                    }
+                    models.push_back(item);
+                }
+            } catch (...) {
+                if (list)
+                    ProArrayFree((ProArray *)&list);
+                throw;
+            }
+        }
+        if (list)
+            CK(ProArrayFree((ProArray *)&list));
+    }
+    inventory.models = models;
+    inventory.type_errors = errors;
+    inventory.truncated = truncated;
+}
+
+static void session_models_native(J &report) {
+    SessionInventory inventory;
+    collect_session_models(inventory);
+    report.update({{"success", true},
+                   {"models", inventory.models},
+                   {"type_errors", inventory.type_errors},
+                   {"complete", inventory.type_errors.empty() && !inventory.truncated},
+                   {"truncated", inventory.truncated},
+                   {"current_model_code", inventory.current_code}});
+}
+
+static int components_total = 0;
+static int components_missing = 0;
+static ProError component_probe(ProFeature *feature, ProError status, ProAppData) {
+    if (status)
+        return status;
+    ProFeattype type;
+    if (ProFeatureTypeGet(feature, &type))
+        return PRO_TK_NO_ERROR;
+    if (type != PRO_FEAT_COMPONENT)
+        return PRO_TK_NO_ERROR;
+    components_total++;
+    ProMdl component = nullptr;
+    if (ProAsmcompMdlGet((ProAsmcomp *)feature, &component) != PRO_TK_NO_ERROR)
+        components_missing++;
+    return PRO_TK_NO_ERROR;
+}
+
+// Read-only retrieval and display of an existing on-disk native model. The file
+// is never saved, erased, renamed or adopted; success creates no managed model.
+static void open_file_native(const J &request, J &report) {
+    const J &choice = request.at("open_file");
+    std::wstring requested = wide(choice.at("requested_path").get<std::string>());
+    std::wstring selected = wide(choice.at("selected_file").get<std::string>());
+    bool assembly = choice.at("model_kind").get<std::string>() == "assembly";
+    std::filesystem::path file_path(selected);
+    std::wstring base = file_path.filename().wstring();
+    if (size_t dot = base.rfind(L'.'); dot != std::wstring::npos) {
+        std::wstring tail = base.substr(dot + 1);
+        if (!tail.empty() && tail.find_first_not_of(L"0123456789") == std::wstring::npos)
+            base = base.substr(0, dot);
+        if (dot = base.rfind(L'.'); dot != std::wstring::npos) {
+            std::wstring ext = base.substr(dot + 1);
+            if (!_wcsicmp(ext.c_str(), L"prt") || !_wcsicmp(ext.c_str(), L"asm"))
+                base = base.substr(0, dot);
+        }
+    }
+    if (base.empty() || base.find_first_of(L".") != std::wstring::npos)
+        throw std::runtime_error("Cannot derive a model name from the selected file path");
+    J summary = {{"requested_path", utf8(requested)},
+                 {"selected_file", utf8(selected)},
+                 {"model_kind", assembly ? "assembly" : "part"},
+                 {"model_name", utf8(base)}};
+    report["open_file"] = summary;
+    // Pre-checks and retrieval share one Toolkit channel: the session state the
+    // checks observed is the state retrieval starts from.
+    generic_stage("open_file_session_check");
+    SessionInventory inventory;
+    collect_session_models(inventory);
+    if (!inventory.type_errors.empty() || inventory.truncated) {
+        report["session_inventory"] = {{"type_errors", inventory.type_errors},
+                                       {"truncated", inventory.truncated}};
+        throw std::runtime_error(
+            "SESSION_ENUMERATION_INCOMPLETE: the session inventory could not be "
+            "completed, so open-file preconditions cannot be proven; no file was "
+            "retrieved");
+    }
+    for (const auto &item : inventory.models) {
+        if (item["name"].is_null())
+            continue;
+        bool same_name = !_wcsicmp(wide(item["name"].get<std::string>()).c_str(), base.c_str());
+        std::string kind = item["model_type"];
+        bool same_family = assembly ? kind == "assembly" : (kind == "part" || kind == "sheetmetal");
+        if (same_name && same_family) {
+            report["open_file"]["conflicting_session_model"] = item;
+            throw std::runtime_error(
+                "SESSION_NAME_CONFLICT: a " + kind +
+                " model with this name is already in the Creo session; the file was "
+                "not retrieved. Close or erase it in Creo first, or switch to it "
+                "directly");
+        }
+    }
+    if (assembly) {
+        for (const auto &item : inventory.models) {
+            std::string kind = item["model_type"];
+            if (kind == "part" || kind == "sheetmetal" || kind == "assembly")
+                throw std::runtime_error(
+                    "ASSEMBLY_REQUIRES_EMPTY_SESSION: the session already holds a "
+                    "part or assembly; assembly retrieval needs a session without "
+                    "parts/assemblies so partial loading stays observable. No file "
+                    "was retrieved");
+        }
+    }
+    generic_stage("open_file_retrieve");
+    ProMdl opened = nullptr;
+    ProPath file;
+    path(file, selected);
+    ProError load_code = ProMdlFiletypeLoad(file, PRO_MDLFILE_UNUSED, PRO_B_FALSE, &opened);
+    if (load_code != PRO_TK_NO_ERROR) {
+        // Retrieval of an incomplete assembly can leave components in the session.
+        // Report them explicitly; the missing-component list is unknown to Toolkit.
+        SessionInventory after;
+        collect_session_models(after);
+        J remaining = J::array();
+        for (const auto &item : after.models) {
+            std::string kind = item["model_type"];
+            if (kind == "part" || kind == "sheetmetal" || kind == "assembly")
+                remaining.push_back(item);
+        }
+        report["loaded"] = false;
+        report["open_file"]["loaded"] = false;
+        report["open_file"]["missing_components"] = "unknown";
+        report["open_file"]["remaining_session_models"] = remaining;
+        report["open_file"]["remaining_models_note"] =
+            "retrieval failed; listed part/assembly objects may be partial residues of "
+            "this attempt and are not erased automatically";
+        throw std::runtime_error(
+            "RETRIEVE_FAILED: ProMdlFiletypeLoad returned " + std::to_string(load_code) +
+            " for the selected file; assemblies failing here usually miss components "
+            "(list unavailable, marked unknown). Inspect remaining_session_models; "
+            "nothing was saved or erased");
+    }
+    report["loaded"] = true;
+    report["open_file"]["loaded"] = true;
+    ProMdlType kind = PRO_MDL_PART;
+    check(ProMdlTypeGet(opened, &kind), "ProMdlTypeGet");
+    if (kind != (assembly ? PRO_MDL_ASSEMBLY : PRO_MDL_PART)) {
+        report["open_file"]["actual_model_type_code"] = kind;
+        throw std::runtime_error(
+            "MODEL_TYPE_MISMATCH: the retrieved file is not the requested model kind; "
+            "the loaded object stays in the session, nothing was saved or erased");
+    }
+    if (assembly) {
+        // Toolkit retrieves an incomplete assembly without error; the component
+        // features exist but their models stay unresolved. Refuse to report a
+        // complete open in that case and leave the residues observable.
+        generic_stage("open_file_component_check");
+        components_total = 0;
+        components_missing = 0;
+        check(ProSolidFeatVisit((ProSolid)opened, component_probe, nullptr, nullptr),
+              "ProSolidFeatVisit");
+        report["open_file"]["component_count"] = components_total;
+        if (components_missing > 0) {
+            SessionInventory after;
+            collect_session_models(after);
+            J remaining = J::array();
+            for (const auto &item : after.models) {
+                std::string item_kind = item["model_type"];
+                if (item_kind == "part" || item_kind == "sheetmetal" || item_kind == "assembly")
+                    remaining.push_back(item);
+            }
+            report["open_file"].update(
+                {{"displayed", false},
+                 {"missing_component_count", components_missing},
+                 {"missing_components",
+                  {{"count", components_missing},
+                   {"total", components_total},
+                   {"names", "unknown"}}},
+                 {"remaining_session_models", remaining},
+                 {"remaining_models_note",
+                  "retrieval incomplete; the assembly object stays in the session "
+                  "(not displayed, not erased); listed part/assembly objects may be "
+                  "partial residues"}});
+            throw std::runtime_error(
+                "RETRIEVE_INCOMPLETE: the assembly was retrieved but " +
+                std::to_string(components_missing) + " of " + std::to_string(components_total) +
+                " components did not resolve (names unavailable, marked unknown). The "
+                "assembly is not displayed; inspect remaining_session_models; nothing "
+                "was saved or erased");
+        }
+    }
+    std::string model_type = assembly ? "assembly" : "part";
+    if (kind == PRO_MDL_PART) {
+        ProMdlsubtype subtype;
+        ProError sc = ProMdlSubtypeGet(opened, &subtype);
+        if (!sc && subtype == PROMDLSTYPE_PART_SHEETMETAL)
+            model_type = "sheetmetal";
+    }
+    ProPath origin = {};
+    check(ProMdlOriginGet(opened, origin), "ProMdlOriginGet");
+    ProMdlName display = {};
+    ProError name_code = ProMdlMdlnameGet(opened, display);
+    report["open_file"].update(
+        {{"model_type", model_type},
+         {"origin", utf8(origin)},
+         {"origin_matches_selected_file", !_wcsicmp(origin, selected.c_str())},
+         {"display_name", name_code ? J(nullptr) : J(utf8(display))}});
+    generic_stage("open_file_display");
+    bool displayed = false;
+    std::string display_message;
+    try {
+        CK(ProMdlDisplay(opened));
+        int window = -1;
+        CK(ProMdlWindowGet(opened, &window));
+        CK(ProWindowCurrentSet(window));
+        CK(ProWindowRefit(window));
+        CK(ProWindowRepaint(window));
+        CK(ProWindowActivate(window));
+        displayed = true;
+    } catch (ProError error) {
+        display_message = "Toolkit call " + last_toolkit_error + " failed with code " +
+                          std::to_string(error) + " during open_file_display";
+    } catch (const std::exception &error) {
+        display_message = error.what();
+    }
+    report["open_file"]["displayed"] = displayed;
+    if (!displayed) {
+        report["open_file"]["display_message"] = display_message;
+        report["message"] =
+            "Loaded the model into the session but could not display it: " + display_message +
+            "; the object remains in the session (query creo_list_session_models); "
+            "nothing was saved or erased";
+        return;
+    }
+    // Single-handle observation of the just-opened model: the same fields as a
+    // session-inventory entry, read directly from the opened handle without a
+    // fresh full enumeration. The Python closeout stamps observed_at.
+    ProMdl window_model = nullptr;
+    int window_code = ProMdlCurrentGet(&window_model);
+    report["open_file"]["opened_session_model"] =
+        observe_session_model(opened, model_type.c_str(), window_model, window_code);
+    report["success"] = true;
+}
+
+static void adopt_native(const J &request, J &report) {
+    const J &choice = request.at("adoption");
+    const std::string action = choice.at("action");
+    if (action == "confirm_snapshot") {
+        confirm_adoption_snapshot(choice, report);
+        return;
+    }
+    bool preparing = action == "prepare";
+    const std::string session = recovery_session_fingerprint();
+    if (choice.contains("session_fingerprint") && choice["session_fingerprint"] != session)
+        throw std::runtime_error("Adoption refused: Creo session changed since recorded evidence");
+    ProMdl current = nullptr;
+    ProError current_code = ProMdlCurrentGet(&current);
+    if (current_code == PRO_TK_BAD_CONTEXT)
+        // -8 is "no current model", not a connection failure; keep the call name
+        // and raw code so the original evidence stays machine-checkable.
+        throw std::runtime_error(
+            "NO_CURRENT_MODEL: the Creo window has no current model "
+            "(ProMdlCurrentGet(&current) returned -8 PRO_TK_BAD_CONTEXT during " +
+            generic_phase +
+            "); switch to a model in Creo first; creo_list_session_models shows the "
+            "session inventory");
+    check(current_code, "ProMdlCurrentGet(&current)");
+    ProMdlType kind = PRO_MDL_PART;
+    CK(ProMdlTypeGet(current, &kind));
+    if (kind != PRO_MDL_PART)
+        throw std::runtime_error(
+            "unsupported_model_type: only part or sheetmetal models can be adopted; "
+            "assemblies and drawings keep their own ownership (adoption refused)");
+    ProPath origin = {};
+    CK(ProMdlOriginGet(current, origin));
+    std::wstring origin_text = origin;
+    if (choice.contains("origin") &&
+        _wcsicmp(wide(choice.at("origin").get<std::string>()).c_str(), origin_text.c_str()))
+        throw std::runtime_error(
+            "Adoption refused: the current model is not the inspected model; inspect again");
+    board = current; // Borrow the handle read-only, exactly like reconciliation inspect.
+    J live = inspection(false);
+    bool millimeters = live["units"] == "mm";
+    bool dependency_clean = dependency_free(board);
+    std::string model_type = live.value("model_type", "part");
+    bool supported = model_type == "part" || model_type == "sheetmetal";
+    ProMdlName display = {};
+    ProError name_code = ProMdlMdlnameGet(current, display);
+    report["live"] = {{"origin", utf8(origin_text)},
+                      {"model_type", model_type},
+                      {"healthy", live.at("healthy")},
+                      {"feature_count", live.at("features").size()},
+                      {"volume_mm3", live.contains("volume_mm3") ? live["volume_mm3"] : J(nullptr)},
+                      {"millimeter_units", millimeters},
+                      {"dependency_free", dependency_clean},
+                      {"session_fingerprint", session},
+                      {"inspection", live}};
+    if (name_code == PRO_TK_NO_ERROR)
+        report["live"]["display_name"] = utf8(display);
+    if (action == "inspect") {
+        board = nullptr;
+        report["success"] = true;
+        return;
+    }
+    if (action != "apply" && !preparing)
+        throw std::runtime_error("Unknown adoption action");
+    if (choice.contains("live_inspection"))
+        verify_recovery(choice.at("live_inspection"), live);
+    board = nullptr; // The user's model is never the managed target again past this point.
+    if (preparing && !origin_text.empty())
+        throw std::runtime_error(
+            "prepare requires a never-saved model; use inspect/apply for a file source");
+    if (!preparing && origin_text.empty())
+        throw std::runtime_error(
+            "Never-saved model requires explicit prepare, then confirm its frozen snapshot");
+    if (!live.value("healthy", false))
+        throw std::runtime_error("unhealthy_features: source has failed, suppressed or incomplete "
+                                 "features (adoption refused)");
+    if (!supported)
+        throw std::runtime_error("unsupported_model_type: only independent part or sheetmetal "
+                                 "models are supported (adoption refused)");
+    if (!millimeters)
+        throw std::runtime_error(
+            "non_millimeter_units: millimeter model units are required (adoption refused)");
+    if (!dependency_clean)
+        throw std::runtime_error("external_dependencies: external dependencies require separate "
+                                 "ownership verification (adoption refused)");
+    struct WindowRestore {
+        int window = -1;
+        ~WindowRestore() {
+            if (window >= 0) {
+                ProError selected = ProWindowCurrentSet(window);
+                ProError activated = ProWindowActivate(window);
+                log("ADOPTION_WINDOW_RESTORE=%d,%d\n", selected, activated);
+            }
+        }
+    } window_restore;
+    int original_window = -1;
+    if (preparing) {
+        CK(ProWindowCurrentGet(&original_window));
+        if (original_window < 0)
+            throw std::runtime_error("Snapshot preparation requires a current model window");
+        window_restore.window = original_window;
+    }
+    ProName adopted;
+    wcscpy_s(adopted, model_name.c_str());
+    ProMdl clash = nullptr;
+    ProError found = ProMdlInit(adopted, PRO_MDL_PART, &clash);
+    if (found == PRO_TK_NO_ERROR)
+        throw std::runtime_error("session_name_conflict: the managed model name already exists in "
+                                 "this Creo session (adoption refused)");
+    if (found != PRO_TK_E_NOT_FOUND)
+        check(found, "CheckAdoptedName");
+    CK(ProMdlnameCopy(current, adopted, &board));
+    if (!millimeter_units(board))
+        throw std::runtime_error(
+            "non_millimeter_units: copied model units are not millimeter (adoption refused)");
+    if (!dependency_free(board))
+        throw std::runtime_error("external_dependencies: the copied model carries external "
+                                 "dependencies (adoption refused)");
+    CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
+    J before = inspection();
+    verify_recovery(live, before); // Prove the copy includes the live source state.
+    generic_stage("adoption_save_and_reload");
+    ProPath destination;
+    path(destination, folder);
+    CK(ProMdlnameBackup(board, destination));
+    std::wstring saved = latest_model_file(); // Only select the output of this adoption save.
+    CK(ProMdlErase(board));
+    board = nullptr;
+    ProPath file;
+    path(file, saved);
+    CK(ProMdlFiletypeLoad(file, PRO_MDLFILE_UNUSED, PRO_B_FALSE, &board));
+    CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
+    J after = inspection();
+    verify_recovery(before, after);
+    after["inspection_source"] = "adoption_verified";
+    after["inspection_available"] = true;
+    if (preparing) {
+        CK(ProWindowCurrentSet(original_window));
+        CK(ProWindowActivate(original_window));
+        window_restore.window = -1;
+    } else
+        display_adopted_model();
+    report.update({{"success", true},
+                   {"saved_file_reloaded_and_verified", true},
+                   {"inspection", after},
+                   {"aliases", J::object()},
+                   {"part_file", utf8(saved)},
+                   {"adopted", !preparing}});
+}
+
 static int run_generic(const std::wstring &job) {
     generic_job = job;
     generic_phase = "loading_request";
@@ -1873,6 +2714,7 @@ static int run_generic(const std::wstring &job) {
     J request;
     ProProcessHandle process = {};
     bool connected = false, mutated = false;
+    std::unique_ptr<RecoveryDeadline> recovery_deadline;
     int operation_index = -1;
     bool executing_operation = false;
     std::wstring checkpoint;
@@ -1882,6 +2724,17 @@ static int run_generic(const std::wstring &job) {
     try {
         std::ifstream input(job + L"\\request.json");
         input >> request;
+        FILETIME created, exited, kernel, user;
+        if (!GetProcessTimes(GetCurrentProcess(), &created, &exited, &kernel, &user) ||
+            !publish_native_json(
+                job + L"\\native_owner.json",
+                {{"pid", GetCurrentProcessId()},
+                 {"created", (static_cast<unsigned long long>(created.dwHighDateTime) << 32) |
+                                 created.dwLowDateTime}}))
+            throw std::runtime_error("Cannot persist native process identity");
+        if (request.contains("reconciliation")) {
+            recovery_deadline = std::make_unique<RecoveryDeadline>(job);
+        }
         auto model = request.at("model");
         model_name = wide(model.at("model_name"));
         folder = wide(model.at("output_directory"));
@@ -1896,139 +2749,190 @@ static int run_generic(const std::wstring &job) {
         CK(connect_creo(&process));
         connected = true;
         report["connected"] = true;
-        ProName name;
-        wcscpy_s(name, model_name.c_str());
-        ProMdlType mdltype =
-            model.value("model_type", "part") == "assembly" ? PRO_MDL_ASSEMBLY : PRO_MDL_PART;
-        ProError found = ProMdlInit(name, mdltype, &board);
-        if (request.at("new").get<bool>()) {
-            if (found == PRO_TK_NO_ERROR)
-                throw std::runtime_error("New model name already exists in the Creo session");
-            if (found != PRO_TK_E_NOT_FOUND)
-                check(found, "CheckNewModelName");
-            ProPath original, destination, tfile;
-            CK(ProDirectoryCurrentGet(original));
-            path(destination, folder);
-            path(tfile, template_file);
-            CK(ProDirectoryChange(destination));
-            try {
-                ProMdl templ;
-                if (request.contains("loft_seed"))
-                    templ = load_isolated_loft_seed(template_file);
-                else
-                    CK(ProMdlFiletypeLoad(tfile, PRO_MDLFILE_UNUSED, PRO_B_FALSE, &templ));
-                ProMdlName new_name;
-                wcscpy_s(new_name, model_name.c_str());
-                CK(ProMdlnameCopy(templ, new_name, &board));
-                if (request.contains("loft_seed"))
-                    CK(ProMdlErase(templ));
-            } catch (...) {
-                ProDirectoryChange(original);
-                throw;
-            }
-            CK(ProDirectoryChange(original));
-            mutated = true;
+        int release_numeric = 0;
+        ProError release_code = ProEngineerReleaseNumericversionGet(&release_numeric);
+        report["creo_release_query_code"] = release_code;
+        report["creo_release_numeric"] = release_code ? J(nullptr) : J(release_numeric);
+        report["session_fingerprint"] = recovery_session_fingerprint();
+        if (!publish_native_json(
+                job + L"\\native_owner.json",
+                {{"pid", GetCurrentProcessId()},
+                 {"created", (static_cast<unsigned long long>(created.dwHighDateTime) << 32) |
+                                 created.dwLowDateTime},
+                 {"session_fingerprint", report["session_fingerprint"]}}))
+            throw std::runtime_error("Cannot persist connected session ownership evidence");
+        if (request.contains("reconciliation")) {
+            generic_stage("recovery_" + request["reconciliation"]["action"].get<std::string>());
+            reconcile_native(request, report);
+        } else if (request.contains("session_models")) {
+            generic_stage("list_session_models");
+            session_models_native(report);
+        } else if (request.contains("open_file")) {
+            generic_stage("open_file_" + request["open_file"]["model_kind"].get<std::string>());
+            open_file_native(request, report);
+        } else if (request.contains("adoption")) {
+            generic_stage("adoption_" + request["adoption"]["action"].get<std::string>());
+            adopt_native(request, report);
         } else {
-            if (found == PRO_TK_E_NOT_FOUND) {
-                ProPath file;
-                path(file, checkpoint);
-                CK(ProMdlFiletypeLoad(file, PRO_MDLFILE_UNUSED, PRO_B_FALSE, &board));
-            } else
-                check(found, "FindOwnedModel");
-            ProPath origin;
-            CK(ProMdlOriginGet(board, origin));
-            std::wstring actual = origin, prefix = folder + L"\\";
-            if (_wcsnicmp(actual.c_str(), prefix.c_str(), prefix.size()))
-                throw std::runtime_error(
-                    "Loaded model origin does not match this MCP model's output directory");
-            if (model.contains("inspection") && !request.value("readonly", false))
-                verify_saved(model["inspection"], inspection());
-        }
-        ProUnitsystem us;
-        ProUnititem unit;
-        CK(ProMdlPrincipalunitsystemGet(board, &us));
-        CK(ProUnitsystemUnitGet(&us, PRO_UNITTYPE_LENGTH, &unit));
-        if (wcscmp(unit.name, L"mm"))
-            throw std::runtime_error("Expected millimeter model units");
-        generic_stage("loaded_blend_validation");
-        report["loft_checks"]["loaded"] = verify_loft_settings(L"loaded");
-        J seed_profiles;
-        if (request.contains("loft_seed")) {
-            if (!request.at("new").get<bool>() || request.value("readonly", false))
-                throw std::runtime_error("Loft seed binding requires a new writable part");
-            seed_profiles = validate_loft_seed(request["loft_seed"]);
-            suppress_seed_for_profiles(request["loft_seed"]["feature_id"], true);
-        }
-        for (auto op : request["operations"]) {
-            ++operation_index;
-            executing_operation = true;
-            generic_stage("execute_" + op["op"].get<std::string>());
-            log("OPERATION_INDEX=%d INPUT=%s\n", operation_index, op.dump().c_str());
-            if (!request.value("readonly", false))
+            // Recovery has its own evidence-bound path. Check callback readiness
+            // only for a normal plan that will create a direct Blend.
+            for (const auto &operation : request.at("operations")) {
+                if (operation.value("op", "") == "loft") {
+                    generic_stage("callback_preflight");
+                    wchar_t executable[MAX_PATH];
+                    GetModuleFileNameW(nullptr, executable, MAX_PATH);
+                    std::string command;
+                    resident_blend_callback(std::filesystem::path(executable).parent_path(),
+                                            command);
+                    break;
+                }
+            }
+            ProName name;
+            wcscpy_s(name, model_name.c_str());
+            ProMdlType mdltype =
+                model.value("model_type", "part") == "assembly" ? PRO_MDL_ASSEMBLY : PRO_MDL_PART;
+            ProError found = ProMdlInit(name, mdltype, &board);
+            if (request.at("new").get<bool>()) {
+                if (found == PRO_TK_NO_ERROR)
+                    throw std::runtime_error("New model name already exists in the Creo session");
+                if (found != PRO_TK_E_NOT_FOUND)
+                    check(found, "CheckNewModelName");
+                ProPath original, destination, tfile;
+                CK(ProDirectoryCurrentGet(original));
+                path(destination, folder);
+                path(tfile, template_file);
+                CK(ProDirectoryChange(destination));
+                try {
+                    ProMdl templ;
+                    if (request.contains("loft_seed"))
+                        templ = load_isolated_loft_seed(template_file, report["seed_native_load"]);
+                    else
+                        CK(ProMdlFiletypeLoad(tfile, PRO_MDLFILE_UNUSED, PRO_B_FALSE, &templ));
+                    ProMdlName new_name;
+                    wcscpy_s(new_name, model_name.c_str());
+                    CK(ProMdlnameCopy(templ, new_name, &board));
+                    if (request.contains("loft_seed"))
+                        CK(ProMdlErase(templ));
+                } catch (...) {
+                    ProDirectoryChange(original);
+                    throw;
+                }
+                CK(ProDirectoryChange(original));
                 mutated = true;
-            execute_operation(op);
-            executing_operation = false;
-        }
-        generic_stage("verify_model");
-        if (request.contains("loft_seed")) {
-            suppress_seed_for_profiles(request["loft_seed"]["feature_id"], false);
-            bind_loft_seed(request["loft_seed"], seed_profiles);
-        }
-        if (!request.value("readonly", false))
-            CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
-        J state = inspection();
-        report["inspection"] = state;
-        report["aliases"] = aliases;
-        verify_assertions(state, request.value("assertions", J::object()));
-        std::wstring saved = checkpoint;
-        if (!request.value("readonly", false)) {
-            generic_stage("before_save_blend_validation");
-            report["loft_checks"]["before_save"] = verify_loft_settings(L"before_save");
-            generic_stage("save_and_reload");
-            ProPath destination;
-            path(destination, folder);
-            CK(ProMdlnameBackup(board, destination));
-            saved = latest_model_file();
-            J before = state;
-            CK(ProMdlErase(board));
-            board = nullptr;
-            ProPath file;
-            path(file, saved);
-            CK(ProMdlFiletypeLoad(file, PRO_MDLFILE_UNUSED, PRO_B_FALSE, &board));
-            CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
-            state = inspection();
-            verify_saved(before, state);
+            } else {
+                if (found == PRO_TK_E_NOT_FOUND) {
+                    if (checkpoint.empty())
+                        throw std::runtime_error(
+                            "model_reconciliation_required: no saved baseline");
+                    ProPath file;
+                    path(file, checkpoint);
+                    CK(ProMdlFiletypeLoad(file, PRO_MDLFILE_UNUSED, PRO_B_FALSE, &board));
+                } else
+                    check(found, "FindOwnedModel");
+                if (checkpoint.empty() && !request.value("readonly", false))
+                    throw std::runtime_error("model_reconciliation_required: refusing to adopt a "
+                                             "checkpointless session model");
+                ProPath origin;
+                CK(ProMdlOriginGet(board, origin));
+                std::wstring actual = origin, prefix = folder + L"\\";
+                if (_wcsnicmp(actual.c_str(), prefix.c_str(), prefix.size()))
+                    throw std::runtime_error(
+                        "Loaded model origin does not match this MCP model's output directory");
+                if (model.contains("inspection") && !request.value("readonly", false)) {
+                    try {
+                        verify_saved(model["inspection"], inspection());
+                    } catch (const std::exception &error) {
+                        throw std::runtime_error(std::string("model_reconciliation_required: ") +
+                                                 error.what());
+                    }
+                }
+            }
+            ProUnitsystem us;
+            ProUnititem unit;
+            CK(ProMdlPrincipalunitsystemGet(board, &us));
+            CK(ProUnitsystemUnitGet(&us, PRO_UNITTYPE_LENGTH, &unit));
+            if (wcscmp(unit.name, L"mm"))
+                throw std::runtime_error("Expected millimeter model units");
+            generic_stage("loaded_blend_validation");
+            report["loft_checks"]["loaded"] = verify_loft_settings(L"loaded");
+            J seed_profiles;
+            if (request.contains("loft_seed")) {
+                if (!request.at("new").get<bool>() || request.value("readonly", false))
+                    throw std::runtime_error("Loft seed binding requires a new writable part");
+                seed_profiles = validate_loft_seed(request["loft_seed"]);
+                suppress_seed_for_profiles(request["loft_seed"]["feature_id"], true);
+            }
+            for (auto op : request["operations"]) {
+                ++operation_index;
+                executing_operation = true;
+                generic_stage("execute_" + op["op"].get<std::string>());
+                log("OPERATION_INDEX=%d INPUT=%s\n", operation_index, op.dump().c_str());
+                if (!request.value("readonly", false))
+                    mutated = true;
+                execute_operation(op);
+                executing_operation = false;
+            }
+            generic_stage("verify_model");
+            if (request.contains("loft_seed")) {
+                suppress_seed_for_profiles(request["loft_seed"]["feature_id"], false);
+                bind_loft_seed(request["loft_seed"], seed_profiles);
+            }
+            if (!request.value("readonly", false))
+                CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
+            J state = inspection();
+            report["inspection"] = state;
+            report["aliases"] = aliases;
             verify_assertions(state, request.value("assertions", J::object()));
-            generic_stage("after_reload_blend_validation");
-            report["loft_checks"]["after_reload"] = verify_loft_settings(L"after_reload");
-            report["saved_file_reloaded_and_verified"] = true;
+            std::wstring saved = checkpoint;
+            if (!request.value("readonly", false)) {
+                generic_stage("before_save_blend_validation");
+                report["loft_checks"]["before_save"] = verify_loft_settings(L"before_save");
+                generic_stage("save_and_reload");
+                ProPath destination;
+                path(destination, folder);
+                CK(ProMdlnameBackup(board, destination));
+                saved = latest_model_file();
+                J before = state;
+                CK(ProMdlErase(board));
+                board = nullptr;
+                ProPath file;
+                path(file, saved);
+                CK(ProMdlFiletypeLoad(file, PRO_MDLFILE_UNUSED, PRO_B_FALSE, &board));
+                CK(ProSolidRegenerate((ProSolid)board, PRO_REGEN_NO_FLAGS));
+                state = inspection();
+                verify_saved(before, state);
+                verify_assertions(state, request.value("assertions", J::object()));
+                generic_stage("after_reload_blend_validation");
+                report["loft_checks"]["after_reload"] = verify_loft_settings(L"after_reload");
+                report["saved_file_reloaded_and_verified"] = true;
+            }
+            state["inspection_source"] =
+                request.value("readonly", false) ? "live_query" : "saved_reloaded";
+            state["inspection_available"] = true;
+            generic_stage("display_preview");
+            CK(ProMdlDisplay(board));
+            CK(ProMdlWindowGet(board, &win));
+            CK(ProWindowCurrentSet(win));
+            double a = sqrt(.5), b = sqrt(1.0 / 6), c = sqrt(1.0 / 3), d = sqrt(2.0 / 3);
+            ProMatrix view = {{a, -b, c, 0}, {a, b, -c, 0}, {0, d, c, 0}, {0, 0, 0, 1}};
+            CK(ProViewMatrixSet(board, nullptr, view));
+            ProWindowRefit(win);
+            ProWindowRepaint(win);
+            ProWindowActivate(win);
+            ProPath preview;
+            path(preview, job + L"\\output\\preview.jpg");
+            int preview_code = ProRasterFileWrite(win, PRORASTERDEPTH_24, 8, 6, PRORASTERDPI_100,
+                                                  PRORASTERTYPE_JPEG, preview);
+            report.update({{"success", true},
+                           {"toolkit_code", 0},
+                           {"inspection", state},
+                           {"aliases", aliases},
+                           {"part_file", utf8(saved)},
+                           {"preview_code", preview_code},
+                           {"preview_file", preview_code == 0 ? J(utf8(preview)) : J(nullptr)},
+                           {"operations", operation_results}});
+            log("BUILD_SUCCESS=1\n");
         }
-        state["inspection_source"] =
-            request.value("readonly", false) ? "live_query" : "saved_reloaded";
-        state["inspection_available"] = true;
-        generic_stage("display_preview");
-        CK(ProMdlDisplay(board));
-        CK(ProMdlWindowGet(board, &win));
-        CK(ProWindowCurrentSet(win));
-        double a = sqrt(.5), b = sqrt(1.0 / 6), c = sqrt(1.0 / 3), d = sqrt(2.0 / 3);
-        ProMatrix view = {{a, -b, c, 0}, {a, b, -c, 0}, {0, d, c, 0}, {0, 0, 0, 1}};
-        CK(ProViewMatrixSet(board, nullptr, view));
-        ProWindowRefit(win);
-        ProWindowRepaint(win);
-        ProWindowActivate(win);
-        ProPath preview;
-        path(preview, job + L"\\output\\preview.jpg");
-        int preview_code = ProRasterFileWrite(win, PRORASTERDEPTH_24, 8, 6, PRORASTERDPI_100,
-                                              PRORASTERTYPE_JPEG, preview);
-        report.update({{"success", true},
-                       {"toolkit_code", 0},
-                       {"inspection", state},
-                       {"aliases", aliases},
-                       {"part_file", utf8(saved)},
-                       {"preview_code", preview_code},
-                       {"preview_file", preview_code == 0 ? J(utf8(preview)) : J(nullptr)},
-                       {"operations", operation_results}});
-        log("BUILD_SUCCESS=1\n");
     } catch (ProError error) {
         report["toolkit_code"] = error;
         report["message"] = "Toolkit call " + last_toolkit_error + " failed with code " +
@@ -2036,10 +2940,14 @@ static int run_generic(const std::wstring &job) {
         log("BUILD_FAILED=%d\n", error);
     } catch (const std::exception &error) {
         report["message"] = error.what();
+        if (std::string(error.what()).find("model_reconciliation_required:") == 0)
+            report["code"] = "model_reconciliation_required";
         report["toolkit_code"] = PRO_TK_GENERAL_ERROR;
         log("BUILD_FAILED=%s\n", error.what());
     }
     if (!report["success"].get<bool>()) {
+        if (generic_phase == "callback_preflight" && !mutated)
+            report["model_unchanged"] = true;
         report["failed_stage"] = generic_phase;
         report["failed_toolkit_call"] =
             last_toolkit_error.empty() ? J(nullptr) : J(last_toolkit_error);
@@ -2084,6 +2992,8 @@ static int run_generic(const std::wstring &job) {
             report["rollback_code"] = loaded;
     }
     generic_stage("disconnect");
+    if (recovery_deadline)
+        recovery_deadline->complete();
     int delivered = deliver_native_result(job, report, connected, [&]() {
         int code = ProEngineerDisconnect(&process, 15);
         log("DISCONNECT=%d\n", code);

@@ -1,0 +1,732 @@
+{
+  "work_item": "FEAT-029",
+  "timestamp_utc": "2026-10-16T08:20:12.123694+00:00",
+  "status": "completed_with_recorded_environment_and_coverage_boundaries",
+  "source": {
+    "baseline_commit": "6a55119f5dc2c9b95fb3365c8073c354f83c7325",
+    "dirty": true,
+    "code_files_unchanged_since_developer_acceptance": 119,
+    "code_fingerprint_map_sha256": "24d84b618d1b27296266cc2d3f46349958dfc0820cd82ecf7a3805b0c1d04f66",
+    "version": "0.3.2 development source; not a newly published release"
+  },
+  "environment": {
+    "platform": "Windows x64",
+    "creo": "12.4.0.0",
+    "release_numeric": 44,
+    "sdk": "matching local Creo 12.4 SDK",
+    "unit": "mm"
+  },
+  "developer_evidence": "FEAT-029-developer-acceptance-2026-10-16.json",
+  "independent_report": {
+    "path": "docs/validation/FEAT-029-WorkBuddy-report-2026-10-16.md",
+    "original_file": "E:\\Projects\\workcreo\\FEAT-029_独立验收报告.md",
+    "sha256": "14f41ff0e6ec2c941c4ac3cee9791ae6613e374097fb39ab453eba8f6c744461",
+    "archived_bytes_match_original": true,
+    "reported_test_window_local": "2026-10-16 16:07-16:13 Asia/Shanghai",
+    "passed_scope": "Current deployment identity, two loft entrances, multi-section/mode/base/seed, synchronous rejections, real rollback and subsequent solid; report items 1,3-8",
+    "lifecycle_matrix_independently_retested": false,
+    "parallel_modeling": false,
+    "loaded_payload_sha256": "9346f9e0410a6b7f91b6c33db2b6be9b8e2f1e597e6d41c5fa0f774b6081e20e"
+  },
+  "developer_read_only_job_crosscheck": {
+    "work_item": "FEAT-029",
+    "original_report": "E:\\Projects\\workcreo\\FEAT-029_独立验收报告.md",
+    "original_report_sha256": "14f41ff0e6ec2c941c4ac3cee9791ae6613e374097fb39ab453eba8f6c744461",
+    "scope": "Codex developer read-only cross-check of archived job states against the independent WorkBuddy report; not additional WorkBuddy scenarios or live replay",
+    "jobs": [
+      {
+        "job_id": "06fbbbd215644d009c160f8f51495795",
+        "model_id": "5fe0e8d008b945c88059786a1b90600b",
+        "status": "succeeded",
+        "revision": 1,
+        "volume_mm3": null,
+        "saved_file_reloaded_and_verified": true,
+        "rollback_succeeded": false,
+        "inspection_source": null,
+        "original_job_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\jobs\\06fbbbd215644d009c160f8f51495795\\job.json",
+        "original_job_sha256": "76ac4ac034ed73ae3a2875e2351ae073f3a7d4517867ef7645334f33fa283b0f",
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "sk_a",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "ca",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 10.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "sketch",
+            "label": "sk_b",
+            "plane": "XY",
+            "offset": 25.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "cb",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 6.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          }
+        ],
+        "spec": null
+      },
+      {
+        "job_id": "0a1ea1a752d241d9b88ca70a59acc665",
+        "model_id": "5fe0e8d008b945c88059786a1b90600b",
+        "status": "succeeded",
+        "revision": 2,
+        "volume_mm3": 5131.268000863329,
+        "saved_file_reloaded_and_verified": true,
+        "rollback_succeeded": false,
+        "inspection_source": null,
+        "original_job_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\jobs\\0a1ea1a752d241d9b88ca70a59acc665\\job.json",
+        "original_job_sha256": "820b9382607f70666bfe59a019ff0717d63cd48c360807185c2e5b77800ecc47",
+        "operations": [
+          {
+            "op": "loft",
+            "label": "blend_probe",
+            "sections": [
+              "sk_a",
+              "sk_b"
+            ],
+            "mode": "add",
+            "interpolation": "straight",
+            "new_body": false
+          }
+        ],
+        "spec": null
+      },
+      {
+        "job_id": "437bf40953ad42e09e60eacacfa1a3f2",
+        "model_id": "56aeed3701294d3abaafaaa7e67dbab8",
+        "status": "succeeded",
+        "revision": 1,
+        "volume_mm3": 5131.268000863329,
+        "saved_file_reloaded_and_verified": true,
+        "rollback_succeeded": false,
+        "inspection_source": null,
+        "original_job_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\jobs\\437bf40953ad42e09e60eacacfa1a3f2\\job.json",
+        "original_job_sha256": "0903474ac19902a47756a6d9d92a78893204da55b2e9c2716b96a7d439e23705",
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "sk_a",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "ca",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 10.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "sketch",
+            "label": "sk_b",
+            "plane": "XY",
+            "offset": 25.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "cb",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 6.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "loft",
+            "label": "blend_probe",
+            "sections": [
+              "sk_a",
+              "sk_b"
+            ],
+            "mode": "add",
+            "interpolation": "straight",
+            "new_body": false
+          }
+        ],
+        "spec": null
+      },
+      {
+        "job_id": "b4caae6163a145529d000234a132eb64",
+        "model_id": "b37a2e4c48684d3a831defc9bfa68da1",
+        "status": "succeeded",
+        "revision": 1,
+        "volume_mm3": 5131.268000863329,
+        "saved_file_reloaded_and_verified": true,
+        "rollback_succeeded": false,
+        "inspection_source": null,
+        "original_job_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\jobs\\b4caae6163a145529d000234a132eb64\\job.json",
+        "original_job_sha256": "1c44f74c02c7f240aab08d589818db273be983fc89698044915dff9f3e5280de",
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "sk_a",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "c1",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 10.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "sketch",
+            "label": "sk_b",
+            "plane": "XY",
+            "offset": 25.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "c2",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 6.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "loft",
+            "label": "blend2",
+            "sections": [
+              "sk_a",
+              "sk_b"
+            ],
+            "mode": "add",
+            "interpolation": "smooth",
+            "new_body": false
+          }
+        ],
+        "spec": null
+      },
+      {
+        "job_id": "dc0da0326af24dfcaeefd0286cb5a030",
+        "model_id": "8623e853fadc4380acf82c3d9918518b",
+        "status": "succeeded",
+        "revision": 1,
+        "volume_mm3": 5131.268000863329,
+        "saved_file_reloaded_and_verified": true,
+        "rollback_succeeded": false,
+        "inspection_source": null,
+        "original_job_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\jobs\\dc0da0326af24dfcaeefd0286cb5a030\\job.json",
+        "original_job_sha256": "9fc3f02416c0038488280d239584d206adefa07e9a4716f5a857f3cc9eddd19e",
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "sk_a",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "c1",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 10.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "sketch",
+            "label": "sk_b",
+            "plane": "XY",
+            "offset": 12.5,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "c2",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 8.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "sketch",
+            "label": "sk_c",
+            "plane": "XY",
+            "offset": 25.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "c3",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 6.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "loft",
+            "label": "blend3",
+            "sections": [
+              "sk_a",
+              "sk_b",
+              "sk_c"
+            ],
+            "mode": "add",
+            "interpolation": "straight",
+            "new_body": false
+          }
+        ],
+        "spec": null
+      },
+      {
+        "job_id": "4d8864042614404986a2de12b9a21c55",
+        "model_id": "87a83eade04644f69af1b86e74f8cbea",
+        "status": "succeeded",
+        "revision": 1,
+        "volume_mm3": 5130.649365654384,
+        "saved_file_reloaded_and_verified": true,
+        "rollback_succeeded": false,
+        "inspection_source": null,
+        "original_job_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\jobs\\4d8864042614404986a2de12b9a21c55\\job.json",
+        "original_job_sha256": "2a254089f485a0acf68dbc2a96efb3bd70314e262edbc1fd0f250241911d5c6b",
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "sk_a",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "c1",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 10.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "sketch",
+            "label": "sk_b",
+            "plane": "XY",
+            "offset": 12.5,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "c2",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 8.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "sketch",
+            "label": "sk_c",
+            "plane": "XY",
+            "offset": 25.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "c3",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 6.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "loft",
+            "label": "blend3",
+            "sections": [
+              "sk_a",
+              "sk_b",
+              "sk_c"
+            ],
+            "mode": "add",
+            "interpolation": "smooth",
+            "new_body": false
+          }
+        ],
+        "spec": null
+      },
+      {
+        "job_id": "542af15f6a2743ff9991bffadfe4c5ae",
+        "model_id": "766d6261d72b4bf58c6d85ccfb7133a2",
+        "status": "succeeded",
+        "revision": 1,
+        "volume_mm3": 4523.893421169301,
+        "saved_file_reloaded_and_verified": true,
+        "rollback_succeeded": false,
+        "inspection_source": null,
+        "original_job_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\jobs\\542af15f6a2743ff9991bffadfe4c5ae\\job.json",
+        "original_job_sha256": "3ef0dce06b43eaa64a641285a6552fad673d284ccf45dededc2bfb82f3d5ffd1",
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "b0",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "bc0",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 12.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "sketch",
+            "label": "b1",
+            "plane": "XY",
+            "offset": 10.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "bc1",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 12.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "loft",
+            "label": "base_blend",
+            "sections": [
+              "b0",
+              "b1"
+            ],
+            "mode": "add",
+            "interpolation": "straight",
+            "new_body": false
+          }
+        ],
+        "spec": null
+      },
+      {
+        "job_id": "a1aa03c66bab420191d78af231d5f91e",
+        "model_id": "766d6261d72b4bf58c6d85ccfb7133a2",
+        "status": "succeeded",
+        "revision": 2,
+        "volume_mm3": 4523.893421169301,
+        "saved_file_reloaded_and_verified": true,
+        "rollback_succeeded": false,
+        "inspection_source": null,
+        "original_job_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\jobs\\a1aa03c66bab420191d78af231d5f91e\\job.json",
+        "original_job_sha256": "e5820e22dcd02b649d4a1d00268e303d4e420f0c3b26095a7f3a906cac76fb96",
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "a2",
+            "plane": "XY",
+            "offset": 10.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "ac1",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 12.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "sketch",
+            "label": "a3",
+            "plane": "XY",
+            "offset": 35.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "ac2",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 6.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          }
+        ],
+        "spec": null
+      },
+      {
+        "job_id": "de3dc8092d7045f09a60bc7c0cabb361",
+        "model_id": "766d6261d72b4bf58c6d85ccfb7133a2",
+        "status": "succeeded",
+        "revision": 3,
+        "volume_mm3": 11121.237993707866,
+        "saved_file_reloaded_and_verified": true,
+        "rollback_succeeded": false,
+        "inspection_source": null,
+        "original_job_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\jobs\\de3dc8092d7045f09a60bc7c0cabb361\\job.json",
+        "original_job_sha256": "2a1597b8015798a8b08a97187e0218f0bab1aeec4266802550e3b40d7bca2d1f",
+        "operations": [
+          {
+            "op": "loft",
+            "label": "blend_app",
+            "sections": [
+              "a2",
+              "a3"
+            ],
+            "mode": "add",
+            "interpolation": "straight",
+            "new_body": false
+          }
+        ],
+        "spec": null
+      },
+      {
+        "job_id": "5091f21ad0f04ecea03994a80c4efc8a",
+        "model_id": "e6ad568c48ab48179d578f12ae8f15c8",
+        "status": "succeeded",
+        "revision": 1,
+        "volume_mm3": 5131.268000863329,
+        "saved_file_reloaded_and_verified": true,
+        "rollback_succeeded": false,
+        "inspection_source": null,
+        "original_job_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\jobs\\5091f21ad0f04ecea03994a80c4efc8a\\job.json",
+        "original_job_sha256": "dbe63f82839c2aba17515d9c0b21952da6a14552073d0c970333a8719e9362cd",
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "sk_a",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "ca",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 10.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "sketch",
+            "label": "sk_b",
+            "plane": "XY",
+            "offset": 25.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "cb",
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "radius": 6.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          }
+        ],
+        "spec": null
+      },
+      {
+        "job_id": "1905d097c81642f396b485d052e912ac",
+        "model_id": "5fe0e8d008b945c88059786a1b90600b",
+        "status": "failed",
+        "revision": null,
+        "volume_mm3": 5131.268000863329,
+        "saved_file_reloaded_and_verified": false,
+        "rollback_succeeded": true,
+        "inspection_source": "rollback_verified",
+        "original_job_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\jobs\\1905d097c81642f396b485d052e912ac\\job.json",
+        "original_job_sha256": "a4cb8024eaf75ac1c80ec16209e9c8162d452b22e8124ebb9700b2908900280b",
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "rb_sk",
+            "plane": "XY",
+            "offset": 60.0,
+            "entities": [
+              {
+                "type": "rectangle",
+                "name": "rb",
+                "min": [
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  10.0,
+                  10.0
+                ],
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          }
+        ],
+        "spec": null
+      },
+      {
+        "job_id": "ef95a8e0350d4203be78640bfcf33fbf",
+        "model_id": null,
+        "status": "succeeded",
+        "revision": null,
+        "volume_mm3": 12000,
+        "saved_file_reloaded_and_verified": true,
+        "rollback_succeeded": null,
+        "inspection_source": null,
+        "original_job_file": "E:\\Projects\\MCP_CREO_MechDog_Test\\jobs\\ef95a8e0350d4203be78640bfcf33fbf\\job.json",
+        "original_job_sha256": "be652cb4624555f3fb62f58bf2da5ec6535d65f09b8bfd7ea7bce873f64bd88a",
+        "operations": null,
+        "spec": {
+          "length": 40.0,
+          "width": 30.0,
+          "thickness": 10.0,
+          "radius": 0.0,
+          "holes": [],
+          "model_name": "feat29v_small"
+        }
+      }
+    ],
+    "success": true,
+    "counts": {
+      "total": 12,
+      "succeeded": 11,
+      "expected_failed_with_verified_rollback": 1,
+      "successful_jobs_saved_reloaded": 11
+    }
+  },
+  "checks": {
+    "independent_report_matches_final_payload": true,
+    "current_program_files_match_developer_test_source": true,
+    "developer_unit_tests_passed": 258,
+    "sdk_and_native_modeling_evidence_available": true,
+    "all_12_persisted_job_terminal_results_match": true
+  },
+  "closure_basis": "Combined real developer lifecycle matrix, operator GUI observations and independent WorkBuddy current-deployment black-box results; no claim of independent lifecycle matrix or concurrent modeling pass",
+  "unverified": [
+    "WorkBuddy independent lifecycle upgrade/restart/rollback/coexist matrix (developer real-machine coverage retained)",
+    "Parallel modeling and WorkBuddy parallel submissions/owner identification",
+    "MCP automatic launch actually reading callback config (directory configured only)",
+    "Creo 9/10 new callback lifecycle",
+    "Loaded legacy protocol-2 DLL migration",
+    "Real loader/SDK generation change",
+    "Hot rollback of already activated payload"
+  ],
+  "delivery_scope": "Commit and push feature branch only; main merge and new Release not part of this instruction",
+  "release_published": false
+}

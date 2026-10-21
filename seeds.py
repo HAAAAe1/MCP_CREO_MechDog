@@ -10,6 +10,7 @@ import zipfile
 from pathlib import Path, PurePosixPath
 
 import bridge
+from creo_mechdog.seed_compatibility import metadata
 from creo_mechdog.seed_distribution import seed_file_bytes
 
 REGISTRY_NAME = "seed_registry.json"
@@ -55,6 +56,7 @@ def _checked_seed(root: Path, entry: dict) -> dict:
         raise ValueError("Seed path escapes its library directory")
     result = {
         **entry,
+        **metadata(entry),
         "seed_file": str(path),
         "seed_feature_id": entry["seed_feature_id"],
         "required_section_count": entry["section_count"],
@@ -131,7 +133,7 @@ def install_seed_library(directory: str | None = None, archive_file: str | None 
         if not source.is_absolute() or not source.is_file():
             raise ValueError("archive_file must be an existing absolute local ZIP path")
         # Accept only the published library, not arbitrary executable ZIP contents.
-        expected_digest = "7e1332dd87ec0a90dd20600594e88580721df50eaff66f4e588a7ad771e79e70"
+        expected_digest = "4edaf07af5dfc39ddebe57476296f4782134b0018d1576563e80261289ea88a1"
         if hashlib.sha256(source.read_bytes()).hexdigest() != expected_digest:
             raise ValueError("Archive SHA256 differs from the published MIT seed library")
         if destination.exists():

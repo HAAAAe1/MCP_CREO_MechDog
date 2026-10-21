@@ -1,18 +1,18 @@
-# MCP_CREO_MechDog 0.3.3
+# MCP_CREO_MechDog 0.4.4
 
 开发维护从 [开发入口](docs/DEVELOPMENT.md) 和 [统一功能台账](docs/BACKLOG.md) 开始。每项工作先定义验收；语言与单元检查、Creo 实机验收分别记录。项目采用渐进布局整理，当前支持环境见 [兼容矩阵](docs/COMPATIBILITY.md)。
 
 本地 Windows MCP 服务，按需启动或连接 Creo Parametric 9 / 10 / 12，通过官方 C/C++ Toolkit 创建、查询和修改**原生参数化特征**。当前开发与发布按本机 Creo 12.4.0.0 的改动范围验收；Creo 10 不再要求独立复测，Creo 9 与 Toolkit 9 已纳入支持/要求范围，[BUG-033](docs/work-items/BUG-033.md) 编译探测修复已实现。本机无 Creo 9 SDK，Creo 9 实机编译与建模运行时均未验收，其他环境收到具体测试反馈后再跟进。历史证据、具体功能与未测范围见 [兼容矩阵](docs/COMPATIBILITY.md)。建模由任意支持的草图轮廓及顺序特征组成：新建零件 → 草图 → 拉伸/旋转 → 切除/孔 → 后续特征。原先的底板接口保留为快捷工具。
 
-**本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 本版对客户端公开 **82 个可用工具**（0.2.6 为 81 个）；`creo_loft` 已通过直接创建和已有零件追加验收并开放。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
+**本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 0.4.2 注册 **87 个工具**（0.4.1 为 86 个，新增 `creo_open_file`）；v0.4.1/Creo 10 反馈按[处理计划](docs/development/CREO10-0.4.1-FEEDBACK-PLAN.md)交付：磁盘 `.prt`/`.asm` 只读检索显示、`creo_capabilities` compact 摘要与分页（FEAT-023/044）、`creo_session_status` 各分支 `server_version`（FEAT-022）、接管 `NO_CURRENT_MODEL`/稳定 `reason_code`/结构化 `refusal_details` 与顶层支持状态（FEAT-006/008）；既有能力（无盘快照接管、会话枚举、受控恢复、直接混合等）保留。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
 
-当前服务/源码版本为 **0.3.3**，新增 SDK 孔常量编译探测、原生构建失败摘要、显式编译环境及安装诊断。变更见 [0.3.3 说明](docs/RELEASE_NOTES_0.3.3.md)，本次发布验收见 [记录](docs/validation/RELEASE-0.3.3.md)。历史 [0.3.2](docs/RELEASE_NOTES_0.3.2.md)、[0.3.1](docs/RELEASE_NOTES_0.3.1.md)、[0.3.0](docs/RELEASE_NOTES_0.3.0.md) 记录保持原身份和日期。
+当前服务/源码版本为 **0.4.5**（PATCH：0.4.2/Creo 10 反馈首批处理，无新增公开工具）。0.4.5 交付：BUG-076 收养 16 MiB 预算阻断首批可定位诊断（稳定原因码 `ADOPTION_METADATA_BUDGET_EXCEEDED` + metadata_kind/字节数/失败阶段/恢复指引，不提高限额）；FEAT-006/008 空窗口 `NO_CURRENT_MODEL` Python 结构化转换与收养预检全阶段诊断；FEAT-043/044 打开成功结果 `opened_session_model`；FEAT-008/023 README 默认摘要与分页接口一览。BUG-076 原环境（Creo 10）证据未取得保持开放；WorkBuddy 黑盒待发布后复核。见[0.4.5 说明](docs/RELEASE_NOTES_0.4.5.md)；历史[0.4.4](docs/RELEASE_NOTES_0.4.4.md)、[0.4.3](docs/RELEASE_NOTES_0.4.3.md)、[0.4.2](docs/RELEASE_NOTES_0.4.2.md)、[0.4.1](docs/RELEASE_NOTES_0.4.1.md)、[0.4.0](docs/RELEASE_NOTES_0.4.0.md)及原验收身份保留。
 
 本版包含 [FEAT-019 自动启动](docs/work-items/FEAT-019.md)：后台检测、启动协调和建模就绪保护已实现；用户于 2026-10-13 接受 WorkBuddy / Creo 12.4 的自动启动、Toolkit 就绪及建模/保存重载验收，并于 2026-10-14 确认补充 Creo 12 已验证可用的说明。该专项未取得 Creo 10 实测结果；Codex 冷启动连接复测失败另列 [BUG-005](docs/work-items/BUG-005.md)。见 [原验收证据](docs/validation/FEAT-019.md)。
 
 普通混合可直接创建或追加，范围见 [直接混合](docs/DIRECT_BLEND_0.2.5.md)；种子复用见 [调用说明](docs/LOFT_SEED.md)、[多截面](docs/MULTISECTION_BLEND.md)。草图支持 `dimensioning="auto" / "autodim" / "coordinates"`，坐标模式的范围与尺寸编辑规则见 [草图说明](docs/SKETCH_STABILITY_0.2.5.md)。迁移步骤见 [种子库](docs/SEED_LIBRARY.md) 和 [换电脑、换 Agent](docs/MIGRATION.md)。
 
-BUG-007开发分支已将直接Blend的首次DLL加载移出建模作业：先通过Creo辅助应用程序初始化 `creo_capabilities.direct_blend_callback.registry_file` 指向的回调，再提交loft。未初始化时明确拒绝，MCP保留原有安全策略。Creo12.4本轮完整正例、三轮串行、已有实体追加及回滚/重载已通过开发者验证，WorkBuddy最终验收仍待完成；见 [本次记录](docs/validation/BUG-007.md)。新建种子放样不需要此回调。
+FEAT-029已集成固定注册与升级预检：构建后按[生命周期说明](docs/CALLBACK_LIFECYCLE.md)完成必要的正式注册、持久配置与手动启动，再查 `creo_callback_status`；只有实时ready才提交直接混合。查询和建模不加载DLL、不修改安全策略。原分支历史实机/WorkBuddy结果保留，本次集成仅通过离线检查，见[集成记录](docs/validation/FEAT-029-integration-2026-10-17.md)。当前Creo卡死限制保持，本轮未连接Creo。新建种子放样不需要此回调。
 
 工程图、曲面、布尔、筋、UDF、钣金和装配沿用已有接口与各自的验收范围。此前 [安装修复](docs/INSTALL_FIX_2026-10-10.md) 和 [建模增量](docs/PORTABLE_MODELING_2026-10-11.md) 保留原版本历史记录；新版本不会自动改写已发布的 GitHub 源码或附件。
 
@@ -27,6 +27,8 @@ DEV-002 已开始分批迁移：更新检查实现位于 `src/creo_mechdog/`，�
 模型引用须按具体工具的参数形状选择，见 [引用格式](docs/REFERENCE_SYNTAX.md)。0.3.0 兼容 axis_pattern 的通用 datum_feature 轴标签，用户已确认 WorkBuddy N1 验收通过；旧发布需要更新源码并重启 MCP 后使用。
 
 ## 安装
+
+0.4.3（2026-10-20 发布，0.3.7 反馈修复合集，工具数 87 不变）：BUG-036 装配约束后元件位姿查询修复（native 组件变换重写 + 隔离 C++ 对照）；BUG-057 Windows 并发准入 open Errno 13 修复（锁打开路径细化）；BUG-074 无进程身份历史作业的恢复守卫（PID-only owner 以独立核验的 Windows 重启为界，证据绑定 token）；种子兼容观察（`creo_list_seeds`/加载证据记录历史兼容性）与进程窗口观察增强；BUG-075 通道探针稳定性登记待复现。0.3.7 剩余黑盒 16/16 与开发者补测（英寸拒绝/四类型枚举/families 全量/异常候选只读 inspect）通过。升级后先重启目标 MCP 连接器，再核对实际路径、启动指纹和工具清单；纳管流程与未测边界见[现有模型接管](docs/ADOPTION.md)。
 
 准备 Windows x64、Python 3.12+ x64、Creo Parametric 9、10 或 12 及匹配的 Toolkit SDK、MSVC x64 C++ 构建工具和可用的 PTC 许可。Creo 9 与 Toolkit 9 的编译探测修复已实现，实机编译与建模运行时未在本机验收。Creo 软件、SDK、模板和许可需要自行取得；MIT 适用于本项目代码、文档及种子库的原创内容，不提供 PTC 软件授权。第三方依赖和 PTC 前置条件见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
@@ -51,14 +53,26 @@ DEV-002 已开始分批迁移：更新检查实现位于 `src/creo_mechdog/`，�
 
 脚本不修改全局客户端配置。完整安装与排错说明见 [docs/INSTALL.md](docs/INSTALL.md)；GitHub 源码发布步骤见 [docs/PUBLISH_GITHUB.md](docs/PUBLISH_GITHUB.md)。GitHub 仓库用于分发源码，服务在使用者的电脑运行。
 
+### 直接混合（Blend）的一次性回调设置
+
+`creo_loft` / 计划内 `loft`（直接混合）依赖一个常驻回调 DLL，须由使用者完成一次正式注册；未就绪时建模前会被明确拒绝（`BLEND_CALLBACK_SETUP_REQUIRED`）。**新建种子放样（`creo_new_loft_part`、`creo_new_airfoil_blade`）不需要此回调**。一次性步骤：
+
+1. 构建后在 `build\blend_callback_setup.json` 或 `creo_callback_status` 返回中确认 `registry_file`（固定入口 `<安装目录>\build\blend_callback_protk.dat`）。
+2. 在 Creo 的「辅助应用程序」（Auxiliary Applications）对话框注册该 `registry_file` 一次，手动启动它并亲自确认 DLL 安全提示；不要直接注册 `module_file`。
+3. 跨 Creo 重启保持条目：把 `build\blend_callback.config.pro` 中的 `protkdat <注册文件绝对路径>` 一行合入实际加载的 config.pro（生成片段不会被自动读取）。
+4. 正常重启 Creo 后条目应自动出现（`delay_start true` 仍需手动 Start）。
+5. 查询 `creo_callback_status`：`readiness=ready` 才提交直接混合；`not_loaded`（可确定未加载，含首次）的 `instruction` 首行即注册入口，`unknown` 表示无法确认，保守处理。
+
+MCP 不会代为注册、加载 DLL 或修改 Creo 安全策略。完整流程、升级/回退与限制见 [生命周期说明](docs/CALLBACK_LIFECYCLE.md)。
+
 ## 建模能力
 
 | 类别 | 工具及能力 |
 | --- | --- |
 | 零件与建模计划 | `creo_new_part`、`creo_execute_plan`：新建毫米零件，或对已有 MCP 零件逐步追加特征 |
 | 草图 | `creo_create_sketch`：直线、中心线、圆、圆弧、矩形、多段线、样条、椭圆；显式尺寸和约束；auto/autodim/coordinates 尺寸策略 |
-| 拉伸 | `creo_extrude`：实体增材、切除、贯穿切除、曲面、薄壁、正/反向、对称深度、新实体 |
-| 旋转 | `creo_revolve`：实体旋转、旋转切除、指定角度，使用草图中心线或外部轴；提供曲面、薄壁和对称角度分支 |
+| 拉伸 | `creo_extrude`：实体增材、切除、贯穿切除、曲面、薄壁、正/反向、对称深度、新实体；切除未去料（板外草图、方向/深度错误或已去除区域）时失败回滚，成功操作详情返回material_removed_mm3 |
+| 旋转 | `creo_revolve`：实体旋转、旋转切除、指定角度，使用草图中心线或外部轴；提供曲面、薄壁和对称角度分支；切除零去料同样失败回滚并返回material_removed_mm3 |
 | 孔 | `creo_hole`：原生直孔，平面定位，两条独立平面参考或共面直边及有符号偏置；边参考用放置面中心明确定位侧。通孔或指定深度盲孔，flip反转原生切削侧；无去料时失败回滚，成功操作详情返回孔轴及material_removed_mm3 |
 | 修饰特征 | `creo_round`、`creo_chamfer`、`creo_shell`：恒定半径圆角、等距倒角、恒定厚度抽壳；用查询得到的边/面 ID 选引用 |
 | 基准与重复 | `creo_datum_plane`、`creo_datum_axis`、`creo_dimension_pattern`：偏移/角度基准面、基准轴、一方向尺寸阵列 |
@@ -78,6 +92,7 @@ DEV-002 已开始分批迁移：更新检查实现位于 `src/creo_mechdog/`，�
 | 高级原生特征接口 | `creo_create_feature_tree`、`creo_lookup_constants`、`creo_dump_feature_tree`：按照本机 SDK 的 Element Tree 结构创建特征，查询常量、导出特征 XML |
 | 保存与导出 | `creo_regenerate`、`creo_save_model`、`creo_export_model`：保存原生 PRT/ASM，导出 STEP、IGES、STL、JPEG；装配的所有导出格式组合未验证 |
 | 环境与任务 | `creo_check_environment`、`creo_session_status`、`creo_capabilities`、`creo_get_job`、`creo_list_jobs`：环境、实际 Toolkit 连接、能力和任务进度 |
+| 磁盘模型打开 | `creo_open_file`：只读检索并显示磁盘既有 `.prt`/`.asm`（显式 `.N` 版本或目录内最高数字版本）；同名同类型会话模型与非空会话装配拒绝；缺件装配报残留对象、缺件清单标记未知；不保存、不擦除、不接管，成功返回 `model_id=null` |
 | 快捷底板 | `creo_create_plate`：兼容此前矩形底板、角圆角、独立通孔接口 |
 
 特征保存为 Creo 可编辑的草图、拉伸、旋转、孔、圆角等，保留尺寸及依赖。多段线和矩形会展开为原生直线，不能将 `polyline` 名字当作单个尺寸引用；例如 `box_0` 是矩形第一条边。
@@ -163,9 +178,23 @@ Toolkit 操作共用一个通道，提交时忙碌会立即拒绝；响应保持
 
 每次修改成功后，执行器检查单位、所有原生特征的活动/完整状态及实体状态；保存 `.prt.N` 或 `.asm.N`，擦除该 MCP 零件的内存模型，从实际保存文件重载、重新生成，再对比特征 ID/类型/名称、尺寸值、实体数量、体积和参数。可额外提供 `require_solid`、`volume_mm3`、`volume_tolerance` 断言。体积计算临时使用密度 1，不修改材料。
 
+**默认摘要与分页接口一览。** 以下三个查询接口默认返回 compact 摘要（小体积、可直接整读），需要全量内容时显式请求并按页遍历；依赖旧全量返回的调用方会静默拿到摘要，不会报错：
+
+| 接口 | 默认 | 取全量 |
+| --- | --- | --- |
+| `creo_list_models` | compact 模型清单摘要 | `detail="full"`，必要时沿 `next_cursor` 分页 |
+| `creo_inspect_model` | compact 快照摘要（身份/revision/体积/计数） | `detail="full"` + `section="dimensions"`/`"surfaces"`/`"edges"`/`"features"` 等，沿 `next_cursor` 分页 |
+| `creo_capabilities` | compact 能力摘要页 | `detail="full"` + `section="tools"`/`"families"`/`"references"` 等，沿 `next_cursor` 分页 |
+
+通用规则：单页响应预算 32 KiB，超预算会分页或对单条超限项显式标记；出现 `next_cursor` 时保持相同 `detail`/`section` 继续翻页，翻完即 `complete=true`。`creo_inspect_model` 的分页绑定已保存快照，模型改变后游标失效，应重新查询；`creo_capabilities` 的分页绑定进程内约 600 秒冻结快照，过期 cursor 被拒绝并提示重新首查。
+
+`creo_list_session_models` 的 cursor 语义另有两态：不带 `cursor` 调用时实时重新采集会话清单；携带上次返回的 `cursor` 时读取约 10 分钟的冻结快照分页，不反映快照创建后的会话变化。因此"打开/擦除模型后要确认会话现状"时应省略 `cursor` 重新查询；需要稳定遍历时沿用 `cursor`。`creo_open_file` 成功结果的 `open_file.opened_session_model` 直接提供刚打开模型的单条会话观察（字段与会话枚举条目一致，另含 `observed_at`），不必立即发起全量枚举。
+
 `creo_list_models` 与 `creo_inspect_model` 默认返回 compact 摘要，保留身份、revision、状态、体积、真实计数和快照时间。需要几何时显式使用 `detail="full"`，可指定 `section="dimensions"`、`"surfaces"`、`"edges"`、`"features"` 等。详情默认每页50条、最多200条，响应预算32 KiB；出现 `next_cursor` 时保持 detail/section 继续分页，模型改变后重新查询。大快照的 `data` 按 section 返回；特征内的尺寸、几何项和草图尺寸分别分页，未知计数为 null，不能当作0。小快照的 full 保留原 inspection/aliases 布局。Python调用方可用 `creo_mechdog.query_client.read_full_model` 收集全部页并重建快照。
 
 `creo_inspect_model` 返回最近已验证的保存快照，snapshot明确不代表实时状态；人工在 Creo 修改后，用 `creo_refresh_model` 获取实况。实时查询不会替换已保存模型的基线，也不会保存或接受人工修改。已有模型修改前会检测模型与记录是否一致；因任务失败或人工修改而不一致时，不应盲目重复提交。失败作业的 inspection 仅在恢复并验证成功时代表恢复模型；失败中间状态另列 failure_inspection，无法取得真实状态时为 null。
+
+DEV-040 开发分支补充恢复失败阶段与原因：执行器派发前的证据校验拒绝返回 `failed` / `before_native`，在锁内仅释放本次恢复占位；原生执行器可能已开始时仍为 `unknown_outcome` 并保留保护。原生会话指纹拒绝发生在连接之后，不能因消息含 refused 就自动重试。见[恢复契约](docs/MODEL_RECOVERY.md)和[本次离线证据](docs/validation/DEV-040-offline-2026-10-18.md)，WorkBuddy 验收尚未执行。
 
 `creo_loft.sections` 和计划中 `op="loft"` 支持草图标签、整数feature_id，以及为客户端兼容接受的纯十进制数字字符串；例如 `[40,"49"]` 归一化为整数ID。归一化后的重复引用被拒绝，不影响其他参数的字符串语义。原生几何与公开客户端验收范围仍分别记录。
 
@@ -177,7 +206,7 @@ BUG-008 保留未知作业的 `pending_job`，`creo_get_job` 的 `recovery` 提�
 
 目前高层工具覆盖上述常见实体特征，仍有明确范围：
 
-- 持续修改只支持本服务创建、登记的零件、钣金模型和装配；未提供直接接管用户现有模型的接口。
+- 持续修改支持本服务创建、登记的零件、钣金模型和装配；用户已在 Creo 打开的未登记模型可通过 `creo_adopt_current_model` 显式接管为受管副本（原件与原会话对象不动，首批独立 part/钣金、mm 单位、无外部依赖；身份按 origin 路径 + 文件哈希 + live 快照证明，不信任显示名）。
 - 各类尺寸/约束的复杂组合、极端几何及外部人工修改的自动接管仍需后续扩展。
 - 孔为直孔，尚未封装螺纹、沉头、沉孔标准孔；倒角为等距，阵列支持一方向尺寸阵列和原生轴阵列。
 - 普通混合支持平行 XY 截面的种子复用及直接创建/追加。随包九个种子覆盖 2/3/4/6 截面的直线和平滑，以及 5 截面平滑；其他数量需显式兼容种子或直接创建并本机验证。直接混合仅支持受管草图、Z 严格递增和默认实体增材。不支持自动增减种子截面、转换连接模式、非平行截面或端点相切/曲率控制。数量上限不代表每种数量都已实测。新零件整体可用原生定位特征移动或旋转。

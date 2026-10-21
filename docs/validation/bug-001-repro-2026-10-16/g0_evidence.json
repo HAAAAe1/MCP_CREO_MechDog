@@ -1,0 +1,3841 @@
+{
+  "driver": "build/g0_driver.py",
+  "scenarios": {
+    "startup": {
+      "startup_ready": {
+        "state": "ready",
+        "connected": true
+      },
+      "session_status": {
+        "connected": true,
+        "connection_state": "connected",
+        "toolkit_code": 0,
+        "current_model": "",
+        "current_model_code": -8,
+        "model_type": -1,
+        "release_numeric": 44,
+        "disconnect_code": 0,
+        "feature_creation_license": "requires_actual_modeling_test",
+        "worker_exit_code": 0,
+        "startup": {
+          "launch_reserved": false,
+          "launch_attempt": 4,
+          "auto_start_enabled": true,
+          "selected_session_configured": false,
+          "coordination_error": null,
+          "launch_state_known": true,
+          "automatic_launch_allowed": true,
+          "state": "ready",
+          "connected": true,
+          "message": "Toolkit connection verified",
+          "retry_allowed": false,
+          "updated_at": "2026-10-16T14:33:13.045731+00:00",
+          "coordinator_pid": 21260,
+          "native": {
+            "connected": true,
+            "connection_state": "connected",
+            "toolkit_code": 0,
+            "current_model": "",
+            "current_model_code": -8,
+            "model_type": -1,
+            "release_numeric": 44,
+            "disconnect_code": 0,
+            "feature_creation_license": "requires_actual_modeling_test",
+            "worker_exit_code": 0
+          },
+          "verified_at": "2026-10-16T14:33:13.045731+00:00",
+          "snapshot": true,
+          "verification_age_seconds": 0,
+          "stale": false,
+          "coordinator_running": false
+        }
+      }
+    },
+    "s1": {
+      "startup_ready": {
+        "state": "ready",
+        "connected": true
+      },
+      "submit_creo_execute_plan": {
+        "job_id": "1327cbe972f3429c8890ec687898bf1e",
+        "kind": "generic",
+        "model_id": "3f0e5accd4f3492583c513c90580e467",
+        "status": "queued",
+        "readonly": false,
+        "created_at": "2026-10-16T14:39:04.077659+00:00",
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "profile",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "rectangle",
+                "name": "base",
+                "min": [
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  60.0,
+                  40.0
+                ],
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "solid",
+            "sketch": "profile",
+            "depth": 10.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_0",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_0",
+                "center": [
+                  8.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_0",
+            "sketch": "pad_sk_0",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_1",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_1",
+                "center": [
+                  14.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_1",
+            "sketch": "pad_sk_1",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_2",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_2",
+                "center": [
+                  20.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_2",
+            "sketch": "pad_sk_2",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_3",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_3",
+                "center": [
+                  26.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_3",
+            "sketch": "pad_sk_3",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_4",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_4",
+                "center": [
+                  32.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_4",
+            "sketch": "pad_sk_4",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_5",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_5",
+                "center": [
+                  38.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_5",
+            "sketch": "pad_sk_5",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_6",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_6",
+                "center": [
+                  44.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_6",
+            "sketch": "pad_sk_6",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_7",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_7",
+                "center": [
+                  50.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_7",
+            "sketch": "pad_sk_7",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_8",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_8",
+                "center": [
+                  8.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_8",
+            "sketch": "pad_sk_8",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_9",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_9",
+                "center": [
+                  14.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_9",
+            "sketch": "pad_sk_9",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_10",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_10",
+                "center": [
+                  20.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_10",
+            "sketch": "pad_sk_10",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_11",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_11",
+                "center": [
+                  26.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_11",
+            "sketch": "pad_sk_11",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_12",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_12",
+                "center": [
+                  32.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_12",
+            "sketch": "pad_sk_12",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_13",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_13",
+                "center": [
+                  38.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_13",
+            "sketch": "pad_sk_13",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_14",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_14",
+                "center": [
+                  44.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_14",
+            "sketch": "pad_sk_14",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_15",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_15",
+                "center": [
+                  50.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_15",
+            "sketch": "pad_sk_15",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_16",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_16",
+                "center": [
+                  8.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_16",
+            "sketch": "pad_sk_16",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_17",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_17",
+                "center": [
+                  14.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_17",
+            "sketch": "pad_sk_17",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_18",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_18",
+                "center": [
+                  20.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_18",
+            "sketch": "pad_sk_18",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_19",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_19",
+                "center": [
+                  26.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_19",
+            "sketch": "pad_sk_19",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_20",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_20",
+                "center": [
+                  32.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_20",
+            "sketch": "pad_sk_20",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_21",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_21",
+                "center": [
+                  38.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_21",
+            "sketch": "pad_sk_21",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_22",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_22",
+                "center": [
+                  44.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_22",
+            "sketch": "pad_sk_22",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_23",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_23",
+                "center": [
+                  50.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_23",
+            "sketch": "pad_sk_23",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_24",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_24",
+                "center": [
+                  8.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_24",
+            "sketch": "pad_sk_24",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_25",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_25",
+                "center": [
+                  14.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_25",
+            "sketch": "pad_sk_25",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_26",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_26",
+                "center": [
+                  20.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_26",
+            "sketch": "pad_sk_26",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_27",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_27",
+                "center": [
+                  26.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_27",
+            "sketch": "pad_sk_27",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_28",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_28",
+                "center": [
+                  32.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_28",
+            "sketch": "pad_sk_28",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_29",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_29",
+                "center": [
+                  38.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_29",
+            "sketch": "pad_sk_29",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          }
+        ],
+        "job_directory": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\jobs\\1327cbe972f3429c8890ec687898bf1e",
+        "output_directory": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\jobs\\1327cbe972f3429c8890ec687898bf1e\\output",
+        "message": "Poll creo_get_job with this job_id; do not resubmit the operation",
+        "model_name": "ai_part_3f0e5accd4f3",
+        "revision": 0
+      },
+      "job_id": "1327cbe972f3429c8890ec687898bf1e",
+      "model_id": "3f0e5accd4f3492583c513c90580e467",
+      "submit_revision": 0,
+      "final_status": "succeeded",
+      "final_revision": 1,
+      "saved_verified": true,
+      "part_sha256": "0977b4bd45fbb292baa8561571f8f1e6eda3c9a2b6b356315aeb54d158f703b0",
+      "duration_seconds": 113.77,
+      "ops_count": 62,
+      "pads": 30,
+      "seconds_per_pad": 3.292,
+      "message": "General feature plan completed"
+    },
+    "s2": {
+      "injected_timeout_seconds": 12,
+      "previous_timeout_seconds": 600,
+      "pads": 30,
+      "startup_ready": {
+        "state": "ready",
+        "connected": true
+      },
+      "submit_creo_execute_plan": {
+        "job_id": "ae5b5af64b774b9796e5037e5b76e931",
+        "kind": "generic",
+        "model_id": "95eb09c9fb0a4a46991cda397b8594f8",
+        "status": "queued",
+        "readonly": false,
+        "created_at": "2026-10-16T14:41:51.318751+00:00",
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "profile",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "rectangle",
+                "name": "base",
+                "min": [
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  60.0,
+                  40.0
+                ],
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "solid",
+            "sketch": "profile",
+            "depth": 10.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_0",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_0",
+                "center": [
+                  8.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_0",
+            "sketch": "pad_sk_0",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_1",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_1",
+                "center": [
+                  14.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_1",
+            "sketch": "pad_sk_1",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_2",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_2",
+                "center": [
+                  20.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_2",
+            "sketch": "pad_sk_2",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_3",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_3",
+                "center": [
+                  26.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_3",
+            "sketch": "pad_sk_3",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_4",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_4",
+                "center": [
+                  32.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_4",
+            "sketch": "pad_sk_4",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_5",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_5",
+                "center": [
+                  38.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_5",
+            "sketch": "pad_sk_5",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_6",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_6",
+                "center": [
+                  44.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_6",
+            "sketch": "pad_sk_6",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_7",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_7",
+                "center": [
+                  50.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_7",
+            "sketch": "pad_sk_7",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_8",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_8",
+                "center": [
+                  8.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_8",
+            "sketch": "pad_sk_8",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_9",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_9",
+                "center": [
+                  14.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_9",
+            "sketch": "pad_sk_9",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_10",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_10",
+                "center": [
+                  20.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_10",
+            "sketch": "pad_sk_10",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_11",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_11",
+                "center": [
+                  26.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_11",
+            "sketch": "pad_sk_11",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_12",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_12",
+                "center": [
+                  32.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_12",
+            "sketch": "pad_sk_12",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_13",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_13",
+                "center": [
+                  38.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_13",
+            "sketch": "pad_sk_13",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_14",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_14",
+                "center": [
+                  44.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_14",
+            "sketch": "pad_sk_14",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_15",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_15",
+                "center": [
+                  50.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_15",
+            "sketch": "pad_sk_15",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_16",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_16",
+                "center": [
+                  8.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_16",
+            "sketch": "pad_sk_16",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_17",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_17",
+                "center": [
+                  14.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_17",
+            "sketch": "pad_sk_17",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_18",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_18",
+                "center": [
+                  20.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_18",
+            "sketch": "pad_sk_18",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_19",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_19",
+                "center": [
+                  26.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_19",
+            "sketch": "pad_sk_19",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_20",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_20",
+                "center": [
+                  32.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_20",
+            "sketch": "pad_sk_20",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_21",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_21",
+                "center": [
+                  38.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_21",
+            "sketch": "pad_sk_21",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_22",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_22",
+                "center": [
+                  44.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_22",
+            "sketch": "pad_sk_22",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_23",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_23",
+                "center": [
+                  50.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_23",
+            "sketch": "pad_sk_23",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_24",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_24",
+                "center": [
+                  8.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_24",
+            "sketch": "pad_sk_24",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_25",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_25",
+                "center": [
+                  14.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_25",
+            "sketch": "pad_sk_25",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_26",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_26",
+                "center": [
+                  20.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_26",
+            "sketch": "pad_sk_26",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_27",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_27",
+                "center": [
+                  26.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_27",
+            "sketch": "pad_sk_27",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_28",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_28",
+                "center": [
+                  32.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_28",
+            "sketch": "pad_sk_28",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_29",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_29",
+                "center": [
+                  38.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_29",
+            "sketch": "pad_sk_29",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          }
+        ],
+        "job_directory": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\jobs\\ae5b5af64b774b9796e5037e5b76e931",
+        "output_directory": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\jobs\\ae5b5af64b774b9796e5037e5b76e931\\output",
+        "message": "Poll creo_get_job with this job_id; do not resubmit the operation",
+        "model_name": "g0_s2_1792161711",
+        "revision": 0
+      },
+      "job_id": "ae5b5af64b774b9796e5037e5b76e931",
+      "model_id": "95eb09c9fb0a4a46991cda397b8594f8",
+      "final_status": "unknown_outcome",
+      "stage": "executing_feature_plan",
+      "message": "Native worker timed out; inspect Creo and the native checkpoint before retrying",
+      "recovery_required": "Outcome is unconfirmed; preserve reservation and inspect recovery evidence",
+      "native_phases": [
+        "execute_extrude",
+        "extrude:pad_1",
+        "execute_sketch",
+        "sketch:pad_sk_2",
+        "execute_extrude",
+        "extrude:pad_2",
+        "execute_sketch",
+        "sketch:pad_sk_3",
+        "execute_extrude",
+        "extrude:pad_3",
+        "execute_sketch",
+        "sketch:pad_sk_4"
+      ],
+      "model_after": {
+        "status": "unknown_outcome",
+        "pending_job": "ae5b5af64b774b9796e5037e5b76e931",
+        "revision": 0,
+        "part_file": null
+      },
+      "output_files": [
+        {
+          "name": "g0_s2_1792161711.prt.1",
+          "sha256": "2ebb777f8ae93b2d4463b06a9338cdf1a6fde818cb2d2150c76b2cb8767be4cb",
+          "bytes": 63653
+        }
+      ],
+      "resubmit_while_pending": {
+        "is_error": true,
+        "raw": [
+          "Error executing tool creo_execute_plan: Creo is not ready (timeout): Toolkit verification was invalidated by a subsequent failure; inspect channel_health and request explicit retry; poll creo_startup_status. No modeling job was queued."
+        ]
+      },
+      "restored_timeout_seconds": 600,
+      "resubmit_after_channel_retry": {
+        "is_error": true,
+        "status": "busy",
+        "code": "toolkit_busy",
+        "accepted": false,
+        "blocking_job_id": "ae5b5af64b774b9796e5037e5b76e931",
+        "blocking_model_id": "95eb09c9fb0a4a46991cda397b8594f8",
+        "blocking_operation": "pending_job",
+        "owner_snapshot": {
+          "job_id": "ae5b5af64b774b9796e5037e5b76e931",
+          "model_id": "95eb09c9fb0a4a46991cda397b8594f8",
+          "operation": "pending_job"
+        },
+        "owner_determined": true,
+        "retry_after_seconds": 1,
+        "retry_guidance": "Poll creo_get_job(job_id='ae5b5af64b774b9796e5037e5b76e931', detail='compact') until terminal; inspect unknown_outcome before retrying. This request was not accepted. Retry this request after 1 second only when the occupying operation has finished; re-read the model revision before writing. Do not resubmit an already accepted job.",
+        "message": "Model has a pending job"
+      }
+    },
+    "s3": {
+      "startup_ready": {
+        "state": "ready",
+        "connected": true
+      },
+      "submit_creo_execute_plan": {
+        "job_id": "65e4bc89b7f24f2fbe176d3e43d15966",
+        "kind": "generic",
+        "model_id": "47d6caa7bf2b4b29ab590eeaef31a863",
+        "status": "queued",
+        "readonly": false,
+        "created_at": "2026-10-16T14:43:44.811424+00:00",
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "profile",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "rectangle",
+                "name": "base",
+                "min": [
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  60.0,
+                  40.0
+                ],
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "solid",
+            "sketch": "profile",
+            "depth": 10.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_0",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_0",
+                "center": [
+                  8.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_0",
+            "sketch": "pad_sk_0",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_1",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_1",
+                "center": [
+                  14.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_1",
+            "sketch": "pad_sk_1",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_2",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_2",
+                "center": [
+                  20.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_2",
+            "sketch": "pad_sk_2",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_3",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_3",
+                "center": [
+                  26.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_3",
+            "sketch": "pad_sk_3",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_4",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_4",
+                "center": [
+                  32.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_4",
+            "sketch": "pad_sk_4",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_5",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_5",
+                "center": [
+                  38.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_5",
+            "sketch": "pad_sk_5",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_6",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_6",
+                "center": [
+                  44.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_6",
+            "sketch": "pad_sk_6",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_7",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_7",
+                "center": [
+                  50.0,
+                  8.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_7",
+            "sketch": "pad_sk_7",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_8",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_8",
+                "center": [
+                  8.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_8",
+            "sketch": "pad_sk_8",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_9",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_9",
+                "center": [
+                  14.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_9",
+            "sketch": "pad_sk_9",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_10",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_10",
+                "center": [
+                  20.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_10",
+            "sketch": "pad_sk_10",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_11",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_11",
+                "center": [
+                  26.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_11",
+            "sketch": "pad_sk_11",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_12",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_12",
+                "center": [
+                  32.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_12",
+            "sketch": "pad_sk_12",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_13",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_13",
+                "center": [
+                  38.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_13",
+            "sketch": "pad_sk_13",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_14",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_14",
+                "center": [
+                  44.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_14",
+            "sketch": "pad_sk_14",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_15",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_15",
+                "center": [
+                  50.0,
+                  14.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_15",
+            "sketch": "pad_sk_15",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_16",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_16",
+                "center": [
+                  8.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_16",
+            "sketch": "pad_sk_16",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_17",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_17",
+                "center": [
+                  14.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_17",
+            "sketch": "pad_sk_17",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_18",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_18",
+                "center": [
+                  20.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_18",
+            "sketch": "pad_sk_18",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_19",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_19",
+                "center": [
+                  26.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_19",
+            "sketch": "pad_sk_19",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_20",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_20",
+                "center": [
+                  32.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_20",
+            "sketch": "pad_sk_20",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_21",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_21",
+                "center": [
+                  38.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_21",
+            "sketch": "pad_sk_21",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_22",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_22",
+                "center": [
+                  44.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_22",
+            "sketch": "pad_sk_22",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_23",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_23",
+                "center": [
+                  50.0,
+                  20.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_23",
+            "sketch": "pad_sk_23",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_24",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_24",
+                "center": [
+                  8.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_24",
+            "sketch": "pad_sk_24",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_25",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_25",
+                "center": [
+                  14.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_25",
+            "sketch": "pad_sk_25",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_26",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_26",
+                "center": [
+                  20.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_26",
+            "sketch": "pad_sk_26",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_27",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_27",
+                "center": [
+                  26.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_27",
+            "sketch": "pad_sk_27",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_28",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_28",
+                "center": [
+                  32.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_28",
+            "sketch": "pad_sk_28",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          },
+          {
+            "op": "sketch",
+            "label": "pad_sk_29",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "pad_c_29",
+                "center": [
+                  38.0,
+                  26.0
+                ],
+                "radius": 2.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "pad_29",
+            "sketch": "pad_sk_29",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          }
+        ],
+        "job_directory": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\jobs\\65e4bc89b7f24f2fbe176d3e43d15966",
+        "output_directory": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\jobs\\65e4bc89b7f24f2fbe176d3e43d15966\\output",
+        "message": "Poll creo_get_job with this job_id; do not resubmit the operation",
+        "model_name": "g0_s3_1792161824",
+        "revision": 0
+      },
+      "phase_hit": true,
+      "workers_killed": 1,
+      "job_id": "65e4bc89b7f24f2fbe176d3e43d15966",
+      "model_id": "47d6caa7bf2b4b29ab590eeaef31a863",
+      "final_status": "unknown_outcome",
+      "message": "Native worker exited 1 without a result; inspect Creo before retrying",
+      "recovery": {
+        "job_id": "65e4bc89b7f24f2fbe176d3e43d15966",
+        "model_id": "47d6caa7bf2b4b29ab590eeaef31a863",
+        "automatic_replay_allowed": false,
+        "native_result_present": false,
+        "next_steps": "Do not resubmit or clear pending_job. Inspect this job's native result/checkpoint, runner identity and saved file in Creo; preserve the original model/checkpoint. Use creo_session_status and explicit startup retry to recheck the channel. A connected channel does not resolve this job or commit its revision. If the result cannot be verified, operator reconciliation is required.",
+        "runner": {
+          "recorded": {
+            "pid": 20692,
+            "created": 134366354248565667,
+            "alive": true
+          },
+          "observed": {
+            "pid": 20692,
+            "alive": false,
+            "windows_error": 87
+          },
+          "same_process": null
+        },
+        "model": {
+          "status": "unknown_outcome",
+          "revision": 0,
+          "pending_job": "65e4bc89b7f24f2fbe176d3e43d15966",
+          "last_job": "65e4bc89b7f24f2fbe176d3e43d15966"
+        }
+      },
+      "recovery_required": "Outcome is unconfirmed; preserve reservation and inspect recovery evidence",
+      "model_after": {
+        "status": "unknown_outcome",
+        "pending_job": "65e4bc89b7f24f2fbe176d3e43d15966",
+        "revision": 0,
+        "part_file": null
+      },
+      "saved_output_files": [
+        {
+          "name": "g0_s3_1792161824.prt.1",
+          "sha256": "0b2daa1db7d022687efcde86bc88e31944842141127cc7e5cfae74ffdfbf464c",
+          "bytes": 63840
+        },
+        {
+          "name": "g0_s3_1792161824.prt.2",
+          "sha256": "9471d0345b750cd00d9800d8885ba37c98cc4690309d2a0c4db5d41ba84acd55",
+          "bytes": 490361
+        }
+      ],
+      "native_phases": [
+        "sketch:pad_sk_28",
+        "execute_extrude",
+        "extrude:pad_28",
+        "execute_sketch",
+        "sketch:pad_sk_29",
+        "execute_extrude",
+        "extrude:pad_29",
+        "verify_model",
+        "before_save_blend_validation",
+        "save_and_reload",
+        "after_reload_blend_validation",
+        "display_preview"
+      ]
+    },
+    "s4": {
+      "startup_ready": {
+        "state": "ready",
+        "connected": true
+      },
+      "submit_creo_execute_plan": {
+        "job_id": "a51e2a4b645444e0acf1a674677ee188",
+        "kind": "generic",
+        "model_id": "486f76a172dc49b0aa46c520003d92e0",
+        "status": "queued",
+        "readonly": false,
+        "created_at": "2026-10-16T14:47:02.828628+00:00",
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "profile",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "rectangle",
+                "name": "base",
+                "min": [
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  60.0,
+                  40.0
+                ],
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "solid",
+            "sketch": "profile",
+            "depth": 10.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          }
+        ],
+        "job_directory": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\jobs\\a51e2a4b645444e0acf1a674677ee188",
+        "output_directory": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\jobs\\a51e2a4b645444e0acf1a674677ee188\\output",
+        "message": "Poll creo_get_job with this job_id; do not resubmit the operation",
+        "model_name": "g0_s4_other_1792162022",
+        "revision": 0
+      },
+      "phase_hit": true,
+      "workers_killed": 1,
+      "job_id": "0cf7f4ae44a54a469a4bcbf5d546842d",
+      "model_id": "2472bbbba6fd478d834bd3e3ce90d04e",
+      "final_status": "unknown_outcome",
+      "message": "Native worker exited 1 without a result; inspect Creo before retrying",
+      "model_after": {
+        "status": "unknown_outcome",
+        "pending_job": "0cf7f4ae44a54a469a4bcbf5d546842d",
+        "revision": 0
+      },
+      "channel_retry_state": "ready",
+      "other_model_job": "a51e2a4b645444e0acf1a674677ee188",
+      "other_model_status": "succeeded",
+      "other_model_revision": 1,
+      "other_saved_verified": true
+    },
+    "s5": {
+      "startup_ready": {
+        "state": "ready",
+        "connected": true
+      },
+      "submit_creo_execute_plan": {
+        "job_id": "8b87e27951e840e89e734adeca52eeb9",
+        "kind": "generic",
+        "model_id": "3f0e5accd4f3492583c513c90580e467",
+        "status": "queued",
+        "readonly": false,
+        "created_at": "2026-10-16T14:51:00.674999+00:00",
+        "operations": [
+          {
+            "op": "sketch",
+            "label": "g5c_sk",
+            "plane": "XY",
+            "offset": 0.0,
+            "entities": [
+              {
+                "type": "circle",
+                "name": "g5c_c",
+                "center": [
+                  45.0,
+                  30.0
+                ],
+                "radius": 3.0,
+                "construction": false
+              }
+            ],
+            "dimensions": [],
+            "constraints": [],
+            "dimensioning": "auto"
+          },
+          {
+            "op": "extrude",
+            "label": "g5c_pad",
+            "sketch": "g5c_sk",
+            "depth": 2.0,
+            "mode": "add",
+            "direction": "positive",
+            "depth_type": "blind",
+            "new_body": false
+          }
+        ],
+        "job_directory": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\jobs\\8b87e27951e840e89e734adeca52eeb9",
+        "output_directory": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\jobs\\8b87e27951e840e89e734adeca52eeb9\\output",
+        "message": "Poll creo_get_job with this job_id; do not resubmit the operation",
+        "model_name": "ai_part_3f0e5accd4f3",
+        "revision": 1
+      },
+      "timeout_job_id": "6df694689250470ab6363a061220b88b",
+      "timeout_status": "unknown_outcome",
+      "timeout_message": "Native worker timed out; inspect Creo and the native checkpoint before retrying",
+      "channel_retry_state": "ready",
+      "resubmit_while_pending": {
+        "is_error": true,
+        "status": "busy",
+        "code": "toolkit_busy",
+        "accepted": false,
+        "blocking_job_id": "6df694689250470ab6363a061220b88b",
+        "blocking_model_id": "3f0e5accd4f3492583c513c90580e467",
+        "blocking_operation": "pending_job",
+        "owner_snapshot": {
+          "job_id": "6df694689250470ab6363a061220b88b",
+          "model_id": "3f0e5accd4f3492583c513c90580e467",
+          "operation": "pending_job"
+        },
+        "owner_determined": true,
+        "retry_after_seconds": 1,
+        "retry_guidance": "Poll creo_get_job(job_id='6df694689250470ab6363a061220b88b', detail='compact') until terminal; inspect unknown_outcome before retrying. This request was not accepted. Retry this request after 1 second only when the occupying operation has finished; re-read the model revision before writing. Do not resubmit an already accepted job.",
+        "message": "Model has a pending job"
+      },
+      "developer_injection": {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\models\\3f0e5accd4f3492583c513c90580e467\\model.json",
+        "before": {
+          "pending_job": "6df694689250470ab6363a061220b88b",
+          "status": "unknown_outcome"
+        },
+        "applied": {
+          "pending_job": null,
+          "status": "ready"
+        }
+      },
+      "gate_job_id": "22bcd3b465fc46e79252f09605c44474",
+      "gate_status": "failed",
+      "gate_message": "Saved feature/body count changed",
+      "gate_result_summary": {
+        "rollback_succeeded": false,
+        "failed_stage": "connect",
+        "failed_operation_index": null,
+        "failed_toolkit_call": null,
+        "toolkit_code": -1,
+        "rollback_message": null
+      },
+      "model_after_gate": {
+        "status": "failed",
+        "pending_job": null,
+        "revision": 1
+      },
+      "second_injection": {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\models\\3f0e5accd4f3492583c513c90580e467\\model.json",
+        "before": {
+          "status": "failed"
+        },
+        "applied": {
+          "status": "ready"
+        }
+      },
+      "retry_error": {
+        "is_error": true,
+        "raw": [
+          "Error executing tool creo_execute_plan: Creo is not ready (building_worker): Building/verifying the native worker; poll creo_startup_status. No modeling job was queued."
+        ]
+      },
+      "retry2_job_id": "8b87e27951e840e89e734adeca52eeb9",
+      "retry2_status": "failed",
+      "retry2_message": "Saved feature/body count changed",
+      "retry2_rollback": false,
+      "retry2_failed_stage": "connect",
+      "model_after_retry2": {
+        "status": "failed",
+        "pending_job": null,
+        "revision": 1
+      }
+    },
+    "s6": {
+      "tool_count": 82,
+      "recovery_like_tools": [],
+      "readonly_while_pending": {
+        "is_error": true,
+        "status": "busy",
+        "code": "toolkit_busy",
+        "accepted": false,
+        "blocking_job_id": "65e4bc89b7f24f2fbe176d3e43d15966",
+        "blocking_model_id": "47d6caa7bf2b4b29ab590eeaef31a863",
+        "blocking_operation": "pending_job",
+        "owner_snapshot": {
+          "job_id": "65e4bc89b7f24f2fbe176d3e43d15966",
+          "model_id": "47d6caa7bf2b4b29ab590eeaef31a863",
+          "operation": "pending_job"
+        },
+        "owner_determined": true,
+        "retry_after_seconds": 1,
+        "retry_guidance": "Poll creo_get_job(job_id='65e4bc89b7f24f2fbe176d3e43d15966', detail='compact') until terminal; inspect unknown_outcome before retrying. This request was not accepted. Retry this request after 1 second only when the occupying operation has finished; re-read the model revision before writing. Do not resubmit an already accepted job.",
+        "message": "Model has a pending job"
+      },
+      "m3_job_recovery_keys": [
+        "automatic_replay_allowed",
+        "job_id",
+        "model",
+        "model_id",
+        "native_result_present",
+        "next_steps",
+        "runner"
+      ],
+      "m3_recovery_required": "Outcome is unconfirmed; preserve reservation and inspect recovery evidence",
+      "m3_job_status": "unknown_outcome",
+      "list_models_snapshot": {
+        "models": [
+          {
+            "model_id": "3f0e5accd4f3492583c513c90580e467",
+            "model_name": "ai_part_3f0e5accd4f3",
+            "model_type": "part",
+            "status": "failed",
+            "revision": 1,
+            "created_at": "2026-10-16T14:39:04.069769+00:00",
+            "updated_at": "2026-10-16T14:40:57.451716+00:00",
+            "pending_job": null,
+            "last_job": "8b87e27951e840e89e734adeca52eeb9",
+            "part_file": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\models\\3f0e5accd4f3492583c513c90580e467\\output\\ai_part_3f0e5accd4f3.prt.2",
+            "inspection": {
+              "healthy": true,
+              "has_solid": true,
+              "units": "mm",
+              "model_type": "part",
+              "volume_mm3": 24000.0,
+              "volume_query_code": 0,
+              "inspection_source": "saved_reloaded",
+              "inspection_available": true,
+              "counts": {
+                "features": 128,
+                "surfaces": 6,
+                "edges": 12,
+                "bodies": 1,
+                "components": null
+              }
+            },
+            "snapshot": {
+              "source": "saved_verified",
+              "revision": 1,
+              "at": "2026-10-16T14:40:57.451716+00:00",
+              "live_state_verified": false,
+              "mutation_pending": false
+            },
+            "detail_available": true
+          },
+          {
+            "model_id": "486f76a172dc49b0aa46c520003d92e0",
+            "model_name": "g0_s4_other_1792162022",
+            "model_type": "part",
+            "status": "ready",
+            "revision": 1,
+            "created_at": "2026-10-16T14:47:02.818211+00:00",
+            "updated_at": "2026-10-16T14:47:10.642254+00:00",
+            "pending_job": null,
+            "last_job": "a51e2a4b645444e0acf1a674677ee188",
+            "part_file": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\models\\486f76a172dc49b0aa46c520003d92e0\\output\\g0_s4_other_1792162022.prt.2",
+            "inspection": {
+              "healthy": true,
+              "has_solid": true,
+              "units": "mm",
+              "model_type": "part",
+              "volume_mm3": 24000.0,
+              "volume_query_code": 0,
+              "inspection_source": "saved_reloaded",
+              "inspection_available": true,
+              "counts": {
+                "features": 8,
+                "surfaces": 6,
+                "edges": 12,
+                "bodies": 1,
+                "components": null
+              }
+            },
+            "snapshot": {
+              "source": "saved_verified",
+              "revision": 1,
+              "at": "2026-10-16T14:47:10.642254+00:00",
+              "live_state_verified": false,
+              "mutation_pending": false
+            },
+            "detail_available": true
+          },
+          {
+            "model_id": "2472bbbba6fd478d834bd3e3ce90d04e",
+            "model_name": "g0_s4_1792161967",
+            "model_type": "part",
+            "status": "unknown_outcome",
+            "revision": 0,
+            "created_at": "2026-10-16T14:46:07.221067+00:00",
+            "pending_job": "0cf7f4ae44a54a469a4bcbf5d546842d",
+            "last_job": "0cf7f4ae44a54a469a4bcbf5d546842d",
+            "part_file": null,
+            "inspection": {
+              "counts": {
+                "features": null,
+                "surfaces": null,
+                "edges": null,
+                "bodies": null,
+                "components": null
+              },
+              "inspection_available": false
+            },
+            "snapshot": {
+              "source": "unavailable",
+              "revision": 0,
+              "at": null,
+              "live_state_verified": false,
+              "mutation_pending": true
+            },
+            "detail_available": true
+          },
+          {
+            "model_id": "47d6caa7bf2b4b29ab590eeaef31a863",
+            "model_name": "g0_s3_1792161824",
+            "model_type": "part",
+            "status": "unknown_outcome",
+            "revision": 0,
+            "created_at": "2026-10-16T14:43:44.805770+00:00",
+            "pending_job": "65e4bc89b7f24f2fbe176d3e43d15966",
+            "last_job": "65e4bc89b7f24f2fbe176d3e43d15966",
+            "part_file": null,
+            "inspection": {
+              "counts": {
+                "features": null,
+                "surfaces": null,
+                "edges": null,
+                "bodies": null,
+                "components": null
+              },
+              "inspection_available": false
+            },
+            "snapshot": {
+              "source": "unavailable",
+              "revision": 0,
+              "at": null,
+              "live_state_verified": false,
+              "mutation_pending": true
+            },
+            "detail_available": true
+          },
+          {
+            "model_id": "95eb09c9fb0a4a46991cda397b8594f8",
+            "model_name": "g0_s2_1792161711",
+            "model_type": "part",
+            "status": "unknown_outcome",
+            "revision": 0,
+            "created_at": "2026-10-16T14:41:51.315148+00:00",
+            "pending_job": "ae5b5af64b774b9796e5037e5b76e931",
+            "last_job": "ae5b5af64b774b9796e5037e5b76e931",
+            "part_file": null,
+            "inspection": {
+              "counts": {
+                "features": null,
+                "surfaces": null,
+                "edges": null,
+                "bodies": null,
+                "components": null
+              },
+              "inspection_available": false
+            },
+            "snapshot": {
+              "source": "unavailable",
+              "revision": 0,
+              "at": null,
+              "live_state_verified": false,
+              "mutation_pending": true
+            },
+            "detail_available": true
+          },
+          {
+            "model_id": "dbf7b60092714d19b38f56221895bb9f",
+            "model_name": "bug008_1792148561",
+            "model_type": "part",
+            "status": "ready",
+            "revision": 3,
+            "created_at": "2026-10-16T11:02:41.031890+00:00",
+            "updated_at": "2026-10-16T11:03:01.733549+00:00",
+            "pending_job": null,
+            "last_job": "bcaed59b339a45589ef609ee66056606",
+            "last_query_at": "2026-10-16T11:03:55.735537+00:00",
+            "part_file": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\models\\dbf7b60092714d19b38f56221895bb9f\\output\\bug008_1792148561.prt.4",
+            "inspection": {
+              "healthy": true,
+              "has_solid": true,
+              "units": "mm",
+              "model_type": "part",
+              "volume_mm3": 600.0,
+              "volume_query_code": 0,
+              "inspection_source": "saved_reloaded",
+              "inspection_available": true,
+              "counts": {
+                "features": 8,
+                "surfaces": 6,
+                "edges": 12,
+                "bodies": 1,
+                "components": null
+              }
+            },
+            "snapshot": {
+              "source": "saved_verified",
+              "revision": 3,
+              "at": "2026-10-16T11:03:01.733549+00:00",
+              "live_state_verified": false,
+              "mutation_pending": false
+            },
+            "detail_available": true
+          },
+          {
+            "model_id": "cc673eed10fd4a92b2c914b5e0c3abdf",
+            "model_name": "bug008_drw_1792148623",
+            "model_type": "drawing",
+            "status": "ready",
+            "revision": 1,
+            "created_at": "2026-10-16T11:03:43.092061+00:00",
+            "updated_at": "2026-10-16T11:03:49.654798+00:00",
+            "pending_job": null,
+            "last_job": "0ffe5be7277046819cdc5c7c02528cee",
+            "part_file": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\models\\cc673eed10fd4a92b2c914b5e0c3abdf\\output\\bug008_drw_1792148623.drw.1",
+            "inspection": {
+              "units": "mm",
+              "model_type": "drawing",
+              "counts": {
+                "features": null,
+                "surfaces": null,
+                "edges": null,
+                "bodies": null,
+                "components": null
+              },
+              "inspection_available": true
+            },
+            "snapshot": {
+              "source": "saved_verified",
+              "revision": 1,
+              "at": "2026-10-16T11:03:49.654798+00:00",
+              "live_state_verified": false,
+              "mutation_pending": false
+            },
+            "detail_available": true
+          },
+          {
+            "model_id": "19799316ff0445449ef79a22ee9bfbfe",
+            "model_name": "bug008_after_1792148598",
+            "model_type": "part",
+            "status": "ready",
+            "revision": 2,
+            "created_at": "2026-10-16T11:03:18.793440+00:00",
+            "updated_at": "2026-10-16T11:03:34.423733+00:00",
+            "pending_job": null,
+            "last_job": "26f3e0c4135b475eb9cf1a341346bf4f",
+            "part_file": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\models\\19799316ff0445449ef79a22ee9bfbfe\\output\\bug008_after_1792148598.prt.3",
+            "inspection": {
+              "healthy": true,
+              "has_solid": true,
+              "units": "mm",
+              "model_type": "part",
+              "volume_mm3": 120.0,
+              "volume_query_code": 0,
+              "inspection_source": "saved_reloaded",
+              "inspection_available": true,
+              "counts": {
+                "features": 8,
+                "surfaces": 6,
+                "edges": 12,
+                "bodies": 1,
+                "components": null
+              }
+            },
+            "snapshot": {
+              "source": "saved_verified",
+              "revision": 2,
+              "at": "2026-10-16T11:03:34.423733+00:00",
+              "live_state_verified": false,
+              "mutation_pending": false
+            },
+            "detail_available": true
+          },
+          {
+            "model_id": "5ca3e07859544b528ba17f7030ba80aa",
+            "model_name": "ai_part_5ca3e0785954",
+            "model_type": "part",
+            "status": "ready",
+            "revision": 1,
+            "created_at": "2026-10-16T11:02:09.332185+00:00",
+            "updated_at": "2026-10-16T11:02:20.453494+00:00",
+            "pending_job": null,
+            "last_job": "5b2866849a9b473dbc597469b6f0d023",
+            "part_file": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\models\\5ca3e07859544b528ba17f7030ba80aa\\output\\ai_part_5ca3e0785954.prt.2",
+            "inspection": {
+              "healthy": true,
+              "has_solid": true,
+              "units": "mm",
+              "model_type": "part",
+              "volume_mm3": 6324.026011676252,
+              "volume_query_code": 0,
+              "inspection_source": "saved_reloaded",
+              "inspection_available": true,
+              "counts": {
+                "features": 14,
+                "surfaces": 16,
+                "edges": 36,
+                "bodies": 1,
+                "components": null
+              }
+            },
+            "snapshot": {
+              "source": "saved_verified",
+              "revision": 1,
+              "at": "2026-10-16T11:02:20.453494+00:00",
+              "live_state_verified": false,
+              "mutation_pending": false
+            },
+            "detail_available": true
+          },
+          {
+            "model_id": "636964645a26435d915d196f6a1369af",
+            "model_name": "ai_part_636964645a26",
+            "model_type": "part",
+            "status": "ready",
+            "revision": 1,
+            "created_at": "2026-10-16T11:02:00.154286+00:00",
+            "updated_at": "2026-10-16T11:02:08.991261+00:00",
+            "pending_job": null,
+            "last_job": "4471f601e2804911aee528d5861ec7c2",
+            "part_file": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\models\\636964645a26435d915d196f6a1369af\\output\\ai_part_636964645a26.prt.2",
+            "inspection": {
+              "healthy": true,
+              "has_solid": true,
+              "units": "mm",
+              "model_type": "part",
+              "volume_mm3": 10600.0,
+              "volume_query_code": 0,
+              "inspection_source": "saved_reloaded",
+              "inspection_available": true,
+              "counts": {
+                "features": 13,
+                "surfaces": 10,
+                "edges": 24,
+                "bodies": 1,
+                "components": null
+              }
+            },
+            "snapshot": {
+              "source": "saved_verified",
+              "revision": 1,
+              "at": "2026-10-16T11:02:08.991261+00:00",
+              "live_state_verified": false,
+              "mutation_pending": false
+            },
+            "detail_available": true
+          }
+        ],
+        "detail": "compact",
+        "complete": false,
+        "next_cursor": "eyJkZXRhaWwiOiJjb21wYWN0Iiwic25hcHNob3RfaGFzaCI6ImEyODVhYzI1Y2Y3ZjNmNjliYmRiZTU3ZDk2OTJkNWRjNzA1MzZkZjU3OWI4NGNjNmVlYjk2ZjNlMzM0OWU5Y2MiLCJvZmZzZXQiOjEwfQ=="
+      },
+      "startup_ready": {
+        "state": "ready",
+        "connected": true
+      }
+    },
+    "s6restart": {
+      "m1_pre_restart": {
+        "status": "failed",
+        "pending_job": null,
+        "revision": 1
+      },
+      "m2_pre_restart": {
+        "status": "unknown_outcome",
+        "pending_job": "ae5b5af64b774b9796e5037e5b76e931",
+        "revision": 0,
+        "part_file": null
+      },
+      "creo_pid_before_restart": "2888",
+      "startup_ready": {
+        "state": "ready",
+        "connected": true
+      },
+      "restarted": true,
+      "submit_creo_execute_plan": {
+        "job_id": "15c6a68e693b4f6a939b03584f8306cc",
+        "kind": "generic",
+        "model_id": "3f0e5accd4f3492583c513c90580e467",
+        "status": "queued",
+        "readonly": false,
+        "created_at": "2026-10-16T14:53:47.905656+00:00",
+        "operations": [
+          {
+            "op": "regenerate"
+          }
+        ],
+        "job_directory": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\jobs\\15c6a68e693b4f6a939b03584f8306cc",
+        "output_directory": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\jobs\\15c6a68e693b4f6a939b03584f8306cc\\output",
+        "message": "Poll creo_get_job with this job_id; do not resubmit the operation",
+        "model_name": "ai_part_3f0e5accd4f3",
+        "revision": 1
+      },
+      "m1_after_restart_status": "failed",
+      "m1_after_restart_revision": null,
+      "m1_after_restart_message": "Saved feature/body count changed",
+      "m2_after_restart_status": "succeeded",
+      "m2_after_restart_message": "General feature plan completed",
+      "real_restart_killed": [
+        "xtop",
+        "parametric",
+        "pro_comm_msg",
+        "nmsd"
+      ],
+      "real_restarted": true,
+      "m1_injection": {
+        "path": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog\\models\\3f0e5accd4f3492583c513c90580e467\\model.json",
+        "before": {
+          "status": "failed",
+          "pending_job": null
+        },
+        "applied": {
+          "status": "ready",
+          "pending_job": null
+        }
+      },
+      "m1_real_restart_job": "15c6a68e693b4f6a939b03584f8306cc",
+      "m1_real_restart_status": "succeeded",
+      "m1_real_restart_revision": 2,
+      "m1_real_restart_message": "General feature plan completed",
+      "m1_real_restart_saved": true,
+      "m1_model_after": {
+        "status": "ready",
+        "revision": 2
+      }
+    }
+  },
+  "models": {
+    "m1": {
+      "model_id": "3f0e5accd4f3492583c513c90580e467",
+      "revision": 1
+    },
+    "m2": {
+      "model_id": "95eb09c9fb0a4a46991cda397b8594f8",
+      "job_id": "ae5b5af64b774b9796e5037e5b76e931",
+      "revision": 0
+    },
+    "m3": {
+      "model_id": "47d6caa7bf2b4b29ab590eeaef31a863",
+      "job_id": "65e4bc89b7f24f2fbe176d3e43d15966"
+    },
+    "m4": {
+      "model_id": "2472bbbba6fd478d834bd3e3ce90d04e",
+      "job_id": "0cf7f4ae44a54a469a4bcbf5d546842d"
+    },
+    "m5_other": {
+      "model_id": "486f76a172dc49b0aa46c520003d92e0"
+    }
+  },
+  "identity": {
+    "recorded_at_utc": "2026-10-16T14:16:33Z",
+    "service_version": "0.3.3",
+    "git_commit": "113c0bae61128dcc7c907830dfc90d4b5ed8dd2f",
+    "git_dirty": "",
+    "git_branch": "codex/bug-001-unknown-recovery",
+    "worker_exe_sha256": "13021ae8d32c7dd30032d400db8ab66129c46a926874859f64eac57447bbdc0b",
+    "worker_exe_mtime_utc": "2026-10-16T10:38:13Z",
+    "config": {
+      "creo_root": "C:\\Program Files\\PTC\\Creo 12.4.0.0",
+      "vcvars64": "C:\\MCP_CREO_MechDog\\vcvars64_local.cmd",
+      "native_timeout_seconds": 180,
+      "generic_timeout_seconds": 600,
+      "creo_session_id": ""
+    },
+    "python": "3.12.14",
+    "data_root": "C:\\Users\\Administrator\\.codex\\worktrees\\dev-029-release033\\MCP_CREO_MechDog",
+    "creo_process": "none"
+  }
+}

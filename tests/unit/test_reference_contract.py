@@ -167,7 +167,7 @@ class ReferenceContractTests(unittest.TestCase):
 
     def test_schema_examples_list_all_three_axis_forms(self):
         tools = {tool.name: tool for tool in asyncio.run(server.mcp.list_tools())}
-        self.assertEqual(len(tools), 82)
+        self.assertEqual(len(tools), 87)
         axis = tools["creo_axis_pattern"].input_schema["properties"]["axis"]
         self.assertEqual(
             {form["properties"]["kind"]["const"] for form in axis["oneOf"]},
@@ -206,6 +206,17 @@ class ReferenceQueueTests(unittest.IsolatedAsyncioTestCase):
             "pending_job": None,
             "aliases": {"t82_da1": {"feature_id": 43}, "leader": {"feature_id": 50}},
         }
+        import hashlib
+
+        output = model_dir / "output"
+        output.mkdir()
+        part = output / "fixture.prt.1"
+        part.write_bytes(b"controlled saved baseline fixture")
+        self.model.update(
+            output_directory=str(output),
+            part_file=str(part),
+            part_sha256=hashlib.sha256(part.read_bytes()).hexdigest(),
+        )
         self.model_file.write_text(json.dumps(self.model), encoding="utf-8")
         template = self.root / "creo/Common Files/templates/mmns_part_solid_abs.prt"
         template.parent.mkdir(parents=True)

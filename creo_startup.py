@@ -13,7 +13,7 @@ import time
 from contextlib import contextmanager
 from ctypes import wintypes
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterator
 
@@ -25,6 +25,7 @@ import win32security
 
 import bridge
 from creo_mechdog.startup_state import StartupStateError, archive_preboot_state, read_startup_state
+from creo_mechdog.window_observations import connection_guidance, window_observations
 from creo_mechdog.windows_boot import BOOT_QUERY_BUDGET_SECONDS, boot_info
 
 LOG = logging.getLogger(__name__)
@@ -222,6 +223,48 @@ def process_identity(pid: int) -> dict | None:
         }
     finally:
         _close(handle)
+
+
+def process_snapshot(settings: Settings, observed: dict | None = None) -> dict:
+    """Best-effort read-only Creo process identities for probe reports.
+
+    A failed connection alone cannot distinguish "Creo exited" from "the IPC
+    endpoint died while the process survives"; this snapshot makes the
+    difference observable without connecting Toolkit."""
+    try:
+        observed = inventory(settings) if observed is None else observed
+    except (OSError, RuntimeError) as exc:
+        return {"available": False, "reason": f"inventory_failed_{type(exc).__name__}"}
+    windows = window_observations({p["pid"] for p in observed["processes"]})
+    processes = []
+    for identity in observed["processes"]:
+        created = identity.get("created")
+        created_at = None
+        if isinstance(created, int):
+            try:
+                created_at = (
+                    datetime(1601, 1, 1, tzinfo=timezone.utc) + timedelta(microseconds=created / 10)
+                ).isoformat()
+            except (OverflowError, OSError, ValueError):
+                created_at = None
+        image = identity.get("image") or ""
+        processes.append(
+            {
+                "pid": identity.get("pid"),
+                "name": Path(image).name if image else None,
+                "created_at": created_at,
+                "created_filetime": created,
+                "image": image,
+                "matches": identity.get("matches"),
+                "windows": windows.get(identity.get("pid"), {"state": "unknown"}),
+            }
+        )
+    return {
+        "available": True,
+        "observed_at": bridge.now(),
+        "uncertain": observed["uncertain"],
+        "processes": processes,
+    }
 
 
 def inventory(settings: Settings) -> dict:
@@ -491,12 +534,19 @@ class CreoStartup:
             state = self.status()
             return {**state.get("native", {}), **state, "startup": state}
         try:
+            settings = Settings.load()
+            snapshot = process_snapshot(settings)
+        except (ValueError, OSError) as exc:
+            settings = None
+            snapshot = {"available": False, "reason": f"configuration_error_{type(exc).__name__}"}
+        try:
             native = bridge.session_status(connect_timeout_seconds=2, build_worker=False)
         except bridge.ToolkitBusy as exc:
             return {
                 "connected": False,
                 "connection_state": "busy",
                 **exc.payload,
+                "creo_process_snapshot": snapshot,
                 "startup": self.status(),
             }
         except (RuntimeError, OSError) as exc:
@@ -514,6 +564,7 @@ class CreoStartup:
                 verified_at=bridge.now(),
             )
         else:
+            native["connection_guidance"] = connection_guidance(snapshot)
             self._publish(
                 "timeout",
                 "Toolkit connection is no longer available; inspect Creo and request creo_startup_status(retry=true)",
@@ -522,7 +573,7 @@ class CreoStartup:
             )
         # This read-only tool can recognize a manually opened session, but must
         # not turn a failed query into an implicit GUI launch/recovery request.
-        return {**native, "startup": self.status()}
+        return {**native, "creo_process_snapshot": snapshot, "startup": self.status()}
 
     def _run(self, retry: bool) -> None:
         try:
@@ -1026,10 +1077,12 @@ class CreoStartup:
                     launch_attempt=attempt,
                 )
                 return
+            observed = process_snapshot(settings, current)
             self._publish(
                 "waiting_for_connection",
-                "Creo is starting or awaiting interaction; Toolkit has not confirmed readiness. Check startup dialogs if this persists",
+                "Toolkit has not confirmed readiness. " + connection_guidance(observed),
                 native=native,
+                creo_process_snapshot=observed,
                 launch_reserved=launched or previous.get("launch_reserved", False),
                 launch_attempt=attempt,
             )

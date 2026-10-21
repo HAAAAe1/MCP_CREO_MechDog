@@ -4,33 +4,16 @@
 #include <ProSelbuffer.h>
 #include <ProMenu.h>
 #include <ProUtil.h>
+#include "callback_runtime.h"
 
 static ProToolkitDllHandle resident_blend_callback(const std::filesystem::path &build,
                                                    std::string &command) {
-    auto setup_file = build / L"blend_callback_setup.json";
-    try {
-        std::ifstream input(setup_file);
-        J setup;
-        input >> setup;
-        std::ifstream ready(wide(setup.at("ready_file")));
-        J state;
-        ready >> state;
-        if (setup.value("protocol", 0) != 2 || state.value("protocol", 0) != 2 ||
-            state.value("initialize_code", -1) != 0 || state.value("terminated", false) ||
-            state.value("command", "") != setup.value("command", ""))
-            return nullptr;
-        ProName id;
-        wcscpy_s(id, wide(state.at("application_id")).c_str());
-        ProToolkitDllHandle module = nullptr;
-        ProError code = trace_blend_call("blend_callback_lookup",
-                                         [&] { return ProToolkitDllHandleGet(id, &module); });
-        if (code)
-            return nullptr;
-        command = setup.at("command");
-        return module;
-    } catch (const std::exception &) {
-        return nullptr;
-    }
+    ProToolkitDllHandle module = nullptr;
+    J status = callback_runtime_status(build, module, command);
+    log("BLEND_CALLBACK_PREFLIGHT=%s\n", status.dump().c_str());
+    if (!module)
+        throw std::runtime_error("BLEND_CALLBACK_SETUP_REQUIRED: " + status.dump());
+    return module;
 }
 
 [[noreturn]] static void require_blend_callback_setup(const std::filesystem::path &build) {
@@ -160,7 +143,7 @@ static void generic_loft(const J &op) {
     std::filesystem::create_directory(callback_dir);
     std::ofstream request(callback_dir / L"callback_request.json", std::ios::binary);
     request << J{
-        {"protocol", 2},
+        {"protocol", mechdog_callback::protocol},
         {"model_name", utf8(model_name)},
         {"command", command},
         {"curve_ids",
