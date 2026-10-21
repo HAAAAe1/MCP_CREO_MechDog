@@ -67,7 +67,9 @@ def model_info(model_id: str) -> dict:
 def list_models(limit: int = 10, detail: str = "compact", cursor: str | None = None) -> dict:
     if not 1 <= limit <= 50:
         raise ValueError("limit must be 1–50")
-    paths = sorted(models_root().glob("*/model.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+    paths = sorted(
+        models_root().glob("*/model.json"), key=lambda p: p.stat().st_mtime, reverse=True
+    )
     models = [model_summary(bridge.read_json(p)) for p in paths]
     return list_page(models, model_info, detail, limit, cursor)
 

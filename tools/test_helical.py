@@ -7,6 +7,7 @@ Run with the repository venv from the repository root:
 This is a probe, not the acceptance test: it records raw geometry so the thread
 profile can be written against the real local frame instead of a guess.
 """
+
 import asyncio
 import json
 import math
@@ -76,9 +77,7 @@ def coil_volume(radius, pitch, length, wire):
 
 
 async def main():
-    params = StdioServerParameters(
-        command=sys.executable, args=[str(ROOT / "server.py")], cwd=ROOT
-    )
+    params = StdioServerParameters(command=sys.executable, args=[str(ROOT / "server.py")], cwd=ROOT)
     async with Client(params, read_timeout_seconds=120) as client:
         tools = await client.list_tools()
         report["tools"] = sorted(t.name for t in tools.tools)
@@ -130,9 +129,7 @@ async def main():
                 "length": 2.0,
                 "start_z": 2.0,
                 "mode": "add",
-                "profile": [
-                    {"type": "circle", "name": "wire", "center": [0, 0], "radius": 0.2}
-                ],
+                "profile": [{"type": "circle", "name": "wire", "center": [0, 0], "radius": 0.2}],
             },
         )
         report["case_b_bbox"] = bbox(b)

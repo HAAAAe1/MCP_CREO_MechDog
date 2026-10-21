@@ -6,6 +6,7 @@ radial direction and which to the axial direction, and with which sign.
 
     .\\.venv\\Scripts\\python.exe tools\\test_helical_frame.py
 """
+
 import asyncio
 import json
 import sys
@@ -78,7 +79,11 @@ async def marker(client, tag, u0, v0, run):
         },
     )
     bb = filled_bbox(result)
-    report["markers"][tag] = {"local": [u0, v0], "bbox": bb, "volume": result["result"]["inspection"]["volume_mm3"]}
+    report["markers"][tag] = {
+        "local": [u0, v0],
+        "bbox": bb,
+        "volume": result["result"]["inspection"]["volume_mm3"],
+    }
     lo, hi = bb
     print(
         "marker %-4s local=(%+.2f,%+.2f)  radius=[%.3f, %.3f]  z=[%.3f, %.3f]  vol=%.6f"

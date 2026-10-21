@@ -48,9 +48,9 @@ static void generic_equation_curve(const J &op) {
     ProSelectionFree(&csys);
     std::string system = op.value("system", "cylindrical");
     integer(root, PRO_E_CRV_FR_EQ_CSYS_TYPE,
-            system == "cartesian"    ? PRO_CRV_FR_EQ_CSYS_TYPE_CARTESIAN
-            : system == "spherical"  ? PRO_CRV_FR_EQ_CSYS_TYPE_SPHERICAL
-                                     : PRO_CRV_FR_EQ_CSYS_TYPE_CYLINDRICAL);
+            system == "cartesian"   ? PRO_CRV_FR_EQ_CSYS_TYPE_CARTESIAN
+            : system == "spherical" ? PRO_CRV_FR_EQ_CSYS_TYPE_SPHERICAL
+                                    : PRO_CRV_FR_EQ_CSYS_TYPE_CYLINDRICAL);
     real(root, PRO_E_CRV_FR_EQ_PARAM_MIN, op.value("param_min", 0.0));
     real(root, PRO_E_CRV_FR_EQ_PARAM_MAX, op.value("param_max", 1.0));
     std::wstring equations = wide(op["equations"]);
@@ -81,8 +81,8 @@ static void generic_helical_sweep(const J &op) {
         op.contains("equations")
             ? op["equations"]
             : J(utf8(helix_equations(op.at("radius"), op.at("pitch"), op.at("length"),
-                                     op.value("start_z", 0.0),
-                                     op.value("hand", "right") == "right", cartesian)));
+                                     op.value("start_z", 0.0), op.value("hand", "right") == "right",
+                                     cartesian)));
     if (op.contains("reference_csys"))
         curve_op["reference_csys"] = op["reference_csys"];
     generic_equation_curve(curve_op);

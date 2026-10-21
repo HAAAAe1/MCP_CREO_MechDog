@@ -100,21 +100,105 @@ static void generic_draft(const J &op) {
     ProElementFree(&root);
     remember(op, f);
 }
-static void generic_sweep(const J& op){
- std::string mode=op.value("mode","add");ProElement root=node(nullptr,PRO_E_FEATURE_TREE);integer(root,PRO_E_FEATURE_TYPE,mode=="surface"?PRO_FEAT_DATUM_SURF:mode=="cut"?PRO_FEAT_CUT:PRO_FEAT_PROTRUSION);integer(root,PRO_E_FEATURE_FORM,PRO_SWEEP);integer(root,PRO_E_SWEEP_TYPE,PRO_SWEEP_TYPE_MULTI_TRAJ);text(root,PRO_E_STD_FEATURE_NAME,wide(op["label"]).c_str());integer(root,PRO_E_EXT_SURF_CUT_SOLID_TYPE,mode=="surface"?PRO_SWEEP_FEAT_TYPE_SURFACE:PRO_SWEEP_FEAT_TYPE_SOLID);integer(root,PRO_E_REMOVE_MATERIAL,mode=="cut"?PRO_SWEEP_MATERIAL_REMOVE:PRO_SWEEP_MATERIAL_ADD);integer(root,PRO_E_FEAT_FORM_IS_THIN,op.contains("thin")?PRO_SWEEP_FEAT_FORM_THIN:PRO_SWEEP_FEAT_FORM_NO_THIN);if(op.contains("thin")){real(root,PRO_E_THICKNESS,op["thin"]);integer(root,PRO_E_STD_MATRLSIDE,PRO_SWEEP_MATERIAL_BOTH_SIDES);}else if(mode=="cut")integer(root,PRO_E_STD_MATRLSIDE,PRO_SWEEP_MATERIAL_SIDE_ONE);
- ProElement frame=node(root,PRO_E_SWEEP_FRAME_COMP),trajectory=node(node(frame,PRO_E_FRM_OPT_TRAJ),PRO_E_OPT_TRAJ);integer(trajectory,PRO_E_STD_SEC_METHOD,PRO_SEC_SELECT);curve_collection(node(node(trajectory,PRO_E_STD_SEC_SELECT),PRO_E_STD_CURVE_COLLECTION_APPL),sketch_curve_refs(op["trajectory"]));ProElement setup=node(frame,PRO_E_FRAME_SETUP);
- auto frame_int=[&](const char*key,int fallback)->int{if(!op.contains(key))return fallback;const J&v=op[key];if(v.is_string()){std::string s=v.get<std::string>();if(s=="pivot")return PRO_FRAME_PIVOT_DIR;if(s=="constant_z"||s=="z_direction")return PRO_FRAME_CONST_Z_DIR;if(s=="origin")return PRO_FRAME_NORM_ORIGIN;if(s=="constant")return PRO_FRAME_CONSTANT;if(s=="auto")return PRO_FRAME_MIN;if(s=="user")return PRO_FRAME_USER_START_X;if(s=="default_x")return PRO_FRAME_DEFAULT_START_X;throw std::runtime_error(std::string("Unknown sweep frame value: ")+s);}return v.get<int>();};
- integer(setup,PRO_E_FRM_NORMAL,frame_int("frame_normal",PRO_FRAME_NORM_ORIGIN));integer(setup,PRO_E_FRM_ORIENT,frame_int("frame_orient",PRO_FRAME_MIN));integer(setup,PRO_E_FRM_USER_X,frame_int("frame_user_x",PRO_FRAME_DEFAULT_START_X));
- auto frame_direction=[&](int holder,const J&spec){ProElement compound=node(node(setup,holder),PRO_E_DIRECTION_COMPOUND);ProSelection direction=resolve(spec);ref(compound,PRO_E_DIRECTION_REFERENCE,direction);ProSelectionFree(&direction);integer(compound,PRO_E_DIRECTION_FLIP,spec.value("flip",false)?PRO_B_TRUE:PRO_B_FALSE);};
- if(op.contains("frame_pivot_direction"))frame_direction(PRO_E_FRM_PIVOT_DIR,op["frame_pivot_direction"]);
- if(op.contains("frame_z_direction"))frame_direction(PRO_E_FRM_CONST_Z,op["frame_z_direction"]);
- if(op.contains("frame_start_x_direction"))frame_direction(PRO_E_FRM_START_X,op["frame_start_x_direction"]);
- ProElement profile=node(root,PRO_E_SWEEP_PROF_COMP);integer(profile,PRO_E_SWP_SEC_TYPE,PRO_SWEEP_CONST_SECTION);integer(node(profile,PRO_E_SWEEP_SECTION),PRO_E_STD_SEC_METHOD,PRO_SEC_SKETCH);if(mode=="surface")integer(node(root,PRO_E_SWP_ATTR),PRO_E_END_SRF_ATTR,op.value("capped",false)?PRO_SWEEP_END_SRF_CAPPED:PRO_SWEEP_END_SRF_OPEN);else body_options(root,op);
- ProFeature f=create(root,PRO_FEAT_CR_INCOMPLETE_FEAT);ProElementFree(&root);CK(ProFeatureElemtreeExtract(&f,nullptr,PRO_FEAT_EXTRACT_NO_OPTS,&root));
- // Creo initializes thin material side while creating an incomplete sweep.
- // Reapply the requested symmetric side when completing its profile.
- if(op.contains("thin")){ProElement side=get(root,{PRO_E_STD_MATRLSIDE});int current=0;CK(ProElementIntegerGet(side,nullptr,&current));log("SWEEP_THIN_INITIAL_SIDE=%d\n",current);CK(ProElementIntegerSet(side,PRO_SWEEP_MATERIAL_BOTH_SIDES));CK(ProElementDoubleSet(get(root,{PRO_E_THICKNESS}),op["thin"]));}
- J path=J::array({PRO_E_SWEEP_PROF_COMP,PRO_E_SWEEP_SECTION,PRO_E_SKETCHER});ProElement sk=get_path(root,path);ProSection section;CK(ProElementSpecialvalueGet(sk,nullptr,(ProAppData*)&section));J extra=populate_profile(section,op);CK(ProElementSpecialvalueSet(sk,(ProAppData)section));redefine(&f,root);CK(ProFeatureElemtreeFree(&f,root));extra["section_path"]=path;remember(op,f,extra);
+static void generic_sweep(const J &op) {
+    std::string mode = op.value("mode", "add");
+    ProElement root = node(nullptr, PRO_E_FEATURE_TREE);
+    integer(root, PRO_E_FEATURE_TYPE,
+            mode == "surface" ? PRO_FEAT_DATUM_SURF
+            : mode == "cut"   ? PRO_FEAT_CUT
+                              : PRO_FEAT_PROTRUSION);
+    integer(root, PRO_E_FEATURE_FORM, PRO_SWEEP);
+    integer(root, PRO_E_SWEEP_TYPE, PRO_SWEEP_TYPE_MULTI_TRAJ);
+    text(root, PRO_E_STD_FEATURE_NAME, wide(op["label"]).c_str());
+    integer(root, PRO_E_EXT_SURF_CUT_SOLID_TYPE,
+            mode == "surface" ? PRO_SWEEP_FEAT_TYPE_SURFACE : PRO_SWEEP_FEAT_TYPE_SOLID);
+    integer(root, PRO_E_REMOVE_MATERIAL,
+            mode == "cut" ? PRO_SWEEP_MATERIAL_REMOVE : PRO_SWEEP_MATERIAL_ADD);
+    integer(root, PRO_E_FEAT_FORM_IS_THIN,
+            op.contains("thin") ? PRO_SWEEP_FEAT_FORM_THIN : PRO_SWEEP_FEAT_FORM_NO_THIN);
+    if (op.contains("thin")) {
+        real(root, PRO_E_THICKNESS, op["thin"]);
+        integer(root, PRO_E_STD_MATRLSIDE, PRO_SWEEP_MATERIAL_BOTH_SIDES);
+    } else if (mode == "cut")
+        integer(root, PRO_E_STD_MATRLSIDE, PRO_SWEEP_MATERIAL_SIDE_ONE);
+    ProElement frame = node(root, PRO_E_SWEEP_FRAME_COMP),
+               trajectory = node(node(frame, PRO_E_FRM_OPT_TRAJ), PRO_E_OPT_TRAJ);
+    integer(trajectory, PRO_E_STD_SEC_METHOD, PRO_SEC_SELECT);
+    curve_collection(node(node(trajectory, PRO_E_STD_SEC_SELECT), PRO_E_STD_CURVE_COLLECTION_APPL),
+                     sketch_curve_refs(op["trajectory"]));
+    ProElement setup = node(frame, PRO_E_FRAME_SETUP);
+    auto frame_int = [&](const char *key, int fallback) -> int {
+        if (!op.contains(key))
+            return fallback;
+        const J &v = op[key];
+        if (v.is_string()) {
+            std::string s = v.get<std::string>();
+            if (s == "pivot")
+                return PRO_FRAME_PIVOT_DIR;
+            if (s == "constant_z" || s == "z_direction")
+                return PRO_FRAME_CONST_Z_DIR;
+            if (s == "origin")
+                return PRO_FRAME_NORM_ORIGIN;
+            if (s == "constant")
+                return PRO_FRAME_CONSTANT;
+            if (s == "auto")
+                return PRO_FRAME_MIN;
+            if (s == "user")
+                return PRO_FRAME_USER_START_X;
+            if (s == "default_x")
+                return PRO_FRAME_DEFAULT_START_X;
+            throw std::runtime_error(std::string("Unknown sweep frame value: ") + s);
+        }
+        return v.get<int>();
+    };
+    integer(setup, PRO_E_FRM_NORMAL, frame_int("frame_normal", PRO_FRAME_NORM_ORIGIN));
+    integer(setup, PRO_E_FRM_ORIENT, frame_int("frame_orient", PRO_FRAME_MIN));
+    integer(setup, PRO_E_FRM_USER_X, frame_int("frame_user_x", PRO_FRAME_DEFAULT_START_X));
+    auto frame_direction = [&](int holder, const J &spec) {
+        ProElement compound = node(node(setup, holder), PRO_E_DIRECTION_COMPOUND);
+        ProSelection direction = resolve(spec);
+        ref(compound, PRO_E_DIRECTION_REFERENCE, direction);
+        ProSelectionFree(&direction);
+        integer(compound, PRO_E_DIRECTION_FLIP,
+                spec.value("flip", false) ? PRO_B_TRUE : PRO_B_FALSE);
+    };
+    if (op.contains("frame_pivot_direction"))
+        frame_direction(PRO_E_FRM_PIVOT_DIR, op["frame_pivot_direction"]);
+    if (op.contains("frame_z_direction"))
+        frame_direction(PRO_E_FRM_CONST_Z, op["frame_z_direction"]);
+    if (op.contains("frame_start_x_direction"))
+        frame_direction(PRO_E_FRM_START_X, op["frame_start_x_direction"]);
+    ProElement profile = node(root, PRO_E_SWEEP_PROF_COMP);
+    integer(profile, PRO_E_SWP_SEC_TYPE, PRO_SWEEP_CONST_SECTION);
+    integer(node(profile, PRO_E_SWEEP_SECTION), PRO_E_STD_SEC_METHOD, PRO_SEC_SKETCH);
+    if (mode == "surface")
+        integer(node(root, PRO_E_SWP_ATTR), PRO_E_END_SRF_ATTR,
+                op.value("capped", false) ? PRO_SWEEP_END_SRF_CAPPED : PRO_SWEEP_END_SRF_OPEN);
+    else
+        body_options(root, op);
+    ProFeature f = create(root, PRO_FEAT_CR_INCOMPLETE_FEAT);
+    ProElementFree(&root);
+    CK(ProFeatureElemtreeExtract(&f, nullptr, PRO_FEAT_EXTRACT_NO_OPTS, &root));
+    // Creo initializes thin material side while creating an incomplete sweep.
+    // Reapply the requested symmetric side when completing its profile.
+    if (op.contains("thin")) {
+        ProElement side = get(root, {PRO_E_STD_MATRLSIDE});
+        int current = 0;
+        CK(ProElementIntegerGet(side, nullptr, &current));
+        log("SWEEP_THIN_INITIAL_SIDE=%d\n", current);
+        CK(ProElementIntegerSet(side, PRO_SWEEP_MATERIAL_BOTH_SIDES));
+        CK(ProElementDoubleSet(get(root, {PRO_E_THICKNESS}), op["thin"]));
+    }
+    J path = J::array({PRO_E_SWEEP_PROF_COMP, PRO_E_SWEEP_SECTION, PRO_E_SKETCHER});
+    ProElement sk = get_path(root, path);
+    ProSection section;
+    CK(ProElementSpecialvalueGet(sk, nullptr, (ProAppData *)&section));
+    J extra = populate_profile(section, op);
+    CK(ProElementSpecialvalueSet(sk, (ProAppData)section));
+    redefine(&f, root);
+    CK(ProFeatureElemtreeFree(&f, root));
+    extra["section_path"] = path;
+    remember(op, f, extra);
 }
 static void generic_sheetmetal_wall(const J &op) {
     // Preserve the editable driving sketch, then convert its thin native extrusion.

@@ -7,6 +7,7 @@ probe could not tell us.
 
     .\\.venv\\Scripts\\python.exe tools\\probe_sweep_frame.py
 """
+
 import asyncio
 import json
 import sys
@@ -69,9 +70,7 @@ async def main():
                 "length": 2.0,
                 "start_z": 2.0,
                 "mode": "add",
-                "profile": [
-                    {"type": "circle", "name": "mk", "center": [1.0, 0.0], "radius": 0.1}
-                ],
+                "profile": [{"type": "circle", "name": "mk", "center": [1.0, 0.0], "radius": 0.1}],
             },
         )
         report["model_id"] = model_id

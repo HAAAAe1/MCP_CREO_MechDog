@@ -8,6 +8,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import bridge
 import generic_bridge
@@ -33,7 +34,10 @@ class SourceLayoutTests(unittest.TestCase):
         self.assertEqual(SOURCE_PATHS.resource_root, ROOT)
         self.assertEqual(SOURCE_PATHS.data_root, bridge.ROOT)
         self.assertEqual(SOURCE_PATHS.jobs, bridge.JOBS)
-        self.assertEqual(SOURCE_PATHS.models, generic_bridge.MODELS)
+        with patch.object(bridge, "config", return_value={}):
+            # Local design: generic_bridge.MODELS=None means "resolve from config";
+            # assert the default layout (no model_root override) matches SOURCE_PATHS.
+            self.assertEqual(SOURCE_PATHS.models, generic_bridge.models_root())
         self.assertEqual(SOURCE_PATHS.build, ROOT / "build")
 
     def test_explicit_data_root_is_independent_and_creates_nothing(self):

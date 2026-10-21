@@ -11,6 +11,7 @@ profile-blank overlap moment. Then save/reload and STEP/JPEG export.
 
     .\\.venv\\Scripts\\python.exe tools\\test_helical_thread.py
 """
+
 import asyncio
 import json
 import sys
@@ -27,22 +28,22 @@ sys.path.insert(0, str(ROOT))
 # --- thread geometry (ISO metric M3.5x0.6 external, simplified form) ---
 MAJOR_D = 3.5
 PITCH = 0.6
-R_CREST = MAJOR_D / 2                       # 1.75
-D_PITCH = MAJOR_D - 0.6495 * PITCH          # 3.1103
-R_C = D_PITCH / 2                           # 1.55515 helix / trajectory radius
-THREAD_DEPTH = 0.6134 * PITCH               # 0.36804
-R_ROOT = R_CREST - THREAD_DEPTH             # 1.38196
-CREST_FLAT = PITCH / 8                      # 0.075
-U_CREST = R_CREST - R_C                     # 0.19485
-U_ROOT = R_ROOT - R_C                       # -0.17319
-HW_CREST = (PITCH - CREST_FLAT) / 2         # 0.2625
+R_CREST = MAJOR_D / 2  # 1.75
+D_PITCH = MAJOR_D - 0.6495 * PITCH  # 3.1103
+R_C = D_PITCH / 2  # 1.55515 helix / trajectory radius
+THREAD_DEPTH = 0.6134 * PITCH  # 0.36804
+R_ROOT = R_CREST - THREAD_DEPTH  # 1.38196
+CREST_FLAT = PITCH / 8  # 0.075
+U_CREST = R_CREST - R_C  # 0.19485
+U_ROOT = R_ROOT - R_C  # -0.17319
+HW_CREST = (PITCH - CREST_FLAT) / 2  # 0.2625
 TAN30 = np.tan(np.pi / 6)
-U_TOP = 0.35                                # profile extended above the blank
+U_TOP = 0.35  # profile extended above the blank
 HW_TOP = HW_CREST + (U_TOP - U_CREST) * TAN30
-Z_START, Z_END = -0.75, 5.0                 # helix spans past both shank ends
+Z_START, Z_END = -0.75, 5.0  # helix spans past both shank ends
 SHANK_LEN, HEAD_H, HEAD_AF = 5.0, 2.4, 5.5
 HEAD_R = HEAD_AF / np.sqrt(3.0) * 1.0 / np.cos(np.pi / 6) ** 0  # placeholder
-HEAD_R = HEAD_AF / 2 / np.cos(np.pi / 6)    # circumradius 3.17543
+HEAD_R = HEAD_AF / 2 / np.cos(np.pi / 6)  # circumradius 3.17543
 
 
 def profile_points():
