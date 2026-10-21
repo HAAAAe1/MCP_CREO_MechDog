@@ -1,4 +1,4 @@
-# MCP_CREO_MechDog 0.4.3
+# MCP_CREO_MechDog 0.4.4
 
 开发维护从 [开发入口](docs/DEVELOPMENT.md) 和 [统一功能台账](docs/BACKLOG.md) 开始。每项工作先定义验收；语言与单元检查、Creo 实机验收分别记录。项目采用渐进布局整理，当前支持环境见 [兼容矩阵](docs/COMPATIBILITY.md)。
 
@@ -6,7 +6,7 @@
 
 **本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 0.4.2 注册 **87 个工具**（0.4.1 为 86 个，新增 `creo_open_file`）；v0.4.1/Creo 10 反馈按[处理计划](docs/development/CREO10-0.4.1-FEEDBACK-PLAN.md)交付：磁盘 `.prt`/`.asm` 只读检索显示、`creo_capabilities` compact 摘要与分页（FEAT-023/044）、`creo_session_status` 各分支 `server_version`（FEAT-022）、接管 `NO_CURRENT_MODEL`/稳定 `reason_code`/结构化 `refusal_details` 与顶层支持状态（FEAT-006/008）；既有能力（无盘快照接管、会话枚举、受控恢复、直接混合等）保留。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
 
-当前服务/源码版本为 **0.4.3**（PATCH：0.3.7 反馈修复合集与观察性增强，无新增公开工具）。0.4.3 交付：BUG-036（component_constraints 成功但位姿不更新——native 组件变换/矩阵读取修复，隔离 C++ 回归）；BUG-057（toolkit_lock 并发准入在 Windows 报 Errno 13——锁打开路径细化）；BUG-074（缺失 owner 身份的历史作业永久阻断恢复——以独立核验的 Windows 重启为界的守卫与证据绑定）；种子兼容观察与窗口观察增强（seed_load_evidence、进程快照观察参数）；BUG-075 登记。0.3.7 剩余验收：黑盒 16/16、开发者补测（英寸/类型枚举/families/只读 inspect）；跨重启四动作与外部原环境未测。见[0.4.3 说明](docs/RELEASE_NOTES_0.4.3.md)；历史[0.4.2](docs/RELEASE_NOTES_0.4.2.md)、[0.4.1](docs/RELEASE_NOTES_0.4.1.md)、[0.4.0](docs/RELEASE_NOTES_0.4.0.md)及原验收身份保留。
+当前服务/源码版本为 **0.4.4**（PATCH：两份 Creo 10 构建侧反馈的完善计划，无新增公开工具）。0.4.4 交付：DEV-027 构建指纹 CRLF→LF 归一化（保留 json.hpp 于依赖清单、缓存 algorithm/generation_key、旧缓存行尾等价复用原世代与注册路径、派生世代键解非确定性冲突死锁）；DEV-030 `vcvars64_env` 放宽为必须含大写 INCLUDE/LIB/PATH、其余键接受并忽略并回写规范化三键；FEAT-044 补验收（钣金件打开、显式 `.asm.N` 精确版本、窗口目视）；FEAT-023 补过期/跨实例 cursor/大内容分页。外部 Creo 10 受限环境复验与 DEV-027 二进制可复现性、目录回收未测。见[0.4.4 说明](docs/RELEASE_NOTES_0.4.4.md)；历史[0.4.3](docs/RELEASE_NOTES_0.4.3.md)、[0.4.2](docs/RELEASE_NOTES_0.4.2.md)、[0.4.1](docs/RELEASE_NOTES_0.4.1.md)、[0.4.0](docs/RELEASE_NOTES_0.4.0.md)及原验收身份保留。
 
 本版包含 [FEAT-019 自动启动](docs/work-items/FEAT-019.md)：后台检测、启动协调和建模就绪保护已实现；用户于 2026-10-13 接受 WorkBuddy / Creo 12.4 的自动启动、Toolkit 就绪及建模/保存重载验收，并于 2026-10-14 确认补充 Creo 12 已验证可用的说明。该专项未取得 Creo 10 实测结果；Codex 冷启动连接复测失败另列 [BUG-005](docs/work-items/BUG-005.md)。见 [原验收证据](docs/validation/FEAT-019.md)。
 

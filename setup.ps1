@@ -22,13 +22,19 @@ if (-not $PSBoundParameters.ContainsKey('VcVars64Env') -and -not $PSBoundParamet
 }
 if ($null -ne $VcVars64Env) {
     $envKeys = @('INCLUDE', 'LIB', 'PATH')
-    if ($VcVars64Env.Count -ne 3 -or @($envKeys | Where-Object { -not $VcVars64Env.ContainsKey($_) }).Count) {
-        throw 'vcvars64_env must contain exactly INCLUDE, LIB and PATH.'
+    # Match bridge validation: the three keys above must be present with this
+    # exact case (PowerShell hashtables otherwise ignore key case).
+    $missing = @($envKeys | Where-Object { @($VcVars64Env.Keys) -cnotcontains $_ })
+    if ($missing.Count) {
+        throw ("vcvars64_env is missing required keys: {0}. Minimal example: -VcVars64Env @{{INCLUDE='...';LIB='...';PATH='...'}}." -f ($missing -join ', '))
     }
-    # Match bridge validation, including key case (PowerShell hashtables ignore case).
-    foreach ($key in $VcVars64Env.Keys) {
+    $extraKeys = @($VcVars64Env.Keys | Where-Object { $_ -cnotin $envKeys } | Sort-Object)
+    if ($extraKeys.Count) {
+        Write-Output ("vcvars64_env: ignoring extra keys not used by the build: {0}" -f ($extraKeys -join ', '))
+    }
+    foreach ($key in $envKeys) {
         $value = $VcVars64Env[$key]
-        if ($key -cnotin $envKeys -or $value -isnot [string] -or [string]::IsNullOrWhiteSpace($value) -or $value -match '[\x00\r\n"%]') {
+        if ($value -isnot [string] -or [string]::IsNullOrWhiteSpace($value) -or $value -match '[\x00\r\n"%]') {
             throw 'Invalid vcvars64_env: use nonempty INCLUDE/LIB/PATH strings without quotes, percent signs or newlines.'
         }
     }
@@ -102,7 +108,14 @@ $localSettings = [ordered]@{}
 foreach ($property in $settings.PSObject.Properties) { $localSettings[$property.Name] = $property.Value }
 $localSettings['creo_root'] = $CreoRoot
 $localSettings['vcvars64'] = $VcVars64
-$localSettings['vcvars64_env'] = $VcVars64Env
+if ($null -ne $VcVars64Env) {
+    # Persist only the normalized three required keys; extra keys were ignored above.
+    $normalizedEnv = @{}
+    foreach ($key in @('INCLUDE', 'LIB', 'PATH')) { $normalizedEnv[$key] = $VcVars64Env[$key] }
+    $localSettings['vcvars64_env'] = $normalizedEnv
+} else {
+    $localSettings['vcvars64_env'] = $null
+}
 $projectPython = Join-Path $PSScriptRoot '.venv\Scripts\python.exe'
 $stage = 'local configuration'
 $completed = @()

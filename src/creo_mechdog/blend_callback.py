@@ -14,6 +14,10 @@ PROTOCOL = 3
 LOADER_ABI = 1
 CONTRACT = "blend-selection-v3-ordered-curves-mm"
 REGISTRY_FILENAME = "blend_callback_protk.dat"
+# A loader generation key is the normalized fingerprint, optionally with a
+# -<sha256[:12]> suffix when a rebuilt (nondeterministic) DLL must coexist
+# with the historical immutable copy recorded under the same fingerprint.
+GENERATION_KEY = re.compile(r"[0-9a-f]{64}(?:-[0-9a-f]{12})?\Z")
 
 
 def _digest(path: Path) -> str:
@@ -67,7 +71,7 @@ def prepare_callback(build: Path, dll_sha256: str, loader_fingerprint: str) -> d
     loader = build / "creo_blend_loader.dll"
     if not re.fullmatch("[0-9a-f]{64}", dll_sha256) or _digest(dll) != dll_sha256:
         raise ValueError("Blend callback hash does not match the current build")
-    if not re.fullmatch("[0-9a-f]{64}", loader_fingerprint):
+    if not GENERATION_KEY.fullmatch(loader_fingerprint):
         raise ValueError("Invalid callback loader generation")
     root = build.parent.resolve()
     directory = build / "blend_callback" / dll_sha256

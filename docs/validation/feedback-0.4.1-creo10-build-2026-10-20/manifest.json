@@ -1,0 +1,16 @@
+{
+  "source": "2026-10-20CREO10.0.0.0-0.4.1jsonhpp仍在指纹清单致注册失效隐患未根治.md",
+  "archived_from": "用户提供的 Downloads 原件（2026-10-21 归档时与原件逐字节一致）",
+  "report_sha256": "92590f8cb826ad4095df44a33ad2bc6b4157c195aa841e06995da17ca60cef17",
+  "reported_version": "0.4.1",
+  "reported_environment": "Windows 10 x64 / Creo 10.0.0.0 / VS2022 BuildTools 14.44.35207 / Windows SDK 10.0.26100.0 / Python 3.13（未连接 Creo，静态与文件层验证）",
+  "mapping": {
+    "§1 升级未触碰注册（首次正面验证）": "FEAT-029/DEV-027 外部正例：清单未变时注册稳定",
+    "§2 json.hpp 仍在指纹清单、换行差异隐患未根治": "DEV-027（本轮按 IMPROVEMENT 计划实施 CRLF→LF 归一化；否决移出清单方案）",
+    "§3 vcvars64_env 恰好三键（第五次未修）": "DEV-030（本轮实施：必须含大写三键，其余键接受并忽略）",
+    "§4 附件 SHA256 入 Release body": "发布流程已采纳（既有实践）",
+    "§5.1 worker 指纹与 loader/payload 清单对新增头文件处理不一致": "DEV-027 观察：worker 指纹按 native 全量文本参与（归一化后同样覆盖），清单差异保持既有设计",
+    "§5.2 payload/loader 目录无自动清理": "DEV-027 已登记子项，盘点与回收另期（IMPROVEMENT 计划第 1 节）"
+  },
+  "additional_note": "处理方案见 docs/development/CREO10-0.4.1-FEEDBACK-IMPROVEMENT-PLAN-2026-10-20.md；本归档随其实施交付。"
+}

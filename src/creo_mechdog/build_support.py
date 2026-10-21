@@ -3,11 +3,26 @@
 from __future__ import annotations
 
 import re
+import sys
 from pathlib import Path
 
 COMPILER_ENV_KEYS = ("INCLUDE", "LIB", "PATH")
 BUILD_LOG_TAIL_BYTES = 128 * 1024
 _ERROR_LINE = re.compile(r"\b(?:fatal\s+)?error(?:\s+[A-Z]+\d+)?\s*:", re.IGNORECASE)
+_MINIMAL_ENV_EXAMPLE = '{"vcvars64_env": {"INCLUDE": "...", "LIB": "...", "PATH": "..."}}'
+_reported_ignored_keys: set[frozenset[str]] = set()
+
+
+def _note_ignored_env_keys(keys: list[str]) -> None:
+    """Name ignored keys on stderr once per process; never echo their values."""
+    signature = frozenset(keys)
+    if signature in _reported_ignored_keys:
+        return
+    _reported_ignored_keys.add(signature)
+    print(
+        f"vcvars64_env: ignoring extra keys not used by the build: {', '.join(keys)}",
+        file=sys.stderr,
+    )
 
 
 def validate_local_path(value: object, name: str) -> str:
@@ -18,10 +33,25 @@ def validate_local_path(value: object, name: str) -> str:
 
 
 def validate_compiler_env(value: object) -> dict[str, str] | None:
+    """Require uppercase INCLUDE/LIB/PATH; accept and ignore any other keys."""
     if value is None:
         return None
-    if not isinstance(value, dict) or set(value) != set(COMPILER_ENV_KEYS):
-        raise ValueError("vcvars64_env must contain exactly INCLUDE, LIB and PATH")
+    if not isinstance(value, dict):
+        raise ValueError(
+            f"vcvars64_env must be an object with {', '.join(COMPILER_ENV_KEYS)}; "
+            f"minimal example: {_MINIMAL_ENV_EXAMPLE}"
+        )
+    missing = [key for key in COMPILER_ENV_KEYS if key not in value]
+    if missing:
+        raise ValueError(
+            f"vcvars64_env is missing required keys: {', '.join(missing)}; "
+            f"minimal example: {_MINIMAL_ENV_EXAMPLE}"
+        )
+    extra = sorted(
+        str(key) for key in value if not (isinstance(key, str) and key in COMPILER_ENV_KEYS)
+    )
+    if extra:
+        _note_ignored_env_keys(extra)
     return {
         key: validate_local_path(value[key], f"vcvars64_env.{key}") for key in COMPILER_ENV_KEYS
     }

@@ -53,3 +53,12 @@
 - 实机 12 场景全过：完整/缺件装配、显式与最高数字版本、同名冲突、非空会话装配拒绝、中文空格路径、幂等重放、非法输入、身份前后一致。
 - **关键发现**：`ProMdlFiletypeLoad` 对缺件装配不报错（组件静默缺失）；已补组件完整性核对（`ProSolidFeatVisit`+`ProAsmcompMdlGet`），缺件时 `RETRIEVE_INCOMPLETE` 明确失败并报告残留与 unknown 缺件计数。
 - 剩余：`asm_mx.asm.16` 原环境复验、显示失败注入、unknown/并发、钣金件打开、`.asm` 数字版本选择、WorkBuddy 公开黑盒复验待执行（[提示词](../WORKBUDDY_0.5.0_OPEN_FILE.md)）。
+
+## 2026-10-21 补验收：钣金件、显式 .asm.N 与窗口目视
+
+按[完善计划](../development/CREO10-0.4.1-FEEDBACK-IMPROVEMENT-PLAN-2026-10-20.md)第 3 节补齐（stdio 直连驱动 `build/dev044_openfile.py`，wbopen_* 白名单素材）：
+
+- **钣金件打开**：受管钣金 `wbopen_sm01.prt.5` → succeeded、model_id=null、adopted=false、model_type=sheetmetal、displayed=true。
+- **显式 `.asm.N`**：`wbopen_asmv.asm.4`=2 组件、`.asm.6`=3 组件，均 succeeded/displayed=true/origin_matches_selected_file=true，打开前后副本 SHA 不变。
+- **窗口目视**：PrintWindow 只读截图，窗口标题 "WBOPEN_ASMV (启用的) - Creo Parametric 12"，图存 `build/dev044_visual_final.bmp`。
+- 残留：SM_FLANGE1 两个 section 对象（失败 plan 遗留，非 PART/ASM 不阻塞）；`asm_mx.asm.16` 原环境、显示失败注入、unknown/并发维持未测。详见[验证记录](../validation/DEV-027-030-IMPROVEMENT-2026-10-21.md)。

@@ -53,7 +53,6 @@ class InstallConfigTests(unittest.TestCase):
             [],
             "INCLUDE=inc",
             {"INCLUDE": "inc", "LIB": "lib"},
-            dict(self.settings["vcvars64_env"], EXTRA="bad"),
             {"include": "inc", "LIB": "lib", "PATH": "bin"},
             *[
                 dict(self.settings["vcvars64_env"], PATH=value)
@@ -66,6 +65,46 @@ class InstallConfigTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "vcvars64_env"):
                     self.config()
                 self.settings["vcvars64_env"] = original
+
+    def test_env_missing_key_error_names_keys_and_minimal_example(self):
+        self.settings["vcvars64_env"] = {"LIB": "lib", "PATH": "bin", "INCLUDE_EXTRA": "x"}
+        with self.assertRaisesRegex(ValueError, "INCLUDE") as caught:
+            self.config()
+        message = str(caught.exception)
+        self.assertIn("missing required keys", message)
+        self.assertIn('{"vcvars64_env"', message)
+
+    def test_env_extra_keys_are_ignored_normalized_and_stay_out_of_builds(self):
+        noisy = "SECRET-VALUE-4F2A"
+        self.settings["vcvars64_env"] = {
+            "INCLUDE": "inc",
+            "LIB": "lib",
+            "PATH": "bin",
+            "VSCMD_SKIP_SENDTELEMETRY": noisy,
+            "unrelated": "1",
+        }
+        value = self.config()
+        self.assertEqual(value["vcvars64_env"], {"INCLUDE": "inc", "LIB": "lib", "PATH": "bin"})
+        self.sdk()
+        (self.root / "native").mkdir()
+        (self.root / "native/worker.cpp").write_text("// fixture")
+
+        def run(command, **kwargs):
+            if command[0] == "cmd.exe":
+                (self.root / "build/creo_worker.exe").write_bytes(b"worker")
+                (self.root / "build/creo_blend_sync.dll").write_bytes(b"callback")
+                (self.root / "build/creo_blend_loader.dll").write_bytes(b"loader")
+            return subprocess.CompletedProcess(command, 0, stdout=b"{}")
+
+        with (
+            patch.object(bridge, "ROOT", self.root),
+            patch.object(bridge.subprocess, "run", side_effect=run),
+        ):
+            bridge.build_native()
+        script = (self.root / "build/build.cmd").read_text()
+        self.assertNotIn(noisy, script)
+        self.assertNotIn("VSCMD_SKIP_SENDTELEMETRY", script)
+        self.assertIn('set "INCLUDE=inc"', script)
 
     def test_explicit_env_does_not_require_vcvars_and_missing_sdk_still_fails(self):
         self.sdk()
@@ -199,13 +238,40 @@ class InstallConfigTests(unittest.TestCase):
             "@{}",
             "@{INCLUDE='i';LIB='l';PATH='%PATH%'}",
             "@{include='i';LIB='l';PATH='p'}",
+            "@{LIB='l';PATH='p';EXTRA='x'}",
         ):
             result = self.powershell(f"-VcVars64Env {value} -CheckOnly")
             self.assertNotEqual(result.returncode, 0)
             self.assertIn(b"vcvars64_env", result.stderr)
+        missing = self.powershell("-VcVars64Env @{LIB='l';PATH='p';EXTRA='x'} -CheckOnly")
+        self.assertIn(b"missing required keys: INCLUDE", missing.stderr)
         result = self.powershell(f"-VcVars64 '{self.root / 'missing.bat'}' -CheckOnly")
         self.assertNotEqual(result.returncode, 0)
         self.assertIn(b"vcvars64.bat not found", result.stderr)
+
+    @unittest.skipUnless(os.name == "nt", "Windows PowerShell installer")
+    def test_setup_accepts_extra_env_keys_and_writeback_normalizes_three(self):
+        self.installer()
+        real_python = sys._base_executable.replace("'", "''")
+        result = self.powershell(
+            f"-Python '{real_python}' "
+            "-VcVars64Env @{'INCLUDE'='i';'LIB'='l';'PATH'='p';'NOISY_KEY'='SECRET-VALUE'} -CheckOnly"
+        )
+        self.assertEqual(result.returncode, 0, result.stderr.decode(errors="replace"))
+        self.assertIn(b"ignoring extra", result.stdout)
+        self.assertIn(b"NOISY_KEY", result.stdout)
+        self.assertNotIn(b"SECRET-VALUE", result.stdout + result.stderr)
+        # Stop after configuration is persisted, before the venv step.
+        fake = self.root / "python.cmd"
+        fake.write_text(
+            '@echo off\nif "%~1"=="-c" (\necho {"version":[3,12,0],"bits":64}\nexit /b 0\n)\nexit /b 1\n'
+        )
+        result = self.powershell(
+            f"-Python '{fake}' -VcVars64Env @{{'INCLUDE'='i';'LIB'='l';'PATH'='p';'EXTRA'='ignored'}}"
+        )
+        self.assertNotEqual(result.returncode, 0)
+        saved = json.loads((self.root / "config.json").read_text(encoding="utf-8-sig"))
+        self.assertEqual(saved["vcvars64_env"], {"INCLUDE": "i", "LIB": "l", "PATH": "p"})
 
     @unittest.skipUnless(os.name == "nt", "Windows PowerShell installer")
     def test_setup_rejects_windowsapps_before_executing_explicit_or_discovered_python(self):

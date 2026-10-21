@@ -35,3 +35,7 @@
 ## 实现与证据
 
 2026-10-20 实施：包内 `creo_mechdog/capability_pages.py`（进程内冻结快照 600 秒+实例 id、compact 摘要、七 section 条目化分页、32 KiB 预算、oversize 显式标记、cursor 失效拒绝）；server `creo_capabilities(detail,section,limit,cursor)` 默认 compact 并携带迁移说明；README 开发分支段同步迁移指引。证据：新增 8 项单元（遍历无遗漏/oversize/过期/快照变化/一致性）；stdio 直连实测 compact 10,471 字节（旧 106,380）、references 9 页翻完、tools 87 条 complete、非法输入拒绝，见[验证记录](../validation/FEAT-044-live-2026-10-20.md)第二节。600 秒过期与重启拒绝由单元覆盖，实机等待注入与超大真实 evidence 单项观察未执行；其余体积议题仍留台账原条目。
+
+## 2026-10-21 补验收：过期、跨实例与超大实际内容
+
+按[完善计划](../development/CREO10-0.4.1-FEEDBACK-IMPROVEMENT-PLAN-2026-10-20.md)补齐 capabilities 分页此前仅单测覆盖的场景（`build/feat023_paging.py`，stdio 直连实机）：篡改 cursor 拒绝、跨实例（等价服务重启）旧 cursor 拒绝、**610 秒真实等待后的过期 cursor 拒绝**、tools 节 13 页翻完 87 条无遗漏（单页峰值 32768 字节，32KiB 上限生效）。详见[验证记录](../validation/DEV-027-030-IMPROVEMENT-2026-10-21.md)。本子项闭环；jobs 日志、组件内联身份等其余体积议题仍留本卡。

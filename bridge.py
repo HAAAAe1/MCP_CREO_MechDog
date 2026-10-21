@@ -24,6 +24,14 @@ from typing import BinaryIO, TextIO
 
 from capabilities import REGISTERED_OPERATIONS, UNAVAILABLE_OPERATIONS
 from creo_mechdog.blend_callback import callback_setup_status, prepare_callback, unknown_readiness
+from creo_mechdog.build_fingerprints import (
+    FINGERPRINT_ALGORITHM,
+    legacy_digest_candidates,
+    match_cached_fingerprint,
+    normalize_lf,
+    normalized_digest,
+    read_dependency_snapshot,
+)
 from creo_mechdog.build_support import (
     compiler_setup_script,
     diagnose_build_failure,
@@ -207,6 +215,17 @@ def write_json(path: Path, value: dict, *, durable: bool = False) -> None:
                 exc.add_note(
                     f"Could not remove this writer's temporary file {temp}: {cleanup_error}"
                 )
+        raise
+
+
+def _write_stamp_text(path: Path, text: str) -> None:
+    """Replace a plain-text cache marker atomically."""
+    temp = path.with_suffix(path.suffix + f".{uuid.uuid4().hex}.tmp")
+    try:
+        temp.write_text(text, encoding="utf-8")
+        os.replace(temp, path)
+    except BaseException:
+        temp.unlink(missing_ok=True)
         raise
 
 
@@ -599,11 +618,15 @@ def build_native() -> Path:
         raise RuntimeError(
             f"SDK constant generation failed; see {build / 'generate_constants.log'}"
         )
+    # Repository-native text dependencies hash CRLF→LF-normalized content so a
+    # line-ending-only change never invalidates the build or the registered
+    # loader generation (DEV-027). SDK headers, effective settings and every
+    # binary integrity digest below keep using raw bytes.
     digest = hashlib.sha256()
     for p in sorted(
         p for p in (ROOT / "native").rglob("*") if p.suffix in (".cpp", ".h", ".hpp", ".inc")
     ):
-        digest.update(p.read_bytes())
+        digest.update(normalize_lf(p.read_bytes()))
     # Enum values and ABI declarations come from SDK headers. A names-only map
     # can stay identical while these change during an SDK maintenance upgrade.
     includes = Path(c["creo_root"]) / "Common Files/protoolkit/includes"
@@ -618,55 +641,105 @@ def build_native() -> Path:
     ).encode()
     digest.update(settings)
     abi.update(settings)
-    callback = hashlib.sha256(b"MSVC17_MD_DLL_v1" + abi.digest())
-    for relative in (
+    callback_relatives = (
         "native/blend_sync.cpp",
         "native/callback_identity.h",
         "native/callback_api.h",
         "native/third_party/json.hpp",
-    ):
-        source = ROOT / relative
-        if source.is_file():
-            callback.update(relative.encode() + source.read_bytes())
-    callback_fingerprint = callback.hexdigest()
-    callback_stamp = build / "blend_sync_build.json"
-    loader_digest = hashlib.sha256(b"MSVC17_MD_LOADER_v1" + abi.digest())
-    for relative in (
+    )
+    loader_relatives = (
         "native/blend_loader.cpp",
         "native/callback_identity.h",
         "native/callback_api.h",
         "native/third_party/json.hpp",
-    ):
-        source = ROOT / relative
-        if source.is_file():
-            loader_digest.update(relative.encode() + source.read_bytes())
-    loader_fingerprint = loader_digest.hexdigest()
-    loader_stamp = build / "blend_loader_build.json"
-    cached_loader = read_json(loader_stamp) if loader_stamp.is_file() else {}
-    pinned_loader = build / "blend_loader" / loader_fingerprint / "loader.dll"
-    if (
-        cached_loader.get("fingerprint") == loader_fingerprint
-        and pinned_loader.is_file()
-        and hashlib.sha256(pinned_loader.read_bytes()).hexdigest() == cached_loader.get("sha256")
-        and (
-            not loader_dll.is_file()
-            or hashlib.sha256(loader_dll.read_bytes()).hexdigest() != cached_loader.get("sha256")
-        )
-    ):
-        # Recover the disposable build output from the verified immutable image;
-        # never relink or modify the registered loader for an unchanged generation.
-        shutil.copyfile(pinned_loader, loader_dll)
-    reuse_loader = (
-        loader_dll.is_file()
-        and cached_loader.get("fingerprint") == loader_fingerprint
-        and cached_loader.get("sha256") == hashlib.sha256(loader_dll.read_bytes()).hexdigest()
     )
+    # One consistent snapshot backs the current fingerprints and the legacy
+    # comparison, so a concurrent file edit cannot split one decision.
+    snapshot = read_dependency_snapshot(ROOT, callback_relatives + loader_relatives)
+    callback_snapshot = {r: snapshot[r] for r in callback_relatives if r in snapshot}
+    loader_snapshot = {r: snapshot[r] for r in loader_relatives if r in snapshot}
+    callback_fingerprint = normalized_digest(b"MSVC17_MD_DLL_v2", abi.digest(), callback_snapshot)
+    callback_stamp = build / "blend_sync_build.json"
+    loader_fingerprint = normalized_digest(b"MSVC17_MD_LOADER_v2", abi.digest(), loader_snapshot)
+    loader_stamp = build / "blend_loader_build.json"
+    callback_cache = read_json(callback_stamp) if callback_stamp.is_file() else {}
+    loader_cache = read_json(loader_stamp) if loader_stamp.is_file() else {}
+    # A legacy cache proves line-ending-only equivalence when its raw-byte
+    # fingerprint reappears among the original/LF/CRLF recombinations.
+    callback_matched, _ = match_cached_fingerprint(
+        callback_cache,
+        callback_fingerprint,
+        legacy_digest_candidates(b"MSVC17_MD_DLL_v1", abi.digest(), callback_snapshot),
+    )
+    loader_matched, cached_loader_generation = match_cached_fingerprint(
+        loader_cache,
+        loader_fingerprint,
+        legacy_digest_candidates(b"MSVC17_MD_LOADER_v1", abi.digest(), loader_snapshot),
+    )
+    reuse_callback = (
+        blend_dll.is_file()
+        and callback_matched
+        and callback_cache.get("sha256") == hashlib.sha256(blend_dll.read_bytes()).hexdigest()
+    )
+    # The physical generation key keeps the registered loader directory stable:
+    # it only becomes the normalized fingerprint when a rebuild is unavoidable.
+    loader_generation = loader_fingerprint
+    reuse_loader = False
+    if loader_matched:
+        cached_sha = loader_cache.get("sha256")
+        if (
+            loader_dll.is_file()
+            and hashlib.sha256(loader_dll.read_bytes()).hexdigest() == cached_sha
+        ):
+            loader_generation = cached_loader_generation
+            reuse_loader = True
+        else:
+            pinned_loader = build / "blend_loader" / cached_loader_generation / "loader.dll"
+            if (
+                pinned_loader.is_file()
+                and hashlib.sha256(pinned_loader.read_bytes()).hexdigest() == cached_sha
+            ):
+                # Recover the disposable build output from the verified immutable
+                # image; never relink or modify the registered loader for an
+                # unchanged generation.
+                shutil.copyfile(pinned_loader, loader_dll)
+                loader_generation = cached_loader_generation
+                reuse_loader = True
+            else:
+                print(
+                    "loader cache could not be verified against the DLL or its immutable "
+                    "copy; rebuilding the loader DLL",
+                    file=sys.stderr,
+                )
+    else:
+        print(
+            "loader fingerprint changed under the normalized algorithm; rebuilding the loader DLL",
+            file=sys.stderr,
+        )
 
     def record_callback():
+        """Publish metadata first; cache markers only after full success."""
         callback_sha256 = hashlib.sha256(blend_dll.read_bytes()).hexdigest()
+        loader_sha256 = hashlib.sha256(loader_dll.read_bytes()).hexdigest()
+        generation = loader_generation
+        historical = build / "blend_loader" / generation / "loader.dll"
+        if historical.is_file() and (
+            hashlib.sha256(historical.read_bytes()).hexdigest() != loader_sha256
+        ):
+            # A rebuilt DLL meets an immutable copy recorded under the same
+            # fingerprint (the cache moved on and back). Keep the historical
+            # directory untouched and publish under a distinct physical key.
+            generation = f"{generation}-{loader_sha256[:12]}"
+            print(
+                "loader generation directory already holds a different image; "
+                f"publishing under {generation}",
+                file=sys.stderr,
+            )
+        prepare_callback(build, callback_sha256, generation)
         write_json(
             callback_stamp,
             {
+                "algorithm": FINGERPRINT_ALGORITHM,
                 "fingerprint": callback_fingerprint,
                 "sha256": callback_sha256,
             },
@@ -674,32 +747,37 @@ def build_native() -> Path:
         write_json(
             loader_stamp,
             {
+                "algorithm": FINGERPRINT_ALGORITHM,
                 "fingerprint": loader_fingerprint,
-                "sha256": hashlib.sha256(loader_dll.read_bytes()).hexdigest(),
+                "generation_key": generation,
+                "sha256": loader_sha256,
             },
         )
-        prepare_callback(build, callback_sha256, loader_fingerprint)
 
     fingerprint = digest.hexdigest()
     stamp = build / "source.sha256"
     if (
         exe.exists()
-        and blend_dll.exists()
+        and reuse_callback
         and reuse_loader
         and stamp.exists()
         and stamp.read_text() == fingerprint
     ):
-        # Migrate a previously verified combined cache without rebuilding the
-        # identical DLL. Changing unrelated worker code should not replace it.
-        if not callback_stamp.exists():
+        # Fully verified combined cache: republish metadata idempotently and
+        # keep the identical DLL images in place. A reused legacy generation
+        # upgrades its cache markers to the current format on the way out.
+        cache_current = (
+            callback_cache.get("algorithm") == FINGERPRINT_ALGORITHM
+            and callback_cache.get("fingerprint") == callback_fingerprint
+            and loader_cache.get("algorithm") == FINGERPRINT_ALGORITHM
+            and loader_cache.get("fingerprint") == loader_fingerprint
+            and loader_cache.get("generation_key") == loader_generation
+        )
+        if cache_current:
+            prepare_callback(build, callback_cache["sha256"], loader_generation)
+        else:
             record_callback()
-        cached = read_json(callback_stamp)
-        if (
-            cached.get("fingerprint") == callback_fingerprint
-            and cached.get("sha256") == hashlib.sha256(blend_dll.read_bytes()).hexdigest()
-        ):
-            prepare_callback(build, cached["sha256"], loader_fingerprint)
-            return exe
+        return exe
     if not check_environment()["ready_to_build"]:
         raise RuntimeError("Creo SDK, template or MSVC is missing; call creo_check_environment")
     sdk = Path(c["creo_root"]) / "Common Files/protoolkit"
@@ -710,12 +788,6 @@ def build_native() -> Path:
     dll_libs = " ".join(
         f'"{sdk / "x86e_win64/obj" / name}"'
         for name in ("protk_dllmd_NU.lib", "ucore.lib", "udata.lib")
-    )
-    cached_callback = read_json(callback_stamp) if callback_stamp.is_file() else {}
-    reuse_callback = (
-        blend_dll.is_file()
-        and cached_callback.get("fingerprint") == callback_fingerprint
-        and cached_callback.get("sha256") == hashlib.sha256(blend_dll.read_bytes()).hexdigest()
     )
     callback_script = (
         ""
@@ -774,8 +846,11 @@ exit /b 0
         raise RuntimeError(
             f"Native build failed ({result.returncode}); see {build / 'build.log'}\n{diagnostic}"
         )
-    stamp.write_text(fingerprint)
+    # Publish callback metadata and DLL cache markers first; the worker cache
+    # marker lands only after every earlier step succeeded, so an interrupted
+    # publish is re-verified by the next locked build instead of trusted.
     record_callback()
+    _write_stamp_text(stamp, fingerprint)
     constants = subprocess.run(
         [str(exe), "constants"],
         env=native_environment(),
