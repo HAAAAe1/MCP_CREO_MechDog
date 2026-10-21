@@ -37,15 +37,74 @@ class AdoptionRefused(ValueError):
         self.reason = reason
 
 
+BUDGET_BYTES = 16 * 1024 * 1024
+
+# The four metadata kinds this module reads under one budget (BUG-076): the
+# native worker result, the managed-model registry, published evidence tokens
+# and the durable commit journal. The kind identifies which read path hit the
+# budget; it is diagnostic data, never a remediation by itself.
+METADATA_KINDS = ("native_result", "model_registry", "evidence_token", "commit_journal")
+
+
+class AdoptionMetadataBudgetExceeded(ValueError):
+    """A metadata read exceeded the adoption budget; the error text is JSON."""
+
+    def __init__(
+        self,
+        *,
+        metadata_kind: str,
+        file: Path,
+        failed_stage: str,
+        job_id: str | None = None,
+        model_id: str | None = None,
+    ):
+        actual = file.stat().st_size if file.is_file() else None
+        try:
+            shown = str(file.resolve().relative_to(bridge.ROOT))
+        except (OSError, ValueError):
+            shown = str(file)
+        self.payload = {
+            "reason_code": "ADOPTION_METADATA_BUDGET_EXCEEDED",
+            "metadata_kind": metadata_kind,
+            "path": shown,
+            "actual_bytes": actual,
+            "budget_bytes": BUDGET_BYTES,
+            "failed_stage": failed_stage,
+            "job_id": job_id,
+            "model_id": model_id,
+            "recovery": (
+                "Keep the oversized file unchanged for diagnosis; report "
+                "metadata_kind, actual_bytes, path, job_id and the deployment "
+                "identity (server version, Creo release) so the read path can be "
+                "refined. Do not delete the file, rerun native execution, or "
+                "raise the budget to hide the error"
+            ),
+        }
+        super().__init__(json.dumps(self.payload, ensure_ascii=False))
+
+
 def digest(value: object) -> str:
     return hashlib.sha256(
         json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
     ).hexdigest()
 
 
-def _read(file: Path) -> dict | None:
-    if file.is_file() and file.stat().st_size > 16 * 1024 * 1024:
-        raise ValueError("Adoption metadata exceeds the 16 MiB read budget")
+def _read(
+    file: Path,
+    *,
+    metadata_kind: str,
+    failed_stage: str,
+    job_id: str | None = None,
+    model_id: str | None = None,
+) -> dict | None:
+    if file.is_file() and file.stat().st_size > BUDGET_BYTES:
+        raise AdoptionMetadataBudgetExceeded(
+            metadata_kind=metadata_kind,
+            file=file,
+            failed_stage=failed_stage,
+            job_id=job_id,
+            model_id=model_id,
+        )
     return bridge.read_json(file) if file.is_file() else None
 
 
@@ -90,7 +149,13 @@ def _native(directory: Path, manifest: dict) -> dict:
             timeout=WORKER_SECONDS,
             creationflags=bridge.HIDDEN,
         )
-    result = _read(directory / "native_result.json")
+    result = _read(
+        directory / "native_result.json",
+        metadata_kind="native_result",
+        failed_stage="adopting_native_model",
+        job_id=manifest.get("job_id"),
+        model_id=manifest.get("model_id"),
+    )
     if result:
         manifest["result"] = result
     if (
@@ -117,7 +182,11 @@ def _origin_conflict(origin: Path, exclude: str | None = None) -> dict | None:
     for directory in sorted(general.MODELS.iterdir()):
         if exclude and directory.name == exclude:
             continue
-        model = _read(directory / "model.json")
+        model = _read(
+            directory / "model.json",
+            metadata_kind="model_registry",
+            failed_stage="origin_conflict_scan",
+        )
         if not model:
             continue
         output = model.get("output_directory")
@@ -199,13 +268,15 @@ def _refusal_details(live: dict) -> dict:
 
 
 # Stable reason codes the native executor prefixes onto adoption refusals that
-# fire before a live summary exists (e.g. an assembly current window).
+# fire before a live summary exists (e.g. an assembly current window, or no
+# current model at all; NO_CURRENT_MODEL keeps its native spelling).
 _NATIVE_REFUSAL_CODES = frozenset(
     {
         "unsupported_model_type",
         "non_millimeter_units",
         "external_dependencies",
         "unhealthy_features",
+        "NO_CURRENT_MODEL",
     }
 )
 
@@ -324,6 +395,11 @@ def inspect(model_id: str | None = None) -> dict:
                     shutil.rmtree(path, ignore_errors=True)
                     return structured
                 raise
+            except AdoptionMetadataBudgetExceeded as error:
+                manifest["status"] = "failed"
+                manifest["reason"] = "ADOPTION_METADATA_BUDGET_EXCEEDED"
+                manifest["reason_details"] = error.payload
+                raise
             except Exception:
                 manifest["status"] = "failed"
                 raise
@@ -331,51 +407,75 @@ def inspect(model_id: str | None = None) -> dict:
                 manifest["finished_at"] = bridge.now()
                 bridge.write_json(probe / "job.json", manifest, durable=True)
             # Keep identity checks and token publication inside the cleanup boundary
-            # and the same channel lock (BUG-071).
+            # and the same channel lock (BUG-071). Each post-native stage stays
+            # observable on the preflight job: a failure here never leaves the
+            # probe reporting success without its stage (FEAT-006/008).
             origin = live.get("origin")
             refusal = _refusal_reason(live)
             if not isinstance(origin, str):
                 raise ValueError("Source origin could not be determined; no adoption accepted")
-            file = identity(Path(origin)) if origin else None
-            conflict = _origin_conflict(Path(origin), exclude=model_id) if origin else None
-            if conflict:
-                reason, reason_code = conflict["message"], conflict["reason"]
-            elif refusal:
-                reason, reason_code = refusal[1], refusal[0]
-            elif not origin:
-                reason, reason_code = None, "snapshot_required"
-            else:
-                reason, reason_code = None, None
-            if reason or not origin:
-                shutil.rmtree(path)
-                return {
-                    "available": False,
-                    "reason": reason or "snapshot_required: use mode=prepare",
-                    "reason_code": reason_code,
-                    "available_modes": [] if reason else ["prepare"],
-                    "conflict": conflict,
-                    "current_model": _summary_only({"live": live}),
-                    "refusal_details": _refusal_details(live),
-                    "file": file,
-                    "source_kind": "file" if origin else "session_only",
-                    "model_id": None,
-                    "evidence_token": None,
-                }
-            model.update(
-                model_type=live["model_type"],
-                adopted_from={
-                    "origin": file["path"],
-                    "origin_sha256": file["sha256"],
-                    "source_kind": "file",
-                    "state": "pending",
-                    "inspected_at": bridge.now(),
-                },
-            )
-            evidence = _evidence(model, live, file)
-            # Publish the registry last: source/hash/token failures cannot leave
-            # a visible model even if cleanup of staging files is unavailable.
-            bridge.write_json(path / "model.json", model, durable=True)
-            return evidence
+            failed_stage = "identity_verification"
+            try:
+                file = identity(Path(origin)) if origin else None
+                failed_stage = "conflict_scan"
+                conflict = _origin_conflict(Path(origin), exclude=model_id) if origin else None
+                if conflict:
+                    reason, reason_code = conflict["message"], conflict["reason"]
+                elif refusal:
+                    reason, reason_code = refusal[1], refusal[0]
+                elif not origin:
+                    reason, reason_code = None, "snapshot_required"
+                else:
+                    reason, reason_code = None, None
+                if reason or not origin:
+                    shutil.rmtree(path)
+                    return {
+                        "available": False,
+                        "reason": reason or "snapshot_required: use mode=prepare",
+                        "reason_code": reason_code,
+                        "available_modes": [] if reason else ["prepare"],
+                        "conflict": conflict,
+                        "current_model": _summary_only({"live": live}),
+                        "refusal_details": _refusal_details(live),
+                        "file": file,
+                        "source_kind": "file" if origin else "session_only",
+                        "model_id": None,
+                        "evidence_token": None,
+                    }
+                failed_stage = "token_publication"
+                model.update(
+                    model_type=live["model_type"],
+                    adopted_from={
+                        "origin": file["path"],
+                        "origin_sha256": file["sha256"],
+                        "source_kind": "file",
+                        "state": "pending",
+                        "inspected_at": bridge.now(),
+                    },
+                )
+                evidence = _evidence(model, live, file)
+                # Publish the registry last: source/hash/token failures cannot leave
+                # a visible model even if cleanup of staging files is unavailable.
+                bridge.write_json(path / "model.json", model, durable=True)
+                return evidence
+            except AdoptionMetadataBudgetExceeded as error:
+                manifest.update(
+                    status="failed",
+                    reason="ADOPTION_METADATA_BUDGET_EXCEEDED",
+                    reason_details=error.payload,
+                    message=str(error),
+                    finished_at=bridge.now(),
+                )
+                raise
+            except Exception as error:
+                manifest.update(
+                    status="failed",
+                    reason="preflight_stage_failed",
+                    failed_stage=failed_stage,
+                    message=str(error),
+                    finished_at=bridge.now(),
+                )
+                raise
     except Exception:
         # This path never mutates the source. Do not leave a registration without
         # published evidence, including on hashing/conflict/token-write failures.
@@ -411,7 +511,12 @@ def _validate_evidence(model_id: str, evidence_token: str) -> tuple[dict, dict]:
             "Adoption already has a pending job",
             holder={"job_id": model["pending_job"], "model_id": model_id, "operation": "adoption"},
         )
-    record = _read(_directory(model_id) / f"evidence-{evidence_token}.json")
+    record = _read(
+        _directory(model_id) / f"evidence-{evidence_token}.json",
+        metadata_kind="evidence_token",
+        failed_stage="validate_evidence",
+        model_id=model_id,
+    )
     if not record or time.time() - record["created"] > TOKEN_SECONDS:
         raise ValueError("Evidence token is missing or expired; inspect again")
     if record["model"]["model_id"] != model_id or record["model"]["status"] != "adopt_pending":
@@ -450,7 +555,12 @@ def prepare(model_name: str | None, idempotency_key: str) -> dict:
     file = path / "adoption" / f"intent-{digest(idempotency_key)}.json"
     arguments = {"mode": "prepare", "model_name": model_name, "idempotency_key": idempotency_key}
     with bridge.toolkit_lock(operation="submit_adoption_prepare", model_id=model_id):
-        existing = _read(file)
+        existing = _read(
+            file,
+            metadata_kind="commit_journal",
+            failed_stage="submit_adoption_prepare",
+            model_id=model_id,
+        )
         if existing:
             if existing["arguments"] != arguments:
                 raise ValueError("Idempotency key already belongs to another adoption request")
@@ -534,7 +644,12 @@ def apply(
         "idempotency_key": idempotency_key,
     }
     file = _journal(model_id, idempotency_key)
-    existing = _read(file)
+    existing = _read(
+        file,
+        metadata_kind="commit_journal",
+        failed_stage="submit_adoption_apply",
+        model_id=model_id,
+    )
     if existing:
         if existing["arguments"] != arguments:
             raise ValueError("Idempotency key already belongs to another adoption request")
@@ -667,7 +782,19 @@ def resume_committed(job_id: str) -> dict | None:
     manifest = bridge.read_json(bridge.job_path(job_id) / "job.json")
     if manifest.get("kind") != "adoption" or manifest.get("status") == "succeeded":
         return None
-    record = _read(_journal(manifest["model_id"], manifest["idempotency_key"]))
+    try:
+        record = _read(
+            _journal(manifest["model_id"], manifest["idempotency_key"]),
+            metadata_kind="commit_journal",
+            failed_stage="finish_adoption_commit",
+            job_id=job_id,
+            model_id=manifest.get("model_id"),
+        )
+    except AdoptionMetadataBudgetExceeded as error:
+        # A journal that cannot be read under the budget must not break polling:
+        # the durable manifest keeps the recorded terminal diagnosis and the
+        # budget hit is only an annotation on it.
+        return {**manifest, "commit_read_budget_exceeded": error.payload}
     if not record or record.get("state") != "committed":
         return None
     try:
@@ -852,8 +979,23 @@ def _commit_prepared(
 def _record_failure(
     job_id: str, manifest: dict, file: Path, error: Exception, *, locked: bool
 ) -> bool:
-    # A committed decision is recoverable by polling; do not replace it.
-    persisted = _read(file) or {}
+    # A committed decision is recoverable by polling; do not replace it. A
+    # second budget hit while reading the journal must never override the
+    # original diagnosis: record it as a note and continue the closeout.
+    try:
+        persisted = (
+            _read(
+                file,
+                metadata_kind="commit_journal",
+                failed_stage="record_failure",
+                job_id=job_id,
+                model_id=manifest.get("model_id"),
+            )
+            or {}
+        )
+    except AdoptionMetadataBudgetExceeded as budget_error:
+        persisted = {}
+        manifest["failure_read_budget_exceeded"] = budget_error.payload
     if persisted.get("state") == "committed":
         return False
     started = bool(manifest.get("worker_started"))
@@ -896,6 +1038,9 @@ def _record_failure(
             manifest["recovery_pending_cleanup_error"] = str(cleanup_error)
     if isinstance(error, bridge.ToolkitBusy):
         manifest["busy"] = error.payload
+    if isinstance(error, AdoptionMetadataBudgetExceeded):
+        manifest["reason"] = "ADOPTION_METADATA_BUDGET_EXCEEDED"
+        manifest["reason_details"] = error.payload
     return True
 
 

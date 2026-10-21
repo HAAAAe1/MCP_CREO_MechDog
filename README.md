@@ -6,7 +6,7 @@
 
 **本版为源码预发布候选版，尚未完成所有 Creo 操作的覆盖。** 0.4.2 注册 **87 个工具**（0.4.1 为 86 个，新增 `creo_open_file`）；v0.4.1/Creo 10 反馈按[处理计划](docs/development/CREO10-0.4.1-FEEDBACK-PLAN.md)交付：磁盘 `.prt`/`.asm` 只读检索显示、`creo_capabilities` compact 摘要与分页（FEAT-023/044）、`creo_session_status` 各分支 `server_version`（FEAT-022）、接管 `NO_CURRENT_MODEL`/稳定 `reason_code`/结构化 `refusal_details` 与顶层支持状态（FEAT-006/008）；既有能力（无盘快照接管、会话枚举、受控恢复、直接混合等）保留。后续禁用操作会从工具列表隐藏，并在排队前拒绝。支持多截面原生混合种子自动匹配、翼型截面参数、原生几何定位、分组和轴阵列。使用官方 Python MCP SDK 2.3.0、stdio 传输，采用 [MIT 许可证](LICENSE)。每位使用者在自己的 Windows 电脑上安装依赖并编译 Toolkit 执行器，由本地 AI 客户端调用。
 
-当前服务/源码版本为 **0.4.4**（PATCH：两份 Creo 10 构建侧反馈的完善计划，无新增公开工具）。0.4.4 交付：DEV-027 构建指纹 CRLF→LF 归一化（保留 json.hpp 于依赖清单、缓存 algorithm/generation_key、旧缓存行尾等价复用原世代与注册路径、派生世代键解非确定性冲突死锁）；DEV-030 `vcvars64_env` 放宽为必须含大写 INCLUDE/LIB/PATH、其余键接受并忽略并回写规范化三键；FEAT-044 补验收（钣金件打开、显式 `.asm.N` 精确版本、窗口目视）；FEAT-023 补过期/跨实例 cursor/大内容分页。外部 Creo 10 受限环境复验与 DEV-027 二进制可复现性、目录回收未测。见[0.4.4 说明](docs/RELEASE_NOTES_0.4.4.md)；历史[0.4.3](docs/RELEASE_NOTES_0.4.3.md)、[0.4.2](docs/RELEASE_NOTES_0.4.2.md)、[0.4.1](docs/RELEASE_NOTES_0.4.1.md)、[0.4.0](docs/RELEASE_NOTES_0.4.0.md)及原验收身份保留。
+当前服务/源码版本为 **0.4.5**（PATCH：0.4.2/Creo 10 反馈首批处理，无新增公开工具）。0.4.5 交付：BUG-076 收养 16 MiB 预算阻断首批可定位诊断（稳定原因码 `ADOPTION_METADATA_BUDGET_EXCEEDED` + metadata_kind/字节数/失败阶段/恢复指引，不提高限额）；FEAT-006/008 空窗口 `NO_CURRENT_MODEL` Python 结构化转换与收养预检全阶段诊断；FEAT-043/044 打开成功结果 `opened_session_model`；FEAT-008/023 README 默认摘要与分页接口一览。BUG-076 原环境（Creo 10）证据未取得保持开放；WorkBuddy 黑盒待发布后复核。见[0.4.5 说明](docs/RELEASE_NOTES_0.4.5.md)；历史[0.4.4](docs/RELEASE_NOTES_0.4.4.md)、[0.4.3](docs/RELEASE_NOTES_0.4.3.md)、[0.4.2](docs/RELEASE_NOTES_0.4.2.md)、[0.4.1](docs/RELEASE_NOTES_0.4.1.md)、[0.4.0](docs/RELEASE_NOTES_0.4.0.md)及原验收身份保留。
 
 本版包含 [FEAT-019 自动启动](docs/work-items/FEAT-019.md)：后台检测、启动协调和建模就绪保护已实现；用户于 2026-10-13 接受 WorkBuddy / Creo 12.4 的自动启动、Toolkit 就绪及建模/保存重载验收，并于 2026-10-14 确认补充 Creo 12 已验证可用的说明。该专项未取得 Creo 10 实测结果；Codex 冷启动连接复测失败另列 [BUG-005](docs/work-items/BUG-005.md)。见 [原验收证据](docs/validation/FEAT-019.md)。
 
@@ -177,6 +177,18 @@ Toolkit 操作共用一个通道，提交时忙碌会立即拒绝；响应保持
 ## 验证、恢复与当前边界
 
 每次修改成功后，执行器检查单位、所有原生特征的活动/完整状态及实体状态；保存 `.prt.N` 或 `.asm.N`，擦除该 MCP 零件的内存模型，从实际保存文件重载、重新生成，再对比特征 ID/类型/名称、尺寸值、实体数量、体积和参数。可额外提供 `require_solid`、`volume_mm3`、`volume_tolerance` 断言。体积计算临时使用密度 1，不修改材料。
+
+**默认摘要与分页接口一览。** 以下三个查询接口默认返回 compact 摘要（小体积、可直接整读），需要全量内容时显式请求并按页遍历；依赖旧全量返回的调用方会静默拿到摘要，不会报错：
+
+| 接口 | 默认 | 取全量 |
+| --- | --- | --- |
+| `creo_list_models` | compact 模型清单摘要 | `detail="full"`，必要时沿 `next_cursor` 分页 |
+| `creo_inspect_model` | compact 快照摘要（身份/revision/体积/计数） | `detail="full"` + `section="dimensions"`/`"surfaces"`/`"edges"`/`"features"` 等，沿 `next_cursor` 分页 |
+| `creo_capabilities` | compact 能力摘要页 | `detail="full"` + `section="tools"`/`"families"`/`"references"` 等，沿 `next_cursor` 分页 |
+
+通用规则：单页响应预算 32 KiB，超预算会分页或对单条超限项显式标记；出现 `next_cursor` 时保持相同 `detail`/`section` 继续翻页，翻完即 `complete=true`。`creo_inspect_model` 的分页绑定已保存快照，模型改变后游标失效，应重新查询；`creo_capabilities` 的分页绑定进程内约 600 秒冻结快照，过期 cursor 被拒绝并提示重新首查。
+
+`creo_list_session_models` 的 cursor 语义另有两态：不带 `cursor` 调用时实时重新采集会话清单；携带上次返回的 `cursor` 时读取约 10 分钟的冻结快照分页，不反映快照创建后的会话变化。因此"打开/擦除模型后要确认会话现状"时应省略 `cursor` 重新查询；需要稳定遍历时沿用 `cursor`。`creo_open_file` 成功结果的 `open_file.opened_session_model` 直接提供刚打开模型的单条会话观察（字段与会话枚举条目一致，另含 `observed_at`），不必立即发起全量枚举。
 
 `creo_list_models` 与 `creo_inspect_model` 默认返回 compact 摘要，保留身份、revision、状态、体积、真实计数和快照时间。需要几何时显式使用 `detail="full"`，可指定 `section="dimensions"`、`"surfaces"`、`"edges"`、`"features"` 等。详情默认每页50条、最多200条，响应预算32 KiB；出现 `next_cursor` 时保持 detail/section 继续分页，模型改变后重新查询。大快照的 `data` 按 section 返回；特征内的尺寸、几何项和草图尺寸分别分页，未知计数为 null，不能当作0。小快照的 full 保留原 inspection/aliases 布局。Python调用方可用 `creo_mechdog.query_client.read_full_model` 收集全部页并重建快照。
 

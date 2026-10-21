@@ -183,6 +183,15 @@ async def invoke(fn, *args, **kwargs):
             structured_content=exc.payload,
         )
     except (ValueError, RuntimeError, OSError) as exc:
+        # A structured payload (e.g. AdoptionMetadataBudgetExceeded) keeps the
+        # same JSON text and structuredContent contract as busy errors.
+        payload = getattr(exc, "payload", None)
+        if isinstance(payload, dict) and str(exc) == json.dumps(payload, ensure_ascii=False):
+            return CallToolResult(
+                is_error=True,
+                content=[TextContent(type="text", text=str(exc))],
+                structured_content=payload,
+            )
         raise ToolError(str(exc)) from None
 
 

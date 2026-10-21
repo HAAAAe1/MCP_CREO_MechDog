@@ -1,0 +1,32 @@
+{
+  "source": "2026-10-20_CREO10_v0.4.2_收养链路被16MiB元数据预算阻断.md",
+  "report_sha256": "598323480b17106004e16dae1935303e97e5645a8801bff5ddf4e4ddd14b4f07",
+  "archived_from": "用户提供的 Downloads/0.4.2 原件（2026-10-21 归档时与原件逐字节一致）",
+  "reported_version": "0.4.2",
+  "reported_environment": "Windows 10 x64 / Creo Parametric 10.0.0.0 (release_numeric 42)；会话 connected，当前窗口 HYD_CYLINDER_ASM（外部装配，modified=true）+ 9 个 MCP 托管副本零件",
+  "mapping": {
+    "§3 creo_open_file 实测 9 项通过 + 错误报文质量": "FEAT-044 外部正例（0.4.2 交付的外部确认）",
+    "§4.1 P0' adopt 预检 16 MiB 预算阻断真实模型": "BUG-076（本次登记，P1；首批交付可定位诊断，不预定全量证据存储重构）",
+    "§4.2 P1 无会话模型清理工具，装配打开链路依赖手动擦除": "会话擦除另期安排（本计划明确不在首批范围，未登记新条目）",
+    "§4.3 P2 open_file 成功结果附 opened_session_model + 会话清单过期提示": "FEAT-043/044（本次实施 opened_session_model；快照过期提示未实施）",
+    "§4.4 P3 adopt 空窗口裸错误与错误包装落差": "FEAT-006/008（本次补 Python 结构化转换与预检全阶段诊断）",
+    "§6 P2' README 汇总默认摘要化接口一览": "FEAT-008/023（本次实施）"
+  },
+  "additional_note": "处理方案见 docs/development/CREO10-0.4.2-FEEDBACK-PLAN-2026-10-21.md。报告中的修法建议（类型门控前置、证据分节化）经 2026-10-20 代码核对未直接采纳为根因判断：16 MiB 限制同时用于原生结果、历史登记、证据令牌和提交日志四类读取，报告无法确定命中哪一类；原生收养入口已在完整 inspection 前拒绝装配。",
+  "related_report": {
+    "source": "2026-10-20CREO10.0.0.0-0.4.2注册连续稳定但jsonhpp与vcvars64env两项遗留仍未处理.md",
+    "archived_as": "report-build-side.md",
+    "report_sha256": "72c1a634be90d6083fbaf40b68fbc806385062987426ccb0f14319ddf2482990",
+    "archived_from": "用户提供的 Downloads/0.4.2 原件（2026-10-21 归档时与原件逐字节一致）",
+    "reported_version": "0.4.2",
+    "reported_environment": "Windows 10 x64 / Creo 10.0.0.0 / VS2022 BuildTools 14.44.35207 / Windows SDK 10.0.26100.0 / Python 3.13（未连接 Creo，编译与文件层验证）",
+    "mapping": {
+      "§1 注册稳定性连续第二版通过（五指纹 SAME）": "DEV-027 外部正例",
+      "§2.1 json.hpp 仍在 loader/payload 指纹清单（第三次提出）": "DEV-027（已随 0.4.4 实施 CRLF→LF 归一化，正是本报告建议之一；保留 json.hpp 于清单）",
+      "§2.2 vcvars64_env 只接受恰好三键（第六次提出）": "DEV-030（已随 0.4.4 实施三键放宽）",
+      "§3 源码包/种子包 SHA256 与 Release body 核对一致": "0.4.2 发布外部确认",
+      "§4/问题3 README 汇总默认摘要化接口一览表": "FEAT-008/023（本次实施）"
+    },
+    "additional_note": "两项遗留已随 0.4.4 交付（见 docs/validation/DEV-027-030-IMPROVEMENT-2026-10-21.md）；本报告归档补齐其原件记录，其中 §1 提供归一化前的注册稳定性外部基线。"
+  }
+}
