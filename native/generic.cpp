@@ -2229,6 +2229,30 @@ struct SessionInventory {
     int current_code = 0;
 };
 
+// Single-handle session observation shared by the session inventory and the
+// open-file result; the field set stays identical so clients can compare
+// entries from either source. current_code mirrors ProMdlCurrentGet's own
+// outcome: when it failed, is_current is null rather than a guess.
+static J observe_session_model(ProMdl mdl, const char *model_type, ProMdl current,
+                               int current_code) {
+    ProMdlName name = {};
+    ProPath origin = {};
+    ProBoolean modified = PRO_B_FALSE;
+    int id = -1;
+    ProError nc = ProMdlMdlnameGet(mdl, name);
+    ProError oc = ProMdlOriginGet(mdl, origin);
+    ProError mc = ProMdlModificationVerify(mdl, &modified);
+    ProError ic = ProMdlIdGet(mdl, &id);
+    return {{"name", nc ? J(nullptr) : J(utf8(name))},
+            {"model_type", model_type},
+            {"is_current", current_code ? J(nullptr) : J(mdl == current)},
+            {"origin", oc ? J(nullptr) : J(utf8(origin))},
+            {"has_saved_origin", oc ? J(nullptr) : J(origin[0] != 0)},
+            {"modified", mc ? J(nullptr) : J(modified == PRO_B_TRUE)},
+            {"session_model_id", ic ? J(nullptr) : J(id)},
+            {"query_codes", {{"name", nc}, {"origin", oc}, {"modified", mc}, {"id", ic}}}};
+}
+
 static void collect_session_models(SessionInventory &inventory) {
     ProMdl current = nullptr;
     inventory.current_code = ProMdlCurrentGet(&current);
@@ -2258,24 +2282,8 @@ static void collect_session_models(SessionInventory &inventory) {
                         truncated = true;
                         break;
                     }
-                    ProMdlName name = {};
-                    ProPath origin = {};
-                    ProBoolean modified = PRO_B_FALSE;
-                    int id = -1;
-                    ProError nc = ProMdlMdlnameGet(list[i], name);
-                    ProError oc = ProMdlOriginGet(list[i], origin);
-                    ProError mc = ProMdlModificationVerify(list[i], &modified);
-                    ProError ic = ProMdlIdGet(list[i], &id);
-                    J item = {
-                        {"name", nc ? J(nullptr) : J(utf8(name))},
-                        {"model_type", entry.second},
-                        {"is_current", inventory.current_code ? J(nullptr) : J(list[i] == current)},
-                        {"origin", oc ? J(nullptr) : J(utf8(origin))},
-                        {"has_saved_origin", oc ? J(nullptr) : J(origin[0] != 0)},
-                        {"modified", mc ? J(nullptr) : J(modified == PRO_B_TRUE)},
-                        {"session_model_id", ic ? J(nullptr) : J(id)},
-                        {"query_codes",
-                         {{"name", nc}, {"origin", oc}, {"modified", mc}, {"id", ic}}}};
+                    J item = observe_session_model(list[i], entry.second, current,
+                                                   inventory.current_code);
                     if (entry.first == PRO_MDL_PART) {
                         ProMdlsubtype subtype;
                         ProError sc = ProMdlSubtypeGet(list[i], &subtype);
@@ -2513,6 +2521,13 @@ static void open_file_native(const J &request, J &report) {
             "nothing was saved or erased";
         return;
     }
+    // Single-handle observation of the just-opened model: the same fields as a
+    // session-inventory entry, read directly from the opened handle without a
+    // fresh full enumeration. The Python closeout stamps observed_at.
+    ProMdl window_model = nullptr;
+    int window_code = ProMdlCurrentGet(&window_model);
+    report["open_file"]["opened_session_model"] =
+        observe_session_model(opened, model_type.c_str(), window_model, window_code);
     report["success"] = true;
 }
 

@@ -311,6 +311,13 @@ def _finalize_identity(manifest: dict, result: dict) -> None:
     report["source_file_changed_during_open"] = bool(
         before and after and before.get("sha256") != after.get("sha256")
     )
+    observation = report.get("opened_session_model")
+    if isinstance(observation, dict):
+        # The native side observes the opened handle right after display; this
+        # closeout stamps the observation time next to the job's own timestamps.
+        observation.setdefault("observed_at", bridge.now())
+        observation["observed_at_source"] = "python_closeout"
+        report["opened_session_model"] = observation
     result["open_file"] = report
     result["model_id"] = None
     result["adopted"] = False
