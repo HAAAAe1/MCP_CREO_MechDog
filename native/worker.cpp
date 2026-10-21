@@ -99,14 +99,28 @@ static void read_spec(const std::wstring &job) {
 }
 static std::wstring latest_part() {
     WIN32_FIND_DATAW entry;
-    std::wstring base = folder + L"\\" + model_name + L".prt";
+    std::wstring leaf = model_name + L".prt";
+    std::wstring base = folder + L"\\" + leaf;
     HANDLE find = FindFirstFileW((base + L".*").c_str(), &entry);
-    if (find == INVALID_HANDLE_VALUE)
+    if (find == INVALID_HANDLE_VALUE) {
+        // save_file_iterations no writes a bare "<name>.prt" that the mask can miss.
+        if (GetFileAttributesW(base.c_str()) != INVALID_FILE_ATTRIBUTES)
+            return base;
         throw PRO_TK_E_NOT_FOUND;
+    }
     int newest = -1;
     std::wstring result;
     do {
         std::wstring f = entry.cFileName;
+        if (_wcsicmp(f.c_str(), leaf.c_str()) == 0) {
+            // Unversioned output (save_file_iterations no) counts as version 0;
+            // any numbered iteration outranks it, mirroring generic latest_model_file.
+            if (newest < 0) {
+                newest = 0;
+                result = base;
+            }
+            continue;
+        }
         size_t pos = f.rfind(L'.');
         if (pos == std::wstring::npos)
             continue;

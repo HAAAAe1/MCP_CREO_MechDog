@@ -86,7 +86,11 @@ def owned_file(model: dict, value: str) -> Path:
     if not file.is_absolute() or file.parent.resolve() != output.resolve():
         raise ValueError("Selected source is outside this model's managed output")
     extension = "asm" if model.get("model_type") == "assembly" else "prt"
-    if not re.fullmatch(re.escape(model["model_name"]) + rf"\.{extension}\.\d+", file.name, re.I):
+    # save_file_iterations no writes a bare "<name>.prt"; native latest_model_file
+    # accepts both forms, so the version suffix is optional here too. The directory
+    # and stem checks above and below still pin the file to this owned model.
+    pattern = re.escape(model["model_name"]) + rf"\.{extension}(\.\d+)?"
+    if not re.fullmatch(pattern, file.name, re.I):
         raise ValueError("Selected source does not match the owned native model name")
     return file
 
