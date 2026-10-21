@@ -178,6 +178,18 @@ Toolkit 操作共用一个通道，提交时忙碌会立即拒绝；响应保持
 
 每次修改成功后，执行器检查单位、所有原生特征的活动/完整状态及实体状态；保存 `.prt.N` 或 `.asm.N`，擦除该 MCP 零件的内存模型，从实际保存文件重载、重新生成，再对比特征 ID/类型/名称、尺寸值、实体数量、体积和参数。可额外提供 `require_solid`、`volume_mm3`、`volume_tolerance` 断言。体积计算临时使用密度 1，不修改材料。
 
+**默认摘要与分页接口一览。** 以下三个查询接口默认返回 compact 摘要（小体积、可直接整读），需要全量内容时显式请求并按页遍历；依赖旧全量返回的调用方会静默拿到摘要，不会报错：
+
+| 接口 | 默认 | 取全量 |
+| --- | --- | --- |
+| `creo_list_models` | compact 模型清单摘要 | `detail="full"`，必要时沿 `next_cursor` 分页 |
+| `creo_inspect_model` | compact 快照摘要（身份/revision/体积/计数） | `detail="full"` + `section="dimensions"`/`"surfaces"`/`"edges"`/`"features"` 等，沿 `next_cursor` 分页 |
+| `creo_capabilities` | compact 能力摘要页 | `detail="full"` + `section="tools"`/`"families"`/`"references"` 等，沿 `next_cursor` 分页 |
+
+通用规则：单页响应预算 32 KiB，超预算会分页或对单条超限项显式标记；出现 `next_cursor` 时保持相同 `detail`/`section` 继续翻页，翻完即 `complete=true`。`creo_inspect_model` 的分页绑定已保存快照，模型改变后游标失效，应重新查询；`creo_capabilities` 的分页绑定进程内约 600 秒冻结快照，过期 cursor 被拒绝并提示重新首查。
+
+`creo_list_session_models` 的 cursor 语义另有两态：不带 `cursor` 调用时实时重新采集会话清单；携带上次返回的 `cursor` 时读取约 10 分钟的冻结快照分页，不反映快照创建后的会话变化。因此"打开/擦除模型后要确认会话现状"时应省略 `cursor` 重新查询；需要稳定遍历时沿用 `cursor`。`creo_open_file` 成功结果的 `open_file.opened_session_model` 直接提供刚打开模型的单条会话观察（字段与会话枚举条目一致，另含 `observed_at`），不必立即发起全量枚举。
+
 `creo_list_models` 与 `creo_inspect_model` 默认返回 compact 摘要，保留身份、revision、状态、体积、真实计数和快照时间。需要几何时显式使用 `detail="full"`，可指定 `section="dimensions"`、`"surfaces"`、`"edges"`、`"features"` 等。详情默认每页50条、最多200条，响应预算32 KiB；出现 `next_cursor` 时保持 detail/section 继续分页，模型改变后重新查询。大快照的 `data` 按 section 返回；特征内的尺寸、几何项和草图尺寸分别分页，未知计数为 null，不能当作0。小快照的 full 保留原 inspection/aliases 布局。Python调用方可用 `creo_mechdog.query_client.read_full_model` 收集全部页并重建快照。
 
 `creo_inspect_model` 返回最近已验证的保存快照，snapshot明确不代表实时状态；人工在 Creo 修改后，用 `creo_refresh_model` 获取实况。实时查询不会替换已保存模型的基线，也不会保存或接受人工修改。已有模型修改前会检测模型与记录是否一致；因任务失败或人工修改而不一致时，不应盲目重复提交。失败作业的 inspection 仅在恢复并验证成功时代表恢复模型；失败中间状态另列 failure_inspection，无法取得真实状态时为 null。

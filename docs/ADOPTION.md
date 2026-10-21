@@ -1,6 +1,6 @@
 # 继续编辑 Creo 中的现有模型
 
-本页对应 FEAT-042 第二阶段与 FEAT-043（随 0.4.1 发布）及 0.4.2 的拒绝诊断增强（NO_CURRENT_MODEL、reason_code/refusal_details，87 工具）。0.4.0 及以前的历史验收保持原范围。
+本页对应 FEAT-042 第二阶段与 FEAT-043（随 0.4.1 发布）及 0.4.2 的拒绝诊断增强（NO_CURRENT_MODEL、reason_code/refusal_details，87 工具）；0.4.5 起空窗口 NO_CURRENT_MODEL 在 Python 侧同为结构化拒绝、元数据读取超限返回 `ADOPTION_METADATA_BUDGET_EXCEEDED`（BUG-076 首批定位诊断）。0.4.0 及以前的历史验收保持原范围。
 
 ## 升级与发现
 
@@ -48,7 +48,9 @@ inspect返回 `available=false`、`available_modes=["prepare"]`，没有可用mo
 
 首批支持独立part/钣金、毫米单位、无外部依赖、无失败/抑制/不完整特征。装配、工程图等类型明确拒绝。普通受管模型的origin、检查点、revision及unknown保护保持有效。
 
-inspect 拒绝时除文本 `reason` 外携带稳定 `reason_code`（`unsupported_model_type` / `non_millimeter_units` / `external_dependencies` / `unhealthy_features` / `managed_output` / `already_adopted` / `snapshot_required`）与 `refusal_details`：报告实际长度单位（未知时 `actual_units=null` 并标记 `actual_units_known=false`）；依赖清单与逐特征健康原因当前无法可靠取得，分别标记 `unknown` 与合并口径说明，不补造细节。毫米、无依赖与健康的准入边界不变。Creo 窗口无当前模型时返回 `NO_CURRENT_MODEL` 前缀错误（保留 `ProMdlCurrentGet` 调用名与 -8 原码），可先经 `creo_list_session_models` 查看会话清单；需要把磁盘既有模型放进会话时先用 `creo_open_file` 只读检入显示，再切换/接管。
+inspect 拒绝时除文本 `reason` 外携带稳定 `reason_code`（`unsupported_model_type` / `non_millimeter_units` / `external_dependencies` / `unhealthy_features` / `managed_output` / `already_adopted` / `snapshot_required` / `NO_CURRENT_MODEL`）与 `refusal_details`：报告实际长度单位（未知时 `actual_units=null` 并标记 `actual_units_known=false`）；依赖清单与逐特征健康原因当前无法可靠取得，分别标记 `unknown` 与合并口径说明，不补造细节。毫米、无依赖与健康的准入边界不变。Creo 窗口无当前模型时返回 `NO_CURRENT_MODEL` 结构化拒绝（保留 `ProMdlCurrentGet` 调用名与 -8 原码，refusal_details 未知值如实标记），可先经 `creo_list_session_models` 查看会话清单；需要把磁盘既有模型放进会话时先用 `creo_open_file` 只读检入显示，再切换/接管。
+
+收养元数据读取有 16 MiB 预算（BUG-076 定位诊断，0.4.5）：超限返回稳定原因码 `ADOPTION_METADATA_BUDGET_EXCEEDED`（同步错误为同一 JSON 文本与 structuredContent），携带 `metadata_kind`（native_result/model_registry/evidence_token/commit_journal 四类读取之一）、服务内相对路径、`actual_bytes`/`budget_bytes`、`failed_stage`、job/model 标识与恢复指引。失败预检 job 保留结构化诊断与超限文件本体供定位；错误收尾与轮询遇二次超限不覆盖原始诊断（`failure_read_budget_exceeded`/`commit_read_budget_exceeded` 附注）；预算错误不重放 native、不清保护。预检后段（来源核验/冲突扫描/令牌发布）失败在预检 job 上标注 `failed_stage`。不通过提高限额、跳过登记或删减核验消除报错；取得原环境超限文件类别后按对应读取路径精修。
 
 [BUG-072](work-items/BUG-072.md)已在开发源码修正，尚待重启部署后的实机复验：inspection.units为查询到的模型长度单位，未知时为null，units_query_code保留查询诊断；只有确认毫米且数值有限时才提供volume_mm3。非毫米/未知单位的两层volume_mm3均为null，volume_query_code=0不代表已换算成mm³。坐标、半径等仍采用所示模型长度单位，不扩大非毫米接管支持。旧连接器可能仍返回原生体积误标mm³，需按本页入口核对启动身份后再采用新语义。
 
