@@ -1,12 +1,12 @@
 # 统一开发台账
 
-建立：2026-10-13；最近更新：2026-10-21；当前服务和源码版本：0.4.4（IMPROVEMENT 完善 PATCH，已合入 main `85bb793` 发布，tag v0.4.4 / [Release 419092342](https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.4.4) 双附件核对一致，见[发布核对](validation/RELEASE-0.4.4.md)）。
+建立：2026-10-13；最近更新：2026-10-21；当前服务和源码版本：0.4.5（0.4.2 反馈首批处理 PATCH，已合入 main `9b7358d` 发布，tag v0.4.5 / [Release 419181692](https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.4.5) 双附件核对一致，见[发布核对](validation/RELEASE-0.4.5.md)）。
 
 这里按下一步工作安排任务。各 ID 只保留一条当前记录，完成项见[完成档案](BACKLOG_COMPLETED.md)。历史观察项仍未证明修复，但暂不进入开发或发布阻断。
 
 ## 当前安排
 
-- 2026-10-21 实施用户确认的[0.4.2 反馈首批处理计划](development/CREO10-0.4.2-FEEDBACK-PLAN-2026-10-21.md)：两份反馈原件归档（[feedback-0.4.2-creo10-2026-10-21](validation/feedback-0.4.2-creo10-2026-10-21/report.md)，主报告 SHA256 `59832348…`、构建侧 `72c1a634…`，均与原件逐字节一致）；新增 [BUG-076](work-items/BUG-076.md)（收养 16 MiB 预算阻断定位诊断，P1，首批交付 `ADOPTION_METADATA_BUDGET_EXCEEDED` 结构化诊断与四类超限隔离用例，不预定全量证据存储重构）；FEAT-006/008 补收养预检全阶段诊断与空窗口 `NO_CURRENT_MODEL` Python 结构化转换；FEAT-043/044 打开成功结果增加 `opened_session_model`；FEAT-008/023 README 汇总默认摘要接口用法。DEV-027/030 已随 0.4.4 交付不在本轮范围；会话擦除、FEAT-045、装配接管/reconcile、旧 DLL 目录回收另期。随 0.4.5 发版。
+- 2026-10-21 实施用户确认的[0.4.2 反馈首批处理计划](development/CREO10-0.4.2-FEEDBACK-PLAN-2026-10-21.md)：两份反馈原件归档（[feedback-0.4.2-creo10-2026-10-21](validation/feedback-0.4.2-creo10-2026-10-21/report.md)，主报告 SHA256 `59832348…`、构建侧 `72c1a634…`，均与原件逐字节一致）；新增 [BUG-076](work-items/BUG-076.md)（收养 16 MiB 预算阻断定位诊断，P1，首批交付 `ADOPTION_METADATA_BUDGET_EXCEEDED` 结构化诊断与四类超限隔离用例，不预定全量证据存储重构）；FEAT-006/008 补收养预检全阶段诊断与空窗口 `NO_CURRENT_MODEL` Python 结构化转换；FEAT-043/044 打开成功结果增加 `opened_session_model`；FEAT-008/023 README 汇总默认摘要接口用法。481 项单元+dev_check+实机（Creo 12.4 空窗口/open_file/正常预检，[验证记录](validation/BUG076-FEEDBACK042-2026-10-21.md)）；既有边界观察：inspect-only staging 无 MCP 清理路径（0.4.4 同行为，reconcile 另期）。DEV-027/030 已随 0.4.4 交付不在本轮范围；会话擦除、FEAT-045、装配接管/reconcile、旧 DLL 目录回收另期。已随 0.4.5 发版（main `9b7358d`，tag v0.4.5，[Release 419181692](https://github.com/wudahua/MCP_CREO_MechDog/releases/tag/v0.4.5) 双附件核对一致，见[发布核对](validation/RELEASE-0.4.5.md)）。BUG-076/FEAT-043/044 转验收中，WorkBuddy 黑盒待复核。
 
 - 2026-10-21 实施用户确认的[IMPROVEMENT 完善计划](development/CREO10-0.4.1-FEEDBACK-IMPROVEMENT-PLAN-2026-10-20.md)（0.4.3 后的下一项工作）：第二份构建侧反馈原件归档（[feedback-0.4.1-creo10-build-2026-10-20](validation/feedback-0.4.1-creo10-build-2026-10-20/report.md)，SHA256 `92590f8c…`）；**DEV-027 指纹稳定化**（保留 json.hpp 于清单、CRLF→LF 归一化算法 `sha256-repo-lf-v1`、缓存 algorithm/generation_key、旧缓存三形式等价复用、元数据先发布后写标记、派生世代键解非确定性冲突死锁）与 **DEV-030 vcvars64_env 放宽**（必须含大写三键、其余键接受并忽略、回写规范化三键）已实现，469 项单元+dev_check+实机迁移/翻转/重建/额外键构建全过；FEAT-044 补验收（钣金件 sheetmetal/displayed、显式 `.asm.4`=2 组件与 `.asm.6`=3 组件、PrintWindow 目视"WBOPEN_ASMV (启用的)"）；FEAT-023 补过期/跨实例 cursor/大内容分页。证据见[验证记录](validation/DEV-027-030-IMPROVEMENT-2026-10-21.md)，随 0.4.4 发版。旧计划补第二份报告修订（第 6 节）、CODING_STANDARD 明确构建依赖按实际引用确定。
 
